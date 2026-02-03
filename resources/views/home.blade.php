@@ -13,8 +13,8 @@
                 <nav aria-label="Global" class="flex items-center justify-between p-6 lg:px-8">
                 <div class="flex lg:flex-1">
                     <a href="#" class="-m-1.5 p-1.5 flex items-center gap-3">
-                        <img src="{{ asset('assets/logo-sppi.png') }}" alt="" class="h-12 w-12" />
-                        <img src="{{ asset('assets/logo-bgn.png') }}" alt="" class="h-12 w-auto" />
+                        <img src="{{ asset('assets/images/logo-sppi.png') }}" alt="" class="h-12 w-12" />
+                        <img src="{{ asset('assets/images/logo-bgn.png') }}" alt="" class="h-12 w-auto" />
                         <span class="sr-only font-semibold">SPPI Buleleng</span>
                     </a>
                 </div>
