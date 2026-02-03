@@ -70,14 +70,14 @@
             </dialog>
             </el-dialog>
         </header>
-        <section class="pt-20 max-w-7xl mx-auto">
+        <section class="pt-16 max-w-7xl mx-auto">
             <div aria-hidden="true" class="absolute inset-x-0 -top-40 -z-10 transform-gpu overflow-hidden blur-3xl sm:-top-80">
                 <div style="clip-path: polygon(74.1% 44.1%, 100% 61.6%, 97.5% 26.9%, 85.5% 0.1%, 80.7% 2%, 72.5% 32.5%, 60.2% 62.4%, 52.4% 68.1%, 47.5% 58.3%, 45.2% 34.5%, 27.5% 76.7%, 0.1% 64.9%, 17.9% 100%, 27.6% 76.8%, 76.1% 97.7%, 74.1% 44.1%)" class="relative left-[calc(50%-11rem)] aspect-1155/678 w-144.5 -translate-x-1/2 rotate-30 bg-linear-to-tr from-[#ff80b5] to-[#9089fc] opacity-30 sm:left-[calc(50%-30rem)] sm:w-288.75"></div>
             </div>
-            <div class="py-12 sm:py-48">
+            <div class="py-12 md:py-20 lg:py-24 2xl:py-48">
                 <div class="mb-8 sm:flex justify-center">
-                    <div class="relative rounded-full px-4 py-2 text-xs sm:text-lg text-blue-600 ring-1 ring-gray-900/10 hover:ring-gray-900/20">
-                    <p class="text-center font-semibold">Sarjana Penggerak Pembangunan Indonesia untuk Badan Gizi Nasional</p>
+                    <div class="relative rounded-full px-4 py-2 text-xs sm:text-lg ring-1 text-gray-600 ring-gray-900/10 hover:ring-gray-900/20">
+                    <p class="text-center font-semibold"><span class="text-red-600">Sarjana Penggerak Pembangunan Indonesia</span> untuk <span class="text-blue-600">Badan Gizi Nasional</span></p>
                 </div>
             </div>
             <div class="text-center">
@@ -86,14 +86,14 @@
                     <img src="{{ asset('assets/images/logo-bgn.png') }}" alt="" class="h-20 sm:h-32 w-auto" />
                     <span class="sr-only font-semibold">SPPI Buleleng</span>
                 </div>
-                <p class="mt-8 text-sm font-medium text-gray-800 sm:text-lg">SPPI untuk BGN merujuk pada program Sarjana Penggerak Pembangunan Indonesia, yang merekrut lulusan sarjana untuk menjadi ASN di Badan Gizi Nasional. Program ini bertujuan untuk memastikan setiap anak memiliki akses gizi yang layak dan menggarap aspek teknis, serta melibatkan peserta dalam pelatihan kepemimpinan dan dasar militer untuk penguatan ketahanan nasional.</p>
+                <p class="mt-8 text-sm text-gray-800 sm:text-lg">SPPI untuk BGN merujuk pada program Sarjana Penggerak Pembangunan Indonesia, yang merekrut lulusan sarjana untuk menjadi ASN di Badan Gizi Nasional. Program ini bertujuan untuk memastikan setiap anak memiliki akses gizi yang layak dan menggarap aspek teknis, serta melibatkan peserta dalam pelatihan kepemimpinan dan dasar militer untuk penguatan ketahanan nasional.</p>
                 <div class="mt-10 flex items-center justify-center gap-x-6">
                 <a href="#info-quick-update-sppg" class="rounded-md bg-blue-500 px-3.5 py-2.5 text-sm font-semibold text-white shadow-xs hover:bg-blue-600 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600">Jelajahi <span aria-hidden="true">&rarr;</span></a>
                 </div>
             </div>
             </div>
         </section>
-        <section id="info-quick-update-sppg" class="pt-20 pb-20">
+        <section id="info-quick-update-sppg" class="pt-16 pb-16 sm:pt-26 sm:pb-26">
             <p class="text-center font-bold text-xl sm:text-3xl pb-2">Informasi SPPG Terkini</p>
             <p class="text-center font-medium text-sm sm:text-lg pb-14 text-gray-800">Sekilas informasi Operasional SPPG dan Penerima Manfaat di Kabupaten Buleleng</p>
             <div class="mx-auto max-w-4/5 px-6 lg:px-8">
