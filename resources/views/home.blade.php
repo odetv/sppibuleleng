@@ -32,7 +32,7 @@
                 <a href="#" class="text-sm/6 font-semibold text-gray-900">Tentang</a>
             </div>
             <div class="hidden lg:flex lg:flex-1 lg:justify-end">
-                <a href="#" class="text-sm/6 font-semibold bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-md">Masuk <span aria-hidden="true">&rarr;</span></a>
+                <a href="#" class="text-sm/6 font-semibold bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-md">Masuk</a>
             </div>
             </nav>
             <el-dialog>
@@ -70,25 +70,25 @@
             </dialog>
             </el-dialog>
         </header>
-        <section class="pt-20">
+        <section class="pt-20 max-w-7xl mx-auto">
             <div aria-hidden="true" class="absolute inset-x-0 -top-40 -z-10 transform-gpu overflow-hidden blur-3xl sm:-top-80">
                 <div style="clip-path: polygon(74.1% 44.1%, 100% 61.6%, 97.5% 26.9%, 85.5% 0.1%, 80.7% 2%, 72.5% 32.5%, 60.2% 62.4%, 52.4% 68.1%, 47.5% 58.3%, 45.2% 34.5%, 27.5% 76.7%, 0.1% 64.9%, 17.9% 100%, 27.6% 76.8%, 76.1% 97.7%, 74.1% 44.1%)" class="relative left-[calc(50%-11rem)] aspect-1155/678 w-144.5 -translate-x-1/2 rotate-30 bg-linear-to-tr from-[#ff80b5] to-[#9089fc] opacity-30 sm:left-[calc(50%-30rem)] sm:w-288.75"></div>
             </div>
-            <div class="py-32 sm:py-48">
+            <div class="py-12 sm:py-48">
                 <div class="mb-8 sm:flex justify-center">
                     <div class="relative rounded-full px-4 py-2 text-xs sm:text-lg text-blue-600 ring-1 ring-gray-900/10 hover:ring-gray-900/20">
                     <p class="text-center font-semibold">Sarjana Penggerak Pembangunan Indonesia untuk Badan Gizi Nasional</p>
                 </div>
             </div>
             <div class="text-center">
-                <div class="flex flex-row justify-center items-center gap-3">
-                    <img src="{{ asset('assets/images/logo-sppi.png') }}" alt="" class="h-24 w-24 sm:h-32 sm:w-32" />
-                    <img src="{{ asset('assets/images/logo-bgn.png') }}" alt="" class="h-24 sm:h-32 w-auto" />
+                <div class="flex flex-row justify-center items-center gap-3 sm:gap-6">
+                    <img src="{{ asset('assets/images/logo-sppi.png') }}" alt="" class="h-20 w-20 sm:h-32 sm:w-32" />
+                    <img src="{{ asset('assets/images/logo-bgn.png') }}" alt="" class="h-20 sm:h-32 w-auto" />
                     <span class="sr-only font-semibold">SPPI Buleleng</span>
                 </div>
                 <p class="mt-8 text-sm font-medium text-gray-800 sm:text-lg">SPPI untuk BGN merujuk pada program Sarjana Penggerak Pembangunan Indonesia, yang merekrut lulusan sarjana untuk menjadi ASN di Badan Gizi Nasional. Program ini bertujuan untuk memastikan setiap anak memiliki akses gizi yang layak dan menggarap aspek teknis, serta melibatkan peserta dalam pelatihan kepemimpinan dan dasar militer untuk penguatan ketahanan nasional.</p>
                 <div class="mt-10 flex items-center justify-center gap-x-6">
-                <a href="#info-quick-update-sppg" class="rounded-md bg-blue-500 px-3.5 py-2.5 text-sm font-semibold text-white shadow-xs hover:bg-blue-600 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600">Jelajahi</a>
+                <a href="#info-quick-update-sppg" class="rounded-md bg-blue-500 px-3.5 py-2.5 text-sm font-semibold text-white shadow-xs hover:bg-blue-600 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600">Jelajahi <span aria-hidden="true">&rarr;</span></a>
                 </div>
             </div>
             </div>
