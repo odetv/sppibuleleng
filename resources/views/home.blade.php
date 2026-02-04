@@ -49,10 +49,10 @@
             </div>
             <div class="relative z-10 mx-auto max-w-7xl px-6 lg:px-8">
                 <div class="text-center">
-                    <p class="mt-2 text-4xl font-bold tracking-tight text-white sm:text-6xl">
+                    <p class="text-xl font-bold tracking-tight text-white sm:text-3xl">
                         Informasi SPPG Terkini
                     </p>
-                    <p class="mt-6 text-lg text-gray-300">
+                    <p class="mt-2 text-sm sm:text-lg leading-8 text-gray-300">
                         Sekilas informasi Operasional SPPG dan Penerima Manfaat di Kabupaten Buleleng
                     </p>
                 </div>
