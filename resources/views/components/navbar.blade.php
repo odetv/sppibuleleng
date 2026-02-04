@@ -18,9 +18,9 @@
             </div>
             <div class="hidden lg:flex lg:gap-x-12">
                 <a href="#" class="text-sm/6 font-semibold text-gray-900">Beranda</a>
-                <a href="#" class="text-sm/6 font-semibold text-gray-900">Dashboard</a>
-                <a href="#" class="text-sm/6 font-semibold text-gray-900">FAQ</a>
-                <a href="#" class="text-sm/6 font-semibold text-gray-900">Tentang</a>
+                <a href="#basecamp" class="text-sm/6 font-semibold text-gray-900">Posko</a>
+                <a href="#administration" class="text-sm/6 font-semibold text-gray-900">Administrasi</a>
+                <a href="#faq" class="text-sm/6 font-semibold text-gray-900">FAQ</a>
             </div>
             <div class="hidden lg:flex lg:flex-1 lg:justify-end">
                 <a href="#" class="text-sm/6 font-semibold bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-md">Masuk</a>
@@ -48,9 +48,9 @@
                         <div class="-my-6 divide-y divide-gray-500/10">
                             <div class="space-y-2 py-6">
                                 <a href="#" class="-mx-3 block rounded-lg px-3 py-2 text-base/7 font-semibold text-gray-900 hover:bg-gray-50">Beranda</a>
-                                <a href="#" class="-mx-3 block rounded-lg px-3 py-2 text-base/7 font-semibold text-gray-900 hover:bg-gray-50">Dashboard</a>
-                                <a href="#" class="-mx-3 block rounded-lg px-3 py-2 text-base/7 font-semibold text-gray-900 hover:bg-gray-50">FAQ</a>
-                                <a href="#" class="-mx-3 block rounded-lg px-3 py-2 text-base/7 font-semibold text-gray-900 hover:bg-gray-50">Tentang</a>
+                                <a href="#basecamp" class="-mx-3 block rounded-lg px-3 py-2 text-base/7 font-semibold text-gray-900 hover:bg-gray-50">Posko</a>
+                                <a href="#administration" class="-mx-3 block rounded-lg px-3 py-2 text-base/7 font-semibold text-gray-900 hover:bg-gray-50">Administrasi</a>
+                                <a href="#faq" class="-mx-3 block rounded-lg px-3 py-2 text-base/7 font-semibold text-gray-900 hover:bg-gray-50">FAQ</a>
                             </div>
                             <div class="py-6">
                                 <a href="#" class="-mx-3 block rounded-lg px-3 py-2.5 text-base/7 font-semibold text-gray-900 hover:bg-gray-50">Masuk</a>

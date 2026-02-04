@@ -83,7 +83,7 @@
         </div>
     </section>
 
-    <section id="posko-sppi">
+    <section id="basecamp">
         <div class="mx-auto max-w-7xl pt-16 pb-16 sm:pt-26 sm:pb-26 p-4">
             <div class="text-center">
                 <h2 class="text-xl font-bold tracking-tight text-gray-900 sm:text-3xl">
@@ -114,14 +114,14 @@
         </div>
     </section>
 
-    <section id="administrasi-sppi">
+    <section id="administration">
         <div class="mx-auto max-w-7xl pt-16 pb-16 sm:pt-26 sm:pb-26 p-4">
             <div class="text-center">
                 <h2 class="text-xl font-bold tracking-tight text-gray-900 sm:text-3xl">
                     Administrasi SPPI
                 </h2>
                 <p class="mt-2 text-sm sm:text-lg leading-8 text-gray-600">
-                    Akses cepat untuk manajemen administrasi dan pelaporan SPPI Buleleng.
+                    Akses cepat untuk manajemen administrasi dan pelaporan SPPI Buleleng
                 </p>
             </div>
             <div class="mt-16 grid grid-cols-1 overflow-hidden rounded-2xl border border-gray-100 bg-gray-50/50 sm:grid-cols-3">
@@ -160,7 +160,7 @@
                     Frequently Asked Questions
                 </h2>
                 <p class="mt-2 text-sm sm:text-lg leading-8 text-gray-600">
-                    Akses cepat untuk manajemen administrasi dan pelaporan SPPI Buleleng.
+                    Pertanyaan yang sering diajukan
                 </p>
             </div>
 
@@ -168,7 +168,7 @@
 
                 <div class="faq-item py-6">
                     <button class="faq-button flex w-full items-start justify-between text-left focus:outline-none">
-                        <span class="text-base font-semibold leading-7 text-gray-900">What's the best thing about Switzerland?</span>
+                        <span class="text-base font-semibold leading-7 text-gray-900">Apa itu BGN?</span>
                         <span class="ml-6 flex h-7 items-center">
                             <svg class="faq-icon h-6 w-6 text-gray-400 transition-transform duration-200" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
                                 <path stroke-linecap="round" stroke-linejoin="round" d="M12 6v12m6-6H6" />
@@ -176,13 +176,13 @@
                         </span>
                     </button>
                     <div class="faq-answer hidden mt-2 pr-12">
-                        <p class="text-sm leading-6 text-gray-600">I don't know, but the flag is a big plus. Lorem ipsum dolor sit amet consectetur adipisicing elit.</p>
+                        <p class="text-sm leading-6 text-gray-600">Badan Gizi Nasional (BGN) adalah lembaga pemerintah yang dibentuk oleh Presiden untuk melaksanakan tugas pemenuhan gizi nasional, terutama bagi kelompok rentan seperti pelajar, balita, ibu hamil, dan ibu menyusui. Lembaga ini bertanggung jawab kepada Presiden dan memiliki tugas merumuskan serta menjalankan kebijakan gizi nasional untuk memastikan setiap warga mendapatkan asupan gizi yang aman, bergizi, dan seimbang.</p>
                     </div>
                 </div>
 
                 <div class="faq-item py-6">
                     <button class="faq-button flex w-full items-start justify-between text-left focus:outline-none">
-                        <span class="text-base font-semibold leading-7 text-gray-900">How do you make holy water?</span>
+                        <span class="text-base font-semibold leading-7 text-gray-900">Apa itu SPPI?</span>
                         <span class="ml-6 flex h-7 items-center">
                             <svg class="faq-icon h-6 w-6 text-gray-400 transition-transform duration-200" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
                                 <path stroke-linecap="round" stroke-linejoin="round" d="M12 6v12m6-6H6" />
@@ -190,13 +190,13 @@
                         </span>
                     </button>
                     <div class="faq-answer hidden mt-2 pr-12">
-                        <p class="text-sm leading-6 text-gray-600">You boil the hell out of it. Lorem ipsum dolor sit amet, consectetur adipiscing elit.</p>
+                        <p class="text-sm leading-6 text-gray-600">SPPI adalah Sarjana Penggerak Pembangunan Indonesia, sebuah program inisiatif dari Kementerian Pertahanan yang bertujuan untuk mencetak lulusan sarjana dengan kompetensi kepemimpinan dan teknis di bidang gizi masyarakat. Program ini dirancang untuk mendukung gerakan makan bergizi gratis, menyiapkan lulusan sebagai aparatur sipil negara (ASN), serta mengintegrasikan mereka ke dalam Komponen Cadangan (Komcad) untuk memperkuat pertahanan negara.</p>
                     </div>
                 </div>
 
                 <div class="faq-item py-6">
                     <button class="faq-button flex w-full items-start justify-between text-left focus:outline-none">
-                        <span class="text-base font-semibold leading-7 text-gray-900">What do you call someone with no body and no nose?</span>
+                        <span class="text-base font-semibold leading-7 text-gray-900">Apa itu SPPG?</span>
                         <span class="ml-6 flex h-7 items-center">
                             <svg class="faq-icon h-6 w-6 text-gray-400 transition-transform duration-200" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
                                 <path stroke-linecap="round" stroke-linejoin="round" d="M12 6v12m6-6H6" />
@@ -204,7 +204,21 @@
                         </span>
                     </button>
                     <div class="faq-answer hidden mt-2 pr-12">
-                        <p class="text-sm leading-6 text-gray-600">Nobody knows. A humorous take on a classic riddle to fill this space.</p>
+                        <p class="text-sm leading-6 text-gray-600">SPPG adalah Satuan Pelayanan Pemenuhan Gizi, sebuah unit layanan yang bertugas mengolah dan mendistribusikan makanan bergizi sesuai standar, terutama untuk program pemerintah seperti Makan Bergizi Gratis (MBG). SPPG berfungsi sebagai dapur utama yang memastikan makanan yang disajikan memenuhi standar gizi, higienitas, dan keamanan pangan bagi kelompok sasaran seperti anak sekolah, ibu hamil, dan balita.</p>
+                    </div>
+                </div>
+
+                <div class="faq-item py-6">
+                    <button class="faq-button flex w-full items-start justify-between text-left focus:outline-none">
+                        <span class="text-base font-semibold leading-7 text-gray-900">Apa bedanya SPPG dan SPPI?</span>
+                        <span class="ml-6 flex h-7 items-center">
+                            <svg class="faq-icon h-6 w-6 text-gray-400 transition-transform duration-200" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M12 6v12m6-6H6" />
+                            </svg>
+                        </span>
+                    </button>
+                    <div class="faq-answer hidden mt-2 pr-12">
+                        <p class="text-sm leading-6 text-gray-600">SPPG adalah Satuan Pelayanan Pemenuhan Gizi, yaitu unit operasional yang menyediakan makanan bergizi gratis, sementara SPPI adalah Sarjana Penggerak Pembangunan Indonesia, yaitu program untuk merekrut sarjana yang perannya adalah memimpin dan mengelola SPPG. Perbedaannya adalah SPPG adalah unit kerjanya, sedangkan SPPI adalah orangnya yang menjadi kepala satuan tersebut.</p>
                     </div>
                 </div>
 
