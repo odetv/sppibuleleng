@@ -1,6 +1,6 @@
-<nav class="absolute inset-x-0 top-0 z-50">
+<nav id="main-navbar" class="fixed inset-x-0 top-0 z-50 transition-colors duration-300 bg-transparent">
     <div id="nav-desktop">
-        <div class="flex items-center justify-between p-6 lg:px-8">
+        <div id="nav-content" class="flex items-center justify-between p-4 lg:px-8">
             <div class="flex lg:flex-1">
                 <a href="#" class="-m-1.5 p-1.5 flex items-center gap-3">
                     <img src="{{ asset('assets/images/logo-sppi.png') }}" alt="" class="h-12 w-12" />
@@ -23,14 +23,15 @@
                 <a href="#faq" class="text-sm/6 font-semibold text-gray-900">FAQ</a>
             </div>
             <div class="hidden lg:flex lg:flex-1 lg:justify-end">
-                <a href="#" class="text-sm/6 font-semibold bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-md">Masuk</a>
+                <a href="#" class="text-sm/6 font-semibold bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-md transition-colors">Masuk</a>
             </div>
         </div>
     </div>
+
     <div id="nav-mobile">
         <dialog id="mobile-menu" class="backdrop:bg-transparent lg:hidden">
             <div tabindex="0" class="fixed inset-0 focus:outline-none">
-                <el-dialog-panel class="fixed inset-y-0 right-0 z-50 w-full overflow-y-auto bg-white p-6 sm:max-w-sm sm:ring-1 sm:ring-gray-900/10">
+                <el-dialog-panel class="fixed inset-y-0 right-0 z-50 w-full overflow-y-auto bg-white p-4 sm:max-w-sm sm:ring-1 sm:ring-gray-900/10">
                     <div class="flex items-center justify-between">
                         <a href="#" class="-m-1.5 p-1.5 flex items-center gap-3">
                             <img src="{{ asset('assets/images/logo-sppi.png') }}" alt="" class="h-12 w-12" />
