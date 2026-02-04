@@ -25,7 +25,7 @@
                             </svg>
                         </div>
                         <div>
-                            <p class="text-xs text-gray-400 font-bold uppercase">SAGI</p>
+                            <p class="text-xs text-gray-400 font-medium uppercase">SAGI</p>
                             <p class="text-base font-bold text-gray-900 group-hover:text-indigo-600 transition-colors">127</p>
                         </div>
                     </a>
@@ -37,7 +37,7 @@
                             </svg>
                         </div>
                         <div>
-                            <p class="text-xs text-gray-400 font-bold uppercase">WhatsApp</p>
+                            <p class="text-xs text-gray-400 font-medium uppercase">WhatsApp</p>
                             <p class="text-sm font-bold text-gray-900 group-hover:text-green-600 transition-colors">0895395012671</p>
                         </div>
                     </a>
