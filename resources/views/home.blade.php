@@ -311,11 +311,12 @@
         <div class="relative bg-gray-900 mt-16 mb-16 pt-16 pb-16 sm:pt-26 sm:pb-26">
             <div class="absolute inset-0 z-0">
                 <img
-                    src={{ asset("assets/images/santap-mbg.jpg") }}
+                    src="{{ asset('assets/images/santap-mbg.jpg') }}"
                     alt="Background"
                     class="h-full w-full object-cover opacity-30" />
                 <div class="absolute inset-0 bg-linear-to-r from-purple-900/40 to-black/60"></div>
             </div>
+
             <div class="relative z-10 mx-auto max-w-7xl px-6 lg:px-8">
                 <div class="text-center">
                     <p class="text-xl font-bold tracking-tight text-white sm:text-3xl">
@@ -326,27 +327,40 @@
                     </p>
                 </div>
 
-                <dl class="mt-16 grid grid-cols-1 gap-x-8 gap-y-12 sm:grid-cols-2 lg:grid-cols-5">
-                    <div class="flex flex-col gap-y-3 border-l border-white/10 pl-6">
-                        <dd class="text-4xl font-bold tracking-tight text-white">23</dd>
-                        <dt class="text-sm leading-6 text-gray-400">SPPG Telah Operasional</dt>
+                <dl class="mt-8 grid grid-cols-1 gap-8 sm:grid-cols-2 lg:grid-cols-3">
+
+                    <div class="flex flex-col justify-center gap-y-3 border-t-2 border-gold bg-gold/10 p-6 rounded-2xl">
+                        <dd class="text-5xl font-bold tracking-tight text-white">23</dd>
+                        <dt class="text-base font-semibold leading-6 text-gold uppercase">SPPG Operasional</dt>
                     </div>
-                    <div class="flex flex-col gap-y-3 border-l border-white/10 pl-6">
-                        <dd class="text-4xl font-bold tracking-tight text-white">0</dd>
-                        <dt class="text-sm leading-6 text-gray-400">SPPG Tutup Sementara</dt>
+
+                    <div class="flex flex-col justify-center gap-y-3 border-t-2 border-gold bg-gold/10 p-6 rounded-2xl">
+                        <dd class="text-5xl font-bold tracking-tight text-white">0</dd>
+                        <dt class="text-base font-semibold leading-6 text-gold uppercase">SPPG Tutup Sementara</dt>
                     </div>
-                    <div class="flex flex-col gap-y-3 border-l border-white/10 pl-6">
-                        <dd class="text-4xl font-bold tracking-tight text-white">51.649</dd>
-                        <dt class="text-sm leading-6 text-gray-400">Total Penerima Manfaat</dt>
+
+                    <div class="flex flex-col gap-y-4 border-t-2 border-gold bg-gold/10 p-6 rounded-2xl sm:col-span-2 lg:col-span-1">
+                        <div>
+                            <dd class="text-5xl font-bold tracking-tight text-white">51.649</dd>
+                            <dt class="text-base font-semibold leading-6 text-gold uppercase">Total Penerima Manfaat</dt>
+                        </div>
+
+                        <div class="grid grid-cols-3 gap-4 border-t border-white/10 pt-4 mt-2">
+                            <div class="flex flex-col">
+                                <dd class="text-lg font-bold text-white">50.552</dd>
+                                <dt class="text-xs text-gray-400 tracking-tighter">Siswa</dt>
+                            </div>
+                            <div class="flex flex-col">
+                                <dd class="text-lg font-bold text-white">1.097</dd>
+                                <dt class="text-xs text-gray-400 tracking-tighter">3B (Ibu Hamil, Ibu Menyusui, Balita)</dt>
+                            </div>
+                            <div class="flex flex-col">
+                                <dd class="text-lg font-bold text-white">0</dd>
+                                <dt class="text-xs text-gray-400 tracking-tighter leading-3">Pendidik & Tenaga Kependidikan</dt>
+                            </div>
+                        </div>
                     </div>
-                    <div class="flex flex-col gap-y-3 border-l border-white/10 pl-6">
-                        <dd class="text-4xl font-bold tracking-tight text-white">50.552</dd>
-                        <dt class="text-sm leading-6 text-gray-400">Penerima Manfaat Siswa</dt>
-                    </div>
-                    <div class="flex flex-col gap-y-3 border-l border-white/10 pl-6">
-                        <dd class="text-4xl font-bold tracking-tight text-white">1.097</dd>
-                        <dt class="text-sm leading-6 text-gray-400">Penerima Manfaat 3B</dt>
-                    </div>
+
                 </dl>
             </div>
         </div>
