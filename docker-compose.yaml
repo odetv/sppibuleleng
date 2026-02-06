@@ -55,16 +55,7 @@ services:
     networks:
       - sppibuleleng-network
     healthcheck:
-      test:
-        [
-          'CMD',
-          'mysqladmin',
-          'ping',
-          '-h',
-          'localhost',
-          '-uroot',
-          '-p${DB_PASSWORD}'
-        ]
+      test: ['CMD', 'mysqladmin', 'ping', '-h', 'localhost']
       interval: 10s
       timeout: 5s
       retries: 5
