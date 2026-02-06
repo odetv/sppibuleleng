@@ -17,10 +17,10 @@
                 </button>
             </div>
             <div class="hidden lg:flex lg:gap-x-12">
-                <a href="#" class="text-sm/6 font-semibold text-gray-900">Beranda</a>
-                <a href="#overview" class="text-sm/6 font-semibold text-gray-900">Sasaran</a>
+                <a href="#" class="text-sm/6 font-semibold text-darkblue hover:text-gold">Beranda</a>
+                <a href="#overview" class="text-sm/6 font-semibold text-darkblue hover:text-gold">Sasaran</a>
                 <div class="relative group">
-                    <button type="button" class="flex items-center gap-x-1 text-sm/6 font-semibold text-gray-900 focus:outline-none cursor-pointer">
+                    <button type="button" class="flex items-center gap-x-1 text-sm/6 font-semibold text-darkblue hover:text-gold focus:outline-none cursor-pointer">
                         Informasi
                         <svg class="size-5 flex-none text-gray-400 transition-transform group-hover:rotate-180" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
                             <path fill-rule="evenodd" d="M5.22 8.22a.75.75 0 0 1 1.06 0L10 11.94l3.72-3.72a.75.75 0 1 1 1.06 1.06l-4.25 4.25a.75.75 0 0 1-1.06 0L5.22 9.28a.75.75 0 0 1 0-1.06Z" clip-rule="evenodd" />
@@ -29,13 +29,13 @@
 
                     <div class="absolute -left-8 top-full z-10 mt-3 w-56 overflow-hidden rounded-3xl bg-white shadow-lg ring-1 ring-gray-900/5 transition-all opacity-0 translate-y-1 invisible group-hover:opacity-100 group-hover:translate-y-0 group-hover:visible">
                         <div class="p-4">
-                            <a href="#quick-info" class="block rounded-lg px-3 py-2 text-sm font-semibold text-gray-900 hover:bg-gray-50">Informasi SPPG</a>
-                            <a href="#geospatial" class="block rounded-lg px-3 py-2 text-sm font-semibold text-gray-900 hover:bg-gray-50">Peta Geospasial</a>
+                            <a href="#quick-info" class="block rounded-lg px-3 py-2 text-sm font-semibold text-darkblue hover:text-gold hover:bg-gray-50">Informasi SPPG</a>
+                            <a href="#geospatial" class="block rounded-lg px-3 py-2 text-sm font-semibold text-darkblue hover:text-gold hover:bg-gray-50">Peta Geospasial</a>
                         </div>
                     </div>
                 </div>
                 <div class="relative group">
-                    <button type="button" class="flex items-center gap-x-1 text-sm/6 font-semibold text-gray-900 focus:outline-none cursor-pointer">
+                    <button type="button" class="flex items-center gap-x-1 text-sm/6 font-semibold text-darkblue hover:text-gold focus:outline-none cursor-pointer">
                         SPPI
                         <svg class="size-5 flex-none text-gray-400 transition-transform group-hover:rotate-180" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
                             <path fill-rule="evenodd" d="M5.22 8.22a.75.75 0 0 1 1.06 0L10 11.94l3.72-3.72a.75.75 0 1 1 1.06 1.06l-4.25 4.25a.75.75 0 0 1-1.06 0L5.22 9.28a.75.75 0 0 1 0-1.06Z" clip-rule="evenodd" />
@@ -44,15 +44,15 @@
 
                     <div class="absolute -left-8 top-full z-10 mt-3 w-56 overflow-hidden rounded-3xl bg-white shadow-lg ring-1 ring-gray-900/5 transition-all opacity-0 translate-y-1 invisible group-hover:opacity-100 group-hover:translate-y-0 group-hover:visible">
                         <div class="p-4">
-                            <a href="#base-camp" class="block rounded-lg px-3 py-2 text-sm font-semibold text-gray-900 hover:bg-gray-50">Posko</a>
-                            <a href="#administration" class="block rounded-lg px-3 py-2 text-sm font-semibold text-gray-900 hover:bg-gray-50">Administrasi</a>
+                            <a href="#base-camp" class="block rounded-lg px-3 py-2 text-sm font-semibold text-darkblue hover:text-gold hover:bg-gray-50">Posko</a>
+                            <a href="#administration" class="block rounded-lg px-3 py-2 text-sm font-semibold text-darkblue hover:text-gold hover:bg-gray-50">Administrasi</a>
                         </div>
                     </div>
                 </div>
-                <a href="#faq" class="text-sm/6 font-semibold text-gray-900">FAQ</a>
+                <a href="#faq" class="text-sm/6 font-semibold text-darkblue hover:text-gold">FAQ</a>
             </div>
             <div class="hidden lg:flex lg:flex-1 lg:justify-end">
-                <a href="#" class="text-sm/6 font-semibold bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-md transition-colors">Masuk</a>
+                <a href="#" class="text-sm/6 font-semibold bg-blue-500 hover:bg-gold text-white px-4 py-2 rounded-md transition-colors">Masuk</a>
             </div>
         </div>
     </div>
@@ -77,40 +77,40 @@
                     <div class="mt-6 flow-root">
                         <div class="-my-6 divide-y divide-gray-500/10">
                             <div class="space-y-2 py-6">
-                                <a href="#" class="-mx-3 block rounded-lg px-3 py-2 text-base/7 font-semibold text-gray-900 hover:bg-gray-50">Beranda</a>
-                                <a href="#overview" class="-mx-3 block rounded-lg px-3 py-2 text-base/7 font-semibold text-gray-900 hover:bg-gray-50">Sasaran</a>
+                                <a href="#" class="-mx-3 block rounded-lg px-3 py-2 text-base/7 font-semibold text-darkblue hover:text-gold hover:bg-gray-50">Beranda</a>
+                                <a href="#overview" class="-mx-3 block rounded-lg px-3 py-2 text-base/7 font-semibold text-darkblue hover:text-gold hover:bg-gray-50">Sasaran</a>
                                 <div class="-mx-3">
                                     <button type="button"
                                         onclick="this.nextElementSibling.classList.toggle('hidden'); this.querySelector('svg').classList.toggle('rotate-180')"
-                                        class="flex w-full items-center justify-between rounded-lg py-2 pl-3 pr-3.5 text-base/7 font-semibold text-gray-900 hover:bg-gray-50 cursor-pointer">
+                                        class="flex w-full items-center justify-between rounded-lg py-2 pl-3 pr-3.5 text-base/7 font-semibold text-darkblue hover:text-gold hover:bg-gray-50 cursor-pointer">
                                         Informasi
                                         <svg class="size-5 flex-none text-gray-400 transition-transform" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
                                             <path fill-rule="evenodd" d="M5.22 8.22a.75.75 0 0 1 1.06 0L10 11.94l3.72-3.72a.75.75 0 1 1 1.06 1.06l-4.25 4.25a.75.75 0 0 1-1.06 0L5.22 9.28a.75.75 0 0 1 0-1.06Z" clip-rule="evenodd" />
                                         </svg>
                                     </button>
                                     <div class="hidden mt-2 space-y-2 pl-6">
-                                        <a href="#quick-info" class="block rounded-lg py-2 pl-3 pr-3 text-sm font-semibold text-gray-900 hover:bg-gray-50">Informasi SPPG</a>
-                                        <a href="#geospatial" class="block rounded-lg py-2 pl-3 pr-3 text-sm font-semibold text-gray-900 hover:bg-gray-50">Peta Geospasial</a>
+                                        <a href="#quick-info" class="block rounded-lg py-2 pl-3 pr-3 text-sm font-semibold text-darkblue hover:text-gold hover:bg-gray-50">Informasi SPPG</a>
+                                        <a href="#geospatial" class="block rounded-lg py-2 pl-3 pr-3 text-sm font-semibold text-darkblue hover:text-gold hover:bg-gray-50">Peta Geospasial</a>
                                     </div>
                                 </div>
                                 <div class="-mx-3">
                                     <button type="button"
                                         onclick="this.nextElementSibling.classList.toggle('hidden'); this.querySelector('svg').classList.toggle('rotate-180')"
-                                        class="flex w-full items-center justify-between rounded-lg py-2 pl-3 pr-3.5 text-base/7 font-semibold text-gray-900 hover:bg-gray-50 cursor-pointer">
+                                        class="flex w-full items-center justify-between rounded-lg py-2 pl-3 pr-3.5 text-base/7 font-semibold text-darkblue hover:text-gold hover:bg-gray-50 cursor-pointer">
                                         SPPI
                                         <svg class="size-5 flex-none text-gray-400 transition-transform" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
                                             <path fill-rule="evenodd" d="M5.22 8.22a.75.75 0 0 1 1.06 0L10 11.94l3.72-3.72a.75.75 0 1 1 1.06 1.06l-4.25 4.25a.75.75 0 0 1-1.06 0L5.22 9.28a.75.75 0 0 1 0-1.06Z" clip-rule="evenodd" />
                                         </svg>
                                     </button>
                                     <div class="hidden mt-2 space-y-2 pl-6">
-                                        <a href="#base-camp" class="block rounded-lg py-2 pl-3 pr-3 text-sm font-semibold text-gray-900 hover:bg-gray-50">Posko</a>
-                                        <a href="#administration" class="block rounded-lg py-2 pl-3 pr-3 text-sm font-semibold text-gray-900 hover:bg-gray-50">Administrasi</a>
+                                        <a href="#base-camp" class="block rounded-lg py-2 pl-3 pr-3 text-sm font-semibold text-darkblue hover:text-gold hover:bg-gray-50">Posko</a>
+                                        <a href="#administration" class="block rounded-lg py-2 pl-3 pr-3 text-sm font-semibold text-darkblue hover:text-gold hover:bg-gray-50">Administrasi</a>
                                     </div>
                                 </div>
-                                <a href="#faq" class="-mx-3 block rounded-lg px-3 py-2 text-base/7 font-semibold text-gray-900 hover:bg-gray-50">FAQ</a>
+                                <a href="#faq" class="-mx-3 block rounded-lg px-3 py-2 text-base/7 font-semibold text-darkblue hover:text-gold hover:bg-gray-50">FAQ</a>
                             </div>
                             <div class="py-6">
-                                <a href="#" class="-mx-3 block rounded-lg px-3 py-2.5 text-base/7 font-semibold text-gray-900 hover:bg-gray-50">Masuk</a>
+                                <a href="#" class="-mx-3 block rounded-lg px-3 py-2.5 text-base/7 font-semibold text-darkblue hover:text-gold hover:bg-gray-50">Masuk</a>
                             </div>
                         </div>
                     </div>

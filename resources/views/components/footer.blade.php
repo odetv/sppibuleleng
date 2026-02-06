@@ -7,14 +7,14 @@
                     <img src="{{ asset('assets/images/logo-sppi.png') }}" alt="SPPI Logo" class="w-14 h-14">
                     <img src="{{ asset('assets/images/logo-bgn.png') }}" alt="BGN Logo" class="w-32 h-auto">
                 </div>
-                <h2 class="text-gray-900 font-bold text-lg mb-2">SPPI Kabupaten Buleleng</h2>
+                <h2 class="text-darkblue font-bold text-lg sm:text-3xl uppercase mb-2">SPPI Buleleng</h2>
                 <p class="text-sm leading-relaxed text-gray-500">
                     Menyediakan informasi terkini mengenai operasional SPPG dan SPPI di wilayah Kabupaten Buleleng, Bali.
                 </p>
             </div>
 
             <div class="lg:w-2/3 lg:pl-4">
-                <h3 class="text-gray-900 font-bold mb-6 uppercase tracking-wider text-xl">Kontak & Media Sosial Kami</h3>
+                <h3 class="text-darkblue font-bold mb-6 tracking-wider text-lg sm:text-xl">Kontak & Media Sosial Kami</h3>
 
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-x-12 gap-y-6">
 
@@ -26,7 +26,7 @@
                         </div>
                         <div>
                             <p class="text-xs text-gray-400 font-medium uppercase">SAGI</p>
-                            <p class="text-base font-bold text-gray-900 group-hover:text-indigo-600 transition-colors">127</p>
+                            <p class="text-base font-bold text-darkblue group-hover:text-indigo-600 transition-colors">127</p>
                         </div>
                     </a>
 
@@ -38,7 +38,7 @@
                         </div>
                         <div>
                             <p class="text-xs text-gray-400 font-medium uppercase">WhatsApp</p>
-                            <p class="text-sm font-bold text-gray-900 group-hover:text-green-600 transition-colors">0895395012671</p>
+                            <p class="text-sm font-bold text-darkblue group-hover:text-green-600 transition-colors">0895395012671</p>
                         </div>
                     </a>
 
@@ -50,7 +50,7 @@
                         </div>
                         <div>
                             <p class="text-xs text-gray-400 font-medium uppercase">Instagram</p>
-                            <p class="text-sm font-bold text-gray-900 group-hover:text-pink-600 transition-colors">@sppibuleleng</p>
+                            <p class="text-sm font-bold text-darkblue group-hover:text-pink-600 transition-colors">@sppibuleleng</p>
                         </div>
                     </a>
 
@@ -62,7 +62,7 @@
                         </div>
                         <div>
                             <p class="text-xs text-gray-400 font-medium uppercase">Facebook</p>
-                            <p class="text-sm font-bold text-gray-900 group-hover:text-blue-600 transition-colors">SPPI Buleleng</p>
+                            <p class="text-sm font-bold text-darkblue group-hover:text-blue-600 transition-colors">SPPI Buleleng</p>
                         </div>
                     </a>
 
@@ -74,7 +74,7 @@
                         </div>
                         <div>
                             <p class="text-xs text-gray-400 font-medium uppercase">TikTok</p>
-                            <p class="text-sm font-bold text-gray-900 group-hover:text-black/80 transition-colors">@sppibuleleng</p>
+                            <p class="text-sm font-bold text-darkblue group-hover:text-black/80 transition-colors">@sppibuleleng</p>
                         </div>
                     </a>
 
@@ -86,7 +86,7 @@
                         </div>
                         <div>
                             <p class="text-xs text-gray-400 font-medium uppercase">Email</p>
-                            <p class="text-sm font-bold text-gray-900 group-hover:text-indigo-600 transition-colors">sppibuleleng@gmail.com</p>
+                            <p class="text-sm font-bold text-darkblue group-hover:text-indigo-600 transition-colors">sppibuleleng@gmail.com</p>
                         </div>
                     </a>
 
@@ -98,7 +98,7 @@
                         </div>
                         <div>
                             <p class="text-xs text-gray-400 font-medium uppercase">Website</p>
-                            <p class="text-sm font-bold text-gray-900 group-hover:text-indigo-600 transition-colors">Situs Resmi</p>
+                            <p class="text-sm font-bold text-darkblue group-hover:text-indigo-600 transition-colors">Situs Resmi</p>
                         </div>
                     </a>
 

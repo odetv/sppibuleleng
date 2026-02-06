@@ -31,7 +31,7 @@
                     </div>
                     <p class="mt-8 text-sm text-gray-600 sm:text-lg leading-loose">SPPI untuk BGN merujuk pada program Sarjana Penggerak Pembangunan Indonesia, yang merekrut lulusan sarjana untuk menjadi ASN di Badan Gizi Nasional. Program ini bertujuan untuk memastikan setiap anak memiliki akses gizi yang layak dan menggarap aspek teknis, serta melibatkan peserta dalam pelatihan kepemimpinan dan dasar militer untuk penguatan ketahanan nasional.</p>
                     <div class="mt-10 flex items-center justify-center gap-x-6">
-                        <a href="#overview" class="rounded-md bg-blue-500 px-3.5 py-2.5 text-sm font-semibold text-white shadow-xs hover:bg-blue-600 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600 transition-colors">Jelajahi <span aria-hidden="true">&rarr;</span></a>
+                        <a href="#overview" class="rounded-md bg-blue-500 px-3.5 py-2.5 text-sm font-semibold text-white shadow-xs hover:bg-gold focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600 transition-colors">Jelajahi <span aria-hidden="true">&rarr;</span></a>
                     </div>
                 </div>
             </div>
@@ -64,8 +64,8 @@
                         <h2 class="mb-4 text-sm lg:text-base xl:text-lg font-semibold uppercase tracking-wider text-gray-500">
                             Badan Gizi Nasional
                         </h2>
-                        <h1 class="text-xl font-bold leading-tight text-[#1e3a8a] sm:text-3xl xl:text-4xl">
-                            Lembaga Non-Kementerian yang Berkomitmen pada Pemenuhan Gizi Masyarakat Nasional
+                        <h1 class="text-xl font-bold leading-tight text-darkblue sm:text-3xl xl:text-4xl">
+                            Lembaga Non-Kementerian yang Berkomitmen pada Pemenuhan <span class="text-gold">Gizi Masyarakat Nasional</span>
                         </h1>
 
                         <p class="mt-4 text-sm text-gray-600 sm:text-base xl:text-lg leading-relaxed xl:leading-loose">
@@ -73,11 +73,11 @@
                         </p>
 
                         <div class="mt-8 flex justify-center lg:justify-start">
-                            <div class="flex items-center gap-x-3 rounded-full bg-gray-50 px-4 py-2 ring-1 ring-inset ring-gray-200 hover:ring-gray-300 transition-colors">
-                                <svg class="h-5 w-5 text-gray-400" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+                            <div class="flex items-center gap-x-3 rounded-full bg-gray-50 px-4 py-2 ring-1 ring-inset ring-gray-200 hover:ring-gold text-gray-500 hover:text-gold transition-all">
+                                <svg class="h-5 w-5 " fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
                                     <path stroke-linecap="round" stroke-linejoin="round" d="M19.5 14.25v-2.625a3.375 3.375 0 0 0-3.375-3.375h-1.5A1.125 1.125 0 0 1 13.5 7.125v-1.5a3.375 3.375 0 0 0-3.375-3.375H8.25m0 12.75h7.5m-7.5 3H12M10.5 2.25H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 0 0-9-9Z" />
                                 </svg>
-                                <a href="https://jdih.kemenkum.go.id/common/dokumen/2024perpres083.pdf" target="_blank" class="text-xs lg:text-sm font-medium text-gray-700">Perpres No. 83 Tahun 2024</a>
+                                <a href="https://jdih.kemenkum.go.id/common/dokumen/2024perpres083.pdf" target="_blank" class="text-xs lg:text-sm font-medium">Perpres No. 83 Tahun 2024</a>
                             </div>
                         </div>
                     </div>
@@ -98,32 +98,18 @@
             <div class="container mx-auto px-4 lg:px-8 relative z-10">
                 <div class="mb-12">
                     <h2 class="mb-4 text-sm lg:text-lg font-semibold uppercase tracking-wider text-gray-500">Sasaran BGN</h2>
-                    <h1 class="text-xl font-bold leading-tight text-[#1e3a8a] sm:text-3xl">
+                    <h1 class="text-xl font-bold leading-tight text-darkblue sm:text-3xl">
                         Misi Badan Gizi Nasional (BGN) untuk <br class="hidden lg:block">
-                        <span class="text-[#d97706]">Menuju Indonesia Emas</span>
+                        <span class="text-gold">Menuju Indonesia Emas</span>
                     </h1>
                     <p class="mt-4 max-w-3xl text-sm text-gray-600 sm:text-lg leading-loose">
                         Program komprehensif yang dirancang untuk memastikan setiap individu mendapatkan asupan gizi optimal.
                     </p>
                 </div>
 
-                <div class="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-5">
+                <div class="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-4">
 
-                    <div class="relative flex flex-col justify-between overflow-hidden rounded-3xl bg-[#f3e8d2] p-8 shadow-sm">
-                        <div class="relative z-10">
-                            <h3 class="text-xl font-bold text-[#1e3a8a]">Sasaran Pemenuhan Gizi BGN</h3>
-                            <p class="mt-4 text-sm leading-relaxed text-gray-700">
-                                Kami mendukung kesehatan gizi melalui berbagai program untuk memastikan setiap individu mendapatkan kebutuhan gizi yang optimal.
-                            </p>
-                        </div>
-                        <div class="absolute -bottom-24 -right-24 opacity-30">
-                            <img src="{{ asset('assets/images/pattern-dots.png') }}"
-                                alt=""
-                                class="h-64 w-64 object-contain">
-                        </div>
-                    </div>
-
-                    <div class="group relative h-100 overflow-hidden rounded-3xl shadow-sm transition-all duration-300 hover:-translate-y-2">
+                    <div class="group relative h-64 overflow-hidden rounded-3xl shadow-sm transition-all duration-300 hover:-translate-y-2">
                         <img src="https://images.unsplash.com/photo-1509062522246-3755977927d7?q=80&w=800&auto=format&fit=crop" alt="Peserta Didik" class="h-full w-full object-cover transition-transform duration-500 group-hover:scale-110">
                         <div class="absolute inset-0 bg-black/10 transition-colors group-hover:bg-black/20"></div>
                         <div class="absolute bottom-4 left-4 right-4">
@@ -134,7 +120,7 @@
                         </div>
                     </div>
 
-                    <div class="group relative h-100 overflow-hidden rounded-3xl shadow-sm transition-all duration-300 hover:-translate-y-2">
+                    <div class="group relative h-64 overflow-hidden rounded-3xl shadow-sm transition-all duration-300 hover:-translate-y-2">
                         <img src="https://images.unsplash.com/photo-1488521787991-ed7bbaae773c?q=80&w=800&auto=format&fit=crop" alt="Anak-anak" class="h-full w-full object-cover transition-transform duration-500 group-hover:scale-110">
                         <div class="absolute inset-0 bg-black/10 transition-colors group-hover:bg-black/20"></div>
                         <div class="absolute bottom-4 left-4 right-4">
@@ -145,8 +131,8 @@
                         </div>
                     </div>
 
-                    <div class="group relative h-100 overflow-hidden rounded-3xl shadow-sm transition-all duration-300 hover:-translate-y-2">
-                        <img src="https://images.unsplash.com/photo-1555252333-9f8e92e65df9?q=80&w=800&auto=format&fit=crop" alt="Ibu Hamil & Menyusui" class="h-full w-full object-cover transition-transform duration-500 group-hover:scale-110">
+                    <div class="group relative h-64 overflow-hidden rounded-3xl shadow-sm transition-all duration-300 hover:-translate-y-2">
+                        <img src="https://images.unsplash.com/flagged/photo-1551049215-23fd6d2ac3f1?q=80&w=876&auto=format&fit=crop" alt="Ibu Hamil & Menyusui" class="h-full w-full object-cover transition-transform duration-500 group-hover:scale-110">
                         <div class="absolute inset-0 bg-black/10 transition-colors group-hover:bg-black/20"></div>
                         <div class="absolute bottom-4 left-4 right-4">
                             <div class="rounded-3xl p-4 text-center backdrop-blur-md shadow-lg">
@@ -156,7 +142,7 @@
                         </div>
                     </div>
 
-                    <div class="group relative h-100 overflow-hidden rounded-3xl shadow-sm transition-all duration-300 hover:-translate-y-2">
+                    <div class="group relative h-64 overflow-hidden rounded-3xl shadow-sm transition-all duration-300 hover:-translate-y-2">
                         <img src="https://images.unsplash.com/photo-1722963220475-979db2dbf216?q=80&w=1170&auto=format&fit=crop" alt="Kelompok Lainnya" class="h-full w-full object-cover transition-transform duration-500 group-hover:scale-110">
                         <div class="absolute inset-0 bg-black/10 transition-colors group-hover:bg-black/20"></div>
                         <div class="absolute bottom-4 left-4 right-4">
@@ -176,7 +162,7 @@
         <div class="relative bg-gray-900 mt-16 mb-16 pt-16 pb-16 sm:pt-26 sm:pb-26">
             <div class="absolute inset-0 z-0">
                 <img
-                    src="https://cms.disway.id/uploads/a2198da0fe5b4f03d57543eb83e80488.jpg"
+                    src={{ asset("assets/images/santap-mbg.jpg") }}
                     alt="Background"
                     class="h-full w-full object-cover opacity-30" />
                 <div class="absolute inset-0 bg-linear-to-r from-purple-900/40 to-black/60"></div>
@@ -220,7 +206,7 @@
     <section id="geospatial">
         <div class="container relative bg-white mx-auto pt-16 pb-16 sm:pt-26 sm:pb-26 p-4">
             <div class="text-center">
-                <h2 class="text-xl font-bold tracking-tight text-gray-900 sm:text-3xl">
+                <h2 class="text-xl font-bold tracking-tight text-darkblue sm:text-3xl">
                     Peta Geospasial
                 </h2>
                 <p class="mt-2 text-sm sm:text-lg leading-8 text-gray-600">
@@ -245,7 +231,7 @@
     <section id="base-camp">
         <div class="mx-auto max-w-7xl pt-16 pb-16 sm:pt-26 sm:pb-26 p-4">
             <div class="text-center">
-                <h2 class="text-xl font-bold tracking-tight text-gray-900 sm:text-3xl">
+                <h2 class="text-xl font-bold tracking-tight text-darkblue sm:text-3xl">
                     Posko SPPI
                 </h2>
                 <p class="mt-2 text-sm sm:text-lg leading-8 text-gray-600">
@@ -276,7 +262,7 @@
     <section id="administration">
         <div class="mx-auto max-w-7xl pt-16 pb-16 sm:pt-26 sm:pb-26 p-4">
             <div class="text-center">
-                <h2 class="text-xl font-bold tracking-tight text-gray-900 sm:text-3xl">
+                <h2 class="text-xl font-bold tracking-tight text-darkblue sm:text-3xl">
                     Administrasi SPPI
                 </h2>
                 <p class="mt-2 text-sm sm:text-lg leading-8 text-gray-600">
@@ -315,7 +301,7 @@
     <section id="faq">
         <div class="mx-auto max-w-4xl pt-16 pb-16 sm:pt-26 sm:pb-26 p-4">
             <div class="text-center mb-8">
-                <h2 class="text-xl font-bold tracking-tight text-gray-900 sm:text-3xl">
+                <h2 class="text-xl font-bold tracking-tight text-darkblue sm:text-3xl">
                     Frequently Asked Questions
                 </h2>
                 <p class="mt-2 text-sm sm:text-lg leading-8 text-gray-600">

@@ -9,6 +9,10 @@
 
 @theme {
   --font-sans: 'Poppins', sans-serif;
+  --color-darkblue: #071e49;
+  --color-green: #92d05d;
+  --color-blue: #b5e0ea;
+  --color-gold: #d1b06c;
 }
 
 html {
