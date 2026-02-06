@@ -109,44 +109,44 @@
 
                 <div class="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-4">
 
-                    <div class="group relative h-64 overflow-hidden rounded-3xl shadow-sm transition-all duration-300 hover:-translate-y-2">
+                    <div class="group relative h-64 overflow-hidden rounded-2xl shadow-sm transition-all duration-300 hover:-translate-y-2">
                         <img src="https://images.unsplash.com/photo-1509062522246-3755977927d7?q=80&w=800&auto=format&fit=crop" alt="Peserta Didik" class="h-full w-full object-cover transition-transform duration-500 group-hover:scale-110">
                         <div class="absolute inset-0 bg-black/10 transition-colors group-hover:bg-black/20"></div>
                         <div class="absolute bottom-4 left-4 right-4">
-                            <div class="rounded-3xl p-4 text-center backdrop-blur-md shadow-lg">
+                            <div class="rounded-2xl p-4 text-center backdrop-blur-md shadow-lg">
                                 <h4 class="text-lg font-bold text-white">Peserta Didik</h4>
                                 <p class="text-xs font-medium text-white/90">SD, SMP, SMA Sederajat, Santri</p>
                             </div>
                         </div>
                     </div>
 
-                    <div class="group relative h-64 overflow-hidden rounded-3xl shadow-sm transition-all duration-300 hover:-translate-y-2">
+                    <div class="group relative h-64 overflow-hidden rounded-2xl shadow-sm transition-all duration-300 hover:-translate-y-2">
                         <img src="https://images.unsplash.com/photo-1488521787991-ed7bbaae773c?q=80&w=800&auto=format&fit=crop" alt="Anak-anak" class="h-full w-full object-cover transition-transform duration-500 group-hover:scale-110">
                         <div class="absolute inset-0 bg-black/10 transition-colors group-hover:bg-black/20"></div>
                         <div class="absolute bottom-4 left-4 right-4">
-                            <div class="rounded-3xl p-4 text-center backdrop-blur-md shadow-lg">
+                            <div class="rounded-2xl p-4 text-center backdrop-blur-md shadow-lg">
                                 <h4 class="text-lg font-bold text-white">Anak - Anak</h4>
                                 <p class="text-xs font-medium text-white/90">Anak usia di bawah 5 tahun</p>
                             </div>
                         </div>
                     </div>
 
-                    <div class="group relative h-64 overflow-hidden rounded-3xl shadow-sm transition-all duration-300 hover:-translate-y-2">
+                    <div class="group relative h-64 overflow-hidden rounded-2xl shadow-sm transition-all duration-300 hover:-translate-y-2">
                         <img src="https://images.unsplash.com/flagged/photo-1551049215-23fd6d2ac3f1?q=80&w=876&auto=format&fit=crop" alt="Ibu Hamil & Menyusui" class="h-full w-full object-cover transition-transform duration-500 group-hover:scale-110">
                         <div class="absolute inset-0 bg-black/10 transition-colors group-hover:bg-black/20"></div>
                         <div class="absolute bottom-4 left-4 right-4">
-                            <div class="rounded-3xl p-4 text-center backdrop-blur-md shadow-lg">
+                            <div class="rounded-2xl p-4 text-center backdrop-blur-md shadow-lg">
                                 <h4 class="text-lg font-bold text-white">Ibu Hamil & Menyusui</h4>
                                 <p class="text-xs font-medium text-white/90">Gizi untuk Ibu Hamil & Menyusui</p>
                             </div>
                         </div>
                     </div>
 
-                    <div class="group relative h-64 overflow-hidden rounded-3xl shadow-sm transition-all duration-300 hover:-translate-y-2">
+                    <div class="group relative h-64 overflow-hidden rounded-2xl shadow-sm transition-all duration-300 hover:-translate-y-2">
                         <img src="https://images.unsplash.com/photo-1722963220475-979db2dbf216?q=80&w=1170&auto=format&fit=crop" alt="Kelompok Lainnya" class="h-full w-full object-cover transition-transform duration-500 group-hover:scale-110">
                         <div class="absolute inset-0 bg-black/10 transition-colors group-hover:bg-black/20"></div>
                         <div class="absolute bottom-4 left-4 right-4">
-                            <div class="rounded-3xl p-4 text-center backdrop-blur-md shadow-lg">
+                            <div class="rounded-2xl p-4 text-center backdrop-blur-md shadow-lg">
                                 <h4 class="text-lg font-bold text-white">kelompok Lainnya</h4>
                                 <p class="text-xs font-medium text-white/90">Pendidik & Tenaga Kependidikan</p>
                             </div>
@@ -171,7 +171,7 @@
                 <div class="mt-5 h-1.5 w-20 bg-gold mx-auto rounded-full"></div>
             </div>
 
-            <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-3 gap-6 text-center">
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 text-center">
 
                 <a href="https://bgn.go.id" target="_blank" class="group relative block overflow-hidden rounded-2xl bg-darkblue shadow-lg transition-all duration-300 hover:-translate-y-2">
                     <div class="aspect-2/1 w-full overflow-hidden">
