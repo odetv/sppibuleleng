@@ -1,0 +1,95 @@
+services:
+  # PHP Service (sppibuleleng)
+  sppibuleleng:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: sppibuleleng-image
+    container_name: sppibuleleng-container
+    restart: unless-stopped
+    tty: true
+    stdin_open: true
+    environment:
+      - APP_ENV=${APP_ENV:-development}
+    volumes:
+      - ./:/var/www
+      - /var/www/node_modules
+      - sppibuleleng-storage:/var/www/storage
+      - ./docker-config/php/local.ini:/usr/local/etc/php/conf.d/local.ini
+    networks:
+      - sppibuleleng-network
+    depends_on:
+      db:
+        condition: service_healthy
+
+  # Nginx Service
+  nginx:
+    image: nginx:alpine
+    container_name: sppibuleleng-nginx
+    restart: unless-stopped
+    ports:
+      - '9090:80'
+    volumes:
+      - ./:/var/www
+      - sppibuleleng-storage:/var/www/storage:ro
+      - ./docker-config/nginx:/etc/nginx/conf.d
+    networks:
+      - sppibuleleng-network
+    depends_on:
+      - sppibuleleng
+
+  # Database Service
+  db:
+    image: mysql:8.0
+    container_name: sppibuleleng-db
+    restart: unless-stopped
+    environment:
+      MYSQL_DATABASE: ${DB_DATABASE}
+      MYSQL_ROOT_PASSWORD: ${DB_PASSWORD}
+      MYSQL_PASSWORD: ${DB_PASSWORD}
+      MYSQL_USER: ${DB_USERNAME}
+    ports:
+      - '${DB_PORT_HOST:-9091}:3306'
+    volumes:
+      - sppibuleleng-db-data:/var/lib/mysql
+    networks:
+      - sppibuleleng-network
+    healthcheck:
+      test:
+        [
+          'CMD',
+          'mysqladmin',
+          'ping',
+          '-h',
+          'localhost',
+          '-uroot',
+          '-p${DB_PASSWORD}'
+        ]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # phpMyAdmin Service
+  phpmyadmin:
+    image: phpmyadmin:latest
+    container_name: sppibuleleng-phpmyadmin
+    restart: unless-stopped
+    environment:
+      PMA_HOST: db
+    ports:
+      - '9092:80'
+    networks:
+      - sppibuleleng-network
+    depends_on:
+      db:
+        condition: service_healthy
+
+networks:
+  sppibuleleng-network:
+    driver: bridge
+
+volumes:
+  sppibuleleng-db-data:
+    driver: local
+  sppibuleleng-storage:
+    driver: local
