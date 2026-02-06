@@ -254,7 +254,7 @@
 
                             <div class="grid grid-rows-[0fr] transition-all duration-500 group-hover:grid-rows-[1fr]">
                                 <p class="overflow-hidden text-sm text-blue opacity-0 transition-all duration-500 group-hover:opacity-100 group-hover:mt-2">
-                                    Sumber informasi mengenai Pejabat Pengelola Informasi & Dokumentasi di BGN
+                                    Sumber informasi mengenai SDM dan Organisasi di BGN
                                 </p>
                             </div>
                         </div>
