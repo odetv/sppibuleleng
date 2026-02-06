@@ -158,6 +158,155 @@
         </div>
     </section>
 
+    <section id="services">
+        <div class="max-w-7xl mx-auto py-16 px-4 sm:px-6 lg:px-8">
+
+            <div class="text-center mb-8">
+                <h2 class="text-xl font-bold tracking-tight text-darkblue sm:text-3xl">
+                    Layanan badan Gizi Nasional
+                </h2>
+                <p class="mt-2 text-sm sm:text-lg leading-8 text-gray-600">
+                    Akses cepat ke portal atau web penting terkait Badan Gizi Nasional
+                </p>
+                <div class="mt-5 h-1.5 w-20 bg-gold mx-auto rounded-full"></div>
+            </div>
+
+            <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-3 gap-6 text-center">
+
+                <a href="https://bgn.go.id" target="_blank" class="group relative block overflow-hidden rounded-2xl bg-darkblue shadow-lg transition-all duration-300 hover:-translate-y-2">
+                    <div class="aspect-2/1 w-full overflow-hidden">
+                        <img src="https://images.unsplash.com/photo-1490645935967-10de6ba17061?auto=format&fit=crop"
+                            class="h-full w-full object-cover transition-transform duration-500 group-hover:scale-110">
+                    </div>
+
+                    <div class="absolute inset-0 flex flex-col justify-end bg-linear-to-t from-darkblue from-0% via-darkblue/90 via-40% to-transparent to-70% p-6">
+
+                        <div class="p-4 rounded-xl transition-all duration-300 group-hover:bg-darkblue/60">
+                            <h3 class="text-lg font-bold text-white group-hover:text-gold transition-colors tracking-wide">
+                                Website Resmi BGN
+                            </h3>
+
+                            <div class="grid grid-rows-[0fr] transition-all duration-500 group-hover:grid-rows-[1fr]">
+                                <p class="overflow-hidden text-sm text-blue opacity-0 transition-all duration-500 group-hover:opacity-100 group-hover:mt-2">
+                                    Sumber informasi tentang gizi dan kesehatan masyarakat Indonesia
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                </a>
+
+                <a href="https://ppid.bgn.go.id" target="_blank" class="group relative block overflow-hidden rounded-2xl bg-darkblue shadow-lg transition-all duration-300 hover:-translate-y-2">
+                    <div class="aspect-2/1 w-full overflow-hidden">
+                        <img src="https://images.unsplash.com/photo-1490645935967-10de6ba17061?auto=format&fit=crop"
+                            class="h-full w-full object-cover transition-transform duration-500 group-hover:scale-110">
+                    </div>
+
+                    <div class="absolute inset-0 flex flex-col justify-end bg-linear-to-t from-darkblue from-0% via-darkblue/90 via-40% to-transparent to-70% p-6">
+
+                        <div class="p-4 rounded-xl transition-all duration-300 group-hover:bg-darkblue/60">
+                            <h3 class="text-lg font-bold text-white group-hover:text-gold transition-colors tracking-wide">
+                                PPID BGN
+                            </h3>
+
+                            <div class="grid grid-rows-[0fr] transition-all duration-500 group-hover:grid-rows-[1fr]">
+                                <p class="overflow-hidden text-sm text-blue opacity-0 transition-all duration-500 group-hover:opacity-100 group-hover:mt-2">
+                                    Sumber informasi mengenai Pejabat Pengelola Informasi & Dokumentasi di BGN
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                </a>
+
+                <a href="https://mitra.bgn.go.id" target="_blank" class="group relative block overflow-hidden rounded-2xl bg-darkblue shadow-lg transition-all duration-300 hover:-translate-y-2">
+                    <div class="aspect-2/1 w-full overflow-hidden">
+                        <img src="https://images.unsplash.com/photo-1490645935967-10de6ba17061?auto=format&fit=crop"
+                            class="h-full w-full object-cover transition-transform duration-500 group-hover:scale-110">
+                    </div>
+
+                    <div class="absolute inset-0 flex flex-col justify-end bg-linear-to-t from-darkblue from-0% via-darkblue/90 via-40% to-transparent to-70% p-6">
+
+                        <div class="p-4 rounded-xl transition-all duration-300 group-hover:bg-darkblue/60">
+                            <h3 class="text-lg font-bold text-white group-hover:text-gold transition-colors tracking-wide">
+                                Portal Mitra BGN
+                            </h3>
+
+                            <div class="grid grid-rows-[0fr] transition-all duration-500 group-hover:grid-rows-[1fr]">
+                                <p class="overflow-hidden text-sm text-blue opacity-0 transition-all duration-500 group-hover:opacity-100 group-hover:mt-2">
+                                    Sumber informasi mengenai Pejabat Pengelola Informasi & Dokumentasi di BGN
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                </a>
+
+                <a href="https://birosdmo.bgn.go.id" target="_blank" class="group relative block overflow-hidden rounded-2xl bg-darkblue shadow-lg transition-all duration-300 hover:-translate-y-2">
+                    <div class="aspect-2/1 w-full overflow-hidden">
+                        <img src="https://images.unsplash.com/photo-1490645935967-10de6ba17061?auto=format&fit=crop"
+                            class="h-full w-full object-cover transition-transform duration-500 group-hover:scale-110">
+                    </div>
+
+                    <div class="absolute inset-0 flex flex-col justify-end bg-linear-to-t from-darkblue from-0% via-darkblue/90 via-40% to-transparent to-70% p-6">
+
+                        <div class="p-4 rounded-xl transition-all duration-300 group-hover:bg-darkblue/60">
+                            <h3 class="text-lg font-bold text-white group-hover:text-gold transition-colors tracking-wide">
+                                Biro SDMO BGN
+                            </h3>
+
+                            <div class="grid grid-rows-[0fr] transition-all duration-500 group-hover:grid-rows-[1fr]">
+                                <p class="overflow-hidden text-sm text-blue opacity-0 transition-all duration-500 group-hover:opacity-100 group-hover:mt-2">
+                                    Sumber informasi mengenai Pejabat Pengelola Informasi & Dokumentasi di BGN
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                </a>
+
+                <a href="https://dialur.bgn.go.id" target="_blank" class="group relative block overflow-hidden rounded-2xl bg-darkblue shadow-lg transition-all duration-300 hover:-translate-y-2">
+                    <div class="aspect-2/1 w-full overflow-hidden">
+                        <img src="https://images.unsplash.com/photo-1490645935967-10de6ba17061?auto=format&fit=crop"
+                            class="h-full w-full object-cover transition-transform duration-500 group-hover:scale-110">
+                    </div>
+
+                    <div class="absolute inset-0 flex flex-col justify-end bg-linear-to-t from-darkblue from-0% via-darkblue/90 via-40% to-transparent to-70% p-6">
+
+                        <div class="p-4 rounded-xl transition-all duration-300 group-hover:bg-darkblue/60">
+                            <h3 class="text-lg font-bold text-white group-hover:text-gold transition-colors tracking-wide">
+                                SMO BGN
+                            </h3>
+
+                            <div class="grid grid-rows-[0fr] transition-all duration-500 group-hover:grid-rows-[1fr]">
+                                <p class="overflow-hidden text-sm text-blue opacity-0 transition-all duration-500 group-hover:opacity-100 group-hover:mt-2">
+                                    Sistem Manajemen Operasional terintegrasi untuk mendukung operasional
+                            </div>
+                        </div>
+                    </div>
+                </a>
+
+                <a href="https://tauwascare.tauwas.bgn.go.id" target="_blank" class="group relative block overflow-hidden rounded-2xl bg-darkblue shadow-lg transition-all duration-300 hover:-translate-y-2">
+                    <div class="aspect-2/1 w-full overflow-hidden">
+                        <img src="https://images.unsplash.com/photo-1490645935967-10de6ba17061?auto=format&fit=crop"
+                            class="h-full w-full object-cover transition-transform duration-500 group-hover:scale-110">
+                    </div>
+
+                    <div class="absolute inset-0 flex flex-col justify-end bg-linear-to-t from-darkblue from-0% via-darkblue/90 via-40% to-transparent to-70% p-6">
+
+                        <div class="p-4 rounded-xl transition-all duration-300 group-hover:bg-darkblue/60">
+                            <h3 class="text-lg font-bold text-white group-hover:text-gold transition-colors tracking-wide">
+                                Tauwas Care BGN
+                            </h3>
+
+                            <div class="grid grid-rows-[0fr] transition-all duration-500 group-hover:grid-rows-[1fr]">
+                                <p class="overflow-hidden text-sm text-blue opacity-0 transition-all duration-500 group-hover:opacity-100 group-hover:mt-2">
+                                    Platform untuk memantau dan mengelola data BGN
+                            </div>
+                        </div>
+                    </div>
+                </a>
+
+            </div>
+        </div>
+    </section>
+
     <section id="quick-info">
         <div class="relative bg-gray-900 mt-16 mb-16 pt-16 pb-16 sm:pt-26 sm:pb-26">
             <div class="absolute inset-0 z-0">
@@ -212,9 +361,10 @@
                 <p class="mt-2 text-sm sm:text-lg leading-8 text-gray-600">
                     Lokasi SPPG yang telah beroperasi di Kabupaten Buleleng
                 </p>
+                <div class="mt-5 h-1.5 w-20 bg-gold mx-auto rounded-full"></div>
             </div>
 
-            <div class="mt-8 relative w-full h-87.5 sm:h-96 lg:h-160 overflow-hidden rounded-3xl bg-gray-100 shadow-lg ring-1 ring-gray-900/5">
+            <div class="mt-8 relative w-full h-64 sm:h-87.5 lg:h-128 overflow-hidden rounded-3xl bg-gray-100 shadow-lg ring-1 ring-gray-900/5">
                 <iframe
                     src="https://www.google.com/maps/d/u/0/embed?mid=1IFi_W-d3Sl8eoFgKzJfcaJcjtLo2UfY&ehbc=2E312F"
                     width="100%"
@@ -237,6 +387,7 @@
                 <p class="mt-2 text-sm sm:text-lg leading-8 text-gray-600">
                     Kodim 1609/Buleleng, Jl. Gajah Mada No.142, Banjar Jawa, Kecamatan Buleleng, Kabupaten Buleleng, Bali (81113)
                 </p>
+                <div class="mt-5 h-1.5 w-20 bg-gold mx-auto rounded-full"></div>
             </div>
             <div class="mt-8 grid grid-cols-1 overflow-hidden rounded-2xl border border-gray-100 bg-gray-50/50 sm:grid-cols-2">
                 <a href="https://docs.google.com/forms/d/e/1FAIpQLSf7dxVgO7Q-i5tugkslfZBkvQhAG9C5KJJ_ehVW2sDa_mrOGA/viewform" class="group flex flex-col items-center text-center bg-white p-10 border-b border-gray-100 sm:border-r sm:border-b-0 hover:bg-gray-50 transition-all duration-200">
@@ -268,6 +419,7 @@
                 <p class="mt-2 text-sm sm:text-lg leading-8 text-gray-600">
                     Akses cepat untuk manajemen administrasi dan pelaporan SPPI Buleleng
                 </p>
+                <div class="mt-5 h-1.5 w-20 bg-gold mx-auto rounded-full"></div>
             </div>
             <div class="mt-8 grid grid-cols-1 overflow-hidden rounded-2xl border border-gray-100 bg-gray-50/50 sm:grid-cols-3">
                 <a href="https://absensi-sppi-buleleng.vercel.app" class="group flex flex-col items-center text-center bg-white p-10 border-b border-gray-100 sm:border-r sm:border-b-0 hover:bg-gray-50 transition-all duration-200">
@@ -307,6 +459,7 @@
                 <p class="mt-2 text-sm sm:text-lg leading-8 text-gray-600">
                     Pertanyaan yang sering diajukan
                 </p>
+                <div class="mt-5 h-1.5 w-20 bg-gold mx-auto rounded-full"></div>
             </div>
 
             <div class="divide-y divide-gray-200 border-t border-gray-200">

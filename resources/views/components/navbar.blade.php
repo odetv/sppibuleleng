@@ -29,6 +29,7 @@
 
                     <div class="absolute -left-8 top-full z-10 mt-3 w-56 overflow-hidden rounded-3xl bg-white shadow-lg ring-1 ring-gray-900/5 transition-all opacity-0 translate-y-1 invisible group-hover:opacity-100 group-hover:translate-y-0 group-hover:visible">
                         <div class="p-4">
+                            <a href="#services" class="block rounded-lg px-3 py-2 text-sm font-semibold text-darkblue hover:text-gold hover:bg-gray-50">Layanan BGN</a>
                             <a href="#quick-info" class="block rounded-lg px-3 py-2 text-sm font-semibold text-darkblue hover:text-gold hover:bg-gray-50">Informasi SPPG</a>
                             <a href="#geospatial" class="block rounded-lg px-3 py-2 text-sm font-semibold text-darkblue hover:text-gold hover:bg-gray-50">Peta Geospasial</a>
                         </div>
@@ -44,8 +45,8 @@
 
                     <div class="absolute -left-8 top-full z-10 mt-3 w-56 overflow-hidden rounded-3xl bg-white shadow-lg ring-1 ring-gray-900/5 transition-all opacity-0 translate-y-1 invisible group-hover:opacity-100 group-hover:translate-y-0 group-hover:visible">
                         <div class="p-4">
-                            <a href="#base-camp" class="block rounded-lg px-3 py-2 text-sm font-semibold text-darkblue hover:text-gold hover:bg-gray-50">Posko</a>
-                            <a href="#administration" class="block rounded-lg px-3 py-2 text-sm font-semibold text-darkblue hover:text-gold hover:bg-gray-50">Administrasi</a>
+                            <a href="#base-camp" class="block rounded-lg px-3 py-2 text-sm font-semibold text-darkblue hover:text-gold hover:bg-gray-50">Posko SPPI</a>
+                            <a href="#administration" class="block rounded-lg px-3 py-2 text-sm font-semibold text-darkblue hover:text-gold hover:bg-gray-50">Administrasi SPPI</a>
                         </div>
                     </div>
                 </div>
@@ -89,6 +90,7 @@
                                         </svg>
                                     </button>
                                     <div class="hidden mt-2 space-y-2 pl-6">
+                                        <a href="#services" class="block rounded-lg py-2 pl-3 pr-3 text-sm font-semibold text-darkblue hover:text-gold hover:bg-gray-50">Layanan BGN</a>
                                         <a href="#quick-info" class="block rounded-lg py-2 pl-3 pr-3 text-sm font-semibold text-darkblue hover:text-gold hover:bg-gray-50">Informasi SPPG</a>
                                         <a href="#geospatial" class="block rounded-lg py-2 pl-3 pr-3 text-sm font-semibold text-darkblue hover:text-gold hover:bg-gray-50">Peta Geospasial</a>
                                     </div>
@@ -103,8 +105,8 @@
                                         </svg>
                                     </button>
                                     <div class="hidden mt-2 space-y-2 pl-6">
-                                        <a href="#base-camp" class="block rounded-lg py-2 pl-3 pr-3 text-sm font-semibold text-darkblue hover:text-gold hover:bg-gray-50">Posko</a>
-                                        <a href="#administration" class="block rounded-lg py-2 pl-3 pr-3 text-sm font-semibold text-darkblue hover:text-gold hover:bg-gray-50">Administrasi</a>
+                                        <a href="#base-camp" class="block rounded-lg py-2 pl-3 pr-3 text-sm font-semibold text-darkblue hover:text-gold hover:bg-gray-50">Posko SPPI</a>
+                                        <a href="#administration" class="block rounded-lg py-2 pl-3 pr-3 text-sm font-semibold text-darkblue hover:text-gold hover:bg-gray-50">Administrasi SPPI</a>
                                     </div>
                                 </div>
                                 <a href="#faq" class="-mx-3 block rounded-lg px-3 py-2 text-base/7 font-semibold text-darkblue hover:text-gold hover:bg-gray-50">FAQ</a>

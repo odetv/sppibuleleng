@@ -108,7 +108,7 @@
 
         <div class="border-t border-gray-100 mt-12 pt-8 flex flex-col md:flex-row justify-between items-center gap-2 text-xs text-gray-400">
             <p>© {{ now()->format('Y') }} - Tim Data SPPI Buleleng Bali</p>
-            <p class="italic">Pelayanan Terpadu SPPI & SPPG Kabupaten Buleleng</p>
+            <p class="italic">Bagimu Negeri Jiwa Raga Kami</p>
         </div>
     </div>
 </footer>
