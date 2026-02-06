@@ -35,6 +35,8 @@ document.addEventListener('DOMContentLoaded', () => {
 
 document.addEventListener('DOMContentLoaded', () => {
   const navbar = document.getElementById('main-navbar');
+  const mobileMenu = document.getElementById('mobile-menu');
+  // 1. Fungsi Toggle Background
   const toggleNavbarBg = () => {
     if (window.scrollY > 20) {
       navbar.classList.add(
@@ -56,6 +58,45 @@ document.addEventListener('DOMContentLoaded', () => {
       navbar.classList.add('bg-transparent', 'border-transparent');
     }
   };
+  // 2. Logika Mobile Menu (Accordion & Reset)
+  const mobileLinks = document.querySelectorAll('#nav-mobile a');
+  const dropdownButtons = document.querySelectorAll(
+    '#nav-mobile button[onclick*="nextElementSibling.classList.toggle"]'
+  );
+  // Fungsi Helper untuk Reset semua dropdown ke kondisi tertutup
+  const resetDropdowns = () => {
+    dropdownButtons.forEach((btn) => {
+      const panel = btn.nextElementSibling;
+      const icon = btn.querySelector('svg');
+      if (panel) panel.classList.add('hidden');
+      if (icon) icon.classList.remove('rotate-180');
+    });
+  };
+  // Logika Accordion: Tutup menu lain saat satu dibuka
+  dropdownButtons.forEach((btn) => {
+    btn.addEventListener('click', () => {
+      dropdownButtons.forEach((otherBtn) => {
+        if (otherBtn !== btn) {
+          const otherPanel = otherBtn.nextElementSibling;
+          const otherIcon = otherBtn.querySelector('svg');
+          if (otherPanel) otherPanel.classList.add('hidden');
+          if (otherIcon) otherIcon.classList.remove('rotate-180');
+        }
+      });
+    });
+  });
+  // RESET saat menu ditutup agar saat dibuka lagi sudah tertutup semua
+  mobileMenu.addEventListener('close', () => {
+    resetDropdowns();
+  });
+  // Penutup otomatis saat link (a) diklik
+  mobileLinks.forEach((link) => {
+    link.addEventListener('click', () => {
+      if (mobileMenu.open) {
+        mobileMenu.close();
+      }
+    });
+  });
   window.addEventListener('scroll', toggleNavbarBg);
   toggleNavbarBg();
 });
