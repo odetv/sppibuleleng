@@ -10,7 +10,8 @@ services:
     tty: true
     stdin_open: true
     environment:
-      - APP_ENV=${APP_ENV:-development}
+      - APP_ENV=production
+      - APP_DEBUG=false
     volumes:
       - ./:/var/www
       - /var/www/node_modules
@@ -28,7 +29,7 @@ services:
     container_name: sppibuleleng-nginx
     restart: unless-stopped
     ports:
-      - '9090:80'
+      - '9091:80'
     volumes:
       - ./:/var/www
       - sppibuleleng-storage:/var/www/storage:ro
@@ -46,10 +47,8 @@ services:
     environment:
       MYSQL_DATABASE: ${DB_DATABASE}
       MYSQL_ROOT_PASSWORD: ${DB_PASSWORD}
-      MYSQL_PASSWORD: ${DB_PASSWORD}
-      MYSQL_USER: ${DB_USERNAME}
     ports:
-      - '${DB_PORT_HOST:-9091}:3306'
+      - '9093:3306'
     volumes:
       - sppibuleleng-db-data:/var/lib/mysql
     networks:
