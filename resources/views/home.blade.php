@@ -25,7 +25,7 @@
             </div>
             <div>
                 <div class="mb-8 sm:flex justify-center">
-                    <div class="relative rounded-full px-4 py-2 text-sm sm:text-xl ring-1 text-gray-600 ring-gray-900/10 hover:ring-gray-900/20">
+                    <div class="relative rounded-full px-4 py-2 text-sm sm:text-xl ring-1 text-gray-600 ring-gray-900/10 hover:ring-gray-900/20 transition-colors">
                         <p class="text-center font-semibold"><span class="text-red-600">Sarjana Penggerak Pembangunan Indonesia</span> untuk <span class="text-blue-600">Badan Gizi Nasional</span></p>
                     </div>
                 </div>
