@@ -1,5 +1,53 @@
 import './bootstrap';
 
+if ('serviceWorker' in navigator) {
+  window.addEventListener('load', () => {
+    navigator.serviceWorker
+      .register('/sw.js')
+      .then((reg) => console.log('PWA: Service Worker terdaftar', reg.scope))
+      .catch((err) => console.error('PWA: Registrasi gagal', err));
+  });
+}
+
+document.addEventListener('DOMContentLoaded', () => {
+  let deferredPrompt;
+  const banner = document.getElementById('pwa-install-banner');
+  const btnInstall = document.getElementById('pwa-btn-install');
+  const btnClose = document.getElementById('pwa-btn-close');
+  const isInstalled = localStorage.getItem('pwaInstalled') === 'true';
+  window.addEventListener('beforeinstallprompt', (e) => {
+    e.preventDefault();
+    deferredPrompt = e;
+    if (!isInstalled && banner) {
+      banner.classList.remove('hidden');
+      setTimeout(() => banner.classList.add('opacity-100'), 10);
+    }
+  });
+  if (btnInstall) {
+    btnInstall.addEventListener('click', async () => {
+      if (deferredPrompt) {
+        deferredPrompt.prompt();
+        const { outcome } = await deferredPrompt.userChoice;
+        if (outcome === 'accepted') {
+          localStorage.setItem('pwaInstalled', 'true');
+          banner.classList.add('hidden');
+        }
+        deferredPrompt = null;
+      }
+    });
+  }
+  if (btnClose) {
+    btnClose.addEventListener('click', () => {
+      banner.classList.add('hidden');
+      localStorage.setItem('pwaInstalled', 'true');
+    });
+  }
+  window.addEventListener('appinstalled', () => {
+    localStorage.setItem('pwaInstalled', 'true');
+    if (banner) banner.classList.add('hidden');
+  });
+});
+
 document.addEventListener('DOMContentLoaded', () => {
   const faqButtons = document.querySelectorAll('.faq-button');
   faqButtons.forEach((button) => {
