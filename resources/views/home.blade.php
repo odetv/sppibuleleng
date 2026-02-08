@@ -25,7 +25,7 @@
             </div>
             <div>
                 <div class="mb-8 sm:flex justify-center">
-                    <div class="relative rounded-full px-4 py-2 text-sm sm:text-xl ring-1 text-gray-600 ring-gray-900/10 hover:ring-gray-900/20">
+                    <div class="relative rounded-full px-4 py-2 text-sm sm:text-xl ring-1 text-gray-600 ring-gray-900/10 hover:ring-gray-900/20 transition-colors">
                         <p class="text-center font-semibold"><span class="text-red-600">Sarjana Penggerak Pembangunan Indonesia</span> untuk <span class="text-blue-600">Badan Gizi Nasional</span></p>
                     </div>
                 </div>
@@ -116,7 +116,7 @@
                 <div class="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-4">
 
                     <div class="group relative h-64 overflow-hidden rounded-2xl shadow-sm transition-all duration-300 hover:-translate-y-2">
-                        <img src="https://images.unsplash.com/photo-1509062522246-3755977927d7?q=80&w=800&auto=format&fit=crop" alt="Peserta Didik" class="h-full w-full object-cover transition-transform duration-500 group-hover:scale-110">
+                        <img src="{{ asset('assets/images/target-peserta-didik.jpg') }}" alt="Peserta Didik" class="h-full w-full object-cover transition-transform duration-500 group-hover:scale-110">
                         <div class="absolute inset-0 bg-black/10 transition-colors group-hover:bg-black/20"></div>
                         <div class="absolute bottom-4 left-4 right-4">
                             <div class="rounded-2xl p-4 text-center backdrop-blur-md shadow-lg">
@@ -127,7 +127,7 @@
                     </div>
 
                     <div class="group relative h-64 overflow-hidden rounded-2xl shadow-sm transition-all duration-300 hover:-translate-y-2">
-                        <img src="https://images.unsplash.com/photo-1488521787991-ed7bbaae773c?q=80&w=800&auto=format&fit=crop" alt="Anak-anak" class="h-full w-full object-cover transition-transform duration-500 group-hover:scale-110">
+                        <img src="{{ asset('assets/images/target-anak.jpg') }}" alt="Anak-anak" class="h-full w-full object-cover transition-transform duration-500 group-hover:scale-110">
                         <div class="absolute inset-0 bg-black/10 transition-colors group-hover:bg-black/20"></div>
                         <div class="absolute bottom-4 left-4 right-4">
                             <div class="rounded-2xl p-4 text-center backdrop-blur-md shadow-lg">
@@ -138,7 +138,7 @@
                     </div>
 
                     <div class="group relative h-64 overflow-hidden rounded-2xl shadow-sm transition-all duration-300 hover:-translate-y-2">
-                        <img src="https://images.unsplash.com/flagged/photo-1551049215-23fd6d2ac3f1?q=80&w=876&auto=format&fit=crop" alt="Ibu Hamil & Menyusui" class="h-full w-full object-cover transition-transform duration-500 group-hover:scale-110">
+                        <img src="{{ asset('assets/images/target-hamil-menyusui-balita.jpg') }}" alt="Ibu Hamil Menyusui Balita" class="h-full w-full object-cover transition-transform duration-500 group-hover:scale-110">
                         <div class="absolute inset-0 bg-black/10 transition-colors group-hover:bg-black/20"></div>
                         <div class="absolute bottom-4 left-4 right-4">
                             <div class="rounded-2xl p-4 text-center backdrop-blur-md shadow-lg">
@@ -149,7 +149,7 @@
                     </div>
 
                     <div class="group relative h-64 overflow-hidden rounded-2xl shadow-sm transition-all duration-300 hover:-translate-y-2">
-                        <img src="https://images.unsplash.com/photo-1722963220475-979db2dbf216?q=80&w=1170&auto=format&fit=crop" alt="Kelompok Lainnya" class="h-full w-full object-cover transition-transform duration-500 group-hover:scale-110">
+                        <img src="{{ asset('assets/images/target-lainnya.jpg') }}" alt="Kelompok Lainnya" class="h-full w-full object-cover transition-transform duration-500 group-hover:scale-110">
                         <div class="absolute inset-0 bg-black/10 transition-colors group-hover:bg-black/20"></div>
                         <div class="absolute bottom-4 left-4 right-4">
                             <div class="rounded-2xl p-4 text-center backdrop-blur-md shadow-lg">
@@ -181,7 +181,7 @@
 
                 <a href="https://bgn.go.id" target="_blank" class="group relative block overflow-hidden rounded-2xl bg-darkblue shadow-lg transition-all duration-300 hover:-translate-y-2">
                     <div class="aspect-2/1 w-full overflow-hidden">
-                        <img src="https://images.unsplash.com/photo-1490645935967-10de6ba17061?auto=format&fit=crop"
+                        <img src={{ asset('assets/images/bg-services.png') }}
                             class="h-full w-full object-cover transition-transform duration-500 group-hover:scale-110">
                     </div>
 
@@ -203,7 +203,7 @@
 
                 <a href="https://ppid.bgn.go.id" target="_blank" class="group relative block overflow-hidden rounded-2xl bg-darkblue shadow-lg transition-all duration-300 hover:-translate-y-2">
                     <div class="aspect-2/1 w-full overflow-hidden">
-                        <img src="https://images.unsplash.com/photo-1490645935967-10de6ba17061?auto=format&fit=crop"
+                        <img src={{ asset('assets/images/bg-services.png') }}
                             class="h-full w-full object-cover transition-transform duration-500 group-hover:scale-110">
                     </div>
 
@@ -225,7 +225,7 @@
 
                 <a href="https://mitra.bgn.go.id" target="_blank" class="group relative block overflow-hidden rounded-2xl bg-darkblue shadow-lg transition-all duration-300 hover:-translate-y-2">
                     <div class="aspect-2/1 w-full overflow-hidden">
-                        <img src="https://images.unsplash.com/photo-1490645935967-10de6ba17061?auto=format&fit=crop"
+                        <img src={{ asset('assets/images/bg-services.png') }}
                             class="h-full w-full object-cover transition-transform duration-500 group-hover:scale-110">
                     </div>
 
@@ -247,7 +247,7 @@
 
                 <a href="https://birosdmo.bgn.go.id" target="_blank" class="group relative block overflow-hidden rounded-2xl bg-darkblue shadow-lg transition-all duration-300 hover:-translate-y-2">
                     <div class="aspect-2/1 w-full overflow-hidden">
-                        <img src="https://images.unsplash.com/photo-1490645935967-10de6ba17061?auto=format&fit=crop"
+                        <img src={{ asset('assets/images/bg-services.png') }}
                             class="h-full w-full object-cover transition-transform duration-500 group-hover:scale-110">
                     </div>
 
@@ -269,7 +269,7 @@
 
                 <a href="https://dialur.bgn.go.id" target="_blank" class="group relative block overflow-hidden rounded-2xl bg-darkblue shadow-lg transition-all duration-300 hover:-translate-y-2">
                     <div class="aspect-2/1 w-full overflow-hidden">
-                        <img src="https://images.unsplash.com/photo-1490645935967-10de6ba17061?auto=format&fit=crop"
+                        <img src={{ asset('assets/images/bg-services.png') }}
                             class="h-full w-full object-cover transition-transform duration-500 group-hover:scale-110">
                     </div>
 
@@ -290,7 +290,7 @@
 
                 <a href="https://tauwascare.tauwas.bgn.go.id" target="_blank" class="group relative block overflow-hidden rounded-2xl bg-darkblue shadow-lg transition-all duration-300 hover:-translate-y-2">
                     <div class="aspect-2/1 w-full overflow-hidden">
-                        <img src="https://images.unsplash.com/photo-1490645935967-10de6ba17061?auto=format&fit=crop"
+                        <img src={{ asset('assets/images/bg-services.png') }}
                             class="h-full w-full object-cover transition-transform duration-500 group-hover:scale-110">
                     </div>
 
