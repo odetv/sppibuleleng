@@ -7,9 +7,15 @@
     @vite('resources/css/app.css')
     @vite('resources/js/app.js')
     <title>SPPI Buleleng</title>
+    <!-- PWA  -->
+    <meta name="theme-color" content="#6777ef" />
+    <link rel="apple-touch-icon" href="{{ asset('assets/images/logo-sppi.png') }}">
+    <link rel="manifest" href="{{ asset('manifest.json') }}">
 </head>
 
 <body class="bg-white">
+    <x-pwa-install-banner />
+
     <x-navbar />
 
     <section id="">
