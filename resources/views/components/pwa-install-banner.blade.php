@@ -42,7 +42,7 @@
     }
 </style>
 
-<div id="pwa-install-banner" class="hidden fixed bottom-5 left-1/2 z-9999 w-auto max-w-[95%] transition-all duration-500 shadow-2xl">
+<div id="pwa-install-banner" class="hidden fixed bottom-5 left-1/2 z-9999 w-auto max-w-[95%] transition-all duration-500">
     <div class="pwa-border-wrapper">
         <div class="pwa-content-inner p-4 px-4 flex items-center justify-start gap-8 text-white">
 
@@ -55,7 +55,7 @@
             </div>
 
             <div class="flex items-center gap-3">
-                <button id="pwa-btn-install" class="bg-white text-[#003366] px-2 py-2 rounded-lg text-xs font-black cursor-pointer hover:bg-gold transition-all active:scale-90 shadow-sm">
+                <button id="pwa-btn-install" class="bg-white text-[#003366] px-2 py-2 rounded-lg text-xs font-black cursor-pointer hover:bg-gold transition-all active:scale-90">
                     OK
                 </button>
                 <button id="pwa-btn-close" class="text-blue-200 hover:text-gold text-lg cursor-pointer transition-colors leading-none">
