@@ -1,17 +1,17 @@
 {
   "name": "Portal SPPI Buleleng",
-  "short_name": "LPT",
+  "short_name": "Portal SPPI Buleleng",
   "start_url": "/index.php",
-  "background_color": "#6777ef",
+  "background_color": "#071e49",
   "description": "Akses Mudah Portal SPPI Buleleng",
   "display": "fullscreen",
-  "theme_color": "#6777ef",
+  "theme_color": "#071e49",
   "icons": [
     {
       "src": "assets/images/logo-sppi.png",
       "sizes": "512x512",
       "type": "image/png",
-      "purpose": "any maskable"
+      "purpose": "any"
     }
   ]
 }
