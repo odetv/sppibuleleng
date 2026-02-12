@@ -26,30 +26,27 @@ class RegisteredUserController extends Controller
     /**
      * Menangani permintaan registrasi masuk.
      */
+
     public function store(Request $request): RedirectResponse
     {
         $request->validate([
             'email' => ['required', 'string', 'lowercase', 'email', 'max:255', 'unique:' . User::class],
+            'phone' => ['required', 'string', 'max:20', 'unique:users,phone'],
             'password' => ['required', 'confirmed', Rules\Password::defaults()],
         ]);
 
-        // 1. Ambil ID Role 'guest' dari tabel ref_person_roles
-        $guestRole = DB::table('ref_person_roles')->where('slug_role', 'guest')->first();
-
-        // 2. Buat User baru sesuai skema diagram
         $user = User::create([
             'email' => $request->email,
+            'phone' => $request->phone,
             'password' => Hash::make($request->password),
-            'id_ref_person_role' => $guestRole->id_ref_person_role, // Otomatis jadi Guest
-            'status_user' => 'pending', // Status awal
+            'status_user' => 'pending',
+            'id_ref_person_role' => 2,
         ]);
 
         event(new Registered($user));
 
         Auth::login($user);
 
-        // 3. Arahkan ke halaman pengisian profil (Tabel Persons)
-        // Pastikan Anda sudah membuat route dengan nama 'profile.complete' nanti
-        return redirect()->intended(route('profile.complete', absolute: false));
+        return redirect(route('dashboard', absolute: false));
     }
 }
