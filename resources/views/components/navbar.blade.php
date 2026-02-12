@@ -53,7 +53,7 @@
                 <a href="#faq" class="text-sm/6 font-semibold text-darkblue hover:text-gold transition-colors">FAQ</a>
             </div>
             <div class="hidden lg:flex lg:flex-1 lg:justify-end">
-                <a href="#" class="text-sm/6 font-semibold bg-blue-500 hover:bg-gold text-white px-4 py-2 rounded-md transition-colors">Masuk</a>
+                <a href="{{ route('login') }}" class="text-sm/6 font-semibold bg-blue-500 hover:bg-gold text-white px-4 py-2 rounded-md transition-colors">Masuk</a>
             </div>
         </div>
     </div>
@@ -112,7 +112,7 @@
                                 <a href="#faq" class="-mx-3 block rounded-lg px-3 py-2 text-base/7 font-semibold text-darkblue hover:text-gold transition-colors hover:bg-gray-50">FAQ</a>
                             </div>
                             <div class="py-6">
-                                <a href="#" class="-mx-3 block rounded-lg px-3 py-2.5 text-base/7 font-semibold text-darkblue hover:text-gold transition-colors hover:bg-gray-50">Masuk</a>
+                                <a href="{{ route('login') }}" class="-mx-3 block rounded-lg px-3 py-2.5 text-base/7 font-semibold text-darkblue hover:text-gold transition-colors hover:bg-gray-50">Masuk</a>
                             </div>
                         </div>
                     </div>
