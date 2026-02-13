@@ -7,6 +7,15 @@ use Illuminate\View\View;
 
 class AppLayout extends Component
 {
+    public $title;
+
+    /**
+     * @param string|null $title
+     */
+    public function __construct($title = null)
+    {
+        $this->title = "SPPI Buleleng | " . $title;
+    }
     /**
      * Get the view / contents that represents the component.
      */

@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class Person extends Model
 {
@@ -13,6 +14,7 @@ class Person extends Model
     protected $primaryKey = 'id_person';
 
     protected $fillable = [
+        'id_user',
         'nik',
         'no_kk',
         'name',
@@ -32,4 +34,12 @@ class Person extends Model
         'gps_coordinates',
         'npwp'
     ];
+
+    /**
+     * Relasi balik ke User (Opsional tapi disarankan)
+     */
+    public function user(): BelongsTo
+    {
+        return $this->belongsTo(User::class, 'id_user', 'id_user');
+    }
 }

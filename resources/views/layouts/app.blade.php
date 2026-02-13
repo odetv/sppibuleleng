@@ -6,41 +6,30 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="csrf-token" content="{{ csrf_token() }}">
 
-    <title>SPPI Buleleng | Admin Panel</title>
+    <title>{{ $title }}</title>
 
     @vite(['resources/css/app.css', 'resources/js/app.js'])
+
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
 </head>
 
-<body class="font-sans antialiased">
-    <div class="min-h-screen bg-gray-100">
-        @include('layouts.navigation')
+<body
+    x-data="{ 
+        sidebarExpanded: true, 
+        isHovered: false, 
+        mobileSidebar: false 
+      }">
 
-        @if (session('success'))
-        <div class="max-w-7xl mx-auto sm:px-6 lg:px-8 mt-4">
-            <div class="bg-green-100 border-l-4 border-green-500 text-green-700 p-4 shadow-sm rounded-r-lg" role="alert">
-                <div class="flex items-center">
-                    <svg class="w-5 h-5 mr-2" fill="currentColor" viewBox="0 0 20 20">
-                        <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"></path>
-                    </svg>
-                    <p class="font-bold text-sm">{{ session('success') }}</p>
-                </div>
-            </div>
+    <div class="flex h-screen overflow-hidden">
+        @include('layouts.sidebar')
+
+        <div class="relative flex flex-1 flex-col overflow-y-auto overflow-x-hidden">
+            @include('layouts.navigation')
+
+            <main>
+                {{ $slot }}
+            </main>
         </div>
-        @endif
-
-        <!-- Page Heading -->
-        @isset($header)
-        <header class="bg-white shadow">
-            <div class="max-w-7xl mx-auto py-6 px-4 sm:px-6 lg:px-8">
-                {{ $header }}
-            </div>
-        </header>
-        @endisset
-
-        <!-- Page Content -->
-        <main>
-            {{ $slot }}
-        </main>
     </div>
 </body>
 
