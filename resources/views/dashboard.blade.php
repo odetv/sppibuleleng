@@ -132,7 +132,7 @@
                         <div class="grid grid-cols-2 gap-8">
                             <div class="flex flex-col space-y-1.5 border-b border-gray-50 pb-3">
                                 <dt class="text-gray-400 text-[10px] font-bold uppercase tracking-widest">Provinsi</dt>
-                                <dd class="font-semibold text-gray-800">{{ Auth::user()->person->city ?? 'Bali' }}</dd>
+                                <dd class="font-semibold text-gray-800">{{ Auth::user()->person->province ?? 'Bali' }}</dd>
                             </div>
                             <div class="flex flex-col space-y-1.5 border-b border-gray-50 pb-3">
                                 <dt class="text-gray-400 text-[10px] font-bold uppercase tracking-widest">Kabupaten</dt>

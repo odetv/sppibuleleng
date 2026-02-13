@@ -5,12 +5,12 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\PersonController;
 use App\Http\Controllers\Admin\UserController;
 
-// 1. Ubah welcome menjadi home sesuai keinginan Anda
+
 Route::get('/', function () {
-    return view('home');
+    return view('landingpage');
 });
 
-// 2. Dashboard diproteksi oleh auth dan middleware kelengkapan profil
+// Dashboard diproteksi oleh auth dan middleware kelengkapan profil
 Route::get('/dashboard', function () {
     return view('dashboard');
 })->middleware(['auth', 'verified', 'profile.completed'])->name('dashboard');

@@ -34,13 +34,12 @@ class PersonController extends Controller
             'name' => 'required|string|max:255',
             'gender' => 'required|in:L,P',
             'date_birthday' => 'required|date',
-            // 'age' dihapus dari validasi karena kita hitung sendiri
             'religion' => 'required|string',
             'marital_status' => 'required|string',
             'village' => 'required|string',
             'district' => 'required|string',
             'regency' => 'required|string',
-            'city' => 'required|string',
+            'province' => 'required|string',
             'address' => 'required|string',
             'photo' => 'nullable|image|max:2048',
         ]);

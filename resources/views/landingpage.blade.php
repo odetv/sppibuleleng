@@ -1,19 +1,4 @@
-<!doctype html>
-<html>
-
-<head>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    @vite('resources/css/app.css')
-    @vite('resources/js/app.js')
-    <title>SPPI Buleleng</title>
-    <!-- PWA  -->
-    <meta name="theme-color" content="#6777ef" />
-    <link rel="apple-touch-icon" href="{{ asset('assets/images/logo-sppi.png') }}">
-    <link rel="manifest" href="{{ asset('manifest.json') }}">
-</head>
-
-<body class="bg-white">
+<x-landingpage-layout title="SPPI Buleleng">
     <x-pwa-install-banner />
 
     <x-navbar />
@@ -545,6 +530,4 @@
     </section>
 
     <x-footer />
-</body>
-
-</html>
+</x-landingpage-layout>

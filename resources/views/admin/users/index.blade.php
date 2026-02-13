@@ -90,7 +90,7 @@
                                     <td class="px-6 py-4 text-xs">
                                         <div>{{ ($user->person->gender ?? '') == 'L' ? 'Laki-laki' : 'Perempuan' }}</div>
                                         <div>{{ $user->person->age ?? '?' }} Tahun</div>
-                                        <div class="italic text-gray-400">{{ $user->person->district ?? '' }}, {{ $user->person->city ?? '' }}</div>
+                                        <div class="italic text-gray-400">{{ $user->person->district ?? '' }}, {{ $user->person->province ?? '' }}</div>
                                     </td>
                                     <td class="px-6 py-4">
                                         <form action="{{ route('admin.users.approve', $user->id_user) }}" method="POST" class="flex items-center space-x-2">

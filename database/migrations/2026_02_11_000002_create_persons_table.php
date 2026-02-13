@@ -24,7 +24,7 @@ return new class extends Migration
             $table->string('village');    // Desa/Kelurahan
             $table->string('district');   // Kecamatan
             $table->string('regency');    // Kabupaten
-            $table->string('city');       // Kota
+            $table->string('province');   // Provinsi
             $table->text('address');
             $table->string('gps_coordinates')->nullable();
             $table->string('npwp')->nullable();

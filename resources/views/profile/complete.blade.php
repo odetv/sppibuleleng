@@ -6,7 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="csrf-token" content="{{ csrf_token() }}">
 
-    <title>{{ config('app.name', 'Laravel') }}</title>
+    <title>SPPI Buleleng | Lengkapi Profil</title>
 
     @vite(['resources/css/app.css', 'resources/js/app.js'])
 
@@ -24,7 +24,7 @@
         }
 
         .is-invalid {
-            border-color: #ef4444 !important;
+            border: 2px solid #ef4444 !important;
             --tw-ring-color: #ef4444 !important;
         }
 
@@ -33,211 +33,281 @@
             width: 100%;
             border-radius: 0.75rem;
             margin-top: 0.5rem;
+            /* Z-index diturunkan agar tombol sticky tetap di atas */
             z-index: 1;
+        }
+
+        /* Container tombol simpan agar tetap di atas elemen lain saat di-scroll */
+        .sticky-footer {
+            position: sticky;
+            bottom: 0;
+            background-color: white;
+            padding-top: 1rem;
+            padding-bottom: 0.5rem;
+            z-index: 50;
+            border-top: 1px solid #f3f4f6;
         }
     </style>
 </head>
 
-<body class="font-sans text-gray-900 antialiased bg-gray-50">
-    <div class="min-h-screen py-12 px-4 sm:px-6 lg:px-8">
-        <div class="max-w-5xl mx-auto">
+<body class="font-sans antialiased text-gray-900 bg-gray-50 overflow-x-hidden">
+    <div class="min-h-screen flex items-center justify-center p-4">
 
-            <div class="text-center mb-10">
-                <h2 class="text-3xl font-bold text-gray-900 tracking-tight sm:text-4xl">Lengkapi Profil Anda</h2>
-                <p class="mt-3 text-lg text-gray-600">Semua kolom wajib diisi untuk keperluan verifikasi akun.</p>
+        <div class="flex flex-col md:flex-row w-full max-w-7xl rounded-2xl overflow-hidden shadow-2xl border border-gray-100 bg-white md:max-h-[95vh]">
+
+            <div class="w-full md:w-1/3 bg-darkblue p-8 flex flex-col items-center justify-center text-center text-white relative overflow-hidden">
+                <div class="absolute top-0 left-0 w-24 h-24 bg-white/5 rounded-full -translate-x-1/2 -translate-y-1/2"></div>
+                <div class="absolute bottom-0 right-0 w-32 h-32 bg-white/5 rounded-full translate-x-1/4 translate-y-1/4"></div>
+
+                <div class="z-10 w-full">
+                    <div class="flex items-center justify-center gap-3 mb-6 bg-white/10 p-3 rounded-xl backdrop-blur-sm inline-flex mx-auto">
+                        <img src="{{ asset('assets/images/logo-bgn-circle.png') }}" alt="Logo BGN" class="h-12 w-auto object-contain">
+                        <div class="h-8 w-px bg-white/20"></div>
+                        <img src="{{ asset('assets/images/logo-sppi.png') }}" alt="Logo SPPI" class="h-12 w-auto object-contain">
+                    </div>
+
+                    <h1 class="text-xl md:text-2xl font-bold leading-tight mb-4">
+                        Lengkapi Profil <br>
+                        <span class="text-blue-300 text-lg">SPPI Buleleng</span>
+                    </h1>
+
+                    <p class="text-gray-300 text-xs leading-relaxed px-4">
+                        Mohon lengkapi seluruh data untuk keperluan verifikasi akun oleh sistem
+                    </p>
+
+                    <div class="mt-8 hidden md:block">
+                        <div class="flex items-center gap-3 text-left text-[11px] text-blue-200 mb-2">
+                            <div class="w-5 h-5 rounded-full bg-blue-500/20 flex items-center justify-center">1</div>
+                            <span>Identitas Resmi (KTP/KK/NPWP)</span>
+                        </div>
+                        <div class="flex items-center gap-3 text-left text-[11px] text-blue-200 mb-2">
+                            <div class="w-5 h-5 rounded-full bg-blue-500/20 flex items-center justify-center">2</div>
+                            <span>Informasi Pribadi</span>
+                        </div>
+                        <div class="flex items-center gap-3 text-left text-[11px] text-blue-200 mb-2">
+                            <div class="w-5 h-5 rounded-full bg-blue-500/20 flex items-center justify-center">3</div>
+                            <span>Alamat & GPS</span>
+                        </div>
+                        <div class="flex items-center gap-3 text-left text-[11px] text-blue-200">
+                            <div class="w-5 h-5 rounded-full bg-blue-500/20 flex items-center justify-center">4</div>
+                            <span>Pas Foto</span>
+                        </div>
+                    </div>
+                    <div class="mt-8 md:mt-auto pt-8 pb-4 text-center">
+                        <div class="text-xs text-gray-400 border-t pt-4">
+                            <p>© {{ now()->format('Y') }} - Tim Data SPPI Buleleng Bali</p>
+                            <p class="italic mt-1">Bagimu Negeri Jiwa Raga Kami</p>
+                        </div>
+                    </div>
+                </div>
             </div>
 
-            @if ($errors->any())
-            <div class="mb-8 p-4 bg-red-50 border-l-4 border-red-500 rounded-md shadow-sm">
-                <div class="ml-3">
-                    <h3 class="text-sm font-bold text-red-800">Mohon lengkapi data berikut:</h3>
-                    <ul class="mt-2 text-sm text-red-700 list-disc list-inside grid grid-cols-1 md:grid-cols-2 gap-x-4">
+            <div class="w-full md:w-2/3 bg-white p-6 md:p-10 overflow-y-auto">
+
+                @if ($errors->any())
+                <div class="mb-6 p-4 bg-red-50 border-l-4 border-red-500 rounded-lg">
+                    <h3 class="text-xs font-bold text-red-800 uppercase tracking-wider">Mohon Perbaiki:</h3>
+                    <ul class="mt-2 text-[11px] text-red-700 list-disc list-inside">
                         @foreach ($errors->all() as $error) <li>{{ $error }}</li> @endforeach
                     </ul>
                 </div>
-            </div>
-            @endif
+                @endif
 
-            <form id="profileForm" method="POST" action="{{ route('profile.store') }}" enctype="multipart/form-data" class="space-y-8" novalidate>
-                @csrf
+                <form id="profileForm" method="POST" action="{{ route('profile.store') }}" enctype="multipart/form-data" class="space-y-8" novalidate>
+                    @csrf
 
-                <div class="bg-white shadow-md border border-gray-100 rounded-xl p-6 sm:p-10">
-                    <div class="flex items-center mb-8 pb-3 border-b border-gray-100">
-                        <div class="bg-indigo-100 p-2 rounded-lg mr-4 text-indigo-600">
-                            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H5a2 2 0 00-2 2v9a2 2 0 002 2h14a2 2 0 002-2V8a2 2 0 00-2-2h-5m-4 0V4a2 2 0 012-2h4a2 2 0 012 2v2m-6 0h6"></path>
-                            </svg>
+                    <section>
+                        <div class="flex items-center gap-2 mb-4">
+                            <span class="p-1.5 bg-blue-50 text-darkblue rounded-lg">
+                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H5a2 2 0 00-2 2v9a2 2 0 002 2h14a2 2 0 002-2V8a2 2 0 00-2-2h-5m-4 0V4a2 2 0 012-2h4a2 2 0 012 2v2m-6 0h6"></path>
+                                </svg>
+                            </span>
+                            <h3 class="font-bold text-darkblue uppercase text-xs tracking-widest">Identitas Resmi</h3>
                         </div>
-                        <h3 class="text-xl font-bold text-gray-800">Identitas Resmi</h3>
-                    </div>
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
-                        <div>
-                            <x-input-label for="nik" :value="__('NIK')" />
-                            <x-text-input id="nik" class="block mt-2 w-full validate-field persist" type="text" name="nik" :value="old('nik')" required minlength="16" maxlength="16" placeholder="Cth: 510801xxxxxxxxxx" />
-                        </div>
-                        <div>
-                            <x-input-label for="no_kk" :value="__('Nomor KK')" />
-                            <x-text-input id="no_kk" class="block mt-2 w-full validate-field persist" type="text" name="no_kk" :value="old('no_kk')" required minlength="16" maxlength="16" placeholder="Cth: 510801xxxxxxxxxx" />
-                        </div>
-                        <div>
-                            <x-input-label for="npwp" :value="__('NPWP')" />
-                            <x-text-input id="npwp" class="block mt-2 w-full validate-field persist" type="text" name="npwp" :value="old('npwp')" required minlength="16" maxlength="16" placeholder="Cth: 510801xxxxxxxxxx" />
-                        </div>
-                        <div>
-                            <x-input-label for="title_education" :value="__('Gelar Belakang')" />
-                            <x-text-input id="title_education" class="block mt-2 w-full validate-field persist" type="text" name="title_education" :value="old('title_education')" required placeholder="Cth: S.Kom." />
-                        </div>
-                        <div class="md:col-span-2">
-                            <x-input-label for="name" :value="__('Nama Lengkap (Tanpa Gelar)')" />
-                            <x-text-input id="name" class="block mt-2 w-full validate-field persist" type="text" name="name" :value="old('name')" required placeholder="Masukkan nama sesuai KTP" />
-                        </div>
-                    </div>
-                </div>
 
-                <div class="bg-white shadow-md border border-gray-100 rounded-xl p-6 sm:p-10">
-                    <div class="flex items-center mb-8 pb-3 border-b border-gray-100">
-                        <div class="bg-indigo-100 p-2 rounded-lg mr-4 text-indigo-600">
-                            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path>
-                            </svg>
+                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                            <div>
+                                <label class="text-[11px] font-bold text-gray-500 uppercase">NIK</label>
+                                <input id="nik" type="number" name="nik" value="{{ old('nik') }}" required minlength="16" maxlength="16" class="w-full mt-2 px-4 py-2.5 bg-gray-50 border-none rounded-lg text-sm focus:ring-2 focus:ring-blue-500 persist validate-field" placeholder="16 Digit NIK">
+                            </div>
+                            <div>
+                                <label class="text-[11px] font-bold text-gray-500 uppercase">Nomor KK</label>
+                                <input id="no_kk" type="number" name="no_kk" value="{{ old('no_kk') }}" required minlength="16" maxlength="16" class="w-full mt-2 px-4 py-2.5 bg-gray-50 border-none rounded-lg text-sm focus:ring-2 focus:ring-blue-500 persist validate-field" placeholder="16 Digit No. KK">
+                            </div>
+                            <div>
+                                <label class="text-[11px] font-bold text-gray-500 uppercase">NPWP</label>
+                                <input id="npwp" type="number" name="npwp" value="{{ old('npwp') }}" required minlength="16" maxlength="16" class="w-full mt-2 px-4 py-2.5 bg-gray-50 border-none rounded-lg text-sm focus:ring-2 focus:ring-blue-500 persist validate-field" placeholder="Masukkan NPWP">
+                            </div>
+                            <div>
+                                <label class="text-[11px] font-bold text-gray-500 uppercase">Gelar Belakang</label>
+                                <input id="title_education" type="text" name="title_education" value="{{ old('title_education') }}" required class="w-full mt-2 px-4 py-2.5 bg-gray-50 border-none rounded-lg text-sm focus:ring-2 focus:ring-blue-500 persist validate-field" placeholder="Cth: S.Kom">
+                            </div>
+                            <div class="sm:col-span-2">
+                                <label class="text-[11px] font-bold text-gray-500 uppercase">Nama Lengkap (Tanpa Gelar)</label>
+                                <input id="name" type="text" name="name" value="{{ old('name') }}" required class="w-full mt-2 px-4 py-2.5 bg-gray-50 border-none rounded-lg text-sm focus:ring-2 focus:ring-blue-500 persist validate-field" placeholder="Sesuai KTP">
+                            </div>
                         </div>
-                        <h3 class="text-xl font-bold text-gray-800">Informasi Pribadi</h3>
-                    </div>
-                    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-                        <div>
-                            <x-input-label for="gender" :value="__('Jenis Kelamin')" />
-                            <select name="gender" id="gender" required class="mt-2 block w-full border-gray-300 rounded-md py-2.5 validate-field persist">
-                                <option value="" disabled {{ old('gender') ? '' : 'selected' }}>Pilih Jenis Kelamin</option>
-                                <option value="L" {{ old('gender') == 'L' ? 'selected' : '' }}>Laki-laki</option>
-                                <option value="P" {{ old('gender') == 'P' ? 'selected' : '' }}>Perempuan</option>
-                            </select>
-                        </div>
-                        <div>
-                            <x-input-label for="religion" :value="__('Agama')" />
-                            <select name="religion" id="religion" required class="mt-2 block w-full border-gray-300 rounded-md py-2.5 validate-field persist">
-                                <option value="" disabled {{ old('religion') ? '' : 'selected' }}>Pilih Agama</option>
-                                @foreach(['Islam', 'Kristen', 'Katholik', 'Hindu', 'Buddha', 'Khonghucu'] as $rel)
-                                <option value="{{ $rel }}" {{ old('religion') == $rel ? 'selected' : '' }}>{{ $rel }}</option>
-                                @endforeach
-                            </select>
-                        </div>
-                        <div>
-                            <x-input-label for="marital_status" :value="__('Status')" />
-                            <select name="marital_status" id="marital_status" required class="mt-2 block w-full border-gray-300 rounded-md py-2.5 validate-field persist">
-                                <option value="" disabled {{ old('marital_status') ? '' : 'selected' }}>Pilih Status</option>
-                                @foreach(['Belum Kawin', 'Kawin', 'Janda', 'Duda'] as $status)
-                                <option value="{{ $status }}" {{ old('marital_status') == $status ? 'selected' : '' }}>{{ $status }}</option>
-                                @endforeach
-                            </select>
-                        </div>
-                        <div>
-                            <x-input-label for="date_birthday" :value="__('Tanggal Lahir')" />
-                            <x-text-input id="date_birthday" class="block mt-2 w-full validate-field persist" type="date" name="date_birthday" :value="old('date_birthday')" required />
-                        </div>
-                        <div class="lg:col-span-2">
-                            <x-input-label for="place_birthday" :value="__('Tempat Lahir')" />
-                            <x-text-input id="place_birthday" class="block mt-2 w-full validate-field persist" type="text" name="place_birthday" :value="old('place_birthday')" required placeholder="Masukkan tempat lahir sesuai KTP" />
-                        </div>
-                    </div>
-                </div>
+                    </section>
 
-                <div class="bg-white shadow-md border border-gray-100 rounded-xl p-6 sm:p-10">
-                    <div class="flex items-center mb-8 pb-3 border-b border-gray-100">
-                        <div class="bg-indigo-100 p-2 rounded-lg mr-4 text-indigo-600">
-                            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"></path>
-                            </svg>
+                    <section>
+                        <div class="flex items-center gap-2 mb-4 pt-4 border-t border-gray-100">
+                            <span class="p-1.5 bg-blue-50 text-darkblue rounded-lg">
+                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path>
+                                </svg>
+                            </span>
+                            <h3 class="font-bold text-darkblue uppercase text-xs tracking-widest">Informasi Pribadi</h3>
                         </div>
-                        <h3 class="text-xl font-bold text-gray-800">Domisili & Lokasi GPS</h3>
-                    </div>
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
-                        <div>
-                            <x-input-label for="city" :value="__('Provinsi')" />
-                            <select name="city" id="city" class="mt-2 block w-full border-gray-300 rounded-md py-2.5 bg-gray-50">
-                                <option value="Bali">Bali</option>
-                            </select>
-                        </div>
-                        <div>
-                            <x-input-label for="regency" :value="__('Kabupaten')" />
-                            <select name="regency" id="regency" class="mt-2 block w-full border-gray-300 rounded-md py-2.5 bg-gray-50">
-                                <option value="Buleleng">Buleleng</option>
-                            </select>
-                        </div>
-                        <div>
-                            <x-input-label for="district" :value="__('Kecamatan')" />
-                            <select name="district" id="district" required class="mt-2 block w-full border-gray-300 rounded-md py-2.5 validate-field persist">
-                                <option value="" disabled {{ old('district') ? '' : 'selected' }}>Pilih Kecamatan</option>
-                                @foreach(['Tejakula', 'Kubutambahan', 'Sawan', 'Sukasada', 'Buleleng', 'Banjar', 'Seririt', 'Busungbiu', 'Gerokgak'] as $kec)
-                                <option value="{{ $kec }}" {{ old('district') == $kec ? 'selected' : '' }}>{{ $kec }}</option>
-                                @endforeach
-                            </select>
-                        </div>
-                        <div>
-                            <x-input-label for="village" :value="__('Desa/Kelurahan')" />
-                            <x-text-input id="village" class="block mt-2 w-full validate-field persist" type="text" name="village" :value="old('village')" required placeholder="Cth: Sangsit" />
-                        </div>
-                        <div class="md:col-span-2">
-                            <x-input-label for="address" :value="__('Alamat Lengkap')" />
-                            <textarea id="address" name="address" rows="2" class="mt-2 block w-full border-gray-300 rounded-md validate-field persist" required placeholder="Cth: Jalan Mawar No. 10, Banjar Dinas Anyar">{{ old('address') }}</textarea>
-                        </div>
-                        <div class="md:col-span-2">
-                            <x-input-label for="gps_coordinates" :value="__('Titik Koordinat GPS')" />
-                            <x-text-input id="gps_coordinates" class="block mt-2 w-full bg-gray-100 validate-field persist" type="text" name="gps_coordinates" :value="old('gps_coordinates')" readonly required placeholder="Silahkan klik pada peta di bawah untuk menentukan lokasi" />
-                            <div id="map"></div>
-                        </div>
-                    </div>
-                </div>
 
-                <div class="bg-white shadow-md border border-gray-100 rounded-xl p-6 sm:p-10">
-                    <h3 class="text-xl font-bold text-gray-800 mb-6 flex items-center">
-                        <svg class="w-6 h-6 text-indigo-600 mr-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
-                        </svg>
-                        Pas Foto
-                    </h3>
-                    <div class="flex flex-col items-center">
-                        <div id="preview-container" class="mb-6 hidden flex flex-col items-center">
-                            <img id="cropped-preview" class="w-40 h-40 object-cover rounded-xl shadow-lg border-4 border-indigo-100">
+                        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+                            <div>
+                                <label class="text-[11px] font-bold text-gray-500 uppercase">Jenis Kelamin</label>
+                                <select name="gender" id="gender" required class="w-full mt-2 px-3 py-2.5 bg-gray-50 border-none rounded-lg text-sm focus:ring-2 focus:ring-blue-500 persist validate-field">
+                                    <option value="" disabled selected>Pilih</option>
+                                    <option value="L" {{ old('gender') == 'L' ? 'selected' : '' }}>Laki-laki</option>
+                                    <option value="P" {{ old('gender') == 'P' ? 'selected' : '' }}>Perempuan</option>
+                                </select>
+                            </div>
+                            <div>
+                                <label class="text-[11px] font-bold text-gray-500 uppercase">Agama</label>
+                                <select name="religion" id="religion" required class="w-full mt-2 px-3 py-2.5 bg-gray-50 border-none rounded-lg text-sm focus:ring-2 focus:ring-blue-500 persist validate-field">
+                                    <option value="" disabled selected>Pilih</option>
+                                    @foreach(['Islam', 'Kristen', 'Katholik', 'Hindu', 'Buddha', 'Khonghucu'] as $rel)
+                                    <option value="{{ $rel }}" {{ old('religion') == $rel ? 'selected' : '' }}>{{ $rel }}</option>
+                                    @endforeach
+                                </select>
+                            </div>
+                            <div>
+                                <label class="text-[11px] font-bold text-gray-500 uppercase">Status</label>
+                                <select name="marital_status" id="marital_status" required class="w-full mt-2 px-3 py-2.5 bg-gray-50 border-none rounded-lg text-sm focus:ring-2 focus:ring-blue-500 persist validate-field">
+                                    <option value="" disabled selected>Pilih Status</option>
+                                    @foreach(['Belum Kawin', 'Kawin', 'Janda', 'Duda'] as $status)
+                                    <option value="{{ $status }}" {{ old('marital_status') == $status ? 'selected' : '' }}>{{ $status }}</option>
+                                    @endforeach
+                                </select>
+                            </div>
+                            <div>
+                                <label class="text-[11px] font-bold text-gray-500 uppercase">Tanggal Lahir</label>
+                                <input id="date_birthday" type="date" name="date_birthday" value="{{ old('date_birthday') }}" required class="w-full mt-2 px-3 py-2 bg-gray-50 border-none rounded-lg text-sm focus:ring-2 focus:ring-blue-500 persist validate-field">
+                            </div>
+                            <div class="lg:col-span-2">
+                                <label class="text-[11px] font-bold text-gray-500 uppercase">Tempat Lahir</label>
+                                <input id="place_birthday" type="text" name="place_birthday" value="{{ old('place_birthday') }}" required class="w-full mt-2 px-4 py-2.5 bg-gray-50 border-none rounded-lg text-sm focus:ring-2 focus:ring-blue-500 persist validate-field" placeholder="Sesuai KTP">
+                            </div>
                         </div>
-                        <label id="drop-area" for="photo" class="relative group flex flex-col items-center justify-center w-full h-48 border-2 border-gray-300 border-dashed rounded-xl cursor-pointer bg-gray-50 hover:bg-indigo-50 transition-all">
-                            <div class="flex flex-col items-center justify-center text-center px-4">
-                                <svg class="w-12 h-12 mb-3 text-gray-400 group-hover:text-indigo-500 transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    </section>
+
+                    <section>
+                        <div class="flex items-center gap-2 mb-4 pt-4 border-t border-gray-100">
+                            <span class="p-1.5 bg-blue-50 text-darkblue rounded-lg">
+                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"></path>
+                                </svg>
+                            </span>
+                            <h3 class="font-bold text-darkblue uppercase text-xs tracking-widest">Alamat & GPS</h3>
+                        </div>
+
+                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                            <div>
+                                <label class="text-[11px] font-bold text-gray-500 uppercase">Provinsi</label>
+                                <select name="province" id="province" required class="w-full mt-2 px-3 py-2.5 bg-gray-50 border-none rounded-lg text-sm focus:ring-2 focus:ring-blue-500 persist validate-field">
+                                    <option value="" disabled selected>Pilih Provinsi</option>
+                                    @foreach(['Bali'] as $kec)
+                                    <option value="{{ $kec }}" {{ old('province') == $kec ? 'selected' : '' }}>{{ $kec }}</option>
+                                    @endforeach
+                                </select>
+                            </div>
+                            <div>
+                                <label class="text-[11px] font-bold text-gray-500 uppercase">Kabupaten</label>
+                                <select name="regency" id="regency" required class="w-full mt-2 px-3 py-2.5 bg-gray-50 border-none rounded-lg text-sm focus:ring-2 focus:ring-blue-500 persist validate-field">
+                                    <option value="" disabled selected>Pilih Kabupaten</option>
+                                    @foreach(['Buleleng'] as $kec)
+                                    <option value="{{ $kec }}" {{ old('regency') == $kec ? 'selected' : '' }}>{{ $kec }}</option>
+                                    @endforeach
+                                </select>
+                            </div>
+                            <div>
+                                <label class="text-[11px] font-bold text-gray-500 uppercase">Kecamatan</label>
+                                <select name="district" id="district" required class="w-full mt-2 px-3 py-2.5 bg-gray-50 border-none rounded-lg text-sm focus:ring-2 focus:ring-blue-500 persist validate-field">
+                                    <option value="" disabled selected>Pilih Kecamatan</option>
+                                    @foreach(['Tejakula', 'Kubutambahan', 'Sawan', 'Sukasada', 'Buleleng', 'Banjar', 'Seririt', 'Busungbiu', 'Gerokgak'] as $kec)
+                                    <option value="{{ $kec }}" {{ old('district') == $kec ? 'selected' : '' }}>{{ $kec }}</option>
+                                    @endforeach
+                                </select>
+                            </div>
+                            <div>
+                                <label class="text-[11px] font-bold text-gray-500 uppercase">Desa/Kelurahan</label>
+                                <input id="village" type="text" name="village" value="{{ old('village') }}" required class="w-full mt-2 px-4 py-2.5 bg-gray-50 border-none rounded-lg text-sm focus:ring-2 focus:ring-blue-500 persist validate-field" placeholder="Nama Desa/Kelurahan">
+                            </div>
+                            <div class="sm:col-span-2">
+                                <label class="text-[11px] font-bold text-gray-500 uppercase">Alamat Lengkap</label>
+                                <textarea id="address" name="address" rows="2" class="w-full mt-2 px-4 py-2.5 bg-gray-50 border-none rounded-lg text-sm focus:ring-2 focus:ring-blue-500 persist validate-field" placeholder="Cth: Jl. Singaraja Bedugul No. 04, Br. Dinas Widya Bali">{{ old('address') }}</textarea>
+                            </div>
+                            <div class="sm:col-span-2">
+                                <label class="text-[11px] font-bold text-gray-500 uppercase tracking-wider">Koordinat GPS (Klik Pada Peta)</label>
+                                <input id="gps_coordinates" type="text" name="gps_coordinates" value="{{ old('gps_coordinates') }}" readonly required class="w-full mt-2 px-4 py-2.5 bg-blue-50 text-blue-700 font-mono text-xs border-none rounded-lg focus:ring-0 validate-field" placeholder="Titik akan muncul saat peta diklik">
+                                <div id="map"></div>
+                            </div>
+                        </div>
+                    </section>
+
+                    <section class="pb-6">
+                        <div class="flex items-center gap-2 mb-4 pt-4 border-t border-gray-100">
+                            <span class="p-1.5 bg-blue-50 text-darkblue rounded-lg">
+                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
+                                </svg>
+                            </span>
+                            <h3 class="font-bold text-darkblue uppercase text-xs tracking-widest">Pas Foto</h3>
+                        </div>
+
+                        <div id="drop-area" class="flex flex-col items-center bg-gray-50 rounded-2xl p-6 border-2 border-dashed border-gray-200 transition-all">
+                            <div id="preview-container" class="mb-4 hidden text-center">
+                                <img id="cropped-preview"
+                                    class="w-32 h-48 object-cover rounded-xl shadow-md border-4 border-white mx-auto cursor-pointer hover:opacity-80 transition-all"
+                                    title="Klik untuk potong ulang foto">
+                                <p class="text-[10px] text-gray-400 mt-2 font-semibold uppercase tracking-wider italic">
+                                    * Klik foto untuk potong ulang
+                                </p>
+                            </div>
+                            <label for="photo" class="flex flex-col items-center justify-center cursor-pointer group">
+                                <svg class="w-10 h-10 mb-2 text-gray-400 group-hover:text-darkblue transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"></path>
                                 </svg>
-                                <p class="text-sm text-gray-600"><span class="font-bold">Klik untuk unggah</span> atau seret foto ke sini</p>
-                            </div>
-                            <input id="photo" name="photo" type="file" class="hidden validate-field" accept="image/*" required />
-                        </label>
-                    </div>
-                </div>
+                                <p class="text-[11px] text-gray-500 font-medium">Klik atau seret foto ke sini</p>
+                                <input id="photo" name="photo" type="file" class="hidden validate-field" accept="image/*" required />
+                            </label>
+                        </div>
+                    </section>
 
-                <div class="flex justify-center pt-6 pb-10">
-                    <button type="submit" class="w-full md:w-2/3 py-4 bg-indigo-600 text-white text-lg font-black rounded-xl shadow-xl hover:bg-indigo-700 transition transform hover:-translate-y-1">
-                        SIMPAN DATA PROFIL
-                    </button>
-                </div>
-            </form>
+                    <div class="sticky-footer">
+                        <button type="submit" class="w-full bg-darkblue text-white py-4 rounded-xl font-bold text-sm shadow-xl hover:bg-gold active:scale-[0.98] transition-all cursor-pointer">
+                            SIMPAN PROFIL
+                        </button>
+                    </div>
+                </form>
+            </div>
         </div>
     </div>
 
     <div id="cropperModal" class="fixed inset-0 z-[100] hidden flex items-center justify-center p-4">
         <div class="bg-white rounded-2xl shadow-2xl w-full max-w-2xl overflow-hidden">
             <div class="p-6 border-b bg-gray-50">
-                <h3 class="text-xl font-bold text-gray-800">Potong Pas Foto</h3>
+                <h3 class="text-xl font-bold text-darkblue">Potong Pas Foto</h3>
             </div>
             <div class="p-6 bg-gray-200 flex justify-center">
                 <div class="max-w-full max-h-[60vh]"><img id="image-to-crop" class="block max-w-full"></div>
             </div>
             <div class="p-6 border-t flex justify-end space-x-3">
-                <button id="cancel-crop" type="button" class="px-6 py-2 font-bold text-gray-500">Batal</button>
-                <button id="apply-crop" type="button" class="px-8 py-2 bg-indigo-600 text-white font-black rounded-lg shadow-lg">Gunakan Foto</button>
+                <button id="cancel-crop" type="button" class="px-6 py-2 font-bold text-gray-500 cursor-pointer hover:text-gray-400 transition-colors">Batal</button>
+                <button id="apply-crop" type="button" class="px-8 py-2 bg-darkblue text-white font-bold rounded-lg shadow-lg cursor-pointer hover:bg-gold transition-colors">Gunakan</button>
             </div>
         </div>
     </div>
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.13/cropper.min.js"></script>
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
-
     <script>
         document.addEventListener('DOMContentLoaded', function() {
             const form = document.getElementById('profileForm');
@@ -248,45 +318,64 @@
 
             // --- 1. PERSISTENCE LOGIC ---
             persistFields.forEach(field => {
-                const savedValue = localStorage.getItem('profile_' + field.id || field.name);
+                const savedValue = localStorage.getItem('profile_' + (field.id || field.name));
                 if (savedValue && !field.value) {
                     field.value = savedValue;
                 }
                 field.addEventListener('input', () => {
-                    localStorage.setItem('profile_' + field.id || field.name, field.value);
+                    localStorage.setItem('profile_' + (field.id || field.name), field.value);
+                    // Hapus error saat mengetik
+                    if (field.value.trim() !== "") clearError(field);
                 });
             });
 
             // --- 2. MAP LOGIC ---
-            const initialCoords = document.getElementById('gps_coordinates').value.split(',');
-            const mapCenter = initialCoords.length === 2 ? [initialCoords[0], initialCoords[1]] : [-8.112, 115.091];
-            const map = L.map('map').setView(mapCenter, 11);
+            const coordsField = document.getElementById('gps_coordinates');
+            const savedCoords = localStorage.getItem('profile_gps_coordinates');
+
+            // Cek apakah ada koordinat tersimpan, jika tidak pakai default Buleleng
+            let initialCoords = [-8.112, 115.091];
+            if (savedCoords && savedCoords.includes(',')) {
+                const parts = savedCoords.split(',');
+                initialCoords = [parseFloat(parts[0]), parseFloat(parts[1])];
+                coordsField.value = savedCoords; // Pastikan input teks terisi
+            }
+
+            const map = L.map('map').setView(initialCoords, 12); // Zoom lebih dekat jika ada titik
             L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png').addTo(map);
+
             let marker;
-            if (initialCoords.length === 2) marker = L.marker(mapCenter).addTo(map);
+
+            // FUNGSI UNTUK MENARUH TITIK
+            function placeMarker(latlng) {
+                if (marker) map.removeLayer(marker);
+                marker = L.marker(latlng).addTo(map);
+                map.panTo(latlng);
+            }
+
+            // Munculkan titik otomatis saat refresh jika data ada
+            if (savedCoords) {
+                placeMarker(initialCoords);
+            }
 
             map.on('click', function(e) {
                 const {
                     lat,
                     lng
                 } = e.latlng;
-                const coordsField = document.getElementById('gps_coordinates');
                 coordsField.value = `${lat}, ${lng}`;
                 localStorage.setItem('profile_gps_coordinates', coordsField.value);
+                placeMarker(e.latlng);
                 clearError(coordsField);
-                if (marker) map.removeLayer(marker);
-                marker = L.marker([lat, lng]).addTo(map);
             });
 
-            // --- 3. DRAG N DROP LOGIC ---
+            // --- 3. DRAG N DROP LOGIC (FIXED) ---
             ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
-                dropArea.addEventListener(eventName, preventDefaults, false);
+                dropArea.addEventListener(eventName, e => {
+                    e.preventDefault();
+                    e.stopPropagation();
+                }, false);
             });
-
-            function preventDefaults(e) {
-                e.preventDefault();
-                e.stopPropagation();
-            }
 
             ['dragenter', 'dragover'].forEach(eventName => {
                 dropArea.addEventListener(eventName, () => dropArea.classList.add('drag-over'), false);
@@ -296,21 +385,21 @@
                 dropArea.addEventListener(eventName, () => dropArea.classList.remove('drag-over'), false);
             });
 
-            dropArea.addEventListener('drop', handleDrop, false);
-
-            function handleDrop(e) {
+            dropArea.addEventListener('drop', (e) => {
                 const dt = e.dataTransfer;
                 const files = dt.files;
                 if (files.length > 0) {
-                    photoInput.files = files; // Assign files ke input
-                    handleFiles(files[0]); // Trigger cropper
+                    handleFiles(files[0]);
                 }
-            }
+            }, false);
 
             // --- 4. FILE & CROPPER LOGIC ---
             let cropper;
             const imageToCrop = document.getElementById('image-to-crop');
             const applyBtn = document.getElementById('apply-crop');
+            const previewImg = document.getElementById('cropped-preview');
+            let originalImageDataUrl = null;
+            let lastCropData = null;
 
             photoInput.addEventListener('change', (e) => {
                 if (e.target.files.length > 0) handleFiles(e.target.files[0]);
@@ -318,21 +407,87 @@
 
             function handleFiles(file) {
                 if (!file.type.startsWith('image/')) {
-                    alert('Mohon unggah file gambar.');
+                    alert('Mohon unggah file gambar saja.');
                     return;
                 }
                 const reader = new FileReader();
                 reader.onload = (event) => {
-                    imageToCrop.src = event.target.result;
-                    document.getElementById('cropperModal').classList.remove('hidden');
-                    if (cropper) cropper.destroy();
-                    cropper = new Cropper(imageToCrop, {
-                        aspectRatio: 1,
-                        viewMode: 2
-                    });
+                    originalImageDataUrl = event.target.result;
+                    lastCropData = null;
+                    openCropper(originalImageDataUrl);
                 };
                 reader.readAsDataURL(file);
             }
+
+            function openCropper(imageSrc) {
+                const imageToCrop = document.getElementById('image-to-crop');
+                imageToCrop.src = imageSrc;
+                document.getElementById('cropperModal').classList.remove('hidden');
+
+                if (cropper) cropper.destroy();
+
+                cropper = new Cropper(imageToCrop, {
+                    aspectRatio: 2 / 3, // Rasio 4x6
+                    viewMode: 2,
+                    dragMode: 'move',
+                    autoCropArea: 1,
+                    responsive: true,
+                    restore: false,
+                    ready: function() {
+                        if (lastCropData) {
+                            cropper.setData(lastCropData);
+                        }
+                    }
+                });
+            }
+
+            previewImg.addEventListener('click', function() {
+                if (originalImageDataUrl) {
+                    openCropper(originalImageDataUrl);
+                }
+            });
+
+            document.getElementById('apply-crop').addEventListener('click', () => {
+                // Simpan koordinat area seleksi terakhir
+                lastCropData = cropper.getData();
+
+                const canvas = cropper.getCroppedCanvas({
+                    width: 400,
+                    height: 600
+                });
+
+                canvas.toBlob((blob) => {
+                    // --- GENERATE NAMA FILE ACAK (LARAVEL STYLE) ---
+                    // Menghasilkan string acak sepanjang 40 karakter
+                    const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+                    let randomString = '';
+                    for (let i = 0; i < 40; i++) {
+                        randomString += chars.charAt(Math.floor(Math.random() * chars.length));
+                    }
+
+                    const uniqueFileName = `${randomString}.jpg`;
+
+                    const croppedFile = new File([blob], uniqueFileName, {
+                        type: "image/jpeg"
+                    });
+                    const dataTransfer = new DataTransfer();
+                    dataTransfer.items.add(croppedFile);
+
+                    // Masukkan file ke input photo asli
+                    photoInput.files = dataTransfer.files;
+
+                    // Perbarui pratinjau
+                    const previewImg = document.getElementById('cropped-preview');
+                    previewImg.src = URL.createObjectURL(croppedFile);
+
+                    document.getElementById('preview-container').classList.remove('hidden');
+                    document.getElementById('cropperModal').classList.add('hidden');
+
+                    // Bersihkan error validasi
+                    clearError(photoInput);
+                    
+                }, 'image/jpeg');
+            });
 
             applyBtn.addEventListener('click', () => {
                 const canvas = cropper.getCroppedCanvas({
@@ -345,7 +500,8 @@
                     });
                     const dataTransfer = new DataTransfer();
                     dataTransfer.items.add(croppedFile);
-                    photoInput.files = dataTransfer.files;
+                    photoInput.files = dataTransfer.files; // Assign file ke input asli
+
                     document.getElementById('cropped-preview').src = URL.createObjectURL(croppedFile);
                     document.getElementById('preview-container').classList.remove('hidden');
                     document.getElementById('cropperModal').classList.add('hidden');
@@ -358,61 +514,81 @@
                 photoInput.value = "";
             });
 
-            // --- 5. VALIDATION & SUBMIT ---
-            function checkFieldValidity(field) {
-                if (field.type === 'file') {
-                    if (field.files.length === 0) {
-                        showError(field.closest('.bg-white'), 'Foto wajib diunggah');
-                        return false;
-                    } else {
-                        clearError(field.closest('.bg-white'));
-                        return true;
-                    }
-                }
-                if (!field.value || field.value.trim() === "") {
-                    showError(field, 'Kolom ini tidak boleh kosong');
-                    return false;
-                } else {
-                    clearError(field);
-                    return true;
-                }
-            }
-
+            // --- 5. SMART VALIDATION & ERROR HANDLING ---
             function showError(field, message) {
+                clearError(field);
                 field.classList.add('is-invalid');
-                let parent = field.id === 'photo' ? field.closest('.bg-white') : field.parentNode;
-                let err = parent.querySelector('.error-msg') || document.createElement('p');
-                err.className = 'error-msg text-red-500 text-xs mt-1 font-semibold';
-                err.innerText = message;
-                if (!parent.querySelector('.error-msg')) parent.appendChild(err);
+
+                // Logic pencarian label yang lebih kuat:
+                // 1. Cek label di parentElement (untuk input teks biasa)
+                // 2. Cek label di section terdekat (khusus untuk struktur Pas Foto)
+                let labelText = "Field";
+                const parentLabel = field.parentElement.querySelector('label');
+                const sectionLabel = field.closest('section')?.querySelector('h3');
+
+                if (labelName = field.getAttribute('data-label')) {
+                    // Gunakan data-label jika ada (paling akurat)
+                    labelText = labelName;
+                } else if (parentLabel) {
+                    labelText = parentLabel.innerText;
+                } else if (sectionLabel) {
+                    labelText = sectionLabel.innerText;
+                }
+
+                if (field.id === 'photo') {
+                    dropArea.classList.add('is-invalid');
+                }
+
+                const errorDisplay = document.createElement('p');
+                errorDisplay.className = 'error-msg text-red-500 text-[10px] mt-2 font-bold italic';
+                errorDisplay.innerText = `* ${labelText}: ${message}`;
+
+                // Khusus photo, taruh di bawah drop area agar rapi
+                if (field.id === 'photo') {
+                    dropArea.after(errorDisplay);
+                } else {
+                    field.parentElement.appendChild(errorDisplay);
+                }
             }
 
             function clearError(field) {
                 field.classList.remove('is-invalid');
-                let parent = field.id === 'photo' ? field.closest('.bg-white') : field.parentNode;
-                const err = parent.querySelector('.error-msg');
-                if (err) err.remove();
+                if (field.id === 'photo') dropArea.classList.remove('is-invalid');
+                const existingError = field.parentElement.querySelector('.error-msg');
+                if (existingError) existingError.remove();
             }
-
-            validateFields.forEach(field => {
-                field.addEventListener('blur', () => checkFieldValidity(field));
-                field.addEventListener('change', () => checkFieldValidity(field));
-            });
 
             form.addEventListener('submit', function(e) {
                 let isFormValid = true;
-                validateFields.forEach(f => {
-                    if (!checkFieldValidity(f)) isFormValid = false;
+
+                validateFields.forEach(field => {
+                    if (field.type === 'file') {
+                        if (field.files.length === 0) {
+                            showError(field, 'Wajib diunggah');
+                            isFormValid = false;
+                        }
+                    } else if (!field.value || field.value.trim() === "") {
+                        showError(field, 'Wajib diisi');
+                        isFormValid = false;
+                    } else if (field.minLength > 0 && field.value.length < field.minLength) {
+                        showError(field, `Kurang dari ${field.minLength} karakter`);
+                        isFormValid = false;
+                    }
                 });
+
                 if (!isFormValid) {
                     e.preventDefault();
+                    // Scroll ke error pertama agar terlihat
                     const firstError = document.querySelector('.is-invalid');
-                    if (firstError) firstError.scrollIntoView({
-                        behavior: 'smooth',
-                        block: 'center'
-                    });
+                    if (firstError) {
+                        firstError.scrollIntoView({
+                            behavior: 'smooth',
+                            block: 'center'
+                        });
+                    }
                 } else {
-                    persistFields.forEach(field => localStorage.removeItem('profile_' + field.id || field.name));
+                    // Jika sukses, hapus data lokal
+                    persistFields.forEach(field => localStorage.removeItem('profile_' + (field.id || field.name)));
                 }
             });
         });

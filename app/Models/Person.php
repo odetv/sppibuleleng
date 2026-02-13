@@ -27,7 +27,7 @@ class Person extends Model
         'village',
         'district',
         'regency',
-        'city',
+        'province',
         'address',
         'gps_coordinates',
         'npwp'
