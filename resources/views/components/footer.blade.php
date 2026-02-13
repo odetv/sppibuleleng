@@ -5,7 +5,7 @@
             <div class="lg:w-1/3 lg:pr-12 lg:border-r lg:border-gray-200">
                 <div class="flex flex-row items-center justify-start gap-3 pb-6">
                     <img src="{{ asset('assets/images/logo-sppi.png') }}" alt="SPPI Logo" class="w-14 h-14">
-                    <img src="{{ asset('assets/images/logo-bgn.png') }}" alt="BGN Logo" class="w-32 h-auto">
+                    <img src="{{ asset('assets/images/logo-bgn.png') }}" alt="BGN Logo" class="w-34 h-auto">
                 </div>
                 <h2 class="text-darkblue font-bold text-lg sm:text-3xl uppercase mb-2">SPPI Buleleng</h2>
                 <p class="text-sm leading-relaxed text-gray-500">
