@@ -11,13 +11,13 @@
                                 <svg class="w-3.5 h-3.5 mr-2 text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
                                 </svg>
-                                Terdaftar: {{ Auth::user()->created_at->translatedFormat('d F Y H:i') }}
+                                Terdaftar: {{ Auth::user()->created_at->translatedFormat('d F Y H:i') }} WITA
                             </span>
                             <span class="flex items-center">
                                 <svg class="w-3.5 h-3.5 mr-2 text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path>
                                 </svg>
-                                Diperbaharui: {{ Auth::user()->person ? Auth::user()->person->updated_at->translatedFormat('d F Y H:i') : '-' }}
+                                Diperbaharui: {{ Auth::user()->person ? Auth::user()->person->updated_at->translatedFormat('d F Y H:i') : '-' }} WITA
                             </span>
                         </div>
                     </div>
@@ -213,7 +213,7 @@
                     const map = L.map('map-preview', {
                         zoomControl: true,
                         attributionControl: false
-                    }).setView(latlng, 16);
+                    }).setView(latlng, 15);
 
                     L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png').addTo(map);
                     L.marker(latlng).addTo(map);

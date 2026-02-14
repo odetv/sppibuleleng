@@ -93,12 +93,6 @@
                             <span>Pas Foto</span>
                         </div>
                     </div>
-                    <div class="mt-8 md:mt-auto pt-8 pb-4 text-center">
-                        <div class="text-xs text-gray-400 border-t pt-4">
-                            <p>© {{ now()->format('Y') }} - Tim Data SPPI Buleleng Bali</p>
-                            <p class="italic mt-1">Bagimu Negeri Jiwa Raga Kami</p>
-                        </div>
-                    </div>
                 </div>
             </div>
 
@@ -141,11 +135,11 @@
                             </div>
                             <div>
                                 <label class="text-[11px] font-bold text-gray-500 uppercase">Gelar Belakang</label>
-                                <input id="title_education" type="text" name="title_education" value="{{ old('title_education') }}" required class="w-full mt-2 px-4 py-2.5 bg-gray-50 border-none rounded-lg text-sm focus:ring-2 focus:ring-blue-500 persist validate-field" placeholder="Cth: S.Kom">
+                                <input id="title_education" type="text" name="title_education" value="{{ old('title_education') }}" required class="w-full mt-2 px-4 py-2.5 bg-gray-50 border-none rounded-lg text-sm focus:ring-2 focus:ring-blue-500 persist validate-field" placeholder="Cth: S.Kom.">
                             </div>
                             <div class="sm:col-span-2">
                                 <label class="text-[11px] font-bold text-gray-500 uppercase">Nama Lengkap (Tanpa Gelar)</label>
-                                <input id="name" type="text" name="name" value="{{ old('name') }}" required class="w-full mt-2 px-4 py-2.5 bg-gray-50 border-none rounded-lg text-sm focus:ring-2 focus:ring-blue-500 persist validate-field" placeholder="Sesuai KTP">
+                                <input id="name" type="text" name="name" value="{{ old('name') }}" required class="w-full mt-2 px-4 py-2.5 bg-gray-50 border-none rounded-lg text-sm focus:ring-2 focus:ring-blue-500 persist validate-field" placeholder="Nama Sesuai KTP">
                             </div>
                         </div>
                     </section>
@@ -193,7 +187,7 @@
                             </div>
                             <div class="lg:col-span-2">
                                 <label class="text-[11px] font-bold text-gray-500 uppercase">Tempat Lahir</label>
-                                <input id="place_birthday" type="text" name="place_birthday" value="{{ old('place_birthday') }}" required class="w-full mt-2 px-4 py-2.5 bg-gray-50 border-none rounded-lg text-sm focus:ring-2 focus:ring-blue-500 persist validate-field" placeholder="Sesuai KTP">
+                                <input id="place_birthday" type="text" name="place_birthday" value="{{ old('place_birthday') }}" required class="w-full mt-2 px-4 py-2.5 bg-gray-50 border-none rounded-lg text-sm focus:ring-2 focus:ring-blue-500 persist validate-field" placeholder="Tempat Lahir Sesuai KTP">
                             </div>
                         </div>
                     </section>
@@ -285,6 +279,14 @@
                         <button type="submit" class="w-full bg-darkblue text-white py-4 rounded-xl font-bold text-sm shadow-xl hover:bg-gold active:scale-[0.98] transition-all cursor-pointer">
                             SIMPAN PROFIL
                         </button>
+                    </div>
+
+
+                    <div class="mt-8 md:mt-auto pt-8 pb-4 text-center">
+                        <div class="text-xs text-gray-400 border-t pt-4">
+                            <p>© {{ now()->format('Y') }} - Tim Data SPPI Buleleng Bali</p>
+                            <p class="italic mt-1">Bagimu Negeri Jiwa Raga Kami</p>
+                        </div>
                     </div>
                 </form>
             </div>
@@ -485,7 +487,7 @@
 
                     // Bersihkan error validasi
                     clearError(photoInput);
-                    
+
                 }, 'image/jpeg');
             });
 

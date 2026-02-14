@@ -62,11 +62,18 @@
                                 Kirim Tautan Reset
                             </button>
 
-                            <p class="text-center text-sm text-gray-600 mt-6">
+                            <p class="text-center text-sm text-gray-600 mt-4">
                                 Ingat kata sandi Anda?
                                 <a href="{{ route('login') }}" class="text-blue-600 font-bold hover:text-gold transition-colors">Masuk</a>
                             </p>
+                            
+                            <div class="mt-4 text-center">
+                                <a href="/" class="text-sm text-gray-400 hover:text-red-600 transition-colors">
+                                    ← Kembali ke Beranda
+                                </a>
+                            </div>
                         </div>
+
                     </form>
 
                     <div class="mt-auto pt-10 text-center">

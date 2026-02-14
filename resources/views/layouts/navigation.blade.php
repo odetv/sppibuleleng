@@ -1,5 +1,5 @@
 <nav class="sticky top-0 z-40 flex w-full bg-white border-b border-gray-200 shadow-sm">
-    <div class="flex flex-grow items-center justify-between px-4 py-4 md:px-6 2xl:px-11">
+    <div class="flex grow items-center justify-between px-4 py-4 md:px-6 2xl:px-11">
 
         <div class="flex items-center gap-2 sm:gap-4">
             <button @click.stop="window.innerWidth < 1024 ? mobileSidebar = !mobileSidebar : sidebarExpanded = !sidebarExpanded"
@@ -12,13 +12,13 @@
             <div class="hidden sm:block">
                 <form action="{{ route('dashboard') }}" method="GET">
                     <div class="relative">
-                        <button type="submit" class="absolute left-0 top-1/2 -translate-y-1/2 cursor-pointer">
+                        <button type="submit" class="absolute left-0 pl-2 top-1/2 -translate-y-1/2 cursor-pointer">
                             <svg class="w-5 h-5 text-gray-400 hover:text-indigo-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
                             </svg>
                         </button>
                         <input type="text" name="search" value="{{ request('search') }}" placeholder="Type to search..."
-                            class="w-full bg-transparent pl-9 pr-4 text-sm font-medium focus:outline-none border-none ring-0 focus:ring-0 text-slate-600" />
+                            class="w-full bg-transparent pl-9 pr-4 text-sm font-medium focus:outline-none border-gray-200 rounded-lg ring-0 focus:ring-0 text-slate-600" />
                     </div>
                 </form>
             </div>
@@ -27,14 +27,14 @@
         <div class="relative" x-data="{ dropdownOpen: false }" @click.away="dropdownOpen = false">
             <button @click.prevent="dropdownOpen = !dropdownOpen" class="flex items-center gap-4 focus:outline-none cursor-pointer">
                 <span class="hidden text-right lg:block">
-                    <span class="block text-sm font-bold text-slate-800 leading-none">{{ Auth::user()->person->name }}</span>
+                    <span class="block text-sm font-medium text-slate-800 leading-none">{{ Auth::user()->person->name }}</span>
                 </span>
 
                 <div class="h-11 w-11 rounded-full border border-gray-200 p-0.5 overflow-hidden">
                     @if(Auth::user()->person && Auth::user()->person->photo)
                     <img src="{{ asset('storage/' . Auth::user()->person->photo) }}" class="h-full w-full rounded-full object-cover">
                     @else
-                    <div class="flex h-full w-full items-center justify-center rounded-full bg-indigo-100 text-indigo-600 font-bold uppercase text-[14px]">
+                    <div class="flex h-full w-full items-center justify-center rounded-full bg-indigo-100 text-indigo-600 font-medium uppercase text-[14px]">
                         {{ substr(Auth::user()->person->name, 0, 1) }}
                     </div>
                     @endif
@@ -52,13 +52,13 @@
                 x-transition:leave="transition ease-in duration-75"
                 x-transition:leave-start="opacity-100 scale-100"
                 x-transition:leave-end="opacity-0 scale-95"
-                class="absolute right-0 mt-4 w-64 rounded-xl border border-slate-200 bg-white shadow-xl z-[999] overflow-hidden"
+                class="absolute right-0 mt-4 w-64 rounded-xl border border-slate-200 bg-white shadow-xl z-999 overflow-hidden"
                 x-cloak>
 
                 <div class="px-6 py-4 border-b border-slate-100 bg-slate-50/50">
-                    <p class="text-sm font-bold text-slate-800">{{ Auth::user()->person->name }}</p>
+                    <p class="text-sm font-medium text-slate-800">{{ Auth::user()->person->name }}</p>
                     <p class="text-[11px] text-slate-500 truncate mt-0.5">{{ Auth::user()->email }}</p>
-                    <div class="mt-2">
+                    <div class="mt-1">
                         <span class="inline-flex items-center px-2 py-0.5 rounded text-[10px] font-bold bg-indigo-100 text-indigo-700 uppercase tracking-wider">
                             {{ Auth::user()->role->name_role ?? 'User' }} </span>
                     </div>
@@ -66,11 +66,11 @@
 
                 <ul class="flex flex-col gap-1 p-2">
                     <li>
-                        <a href="{{ route('profile.edit') }}" class="flex items-center gap-3.5 px-4 py-2.5 text-[13px] font-medium text-slate-600 duration-300 ease-in-out hover:text-indigo-600 hover:bg-slate-50 rounded-lg">
+                        <a href="{{ route('profile.show') }}" class="flex items-center gap-3.5 px-4 py-2.5 text-[13px] font-medium text-slate-600 duration-300 ease-in-out hover:text-indigo-600 hover:bg-slate-50 rounded-lg">
                             <svg class="w-4.5 h-4.5 opacity-70" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path>
                             </svg>
-                            Edit profile
+                            Profil
                         </a>
                     </li>
                 </ul>
@@ -82,7 +82,7 @@
                             <svg class="w-4.5 h-4.5 opacity-80" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"></path>
                             </svg>
-                            Sign out
+                            Keluar
                         </button>
                     </form>
                 </div>

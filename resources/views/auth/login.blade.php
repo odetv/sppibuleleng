@@ -99,6 +99,11 @@
                                 <a href="{{ route('register') }}" class="text-blue-600 font-bold hover:text-gold transition-colors">Daftar Sekarang</a>
                             </p>
                         </div>
+                        <div class="mt-4 text-center">
+                            <a href="/" class="text-sm text-gray-400 hover:text-red-600 transition-colors">
+                                ← Kembali ke Beranda
+                            </a>
+                        </div>
                     </form>
 
                     <div class="mt-8 md:mt-auto pt-8 pb-4 text-center">
