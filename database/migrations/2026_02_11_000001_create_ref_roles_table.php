@@ -8,8 +8,8 @@ return new class extends Migration
 {
     public function up(): void
     {
-        Schema::create('ref_person_roles', function (Blueprint $table) {
-            $table->id('id_ref_person_role');
+        Schema::create('ref_roles', function (Blueprint $table) {
+            $table->id('id_ref_role');
             $table->string('name_role');
             $table->string('slug_role')->unique();
             $table->timestamps();

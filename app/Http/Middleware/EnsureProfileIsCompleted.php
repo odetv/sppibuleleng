@@ -11,12 +11,12 @@ class EnsureProfileIsCompleted
 {
     public function handle(Request $request, Closure $next): Response
     {
-        // Jika user sudah login tapi id_person masih kosong (belum isi profil)
-        if (Auth::check() && is_null(Auth::user()->id_person)) {
-            // Jangan redirect jika user memang sedang berada di halaman pengisian profil
-            if (!$request->routeIs('profile.complete') && !$request->routeIs('profile.store')) {
+        // Jika user login tapi belum punya data person
+        if (auth()->check() && !auth()->user()->id_person) {
+            // Jangan redirect jika user sudah berada di halaman pengisian profil
+            if (!$request->is('complete-profile*')) {
                 return redirect()->route('profile.complete')
-                    ->with('info', 'Silakan lengkapi identitas Anda terlebih dahulu.');
+                    ->with('info', 'Silakan lengkapi profil Anda terlebih dahulu.');
             }
         }
 

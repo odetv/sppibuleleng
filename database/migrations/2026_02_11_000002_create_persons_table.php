@@ -10,11 +10,20 @@ return new class extends Migration
     {
         Schema::create('persons', function (Blueprint $table) {
             $table->id('id_person');
+
+            // --- TAMBAHKAN RELASI KE POSISI DISINI ---
+            $table->foreignId('id_ref_position')
+                ->nullable() // Boleh kosong jika user baru mendaftar belum punya jabatan
+                ->constrained('ref_positions', 'id_ref_position')
+                ->onDelete('set null'); // Jika data posisi dihapus, person tetap ada tapi jabatannya kosong
+            // ----------------------------------------
+
             $table->string('nik', 16)->unique();
             $table->string('no_kk', 16);
             $table->string('name');
-            $table->string('photo')->nullable();
-            $table->string('title_education')->nullable();
+            $table->string('npwp');
+            $table->string('photo');
+            $table->string('title_education');
             $table->enum('gender', ['L', 'P']);
             $table->string('place_birthday');
             $table->date('date_birthday');
@@ -26,8 +35,7 @@ return new class extends Migration
             $table->string('regency');    // Kabupaten
             $table->string('province');   // Provinsi
             $table->text('address');
-            $table->string('gps_coordinates')->nullable();
-            $table->string('npwp')->nullable();
+            $table->string('gps_coordinates');
             $table->timestamps();
             $table->softDeletes();
         });
