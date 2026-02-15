@@ -44,6 +44,9 @@
                 </li>
             </ul>
 
+            {{-- PENGECEKAN STATUS AKTIF UNTUK MENU UTAMA --}}
+            @if(auth()->user()->status_user === 'active')
+
             {{-- 2. MENU ADMIN (Hanya untuk Role Administrator) --}}
             @if(auth()->user()->role->slug_role === 'administrator')
             <div>
@@ -54,9 +57,10 @@
                 </div>
                 <ul class="mb-6 flex flex-col gap-1.5">
                     <li>
+                        {{-- Button Manajemen Pengguna --}}
                         <button @click="selected = (selected === 'admin_user' ? '' : 'admin_user')"
                             :class="(sidebarExpanded || isHovered || mobileSidebar) ? 'px-4' : 'justify-center'"
-                            class="w-full group relative flex items-center gap-3 rounded-lg py-2.5 text-[14px] font-medium text-slate-600 transition-all duration-200 hover:bg-indigo-50 hover:text-indigo-600">
+                            class="w-full group relative flex items-center gap-3 rounded-lg py-2.5 text-[14px] font-medium transition-all duration-200 {{ request()->routeIs('admin.users.*', 'admin.roles.*', 'admin.positions.*') ? 'bg-indigo-50/50 text-indigo-600' : 'text-slate-600 hover:bg-indigo-50 hover:text-indigo-600' }}">
                             <div class="shrink-0 flex items-center justify-center">
                                 <svg class="w-5.5 h-5.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z" />
@@ -67,16 +71,18 @@
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
                             </svg>
                         </button>
+                        {{-- Sub-menu Manajemen Pengguna --}}
                         <ul x-show="selected === 'admin_user' && (sidebarExpanded || isHovered || mobileSidebar)" x-transition class="ml-9 mt-1 flex flex-col gap-1 border-l border-slate-100">
-                            <li><a href="{{ route('admin.users.index') }}" class="block py-2 px-3 text-[13px] text-slate-500 hover:text-indigo-600 transition-colors">Daftar Pengguna</a></li>
-                            <li><a href="{{ route('admin.roles.index') }}" class="block py-2 px-3 text-[13px] text-slate-500 hover:text-indigo-600 transition-colors">Daftar Hak Akses</a></li>
-                            <li><a href="{{ route('admin.positions.index') }}" class="block py-2 px-3 text-[13px] text-slate-500 hover:text-indigo-600 transition-colors">Daftar Jabatan</a></li>
+                            <li><a href="{{ route('admin.users.index') }}" class="block py-2 px-3 text-[13px] transition-colors {{ request()->routeIs('admin.users.index') ? 'text-indigo-600 font-bold' : 'text-slate-500 hover:text-indigo-600' }}">Daftar Pengguna</a></li>
+                            <li><a href="{{ route('admin.roles.index') }}" class="block py-2 px-3 text-[13px] transition-colors {{ request()->routeIs('admin.roles.index') ? 'text-indigo-600 font-bold' : 'text-slate-500 hover:text-indigo-600' }}">Daftar Hak Akses</a></li>
+                            <li><a href="{{ route('admin.positions.index') }}" class="block py-2 px-3 text-[13px] transition-colors {{ request()->routeIs('admin.positions.index') ? 'text-indigo-600 font-bold' : 'text-slate-500 hover:text-indigo-600' }}">Daftar Jabatan</a></li>
                         </ul>
                     </li>
                     <li>
+                        {{-- Button Manajemen SPPG --}}
                         <button @click="selected = (selected === 'admin_sppg' ? '' : 'admin_sppg')"
                             :class="(sidebarExpanded || isHovered || mobileSidebar) ? 'px-4' : 'justify-center'"
-                            class="w-full group relative flex items-center gap-3 rounded-lg py-2.5 text-[14px] font-medium text-slate-600 transition-all duration-200 hover:bg-indigo-50 hover:text-indigo-600">
+                            class="w-full group relative flex items-center gap-3 rounded-lg py-2.5 text-[14px] font-medium transition-all duration-200 {{ request()->routeIs('admin.sppg.*') ? 'bg-indigo-50/50 text-indigo-600' : 'text-slate-600 hover:bg-indigo-50 hover:text-indigo-600' }}">
                             <div class="shrink-0 flex items-center justify-center">
                                 <svg class="w-5.5 h-5.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01" />
@@ -87,10 +93,11 @@
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
                             </svg>
                         </button>
+                        {{-- Sub-menu Manajemen SPPG --}}
                         <ul x-show="selected === 'admin_sppg' && (sidebarExpanded || isHovered || mobileSidebar)" x-transition class="ml-9 mt-1 flex flex-col gap-1 border-l border-slate-100">
-                            <li><a href="{{ route('admin.sppg.index') }}" class="block py-2 px-3 text-[13px] text-slate-500 hover:text-indigo-600 transition-colors">Daftar SPPG</a></li>
-                            <li><a href="{{ route('admin.sppg.pm') }}" class="block py-2 px-3 text-[13px] text-slate-500 hover:text-indigo-600 transition-colors">Daftar PM</a></li>
-                            <li><a href="{{ route('admin.sppg.supplier') }}" class="block py-2 px-3 text-[13px] text-slate-500 hover:text-indigo-600 transition-colors">Daftar Supplier MBG</a></li>
+                            <li><a href="{{ route('admin.sppg.index') }}" class="block py-2 px-3 text-[13px] transition-colors {{ request()->routeIs('admin.sppg.index') ? 'text-indigo-600 font-bold' : 'text-slate-500 hover:text-indigo-600' }}">Daftar SPPG</a></li>
+                            <li><a href="{{ route('admin.sppg.pm') }}" class="block py-2 px-3 text-[13px] transition-colors {{ request()->routeIs('admin.sppg.pm') ? 'text-indigo-600 font-bold' : 'text-slate-500 hover:text-indigo-600' }}">Daftar PM</a></li>
+                            <li><a href="{{ route('admin.sppg.supplier') }}" class="block py-2 px-3 text-[13px] transition-colors {{ request()->routeIs('admin.sppg.supplier') ? 'text-indigo-600 font-bold' : 'text-slate-500 hover:text-indigo-600' }}">Daftar Supplier MBG</a></li>
                         </ul>
                     </li>
                 </ul>
@@ -99,9 +106,9 @@
 
             {{-- 3. MENU SPPG (Hanya untuk Jabatan: KaSPPG, Ahli Gizi, Akuntansi, dan Administrator) --}}
             @php
-                $allowedPositions = ['kasppg', 'ag', 'ak'];
-                $userPosition = auth()->user()->person?->position?->slug_position;
-                $isAdmin = auth()->user()->role->slug_role === 'administrator';
+            $allowedPositions = ['kasppg', 'ag', 'ak'];
+            $userPosition = auth()->user()->person?->position?->slug_position;
+            $isAdmin = auth()->user()->role->slug_role === 'administrator';
             @endphp
 
             @if($isAdmin || in_array($userPosition, $allowedPositions))
@@ -130,7 +137,7 @@
                     <li>
                         <button @click="selected = (selected === 'sppg' ? '' : 'sppg')"
                             :class="(sidebarExpanded || isHovered || mobileSidebar) ? 'px-4' : 'justify-center'"
-                            class="w-full group relative flex items-center gap-3 rounded-lg py-2.5 text-[14px] font-medium text-slate-600 transition-all duration-200 hover:bg-indigo-50 hover:text-indigo-600">
+                            class="w-full group relative flex items-center gap-3 rounded-lg py-2.5 text-[14px] font-medium transition-all duration-200 {{ request()->routeIs('sppg.pks', 'sppg.sertifikasi', 'sppg.petugas', 'sppg.pm', 'sppg.supplier') ? 'bg-indigo-50/50 text-indigo-600' : 'text-slate-600 hover:bg-indigo-50 hover:text-indigo-600' }}">
                             <div class="shrink-0 flex items-center justify-center">
                                 <svg class="w-5.5 h-5.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
@@ -142,15 +149,16 @@
                             </svg>
                         </button>
                         <ul x-show="selected === 'sppg' && (sidebarExpanded || isHovered || mobileSidebar)" x-transition class="ml-9 mt-1 flex flex-col gap-1 border-l border-slate-100">
-                            <li><a href="{{ route('sppg.pks') }}" class="block py-2 px-3 text-[13px] {{ request()->routeIs('sppg.pks') ? 'text-indigo-600 font-bold' : 'text-slate-500 hover:text-indigo-600' }}">Kerjasama (PKS)</a></li>
-                            <li><a href="{{ route('sppg.sertifikasi') }}" class="block py-2 px-3 text-[13px] {{ request()->routeIs('sppg.sertifikasi') ? 'text-indigo-600 font-bold' : 'text-slate-500 hover:text-indigo-600' }}">Sertifikasi SPPG</a></li>
-                            <li><a href="{{ route('sppg.petugas') }}" class="block py-2 px-3 text-[13px] {{ request()->routeIs('sppg.petugas') ? 'text-indigo-600 font-bold' : 'text-slate-500 hover:text-indigo-600' }}">Petugas SPPG</a></li>
-                            <li><a href="{{ route('sppg.pm') }}" class="block py-2 px-3 text-[13px] {{ request()->routeIs('sppg.pm') ? 'text-indigo-600 font-bold' : 'text-slate-500 hover:text-indigo-600' }}">Kelompok PM</a></li>
-                            <li><a href="{{ route('sppg.supplier') }}" class="block py-2 px-3 text-[13px] {{ request()->routeIs('sppg.supplier') ? 'text-indigo-600 font-bold' : 'text-slate-500 hover:text-indigo-600' }}">Supplier MBG</a></li>
+                            <li><a href="{{ route('sppg.pks') }}" class="block py-2 px-3 text-[13px] transition-colors {{ request()->routeIs('sppg.pks') ? 'text-indigo-600 font-bold' : 'text-slate-500 hover:text-indigo-600' }}">Kerjasama (PKS)</a></li>
+                            <li><a href="{{ route('sppg.sertifikasi') }}" class="block py-2 px-3 text-[13px] transition-colors {{ request()->routeIs('sppg.sertifikasi') ? 'text-indigo-600 font-bold' : 'text-slate-500 hover:text-indigo-600' }}">Sertifikasi SPPG</a></li>
+                            <li><a href="{{ route('sppg.petugas') }}" class="block py-2 px-3 text-[13px] transition-colors {{ request()->routeIs('sppg.petugas') ? 'text-indigo-600 font-bold' : 'text-slate-500 hover:text-indigo-600' }}">Petugas SPPG</a></li>
+                            <li><a href="{{ route('sppg.pm') }}" class="block py-2 px-3 text-[13px] transition-colors {{ request()->routeIs('sppg.pm') ? 'text-indigo-600 font-bold' : 'text-slate-500 hover:text-indigo-600' }}">Kelompok PM</a></li>
+                            <li><a href="{{ route('sppg.supplier') }}" class="block py-2 px-3 text-[13px] transition-colors {{ request()->routeIs('sppg.supplier') ? 'text-indigo-600 font-bold' : 'text-slate-500 hover:text-indigo-600' }}">Supplier MBG</a></li>
                         </ul>
                     </li>
                 </ul>
             </div>
+            @endif
             @endif
 
             {{-- 4. PENGATURAN --}}
@@ -164,7 +172,7 @@
                     <li>
                         <button @click="selected = (selected === 'profil' ? '' : 'profil')"
                             :class="(sidebarExpanded || isHovered || mobileSidebar) ? 'px-4' : 'justify-center'"
-                            class="w-full group relative flex items-center gap-3 rounded-lg py-2.5 text-[14px] font-medium transition-all duration-200 {{ request()->routeIs('profile.*') ? 'bg-indigo-50 text-indigo-600 font-bold' : 'text-slate-600 hover:bg-indigo-50 hover:text-indigo-600' }}">
+                            class="w-full group relative flex items-center gap-3 rounded-lg py-2.5 text-[14px] font-medium transition-all duration-200 {{ request()->routeIs('profile.*') ? 'bg-indigo-50/50 text-indigo-600' : 'text-slate-600 hover:bg-indigo-50 hover:text-indigo-600' }}">
                             <div class="shrink-0 flex items-center justify-center">
                                 <svg class="w-5.5 h-5.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
@@ -176,8 +184,8 @@
                             </svg>
                         </button>
                         <ul x-show="selected === 'profil' && (sidebarExpanded || isHovered || mobileSidebar)" x-transition class="ml-9 mt-1 flex flex-col gap-1 border-l border-slate-100">
-                            <li><a href="{{ route('profile.show') }}" class="block py-2 px-3 text-[13px] {{ request()->routeIs('profile.show') ? 'text-indigo-600 font-bold' : 'text-slate-500 hover:text-indigo-600' }}">Biodata</a></li>
-                            <li><a href="{{ route('profile.edit') }}" class="block py-2 px-3 text-[13px] {{ request()->routeIs('profile.edit') ? 'text-indigo-600 font-bold' : 'text-slate-500 hover:text-indigo-600' }}">Edit Profil</a></li>
+                            <li><a href="{{ route('profile.show') }}" class="block py-2 px-3 text-[13px] transition-colors {{ request()->routeIs('profile.show') ? 'text-indigo-600 font-bold' : 'text-slate-500 hover:text-indigo-600' }}">Biodata</a></li>
+                            <li><a href="{{ route('profile.edit') }}" class="block py-2 px-3 text-[13px] transition-colors {{ request()->routeIs('profile.edit') ? 'text-indigo-600 font-bold' : 'text-slate-500 hover:text-indigo-600' }}">Edit Profil</a></li>
                         </ul>
                     </li>
                     <li>

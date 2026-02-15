@@ -16,7 +16,7 @@ class User extends Authenticatable
 
     protected $fillable = [
         'id_person',
-        'id_ref_role', // Diperbarui dari id_ref_person_role
+        'id_ref_role',
         'phone',
         'email',
         'password',
@@ -52,6 +52,6 @@ class User extends Authenticatable
      */
     public function person(): BelongsTo
     {
-        return $this->belongsTo(Person::class, 'id_person', 'id_person');
+        return $this->belongsTo(Person::class, 'id_person', 'id_person')->withTrashed();
     }
 }

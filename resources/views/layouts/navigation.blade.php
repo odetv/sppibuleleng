@@ -17,7 +17,7 @@
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
                             </svg>
                         </button>
-                        <input type="text" name="search" value="{{ request('search') }}" placeholder="Type to search..."
+                        <input type="text" name="search" value="{{ request('search') }}" placeholder="Cari sesuatu..."
                             class="w-full bg-transparent pl-9 pr-4 text-sm font-medium focus:outline-none border-gray-200 rounded-lg ring-0 focus:ring-0 text-slate-600" />
                     </div>
                 </form>

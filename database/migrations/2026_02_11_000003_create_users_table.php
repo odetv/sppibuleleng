@@ -18,8 +18,8 @@ return new class extends Migration
             $table->string('email')->unique();
             $table->timestamp('email_verified_at')->nullable();
             $table->string('password');
-            $table->string('phone')->nullable();
-            $table->string('status_user')->default('pending');
+            $table->string('phone');
+            $table->enum('status_user', ['pending', 'active', 'inactive'])->default('pending');
             $table->rememberToken();
             $table->timestamps();
             $table->softDeletes();

@@ -1,63 +1,77 @@
-<x-app-layout title="Manajemen Jabatan">
-    <div class="py-10 p-4">
+<x-app-layout title="Daftar Jabatan">
+    <div class="py-10 p-4 text-slate-800 text-[14px]">
         <div class="w-full mx-auto sm:px-6 lg:px-8 space-y-10">
 
-            {{-- 1. Header Section (Minimalist & Clean) --}}
+            {{-- 1. HEADER SECTION --}}
             <div class="bg-white rounded-xl border border-slate-200 overflow-hidden shadow-sm">
-                <div class="p-8">
-                    <div class="flex flex-wrap justify-between items-center gap-4">
-                        <div>
-                            <h2 class="text-xl font-bold text-slate-800 uppercase tracking-wider">
-                                Manajemen Jabatan
-                            </h2>
-                            <p class="text-[10px] text-slate-400 font-bold uppercase tracking-widest mt-1">
-                                Pengaturan struktur organisasi dan penamaan posisi fungsional
-                            </p>
-                        </div>
-                        <div class="flex items-center">
-                            <span class="inline-flex items-center px-4 py-1.5 text-[10px] font-bold rounded bg-slate-50 text-slate-600 uppercase border border-slate-200 tracking-widest">
-                                {{ $positions->count() }} Jabatan Terdaftar
-                            </span>
-                        </div>
+                <div class="p-6 md:p-8 flex flex-col md:flex-row justify-between items-center gap-4">
+                    <div>
+                        <h2 class="text-xl font-bold text-slate-800 uppercase tracking-wider">
+                            Daftar Jabatan
+                        </h2>
+                        <p class="text-[10px] text-slate-400 font-bold uppercase tracking-widest mt-1">
+                            Pengaturan struktur organisasi dan penamaan posisi fungsional
+                        </p>
+                    </div>
+                    <div class="flex items-center">
+                        <span class="inline-flex items-center px-4 py-2 text-[10px] font-bold rounded bg-white text-slate-600 uppercase border border-slate-200 tracking-widest shadow-sm">
+                            {{ $positions->count() }} Jabatan Terdaftar
+                        </span>
                     </div>
                 </div>
             </div>
 
-            {{-- 2. Table Section (Focused & Clean) --}}
+            {{-- 2. SINGLE STATS CARD (Full Width) --}}
+            <div class="w-full">
+                <div class="bg-white p-6 rounded-xl border border-slate-200 flex items-center shadow-sm w-full transition-all hover:border-indigo-300">
+                    <div class="p-3 bg-slate-50 rounded-lg mr-4 text-indigo-600 border border-slate-100 shadow-sm">
+                        <svg class="w-8 h-8" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M21 13.255A23.931 23.931 0 0112 15c-3.183 0-6.22-.62-9-1.745M16 6V4a2 2 0 00-2-2h-4a2 2 0 00-2 2v2m4 6h.01M5 20h14a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"></path>
+                        </svg>
+                    </div>
+                    <div>
+                        <p class="text-[11px] font-bold uppercase tracking-[2px] text-slate-400">Total Posisi Fungsional</p>
+                        <h4 class="text-2xl font-black text-slate-800">{{ $positions->count() }} <span class="text-xs font-bold text-slate-400 ml-1">Kategori Jabatan</span></h4>
+                    </div>
+                </div>
+            </div>
+
+            {{-- 3. DATABASE TABLE --}}
             <div class="bg-white rounded-xl border border-slate-200 overflow-hidden shadow-sm">
-                <div class="overflow-x-auto">
-                    <table class="w-full text-left border-collapse">
+                <div class="p-6 border-b border-slate-100 bg-slate-50/50 flex justify-between items-center text-slate-700">
+                    <h3 class="font-bold uppercase tracking-wider">Daftar Jabatan Personel</h3>
+                </div>
+                <div class="overflow-x-auto scrollbar-thin">
+                    <table class="w-full text-left border-collapse text-sm">
                         <thead>
-                            <tr class="bg-slate-50 text-[10px] font-bold text-slate-400 uppercase tracking-widest border-b border-slate-100">
-                                <th class="px-8 py-5">Slug Posisi</th>
-                                <th class="px-8 py-5">Nama Jabatan</th>
-                                <th class="px-8 py-5 text-right">Tindakan</th>
+                            <tr class="bg-slate-50 text-[11px] font-bold uppercase tracking-wider text-slate-400 border-b border-slate-100">
+                                <th class="px-8 py-4">Slug Posisi</th>
+                                <th class="px-8 py-4 text-center">Nama Jabatan</th>
+                                <th class="px-8 py-4 text-right">Aksi</th>
                             </tr>
                         </thead>
                         <tbody class="divide-y divide-slate-50">
                             @foreach($positions as $pos)
                             <tr class="hover:bg-slate-50/80 transition-colors group">
-                                <td class="px-8 py-6">
-                                    <div class="flex items-center">
-                                        <div class="w-2 h-2 rounded-full bg-indigo-500 mr-4 border border-indigo-100"></div>
-                                        <span class="font-mono text-xs font-bold text-slate-600 px-2 py-1 bg-slate-100 rounded border border-slate-200 tracking-tighter uppercase">
-                                            {{ $pos->slug_position }}
-                                        </span>
+                                <td class="px-8 py-4">
+                                    <div class="flex items-center gap-3">
+                                        <div class="w-2.5 h-2.5 rounded-full bg-indigo-500 shadow-sm"></div>
+                                        <span class="font-bold text-slate-700 font-sans tracking-tight">{{ $pos->slug_position }}</span>
                                     </div>
                                 </td>
-                                <td class="px-8 py-6">
-                                    <span class="text-sm font-medium text-slate-700 group-hover:text-indigo-600 transition-colors">
+                                <td class="px-8 py-4 text-center">
+                                    <span class="text-slate-600 font-medium">
                                         {{ $pos->name_position }}
                                     </span>
                                 </td>
-                                <td class="px-8 py-6 text-right">
+                                <td class="px-8 py-4 text-right">
                                     <button
                                         onclick="openEditPositionModal('{{ $pos->id_ref_position }}', '{{ $pos->name_position }}', '{{ $pos->slug_position }}')"
-                                        class="inline-flex items-center px-4 py-2 bg-white border border-slate-200 rounded text-[10px] font-bold text-slate-600 uppercase tracking-widest hover:bg-slate-50 hover:text-slate-900 hover:border-slate-300 transition-all">
-                                        <svg class="w-3.5 h-3.5 mr-2 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                            <path d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+                                        class="p-2 text-slate-400 hover:text-indigo-600 transition-colors cursor-pointer"
+                                        title="Edit Jabatan">
+                                        <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                                            <path d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path>
                                         </svg>
-                                        Edit
                                     </button>
                                 </td>
                             </tr>
@@ -69,60 +83,46 @@
         </div>
     </div>
 
-    {{-- 3. Simple Premium Modal --}}
-    <div id="editPositionModal" class="fixed inset-0 z-[999] hidden">
-        {{-- Backdrop --}}
-        <div class="absolute inset-0 bg-slate-900/40 backdrop-blur-sm transition-opacity" onclick="closeEditPositionModal()"></div>
-
-        {{-- Modal Container --}}
-        <div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-full max-w-md p-4">
-            <div class="bg-white rounded-xl border border-slate-200 overflow-hidden transform transition-all shadow-xl" id="posModalContainer">
-                <div class="p-8">
-                    <div class="mb-6 pb-4 border-b border-slate-100 flex justify-between items-center">
-                        <div>
-                            <h3 class="text-sm font-bold text-slate-800 uppercase tracking-widest">Perbarui Jabatan</h3>
-                            <p class="text-[10px] text-slate-400 font-medium uppercase mt-0.5" id="pos_slug_display"></p>
-                        </div>
-                        <button onclick="closeEditPositionModal()" class="text-slate-300 hover:text-slate-500 transition-colors">
-                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path d="M6 18L18 6M6 6l12 12"></path>
-                            </svg>
-                        </button>
-                    </div>
-
-                    <form id="editPositionForm" method="POST">
-                        @csrf
-                        @method('PATCH')
-
-                        <div class="space-y-6">
-                            <div class="flex flex-col space-y-2">
-                                <label class="text-[10px] font-bold text-slate-400 uppercase tracking-widest ml-1">Nama Jabatan Baru</label>
-                                <input type="text" id="input_name_position" name="name_position"
-                                    class="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded text-slate-700 text-sm font-medium focus:ring-1 focus:ring-slate-400 focus:bg-white outline-none transition-all"
-                                    placeholder="Contoh: Staff Akuntansi" required>
-                            </div>
-                        </div>
-
-                        <div class="mt-8 flex gap-3">
-                            <button type="button" onclick="closeEditPositionModal()"
-                                class="flex-1 px-4 py-2.5 bg-slate-50 text-slate-500 text-[10px] font-bold uppercase tracking-widest rounded border border-slate-200 hover:bg-slate-100 transition-all">
-                                Batal
-                            </button>
-                            <button type="submit"
-                                class="flex-1 px-4 py-2.5 bg-slate-800 text-white text-[10px] font-bold uppercase tracking-widest rounded hover:bg-slate-900 shadow-sm transition-all">
-                                Simpan
-                            </button>
-                        </div>
-                    </form>
+    {{-- 4. EDIT MODAL (Style Seragam Manajemen Pengguna) --}}
+    <div id="editPositionModal" class="fixed inset-0 z-[99] hidden flex items-center justify-center p-4">
+        <div class="absolute inset-0 bg-slate-900/60 backdrop-blur-sm transition-opacity" onclick="closeEditPositionModal()"></div>
+        <div class="relative bg-white rounded-xl shadow-xl border border-slate-200 w-full max-w-lg overflow-hidden transform transition-all font-sans">
+            <div class="p-6 border-b border-slate-100 bg-slate-50 flex justify-between items-center text-slate-800 font-bold uppercase tracking-widest text-[14px]">
+                <div>
+                    <h3>Perbarui Jabatan</h3>
+                    <p class="text-[10px] text-indigo-500 mt-1" id="pos_slug_display"></p>
                 </div>
+                <button type="button" onclick="closeEditPositionModal()" class="text-slate-400 hover:text-slate-600 text-2xl cursor-pointer">&times;</button>
             </div>
+
+            <form id="editPositionForm" method="POST">
+                @csrf
+                @method('PATCH')
+
+                <div class="p-8">
+                    <label class="text-[11px] font-bold uppercase text-slate-500 block mb-2 tracking-widest">Nama Jabatan Baru</label>
+                    <input type="text" id="input_name_position" name="name_position"
+                        class="w-full px-4 py-3 bg-slate-50 border-none rounded-lg focus:ring-2 focus:ring-indigo-500 outline-none text-sm transition-all font-sans"
+                        required placeholder="Contoh: Staff Akuntansi">
+                </div>
+
+                <div class="p-6 border-t border-slate-100 bg-slate-50/50 flex gap-4">
+                    <button type="button" onclick="closeEditPositionModal()"
+                        class="flex-1 py-4 text-[11px] font-bold uppercase tracking-wider text-slate-500 bg-white border border-slate-200 rounded-xl hover:bg-slate-50 cursor-pointer transition-all font-sans">
+                        Batal
+                    </button>
+                    <button type="submit"
+                        class="flex-1 py-4 text-[11px] font-bold uppercase tracking-wider text-white bg-slate-800 rounded-xl shadow-lg hover:bg-slate-900 cursor-pointer transition-all active:scale-[0.98] font-sans">
+                        Simpan
+                    </button>
+                </div>
+            </form>
         </div>
     </div>
 
     <script>
         function openEditPositionModal(id, name, slug) {
             const modal = document.getElementById('editPositionModal');
-            const container = document.getElementById('posModalContainer');
             const form = document.getElementById('editPositionForm');
             const input = document.getElementById('input_name_position');
             const slugDisplay = document.getElementById('pos_slug_display');
@@ -132,15 +132,10 @@
             slugDisplay.innerText = "System Identity: " + slug;
 
             modal.classList.remove('hidden');
-            setTimeout(() => {
-                container.style.opacity = "1";
-                container.style.transform = "scale(1)";
-            }, 10);
         }
 
         function closeEditPositionModal() {
-            const modal = document.getElementById('editPositionModal');
-            modal.classList.add('hidden');
+            document.getElementById('editPositionModal').classList.add('hidden');
         }
     </script>
 </x-app-layout>

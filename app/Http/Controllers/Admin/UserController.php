@@ -22,11 +22,20 @@ class UserController extends Controller
             'incomplete' => User::whereNull('id_person')->count(),
         ];
 
-        $users = User::with(['person.position', 'role'])->where('status_user', 'pending')->whereNotNull('id_person')->latest()->get();
+        // Ambil data antrian (pending)
+        $users = User::with(['person.position', 'role'])
+            ->where('status_user', 'pending')
+            ->whereNotNull('id_person')
+            ->latest()
+            ->get();
+
+        // Ambil semua data untuk database utama
         $allUsers = User::with(['person.position', 'role'])->latest()->get();
 
-        // Ambil data yang sudah di soft delete
-        $trashedUsers = User::onlyTrashed()->with(['person'])->latest()->get();
+        // Ambil data yang sudah di soft delete (relasi person harus withTrashed)
+        $trashedUsers = User::onlyTrashed()->with(['person' => function ($query) {
+            $query->withTrashed();
+        }, 'role'])->latest()->get();
 
         $roles = RefRole::all();
         $positions = RefPosition::all();
@@ -42,6 +51,7 @@ class UserController extends Controller
             'id_ref_role' => 'required',
             'id_ref_position' => 'required',
             'photo' => 'nullable|image|max:2048',
+            'date_birthday' => 'nullable|date',
         ]);
 
         $user = User::findOrFail($id);
@@ -57,27 +67,11 @@ class UserController extends Controller
 
             if ($user->id_person) {
                 $person = Person::findOrFail($user->id_person);
+                $data = $request->except(['photo', '_token', '_method']);
 
-                $data = $request->only([
-                    'id_ref_position',
-                    'nik',
-                    'no_kk',
-                    'name',
-                    'title_education',
-                    'gender',
-                    'place_birthday',
-                    'date_birthday',
-                    'age',
-                    'religion',
-                    'marital_status',
-                    'province',
-                    'regency',
-                    'district',
-                    'village',
-                    'address',
-                    'gps_coordinates',
-                    'npwp'
-                ]);
+                if ($request->filled('date_birthday')) {
+                    $data['age'] = \Carbon\Carbon::parse($request->date_birthday)->age;
+                }
 
                 if ($request->hasFile('photo')) {
                     if ($person->photo) {
@@ -90,79 +84,137 @@ class UserController extends Controller
             }
 
             DB::commit();
-            return back()->with('success', 'Data diperbarui.');
+            return back()->with('success', 'Data pengguna berhasil diperbarui.');
         } catch (\Exception $e) {
             DB::rollBack();
-            return back()->with('error', 'Gagal: ' . $e->getMessage());
+            return back()->with('error', 'Gagal memperbarui data: ' . $e->getMessage());
         }
     }
 
     public function destroy($id)
     {
-        // Cegah hapus diri sendiri
         if ($id == auth()->id()) {
             return back()->with('error', 'Anda tidak dapat menghapus akun sendiri.');
         }
 
-        $user = User::findOrFail($id);
+        try {
+            DB::beginTransaction();
+            $user = User::findOrFail($id);
 
-        // Hapus foto jika ada
-        if ($user->person && $user->person->photo) {
-            Storage::disk('public')->delete($user->person->photo);
+            // JANGAN ubah kolom status_user, biarkan aslinya (active/pending)
+            // Cukup jalankan soft delete
+            if ($user->person) {
+                $user->person->delete();
+            }
+            $user->delete();
+
+            DB::commit();
+            return back()->with('success', 'Pengguna berhasil dipindahkan ke tempat sampah.');
+        } catch (\Exception $e) {
+            DB::rollBack();
+            return back()->with('error', 'Gagal menghapus pengguna.');
         }
-
-        // Hapus person jika ada (karena SoftDeletes digunakan di model Person)
-        if ($user->person) {
-            $user->person->delete();
-        }
-
-        $user->delete();
-
-        return back()->with('success', 'Pengguna berhasil dihapus secara permanen.');
     }
 
     public function forceDelete($id)
     {
-        $user = User::onlyTrashed()->findOrFail($id);
-        if ($user->person) {
-            $user->person()->forceDelete(); // Hapus permanen data personil
+        // Ambil user dari sampah beserta personnya (termasuk yang di-softdelete)
+        $user = User::onlyTrashed()->with(['person' => function ($q) {
+            $q->withTrashed();
+        }])->findOrFail($id);
+
+        try {
+            DB::beginTransaction();
+
+            if ($user->id_person) {
+                // Ambil instance person
+                $person = Person::withTrashed()->find($user->id_person);
+
+                if ($person) {
+                    // 1. Hapus File Fisik Foto
+                    if ($person->photo && Storage::disk('public')->exists($person->photo)) {
+                        Storage::disk('public')->delete($person->photo);
+                    }
+
+                    // 2. Putus hubungan di table users dulu (agar tidak melanggar constraint)
+                    $user->update(['id_person' => null]);
+
+                    // 3. Hapus Permanen dari table persons
+                    $person->forceDelete();
+                }
+            }
+
+            // 4. Hapus Permanen dari table users
+            $user->forceDelete();
+
+            DB::commit();
+            return back()->with('success', 'Data pengguna dan profil berhasil dibuang permanen.');
+        } catch (\Exception $e) {
+            DB::rollBack();
+            // Log error untuk debug jika diperlukan: \Log::error($e->getMessage());
+            return back()->with('error', 'Gagal hapus permanen: ' . $e->getMessage());
         }
-        $user->forceDelete(); // Hapus permanen data user
-        return back()->with('success', 'Pengguna telah dihapus permanen.');
     }
 
     public function forceDeleteAll()
     {
-        User::onlyTrashed()->each(function ($user) {
-            if ($user->person) $user->person()->forceDelete();
-            $user->forceDelete();
-        });
-        return back()->with('success', 'Seluruh tempat sampah telah dikosongkan.');
+        try {
+            DB::beginTransaction();
+
+            // Ambil semua yang di sampah
+            $trashedUsers = User::onlyTrashed()->get();
+
+            foreach ($trashedUsers as $user) {
+                if ($user->id_person) {
+                    $person = Person::withTrashed()->find($user->id_person);
+                    if ($person) {
+                        // Hapus Foto
+                        if ($person->photo && Storage::disk('public')->exists($person->photo)) {
+                            Storage::disk('public')->delete($person->photo);
+                        }
+                        // Putus hubungan
+                        $user->update(['id_person' => null]);
+                        // Hapus Person
+                        $person->forceDelete();
+                    }
+                }
+                // Hapus User
+                $user->forceDelete();
+            }
+
+            DB::commit();
+            return back()->with('success', 'Tempat sampah berhasil dikosongkan total.');
+        } catch (\Exception $e) {
+            DB::rollBack();
+            return back()->with('error', 'Gagal mengosongkan sampah.');
+        }
     }
 
     public function restore($id)
     {
         try {
-            $user = User::onlyTrashed()->findOrFail($id);
-            $user->restore(); // Mengembalikan data user
+            DB::beginTransaction();
 
-            // Jika personil juga di soft delete, kembalikan juga
-            if ($user->person()->onlyTrashed()->exists()) {
-                $user->person()->restore();
+            // Mengambil user dari sampah
+            $user = User::onlyTrashed()->findOrFail($id);
+            $user->restore(); // Status_user akan tetap seperti sebelum dihapus
+
+            // Pulihkan profil (person) yang terkait
+            $person = Person::withTrashed()->find($user->id_person);
+            if ($person) {
+                $person->restore();
             }
 
-            return back()->with('success', "Akun {$user->email} berhasil diaktifkan kembali.");
+            DB::commit();
+            return back()->with('success', "Akun {$user->email} berhasil dipulihkan.");
         } catch (\Exception $e) {
+            DB::rollBack();
             return back()->with('error', "Gagal memulihkan pengguna.");
         }
     }
 
-    // Tambahkan di UserController.php
-
     public function approve(Request $request, $id)
     {
-        // Jika tidak ada role yang dipilih, kita beri default role (misal: 'guest' atau id role terendah)
-        // Atau pastikan admin memilih role di tabel sebelum klik approve
         $request->validate([
             'id_ref_role' => 'required|exists:ref_roles,id_ref_role'
         ]);
@@ -178,7 +230,6 @@ class UserController extends Controller
 
     public function approveAll(Request $request)
     {
-        // Approve semua yang pending dan berikan role default dari input
         $request->validate(['id_ref_role' => 'required']);
 
         User::where('status_user', 'pending')->update([
