@@ -33,11 +33,9 @@
             width: 100%;
             border-radius: 0.75rem;
             margin-top: 0.5rem;
-            /* Z-index diturunkan agar tombol sticky tetap di atas */
             z-index: 1;
         }
 
-        /* Container tombol simpan agar tetap di atas elemen lain saat di-scroll */
         .sticky-footer {
             position: sticky;
             bottom: 0;
@@ -46,6 +44,12 @@
             padding-bottom: 0.5rem;
             z-index: 50;
             border-top: 1px solid #f3f4f6;
+        }
+
+        input::-webkit-outer-spin-button,
+        input::-webkit-inner-spin-button {
+            -webkit-appearance: none;
+            margin: 0;
         }
     </style>
 </head>
@@ -78,18 +82,26 @@
                     <div class="mt-8 hidden md:block">
                         <div class="flex items-center gap-3 text-left text-[11px] text-blue-200 mb-2">
                             <div class="w-5 h-5 rounded-full bg-blue-500/20 flex items-center justify-center">1</div>
-                            <span>Identitas Resmi (KTP/KK/NPWP)</span>
+                            <span>Penempatan & Status Kerja</span>
                         </div>
                         <div class="flex items-center gap-3 text-left text-[11px] text-blue-200 mb-2">
                             <div class="w-5 h-5 rounded-full bg-blue-500/20 flex items-center justify-center">2</div>
-                            <span>Informasi Pribadi</span>
+                            <span>Informasi Payroll</span>
                         </div>
                         <div class="flex items-center gap-3 text-left text-[11px] text-blue-200 mb-2">
                             <div class="w-5 h-5 rounded-full bg-blue-500/20 flex items-center justify-center">3</div>
+                            <span>Identitas & Pendidikan</span>
+                        </div>
+                        <div class="flex items-center gap-3 text-left text-[11px] text-blue-200 mb-2">
+                            <div class="w-5 h-5 rounded-full bg-blue-500/20 flex items-center justify-center">4</div>
+                            <span>Informasi Pribadi & Seragam</span>
+                        </div>
+                        <div class="flex items-center gap-3 text-left text-[11px] text-blue-200 mb-2">
+                            <div class="w-5 h-5 rounded-full bg-blue-500/20 flex items-center justify-center">5</div>
                             <span>Alamat & GPS</span>
                         </div>
                         <div class="flex items-center gap-3 text-left text-[11px] text-blue-200">
-                            <div class="w-5 h-5 rounded-full bg-blue-500/20 flex items-center justify-center">4</div>
+                            <div class="w-5 h-5 rounded-full bg-blue-500/20 flex items-center justify-center">6</div>
                             <span>Pas Foto</span>
                         </div>
                     </div>
@@ -110,40 +122,132 @@
                 <form id="profileForm" method="POST" action="{{ route('profile.store') }}" enctype="multipart/form-data" class="space-y-8" novalidate>
                     @csrf
 
+                    {{-- SECTION 1: PENEMPATAN & STATUS KERJA --}}
                     <section>
                         <div class="flex items-center gap-2 mb-4">
+                            <span class="p-1.5 bg-indigo-50 text-darkblue rounded-lg">
+                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"></path>
+                                </svg>
+                            </span>
+                            <h3 class="font-bold text-darkblue uppercase text-xs tracking-widest">Penempatan & Status Kerja</h3>
+                        </div>
+                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                            <div class="sm:col-span-2">
+                                <label class="text-[11px] font-bold text-gray-500 uppercase">Unit Penugasan (Sesuai SK)</label>
+                                <select name="id_work_assignment" id="id_work_assignment" required class="w-full mt-2 px-3 py-2.5 bg-gray-50 border-none rounded-lg text-sm focus:ring-2 focus:ring-blue-500 persist validate-field">
+                                    <option value="" disabled selected>Pilih Unit Penugasan</option>
+                                    @foreach($workAssignments as $wa)
+                                    <option value="{{ $wa->id_work_assignment }}" {{ old('id_work_assignment') == $wa->id_work_assignment ? 'selected' : '' }}>
+                                        {{ $wa->sppgUnit->name }} - {{ $wa->decree->no_sk }}
+                                    </option>
+                                    @endforeach
+                                </select>
+                            </div>
+                            <div>
+                                <label class="text-[11px] font-bold text-gray-500 uppercase">Batch</label>
+                                <select name="batch" id="batch" required class="w-full mt-2 px-3 py-2.5 bg-gray-50 border-none rounded-lg text-sm focus:ring-2 focus:ring-blue-500 persist validate-field">
+                                    <option value="" disabled selected>Pilih Batch</option>
+                                    @foreach(['1', '2', '3', 'Non-SPPI'] as $b)
+                                    <option value="{{ $b }}" {{ old('batch') == $b ? 'selected' : '' }}>{{ $b }}</option>
+                                    @endforeach
+                                </select>
+                            </div>
+                            <div>
+                                <label class="text-[11px] font-bold text-gray-500 uppercase">Status Kerja</label>
+                                <select name="employment_status" id="employment_status" required class="w-full mt-2 px-3 py-2.5 bg-gray-50 border-none rounded-lg text-sm focus:ring-2 focus:ring-blue-500 persist validate-field">
+                                    <option value="" disabled selected>Pilih Status</option>
+                                    <option value="ASN" {{ old('employment_status') == 'ASN' ? 'selected' : '' }}>ASN</option>
+                                    <option value="Non-ASN" {{ old('employment_status') == 'Non-ASN' ? 'selected' : '' }}>Non-ASN</option>
+                                </select>
+                            </div>
+                        </div>
+                    </section>
+
+                    {{-- SECTION 2: INFORMASI PAYROLL --}}
+                    <section>
+                        <div class="flex items-center gap-2 mb-4 pt-4 border-t border-gray-100">
+                            <span class="p-1.5 bg-indigo-50 text-darkblue rounded-lg">
+                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 9V7a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2m2 4h10a2 2 0 002-2v-6a2 2 0 00-2-2H9a2 2 0 00-2 2v6a2 2 0 002 2zm7-5a2 2 0 11-4 0 2 2 0 014 0z" />
+                                </svg>
+                            </span>
+                            <h3 class="font-bold text-darkblue uppercase text-xs tracking-widest">Informasi Payroll</h3>
+                        </div>
+                        <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                            <div>
+                                <label class="text-[11px] font-bold text-gray-500 uppercase">Nama Bank</label>
+                                <select name="payroll_bank_name" id="payroll_bank_name" required class="w-full mt-2 px-3 py-2.5 bg-gray-50 border-none rounded-lg text-sm focus:ring-2 focus:ring-blue-500 persist validate-field">
+                                    <option value="" disabled selected>Pilih Bank</option>
+                                    @foreach(['BNI', 'Mandiri', 'BCA', 'BTN', 'BSI', 'BPD Bali'] as $bank)
+                                    <option value="{{ $bank }}" {{ old('payroll_bank_name') == $bank ? 'selected' : '' }}>{{ $bank }}</option>
+                                    @endforeach
+                                </select>
+                            </div>
+                            <div>
+                                <label class="text-[11px] font-bold text-gray-500 uppercase">Nomor Rekening</label>
+                                <input type="number" name="payroll_bank_account_number" id="payroll_bank_account_number" value="{{ old('payroll_bank_account_number') }}" required class="w-full mt-2 px-4 py-2.5 bg-gray-50 border-none rounded-lg text-sm focus:ring-2 focus:ring-blue-500 persist validate-field" placeholder="Sesuai Buku Tabungan">
+                            </div>
+                            <div>
+                                <label class="text-[11px] font-bold text-gray-500 uppercase">Nama Rekening</label>
+                                <input type="text" name="payroll_bank_account_name" id="payroll_bank_account_name" value="{{ old('payroll_bank_account_name') }}" required class="w-full mt-2 px-4 py-2.5 bg-gray-50 border-none rounded-lg text-sm focus:ring-2 focus:ring-blue-500 persist validate-field" placeholder="Sesuai Buku Tabungan">
+                            </div>
+                        </div>
+                    </section>
+
+                    {{-- SECTION 3: IDENTITAS & PENDIDIKAN --}}
+                    <section>
+                        <div class="flex items-center gap-2 mb-4 pt-4 border-t border-gray-100">
                             <span class="p-1.5 bg-blue-50 text-darkblue rounded-lg">
                                 <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H5a2 2 0 00-2 2v9a2 2 0 002 2h14a2 2 0 002-2V8a2 2 0 00-2-2h-5m-4 0V4a2 2 0 012-2h4a2 2 0 012 2v2m-6 0h6"></path>
                                 </svg>
                             </span>
-                            <h3 class="font-bold text-darkblue uppercase text-xs tracking-widest">Identitas Resmi</h3>
+                            <h3 class="font-bold text-darkblue uppercase text-xs tracking-widest">Identitas & Pendidikan</h3>
                         </div>
 
                         <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
                             <div>
                                 <label class="text-[11px] font-bold text-gray-500 uppercase">NIK</label>
-                                <input id="nik" type="number" name="nik" value="{{ old('nik') }}" required minlength="16" maxlength="16" class="w-full mt-2 px-4 py-2.5 bg-gray-50 border-none rounded-lg text-sm focus:ring-2 focus:ring-blue-500 persist validate-field" placeholder="16 Digit NIK">
+                                <input id="nik" type="number" name="nik" value="{{ old('nik') }}" required minlength="16" maxlength="16" class="w-full mt-2 px-4 py-2.5 bg-gray-50 border-none rounded-lg text-sm focus:ring-2 focus:ring-blue-500 persist validate-field" placeholder="Masukkan NIK">
                             </div>
                             <div>
                                 <label class="text-[11px] font-bold text-gray-500 uppercase">Nomor KK</label>
-                                <input id="no_kk" type="number" name="no_kk" value="{{ old('no_kk') }}" required minlength="16" maxlength="16" class="w-full mt-2 px-4 py-2.5 bg-gray-50 border-none rounded-lg text-sm focus:ring-2 focus:ring-blue-500 persist validate-field" placeholder="16 Digit No. KK">
+                                <input id="no_kk" type="number" name="no_kk" value="{{ old('no_kk') }}" required minlength="16" maxlength="16" class="w-full mt-2 px-4 py-2.5 bg-gray-50 border-none rounded-lg text-sm focus:ring-2 focus:ring-blue-500 persist validate-field" placeholder="Masukkan No. KK">
+                            </div>
+                            <div>
+                                <label class="text-[11px] font-bold text-gray-500 uppercase">NIP</label>
+                                <input id="nip" type="number" name="nip" value="{{ old('nip') }}" required class="w-full mt-2 px-4 py-2.5 bg-gray-50 border-none rounded-lg text-sm focus:ring-2 focus:ring-blue-500 persist validate-field" placeholder="Masukkan NIP">
                             </div>
                             <div>
                                 <label class="text-[11px] font-bold text-gray-500 uppercase">NPWP</label>
-                                <input id="npwp" type="number" name="npwp" value="{{ old('npwp') }}" required minlength="16" maxlength="16" class="w-full mt-2 px-4 py-2.5 bg-gray-50 border-none rounded-lg text-sm focus:ring-2 focus:ring-blue-500 persist validate-field" placeholder="Masukkan NPWP">
+                                <input id="npwp" type="number" name="npwp" value="{{ old('npwp') }}" required class="w-full mt-2 px-4 py-2.5 bg-gray-50 border-none rounded-lg text-sm focus:ring-2 focus:ring-blue-500 persist validate-field" placeholder="Masukkan NPWP">
+                            </div>
+                            <div>
+                                <label class="text-[11px] font-bold text-gray-500 uppercase">Pendidikan Terakhir</label>
+                                <select name="last_education" id="last_education" required class="w-full mt-2 px-3 py-2.5 bg-gray-50 border-none rounded-lg text-sm focus:ring-2 focus:ring-blue-500 persist validate-field">
+                                    <option value="" disabled selected>Pilih Pendidikan Terakhir</option>
+                                    @foreach(['D-III', 'D-IV', 'S-1'] as $edu)
+                                    <option value="{{ $edu }}" {{ old('last_education') == $edu ? 'selected' : '' }}>{{ $edu }}</option>
+                                    @endforeach
+                                </select>
                             </div>
                             <div>
                                 <label class="text-[11px] font-bold text-gray-500 uppercase">Gelar Belakang</label>
                                 <input id="title_education" type="text" name="title_education" value="{{ old('title_education') }}" required class="w-full mt-2 px-4 py-2.5 bg-gray-50 border-none rounded-lg text-sm focus:ring-2 focus:ring-blue-500 persist validate-field" placeholder="Cth: S.Kom.">
                             </div>
-                            <div class="sm:col-span-2">
-                                <label class="text-[11px] font-bold text-gray-500 uppercase">Nama Lengkap (Tanpa Gelar)</label>
-                                <input id="name" type="text" name="name" value="{{ old('name') }}" required class="w-full mt-2 px-4 py-2.5 bg-gray-50 border-none rounded-lg text-sm focus:ring-2 focus:ring-blue-500 persist validate-field" placeholder="Nama Sesuai KTP">
+                            <div>
+                                <label class="text-[11px] font-bold text-gray-500 uppercase">Lulusan Program Studi</label>
+                                <input id="major_education" type="text" name="major_education" value="{{ old('major_education') }}" required class="w-full mt-2 px-4 py-2.5 bg-gray-50 border-none rounded-lg text-sm focus:ring-2 focus:ring-blue-500 persist validate-field" placeholder="Cth: Ilmu Kelautan">
+                            </div>
+                            <div>
+                                <label class="text-[11px] font-bold text-gray-500 uppercase">Nama Lengkap (Sesuai KTP)</label>
+                                <input id="name" type="text" name="name" value="{{ old('name') }}" required class="w-full mt-2 px-4 py-2.5 bg-gray-50 border-none rounded-lg text-sm focus:ring-2 focus:ring-blue-500 persist validate-field" placeholder="Masukkan Nama Tanpa Gelar">
                             </div>
                         </div>
                     </section>
 
+                    {{-- SECTION 4: INFO PRIBADI & SERAGAM --}}
                     <section>
                         <div class="flex items-center gap-2 mb-4 pt-4 border-t border-gray-100">
                             <span class="p-1.5 bg-blue-50 text-darkblue rounded-lg">
@@ -151,14 +255,14 @@
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path>
                                 </svg>
                             </span>
-                            <h3 class="font-bold text-darkblue uppercase text-xs tracking-widest">Informasi Pribadi</h3>
+                            <h3 class="font-bold text-darkblue uppercase text-xs tracking-widest">Informasi Pribadi & Seragam</h3>
                         </div>
 
                         <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
                             <div>
                                 <label class="text-[11px] font-bold text-gray-500 uppercase">Jenis Kelamin</label>
                                 <select name="gender" id="gender" required class="w-full mt-2 px-3 py-2.5 bg-gray-50 border-none rounded-lg text-sm focus:ring-2 focus:ring-blue-500 persist validate-field">
-                                    <option value="" disabled selected>Pilih</option>
+                                    <option value="" disabled selected>Pilih Jenis Kelamin</option>
                                     <option value="L" {{ old('gender') == 'L' ? 'selected' : '' }}>Laki-laki</option>
                                     <option value="P" {{ old('gender') == 'P' ? 'selected' : '' }}>Perempuan</option>
                                 </select>
@@ -166,16 +270,16 @@
                             <div>
                                 <label class="text-[11px] font-bold text-gray-500 uppercase">Agama</label>
                                 <select name="religion" id="religion" required class="w-full mt-2 px-3 py-2.5 bg-gray-50 border-none rounded-lg text-sm focus:ring-2 focus:ring-blue-500 persist validate-field">
-                                    <option value="" disabled selected>Pilih</option>
+                                    <option value="" disabled selected>Pilih Agama</option>
                                     @foreach(['Islam', 'Kristen', 'Katholik', 'Hindu', 'Buddha', 'Khonghucu'] as $rel)
                                     <option value="{{ $rel }}" {{ old('religion') == $rel ? 'selected' : '' }}>{{ $rel }}</option>
                                     @endforeach
                                 </select>
                             </div>
                             <div>
-                                <label class="text-[11px] font-bold text-gray-500 uppercase">Status</label>
+                                <label class="text-[11px] font-bold text-gray-500 uppercase">Status Pernikahan</label>
                                 <select name="marital_status" id="marital_status" required class="w-full mt-2 px-3 py-2.5 bg-gray-50 border-none rounded-lg text-sm focus:ring-2 focus:ring-blue-500 persist validate-field">
-                                    <option value="" disabled selected>Pilih Status</option>
+                                    <option value="" disabled selected>Pilih Status Pernikahan</option>
                                     @foreach(['Belum Kawin', 'Kawin', 'Janda', 'Duda'] as $status)
                                     <option value="{{ $status }}" {{ old('marital_status') == $status ? 'selected' : '' }}>{{ $status }}</option>
                                     @endforeach
@@ -183,15 +287,38 @@
                             </div>
                             <div>
                                 <label class="text-[11px] font-bold text-gray-500 uppercase">Tanggal Lahir</label>
-                                <input id="date_birthday" type="date" name="date_birthday" value="{{ old('date_birthday') }}" required class="w-full mt-2 px-3 py-2 bg-gray-50 border-none rounded-lg text-sm focus:ring-2 focus:ring-blue-500 persist validate-field">
+                                <input id="date_birthday" type="date" name="date_birthday" value="{{ old('date_birthday') }}" required class="w-full mt-2 px-3 py-2.5 bg-gray-50 border-none rounded-lg text-sm focus:ring-2 focus:ring-blue-500 persist validate-field">
                             </div>
-                            <div class="lg:col-span-2">
+                            <div>
+                                <label class="text-[11px] font-bold text-gray-500 uppercase">Umur</label>
+                                <input id="age" type="number" name="age" value="{{ old('age') }}" readonly class="w-full mt-2 px-4 py-2.5 bg-gray-100 border-none rounded-lg text-sm focus:ring-0 cursor-not-allowed" placeholder="0">
+                            </div>
+                            <div>
                                 <label class="text-[11px] font-bold text-gray-500 uppercase">Tempat Lahir</label>
-                                <input id="place_birthday" type="text" name="place_birthday" value="{{ old('place_birthday') }}" required class="w-full mt-2 px-4 py-2.5 bg-gray-50 border-none rounded-lg text-sm focus:ring-2 focus:ring-blue-500 persist validate-field" placeholder="Tempat Lahir Sesuai KTP">
+                                <input id="place_birthday" type="text" name="place_birthday" value="{{ old('place_birthday') }}" required class="w-full mt-2 px-4 py-2.5 bg-gray-50 border-none rounded-lg text-sm focus:ring-2 focus:ring-blue-500 persist validate-field" placeholder="Sesuai KTP">
+                            </div>
+                            <div>
+                                <label class="text-[11px] font-bold text-indigo-500 uppercase">Ukuran Baju</label>
+                                <select name="clothing_size" id="clothing_size" required class="w-full mt-2 px-3 py-2.5 bg-indigo-50 border-none rounded-lg text-sm focus:ring-2 focus:ring-indigo-500 persist validate-field">
+                                    <option value="" disabled selected>Pilih Ukuran Baju</option>
+                                    @foreach(['XS', 'S', 'M', 'L', 'XL', 'XXL', 'XXXL', 'XXXXL', '4XL', '5XL', '6XL', '7XL', '8XL', '9XL', '10XL'] as $size)
+                                    <option value="{{ $size }}" {{ old('clothing_size') == $size ? 'selected' : '' }}>{{ $size }}</option>
+                                    @endforeach
+                                </select>
+                            </div>
+                            <div>
+                                <label class="text-[11px] font-bold text-indigo-500 uppercase">Ukuran Sepatu</label>
+                                <select name="shoe_size" id="shoe_size" required class="w-full mt-2 px-3 py-2.5 bg-indigo-50 border-none rounded-lg text-sm focus:ring-2 focus:ring-indigo-500 persist validate-field">
+                                    <option value="" disabled selected>Pilih Ukuran Sepatu</option>
+                                    @for($i = 35; $i <= 50; $i++)
+                                        <option value="{{ $i }}" {{ old('shoe_size') == $i ? 'selected' : '' }}>{{ $i }}</option>
+                                        @endfor
+                                </select>
                             </div>
                         </div>
                     </section>
 
+                    {{-- SECTION 5: ALAMAT & GPS --}}
                     <section>
                         <div class="flex items-center gap-2 mb-4 pt-4 border-t border-gray-100">
                             <span class="p-1.5 bg-blue-50 text-darkblue rounded-lg">
@@ -206,19 +333,13 @@
                             <div>
                                 <label class="text-[11px] font-bold text-gray-500 uppercase">Provinsi</label>
                                 <select name="province" id="province" required class="w-full mt-2 px-3 py-2.5 bg-gray-50 border-none rounded-lg text-sm focus:ring-2 focus:ring-blue-500 persist validate-field">
-                                    <option value="" disabled selected>Pilih Provinsi</option>
-                                    @foreach(['Bali'] as $kec)
-                                    <option value="{{ $kec }}" {{ old('province') == $kec ? 'selected' : '' }}>{{ $kec }}</option>
-                                    @endforeach
+                                    <option value="Bali" selected>Bali</option>
                                 </select>
                             </div>
                             <div>
                                 <label class="text-[11px] font-bold text-gray-500 uppercase">Kabupaten</label>
                                 <select name="regency" id="regency" required class="w-full mt-2 px-3 py-2.5 bg-gray-50 border-none rounded-lg text-sm focus:ring-2 focus:ring-blue-500 persist validate-field">
-                                    <option value="" disabled selected>Pilih Kabupaten</option>
-                                    @foreach(['Buleleng'] as $kec)
-                                    <option value="{{ $kec }}" {{ old('regency') == $kec ? 'selected' : '' }}>{{ $kec }}</option>
-                                    @endforeach
+                                    <option value="Buleleng" selected>Buleleng</option>
                                 </select>
                             </div>
                             <div>
@@ -246,6 +367,7 @@
                         </div>
                     </section>
 
+                    {{-- SECTION 6: PAS FOTO --}}
                     <section class="pb-6">
                         <div class="flex items-center gap-2 mb-4 pt-4 border-t border-gray-100">
                             <span class="p-1.5 bg-blue-50 text-darkblue rounded-lg">
@@ -281,7 +403,6 @@
                         </button>
                     </div>
 
-
                     <div class="mt-8 md:mt-auto pt-8 pb-4 text-center">
                         <div class="text-xs text-gray-400 border-t pt-4">
                             <p>© {{ now()->format('Y') }} - Tim Data SPPI Buleleng Bali</p>
@@ -293,6 +414,7 @@
         </div>
     </div>
 
+    {{-- MODAL CROPPER --}}
     <div id="cropperModal" class="fixed inset-0 z-[100] hidden flex items-center justify-center p-4">
         <div class="bg-white rounded-2xl shadow-2xl w-full max-w-2xl overflow-hidden">
             <div class="p-6 border-b bg-gray-50">
@@ -317,6 +439,8 @@
             const persistFields = document.querySelectorAll('.persist');
             const dropArea = document.getElementById('drop-area');
             const photoInput = document.getElementById('photo');
+            const dateBirthdayInput = document.getElementById('date_birthday');
+            const ageInput = document.getElementById('age');
 
             // --- 1. PERSISTENCE LOGIC ---
             persistFields.forEach(field => {
@@ -326,7 +450,6 @@
                 }
                 field.addEventListener('input', () => {
                     localStorage.setItem('profile_' + (field.id || field.name), field.value);
-                    // Hapus error saat mengetik
                     if (field.value.trim() !== "") clearError(field);
                 });
             });
@@ -334,31 +457,25 @@
             // --- 2. MAP LOGIC ---
             const coordsField = document.getElementById('gps_coordinates');
             const savedCoords = localStorage.getItem('profile_gps_coordinates');
-
-            // Cek apakah ada koordinat tersimpan, jika tidak pakai default Buleleng
             let initialCoords = [-8.112, 115.091];
             if (savedCoords && savedCoords.includes(',')) {
                 const parts = savedCoords.split(',');
                 initialCoords = [parseFloat(parts[0]), parseFloat(parts[1])];
-                coordsField.value = savedCoords; // Pastikan input teks terisi
+                coordsField.value = savedCoords;
             }
 
-            const map = L.map('map').setView(initialCoords, 12); // Zoom lebih dekat jika ada titik
+            const map = L.map('map').setView(initialCoords, 12);
             L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png').addTo(map);
 
             let marker;
 
-            // FUNGSI UNTUK MENARUH TITIK
             function placeMarker(latlng) {
                 if (marker) map.removeLayer(marker);
                 marker = L.marker(latlng).addTo(map);
                 map.panTo(latlng);
             }
 
-            // Munculkan titik otomatis saat refresh jika data ada
-            if (savedCoords) {
-                placeMarker(initialCoords);
-            }
+            if (savedCoords) placeMarker(initialCoords);
 
             map.on('click', function(e) {
                 const {
@@ -371,7 +488,32 @@
                 clearError(coordsField);
             });
 
-            // --- 3. DRAG N DROP LOGIC (FIXED) ---
+            // --- 3. AUTO AGE CALCULATION ---
+            function calculateAge(birthDateValue) {
+                if (!birthDateValue) return "";
+                const birthDate = new Date(birthDateValue);
+                const today = new Date();
+                let age = today.getFullYear() - birthDate.getFullYear();
+                const m = today.getMonth() - birthDate.getMonth();
+                if (m < 0 || (m === 0 && today.getDate() < birthDate.getDate())) {
+                    age--;
+                }
+                return age;
+            }
+
+            dateBirthdayInput.addEventListener('change', function() {
+                const age = calculateAge(this.value);
+                ageInput.value = age;
+                localStorage.setItem('profile_age', age);
+            });
+
+            // Sync umur saat load/refresh
+            const currentBirthDate = localStorage.getItem('profile_date_birthday') || dateBirthdayInput.value;
+            if (currentBirthDate) {
+                ageInput.value = calculateAge(currentBirthDate);
+            }
+
+            // --- 4. DRAG N DROP LOGIC ---
             ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
                 dropArea.addEventListener(eventName, e => {
                     e.preventDefault();
@@ -395,7 +537,7 @@
                 }
             }, false);
 
-            // --- 4. FILE & CROPPER LOGIC ---
+            // --- 5. FILE & CROPPER LOGIC ---
             let cropper;
             const imageToCrop = document.getElementById('image-to-crop');
             const applyBtn = document.getElementById('apply-crop');
@@ -422,14 +564,13 @@
             }
 
             function openCropper(imageSrc) {
-                const imageToCrop = document.getElementById('image-to-crop');
                 imageToCrop.src = imageSrc;
                 document.getElementById('cropperModal').classList.remove('hidden');
 
                 if (cropper) cropper.destroy();
 
                 cropper = new Cropper(imageToCrop, {
-                    aspectRatio: 2 / 3, // Rasio 4x6
+                    aspectRatio: 2 / 3,
                     viewMode: 2,
                     dragMode: 'move',
                     autoCropArea: 1,
@@ -449,62 +590,30 @@
                 }
             });
 
-            document.getElementById('apply-crop').addEventListener('click', () => {
-                // Simpan koordinat area seleksi terakhir
+            applyBtn.addEventListener('click', () => {
                 lastCropData = cropper.getData();
-
                 const canvas = cropper.getCroppedCanvas({
                     width: 400,
                     height: 600
                 });
 
                 canvas.toBlob((blob) => {
-                    // --- GENERATE NAMA FILE ACAK (LARAVEL STYLE) ---
-                    // Menghasilkan string acak sepanjang 40 karakter
                     const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
                     let randomString = '';
                     for (let i = 0; i < 40; i++) {
                         randomString += chars.charAt(Math.floor(Math.random() * chars.length));
                     }
-
                     const uniqueFileName = `${randomString}.jpg`;
-
                     const croppedFile = new File([blob], uniqueFileName, {
                         type: "image/jpeg"
                     });
                     const dataTransfer = new DataTransfer();
                     dataTransfer.items.add(croppedFile);
 
-                    // Masukkan file ke input photo asli
                     photoInput.files = dataTransfer.files;
-
-                    // Perbarui pratinjau
                     const previewImg = document.getElementById('cropped-preview');
                     previewImg.src = URL.createObjectURL(croppedFile);
 
-                    document.getElementById('preview-container').classList.remove('hidden');
-                    document.getElementById('cropperModal').classList.add('hidden');
-
-                    // Bersihkan error validasi
-                    clearError(photoInput);
-
-                }, 'image/jpeg');
-            });
-
-            applyBtn.addEventListener('click', () => {
-                const canvas = cropper.getCroppedCanvas({
-                    width: 600,
-                    height: 600
-                });
-                canvas.toBlob((blob) => {
-                    const croppedFile = new File([blob], "photo.jpg", {
-                        type: "image/jpeg"
-                    });
-                    const dataTransfer = new DataTransfer();
-                    dataTransfer.items.add(croppedFile);
-                    photoInput.files = dataTransfer.files; // Assign file ke input asli
-
-                    document.getElementById('cropped-preview').src = URL.createObjectURL(croppedFile);
                     document.getElementById('preview-container').classList.remove('hidden');
                     document.getElementById('cropperModal').classList.add('hidden');
                     clearError(photoInput);
@@ -516,20 +625,17 @@
                 photoInput.value = "";
             });
 
-            // --- 5. SMART VALIDATION & ERROR HANDLING ---
+            // --- 6. SMART VALIDATION & ERROR HANDLING ---
             function showError(field, message) {
+                // Clear existing error message for this field to prevent duplicates
                 clearError(field);
-                field.classList.add('is-invalid');
 
-                // Logic pencarian label yang lebih kuat:
-                // 1. Cek label di parentElement (untuk input teks biasa)
-                // 2. Cek label di section terdekat (khusus untuk struktur Pas Foto)
+                field.classList.add('is-invalid');
                 let labelText = "Field";
                 const parentLabel = field.parentElement.querySelector('label');
                 const sectionLabel = field.closest('section')?.querySelector('h3');
 
                 if (labelName = field.getAttribute('data-label')) {
-                    // Gunakan data-label jika ada (paling akurat)
                     labelText = labelName;
                 } else if (parentLabel) {
                     labelText = parentLabel.innerText;
@@ -545,7 +651,6 @@
                 errorDisplay.className = 'error-msg text-red-500 text-[10px] mt-2 font-bold italic';
                 errorDisplay.innerText = `* ${labelText}: ${message}`;
 
-                // Khusus photo, taruh di bawah drop area agar rapi
                 if (field.id === 'photo') {
                     dropArea.after(errorDisplay);
                 } else {
@@ -556,8 +661,18 @@
             function clearError(field) {
                 field.classList.remove('is-invalid');
                 if (field.id === 'photo') dropArea.classList.remove('is-invalid');
-                const existingError = field.parentElement.querySelector('.error-msg');
-                if (existingError) existingError.remove();
+
+                // Find and remove error message specifically associated with this field
+                let existingError;
+                if (field.id === 'photo') {
+                    existingError = dropArea.nextElementSibling;
+                } else {
+                    existingError = field.parentElement.querySelector('.error-msg');
+                }
+
+                if (existingError && existingError.classList.contains('error-msg')) {
+                    existingError.remove();
+                }
             }
 
             form.addEventListener('submit', function(e) {
@@ -580,7 +695,6 @@
 
                 if (!isFormValid) {
                     e.preventDefault();
-                    // Scroll ke error pertama agar terlihat
                     const firstError = document.querySelector('.is-invalid');
                     if (firstError) {
                         firstError.scrollIntoView({
@@ -589,8 +703,9 @@
                         });
                     }
                 } else {
-                    // Jika sukses, hapus data lokal
                     persistFields.forEach(field => localStorage.removeItem('profile_' + (field.id || field.name)));
+                    localStorage.removeItem('profile_age');
+                    localStorage.removeItem('profile_gps_coordinates');
                 }
             });
         });

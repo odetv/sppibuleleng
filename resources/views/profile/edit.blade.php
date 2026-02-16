@@ -13,15 +13,15 @@
     </x-slot>
 
     @if ($errors->any())
-    <div class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative mb-4">
+    <div class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative mb-4 mx-4">
         <strong>Error Validasi:</strong>
-        <ul>
+        <ul class="text-xs">
             @foreach ($errors->all() as $error)
-                <li>- {{ $error }}</li>
+            <li>- {{ $error }}</li>
             @endforeach
         </ul>
     </div>
-@endif
+    @endif
 
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.13/cropper.min.css">
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
@@ -65,6 +65,7 @@
                     @method('patch')
 
                     <div class="flex flex-col lg:flex-row gap-12">
+                        {{-- BAGIAN FOTO --}}
                         <div class="shrink-0 flex flex-col items-center gap-4">
                             <label class="text-[11px] font-bold text-gray-500 uppercase tracking-wider">Pas Foto (4x6)</label>
                             <div class="relative group">
@@ -85,12 +86,13 @@
                             <p class="text-[10px] text-slate-400 italic text-center max-w-[160px]">Format: JPG, PNG. Maks 2MB.</p>
                         </div>
 
+                        {{-- BAGIAN INPUT UTAMA --}}
                         <div class="flex-1 grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-6">
                             <div>
                                 <label class="text-[11px] font-bold text-gray-500 uppercase tracking-wider">Email Akun</label>
-                                <input type="email" name="email" value="{{ Auth::user()->email }}" 
-                                    class="w-full mt-2 px-4 py-2.5 bg-slate-100 border-none rounded-lg text-sm text-slate-400 cursor-not-allowed" 
-                                    readonly>
+                                <input type="email" name="email" value="{{ Auth::user()->email }}"
+                                    class="w-full mt-2 px-4 py-2.5 bg-slate-100 border-none rounded-lg text-sm text-slate-400 cursor-not-allowed"
+                                    readonly title="Email tidak dapat diubah">
                             </div>
                             <div>
                                 <label class="text-[11px] font-bold text-gray-500 uppercase tracking-wider">Nama Lengkap (Sesuai KTP)</label>
@@ -105,17 +107,52 @@
                                 <input type="number" name="no_kk" value="{{ old('no_kk', Auth::user()->person->no_kk ?? '') }}" class="w-full mt-2 px-4 py-2.5 bg-gray-50 border-none rounded-lg text-sm focus:ring-2 focus:ring-indigo-500 transition-all">
                             </div>
                             <div>
+                                <label class="text-[11px] font-bold text-gray-500 uppercase tracking-wider">NIP</label>
+                                <input type="number" name="nip" value="{{ old('nip', Auth::user()->person->nip ?? '') }}" class="w-full mt-2 px-4 py-2.5 bg-gray-50 border-none rounded-lg text-sm focus:ring-2 focus:ring-indigo-500 transition-all">
+                            </div>
+                            <div>
                                 <label class="text-[11px] font-bold text-gray-500 uppercase tracking-wider">NPWP</label>
-                                <input type="text" name="npwp" value="{{ old('npwp', Auth::user()->person->npwp ?? '') }}" class="w-full mt-2 px-4 py-2.5 bg-gray-50 border-none rounded-lg text-sm focus:ring-2 focus:ring-indigo-500 transition-all">
+                                <input type="number" name="npwp" value="{{ old('npwp', Auth::user()->person->npwp ?? '') }}" class="w-full mt-2 px-4 py-2.5 bg-gray-50 border-none rounded-lg text-sm focus:ring-2 focus:ring-indigo-500 transition-all">
                             </div>
                             <div>
                                 <label class="text-[11px] font-bold text-gray-500 uppercase tracking-wider">Gelar Belakang</label>
                                 <input type="text" name="title_education" value="{{ old('title_education', Auth::user()->person->title_education ?? '') }}" class="w-full mt-2 px-4 py-2.5 bg-gray-50 border-none rounded-lg text-sm focus:ring-2 focus:ring-indigo-500 transition-all" placeholder="Cth: S.Kom">
                             </div>
+                            {{-- TAMBAHAN: PENDIDIKAN --}}
+                            <div>
+                                <label class="text-[11px] font-bold text-gray-500 uppercase tracking-wider">Pendidikan Terakhir</label>
+                                <select name="last_education" class="w-full mt-2 px-4 py-2.5 bg-gray-50 border-none rounded-lg text-sm focus:ring-2 focus:ring-indigo-500 transition-all">
+                                    @foreach(['D-III', 'D-IV', 'S-1', 'S-2'] as $edu)
+                                    <option value="{{ $edu }}" {{ old('last_education', Auth::user()->person->last_education ?? '') == $edu ? 'selected' : '' }}>{{ $edu }}</option>
+                                    @endforeach
+                                </select>
+                            </div>
+                            <div>
+                                <label class="text-[11px] font-bold text-gray-500 uppercase tracking-wider">Jurusan</label>
+                                <input type="text" name="major_education" value="{{ old('major_education', Auth::user()->person->major_education ?? '') }}" class="w-full mt-2 px-4 py-2.5 bg-gray-50 border-none rounded-lg text-sm focus:ring-2 focus:ring-indigo-500 transition-all" placeholder="Teknik Informatika">
+                            </div>
                             <div>
                                 <label class="text-[11px] font-bold text-gray-500 uppercase tracking-wider">Nomor Telepon/WA</label>
                                 <input type="text" name="phone" value="{{ old('phone', Auth::user()->phone ?? '') }}" class="w-full mt-2 px-4 py-2.5 bg-gray-50 border-none rounded-lg text-sm focus:ring-2 focus:ring-indigo-500 transition-all">
                             </div>
+                            {{-- TAMBAHAN: UNIT PENEMPATAN --}}
+                            <div>
+                                <label class="text-[11px] font-bold text-gray-500 uppercase tracking-wider">Unit Penugasan</label>
+                                <select name="id_work_assignment" class="w-full mt-2 px-4 py-2.5 bg-gray-50 border-none rounded-lg text-sm focus:ring-2 focus:ring-indigo-500 transition-all">
+                                    <option value="">Pilih Penugasan</option>
+                                    @foreach($workAssignments as $wa)
+                                    <option value="{{ $wa->id_work_assignment }}" {{ old('id_work_assignment', Auth::user()->person->id_work_assignment ?? '') == $wa->id_work_assignment ? 'selected' : '' }}>
+                                        {{ $wa->sppgUnit->name }}
+                                    </option>
+                                    @endforeach
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+
+                    {{-- TAMBAHAN: INFORMASI PRIBADI & ATRIBUT --}}
+                    <div class="pt-10 border-t border-gray-100">
+                        <div class="grid grid-cols-1 md:grid-cols-4 gap-8">
                             <div>
                                 <label class="text-[11px] font-bold text-gray-500 uppercase tracking-wider">Agama</label>
                                 <select name="religion" class="w-full mt-2 px-4 py-2.5 bg-gray-50 border-none rounded-lg text-sm focus:ring-2 focus:ring-indigo-500 transition-all">
@@ -140,6 +177,37 @@
                                 </select>
                             </div>
                             <div>
+                                <label class="text-[11px] font-bold text-gray-500 uppercase tracking-wider">Batch</label>
+                                <select name="batch" class="w-full mt-2 px-4 py-2.5 bg-gray-50 border-none rounded-lg text-sm focus:ring-2 focus:ring-indigo-500 transition-all">
+                                    @foreach(['1', '2', '3', 'Non-SPPI'] as $b)
+                                    <option value="{{ $b }}" {{ old('batch', Auth::user()->person->batch ?? '') == $b ? 'selected' : '' }}>{{ $b }}</option>
+                                    @endforeach
+                                </select>
+                            </div>
+                            <div>
+                                <label class="text-[11px] font-bold text-gray-500 uppercase tracking-wider">Status Kerja</label>
+                                <select name="employment_status" class="w-full mt-2 px-4 py-2.5 bg-gray-50 border-none rounded-lg text-sm focus:ring-2 focus:ring-indigo-500 transition-all">
+                                    <option value="ASN" {{ old('employment_status', Auth::user()->person->employment_status ?? '') == 'ASN' ? 'selected' : '' }}>ASN</option>
+                                    <option value="Non-ASN" {{ old('employment_status', Auth::user()->person->employment_status ?? '') == 'Non-ASN' ? 'selected' : '' }}>Non-ASN</option>
+                                </select>
+                            </div>
+                            <div>
+                                <label class="text-[11px] font-bold text-gray-500 uppercase tracking-wider">Ukuran Baju</label>
+                                <select name="clothing_size" class="w-full mt-2 px-4 py-2.5 bg-gray-50 border-none rounded-lg text-sm focus:ring-2 focus:ring-indigo-500 transition-all">
+                                    @foreach(['XS', 'S', 'M', 'L', 'XL', 'XXL', 'XXXL', '4XL', '5XL'] as $size)
+                                    <option value="{{ $size }}" {{ old('clothing_size', Auth::user()->person->clothing_size ?? '') == $size ? 'selected' : '' }}>{{ $size }}</option>
+                                    @endforeach
+                                </select>
+                            </div>
+                            <div>
+                                <label class="text-[11px] font-bold text-gray-500 uppercase tracking-wider">Ukuran Sepatu</label>
+                                <select name="shoe_size" class="w-full mt-2 px-4 py-2.5 bg-gray-50 border-none rounded-lg text-sm focus:ring-2 focus:ring-indigo-500 transition-all">
+                                    @for($i=35; $i<=50; $i++)
+                                    <option value="{{ $i }}" {{ old('shoe_size', Auth::user()->person->shoe_size ?? '') == $i ? 'selected' : '' }}>{{ $i }}</option>
+                                    @endfor
+                                </select>
+                            </div>
+                            <div>
                                 <label class="text-[11px] font-bold text-gray-500 uppercase tracking-wider">Tempat Lahir</label>
                                 <input type="text" name="place_birthday" value="{{ old('place_birthday', Auth::user()->person->place_birthday ?? '') }}" class="w-full mt-2 px-4 py-2.5 bg-gray-50 border-none rounded-lg text-sm focus:ring-2 focus:ring-indigo-500 transition-all">
                             </div>
@@ -150,6 +218,38 @@
                         </div>
                     </div>
 
+                    {{-- TAMBAHAN: PAYROLL INFO --}}
+                    <div class="pt-10 border-t border-gray-100">
+                        <div class="flex items-center gap-2 mb-6 text-indigo-600">
+                            <span class="p-1.5 bg-indigo-50 rounded-lg">
+                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path d="M17 9V7a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2m2 4h10a2 2 0 002-2v-6a2 2 0 00-2-2H9a2 2 0 00-2 2v6a2 2 0 002 2zm7-5a2 2 0 11-4 0 2 2 0 014 0z" />
+                                </svg>
+                            </span>
+                            <h3 class="text-sm font-bold uppercase tracking-widest text-slate-800">Informasi Payroll</h3>
+                        </div>
+                        <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+                            <div>
+                                <label class="text-[11px] font-bold text-gray-500 uppercase tracking-wider">Nama Bank</label>
+                                <select name="payroll_bank_name" class="w-full mt-2 px-4 py-2.5 bg-gray-50 border-none rounded-lg text-sm focus:ring-2 focus:ring-indigo-500 transition-all">
+                                    <option value="" disabled>Pilih Bank</option>
+                                    @foreach(['BNI', 'Mandiri', 'BCA', 'BTN', 'BSI', 'BPD Bali'] as $bank)
+                                    <option value="{{ $bank }}" {{ old('payroll_bank_name', Auth::user()->person->payroll_bank_name ?? '') == $bank ? 'selected' : '' }}>{{ $bank }}</option>
+                                    @endforeach
+                                </select>
+                            </div>
+                            <div>
+                                <label class="text-[11px] font-bold text-gray-500 uppercase tracking-wider">Nomor Rekening</label>
+                                <input type="number" name="payroll_bank_account_number" value="{{ old('payroll_bank_account_number', Auth::user()->person->payroll_bank_account_number ?? '') }}" class="w-full mt-2 px-4 py-2.5 bg-gray-50 border-none rounded-lg text-sm focus:ring-2 focus:ring-indigo-500 transition-all">
+                            </div>
+                            <div>
+                                <label class="text-[11px] font-bold text-gray-500 uppercase tracking-wider">Nama Pemilik Rekening</label>
+                                <input type="text" name="payroll_bank_account_name" value="{{ old('payroll_bank_account_name', Auth::user()->person->payroll_bank_account_name ?? '') }}" class="w-full mt-2 px-4 py-2.5 bg-gray-50 border-none rounded-lg text-sm focus:ring-2 focus:ring-indigo-500 transition-all">
+                            </div>
+                        </div>
+                    </div>
+
+                    {{-- DOMISILI & MAP --}}
                     <div class="pt-10 border-t border-gray-100">
                         <div class="flex items-center gap-2 mb-6 text-emerald-600">
                             <span class="p-1.5 bg-emerald-50 rounded-lg">
@@ -166,21 +266,15 @@
                                     <div>
                                         <label class="text-[11px] font-bold text-gray-400 uppercase tracking-wider">Provinsi</label>
                                         <select name="province" class="w-full mt-2 px-4 py-2.5 bg-gray-50 border-none rounded-lg text-sm focus:ring-2 focus:ring-indigo-500 transition-all">
-                                            @foreach(['Bali'] as $kec)
-                                            <option value="{{ $kec }}" {{ old('province', Auth::user()->person->province ?? '') == $kec ? 'selected' : '' }}>{{ $kec }}</option>
-                                            @endforeach
+                                            <option value="Bali" selected>Bali</option>
                                         </select>
                                     </div>
                                     <div>
                                         <label class="text-[11px] font-bold text-gray-400 uppercase tracking-wider">Kabupaten</label>
                                         <select name="regency" class="w-full mt-2 px-4 py-2.5 bg-gray-50 border-none rounded-lg text-sm focus:ring-2 focus:ring-indigo-500 transition-all">
-                                            @foreach(['Buleleng'] as $kec)
-                                            <option value="{{ $kec }}" {{ old('regency', Auth::user()->person->regency ?? '') == $kec ? 'selected' : '' }}>{{ $kec }}</option>
-                                            @endforeach
+                                            <option value="Buleleng" selected>Buleleng</option>
                                         </select>
                                     </div>
-                                </div>
-                                <div class="grid grid-cols-2 gap-4">
                                     <div>
                                         <label class="text-[11px] font-bold text-gray-400 uppercase tracking-wider">Kecamatan</label>
                                         <select name="district" class="w-full mt-2 px-4 py-2.5 bg-gray-50 border-none rounded-lg text-sm focus:ring-2 focus:ring-indigo-500 transition-all">
@@ -199,7 +293,7 @@
                                     <textarea name="address" rows="3" class="w-full mt-2 px-4 py-2.5 bg-gray-50 border-none rounded-lg text-sm focus:ring-2 focus:ring-indigo-500 transition-all">{{ old('address', Auth::user()->person->address ?? '') }}</textarea>
                                 </div>
                                 <div>
-                                    <label class="text-[11px] font-bold text-indigo-600 uppercase tracking-wider">Koordinat GPS (Klik Peta)</label>
+                                    <label class="text-[11px] font-bold text-gray-400 uppercase tracking-wider">Koordinat GPS (Klik Pada Peta)</label>
                                     <input type="text" id="gps_coordinates" name="gps_coordinates" value="{{ old('gps_coordinates', Auth::user()->person->gps_coordinates ?? '') }}" readonly class="w-full mt-2 px-4 py-2 bg-indigo-50 text-indigo-700 font-mono text-[11px] rounded-lg border-none focus:ring-0 cursor-default">
                                 </div>
                             </div>
@@ -253,6 +347,7 @@
         </div>
     </div>
 
+    {{-- MODAL CROPPER --}}
     <div id="cropperModal" class="fixed inset-0 hidden flex items-center justify-center p-4">
         <div class="bg-white rounded-2xl shadow-2xl w-full max-w-xl overflow-hidden">
             <div class="p-6 border-b bg-gray-50 flex justify-between items-center">

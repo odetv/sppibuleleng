@@ -10,7 +10,6 @@ class PositionController extends Controller
 {
     public function index()
     {
-        // Mengambil semua data jabatan
         $positions = RefPosition::all();
         return view('admin.positions.index', compact('positions'));
     }

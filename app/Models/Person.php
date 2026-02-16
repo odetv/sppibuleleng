@@ -14,18 +14,25 @@ class Person extends Model
     protected $table = 'persons';
     protected $primaryKey = 'id_person';
 
-    /**
-     * fillable harus menyertakan id_ref_position agar data jabatan 
-     * bisa disimpan, dan id_user dihapus karena kolomnya sudah 
-     * pindah ke tabel users.
-     */
     protected $fillable = [
         'id_ref_position',
+        'id_work_assignment',
         'nik',
         'no_kk',
+        'nip',
+        'npwp',
         'name',
         'photo',
         'title_education',
+        'last_education',
+        'major_education',
+        'clothing_size',
+        'shoe_size',
+        'batch',
+        'employment_status',
+        'payroll_bank_name',
+        'payroll_bank_account_number',
+        'payroll_bank_account_name',
         'gender',
         'place_birthday',
         'date_birthday',
@@ -38,25 +45,20 @@ class Person extends Model
         'province',
         'address',
         'gps_coordinates',
-        'npwp'
     ];
 
-    /**
-     * Relasi ke Tabel Posisi (Jabatan)
-     * Ini yang dibutuhkan agar Sidebar bisa menampilkan 'Korwil', 'SPPI', dll.
-     */
     public function position(): BelongsTo
     {
         return $this->belongsTo(RefPosition::class, 'id_ref_position', 'id_ref_position');
     }
 
-    /**
-     * Relasi ke User
-     * Karena di database Anda id_person ada di tabel 'users',
-     * maka model Person 'hasOne' (memiliki satu) User. 
-     */
     public function user(): HasOne
     {
         return $this->hasOne(User::class, 'id_person', 'id_person');
+    }
+
+    public function workAssignment(): BelongsTo
+    {
+        return $this->belongsTo(WorkAssignment::class, 'id_work_assignment', 'id_work_assignment');
     }
 }

@@ -27,7 +27,7 @@
         <div class="relative" x-data="{ dropdownOpen: false }" @click.away="dropdownOpen = false">
             <button @click.prevent="dropdownOpen = !dropdownOpen" class="flex items-center gap-4 focus:outline-none cursor-pointer">
                 <span class="hidden text-right lg:block">
-                    <span class="block text-sm font-medium text-slate-800 leading-none">{{ Auth::user()->person->name }}</span>
+                    <span class="block text-sm font-semibold text-slate-800 leading-none">{{ Auth::user()->person->name }}</span>
                 </span>
 
                 <div class="h-11 w-11 rounded-full border border-gray-200 p-0.5 overflow-hidden">
@@ -56,8 +56,8 @@
                 x-cloak>
 
                 <div class="px-6 py-4 border-b border-slate-100 bg-slate-50/50">
-                    <p class="text-sm font-medium text-slate-800">{{ Auth::user()->person->name }}</p>
-                    <p class="text-[11px] text-slate-500 truncate mt-0.5">{{ Auth::user()->email }}</p>
+                    <p class="text-sm font-semibold text-slate-800">{{ Auth::user()->person->name }}</p>
+                    <p class="text-xs text-slate-500 truncate mt-0.5">{{ Auth::user()->email }}</p>
                     <div class="mt-1">
                         <span class="inline-flex items-center px-2 py-0.5 rounded text-[10px] font-bold bg-green-100 text-green-700 uppercase tracking-wider">
                             {{ auth()->user()->person->position->name_position ?? 'No Position' }} </span>

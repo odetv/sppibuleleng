@@ -7,6 +7,7 @@ use App\Models\Person;
 use App\Models\RefPosition;
 use App\Models\RefRole;
 use App\Models\User;
+use App\Models\WorkAssignment;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
@@ -22,17 +23,14 @@ class UserController extends Controller
             'incomplete' => User::whereNull('id_person')->count(),
         ];
 
-        // Ambil data antrian (pending)
-        $users = User::with(['person.position', 'role'])
+        $users = User::with(['person.position', 'person.workAssignment.sppgUnit', 'person.workAssignment.decree', 'role'])
             ->where('status_user', 'pending')
             ->whereNotNull('id_person')
             ->latest()
             ->get();
 
-        // Ambil semua data untuk database utama
-        $allUsers = User::with(['person.position', 'role'])->latest()->get();
+        $allUsers = User::with(['person.position', 'person.workAssignment.sppgUnit', 'role'])->latest()->get();
 
-        // Ambil data yang sudah di soft delete (relasi person harus withTrashed)
         $trashedUsers = User::onlyTrashed()->with(['person' => function ($query) {
             $query->withTrashed();
         }, 'role'])->latest()->get();
@@ -40,7 +38,17 @@ class UserController extends Controller
         $roles = RefRole::all();
         $positions = RefPosition::all();
 
-        return view('admin.users.index', compact('users', 'allUsers', 'trashedUsers', 'stats', 'roles', 'positions'));
+        $workAssignments = WorkAssignment::with(['sppgUnit', 'decree'])->get();
+
+        return view('admin.users.index', compact(
+            'users',
+            'allUsers',
+            'trashedUsers',
+            'stats',
+            'roles',
+            'positions',
+            'workAssignments'
+        ));
     }
 
     public function update(Request $request, $id)
@@ -49,9 +57,13 @@ class UserController extends Controller
             'name' => 'required|string|max:255',
             'email' => 'required|email|unique:users,email,' . $id . ',id_user',
             'id_ref_role' => 'required',
-            'id_ref_position' => 'required',
+            'id_ref_position' => 'nullable',
+            'id_work_assignment' => 'nullable|exists:work_assignments,id_work_assignment',
             'photo' => 'nullable|image|max:2048',
             'date_birthday' => 'nullable|date',
+            'batch' => 'nullable|in:1,2,3,Non-SPPI',
+            'employment_status' => 'nullable|in:ASN,Non-ASN',
+            'last_education' => 'nullable|in:D-III,D-IV,S-1',
         ]);
 
         $user = User::findOrFail($id);
@@ -67,7 +79,9 @@ class UserController extends Controller
 
             if ($user->id_person) {
                 $person = Person::findOrFail($user->id_person);
-                $data = $request->except(['photo', '_token', '_method']);
+
+                // Ambil semua input kecuali yang spesifik tabel users
+                $data = $request->except(['photo', '_token', '_method', 'email', 'phone', 'id_ref_role']);
 
                 if ($request->filled('date_birthday')) {
                     $data['age'] = \Carbon\Carbon::parse($request->date_birthday)->age;
@@ -80,11 +94,12 @@ class UserController extends Controller
                     $data['photo'] = $request->file('photo')->store('photos', 'public');
                 }
 
+                // Update data person (termasuk id_work_assignment & id_ref_position)
                 $person->update($data);
             }
 
             DB::commit();
-            return back()->with('success', 'Data pengguna berhasil diperbarui.');
+            return back()->with('success', 'Data pengguna dan plotting penugasan berhasil diperbarui.');
         } catch (\Exception $e) {
             DB::rollBack();
             return back()->with('error', 'Gagal memperbarui data: ' . $e->getMessage());
@@ -215,17 +230,36 @@ class UserController extends Controller
 
     public function approve(Request $request, $id)
     {
+        // Saat approve, admin bisa langsung set Role dan Jabatannya
         $request->validate([
-            'id_ref_role' => 'required|exists:ref_roles,id_ref_role'
+            'id_ref_role' => 'required|exists:ref_roles,id_ref_role',
+            'id_ref_position' => 'nullable|exists:ref_positions,id_ref_position',
+            'id_work_assignment' => 'nullable|exists:work_assignments,id_work_assignment',
         ]);
 
         $user = User::findOrFail($id);
-        $user->update([
-            'status_user' => 'active',
-            'id_ref_role' => $request->id_ref_role
-        ]);
 
-        return back()->with('success', "Akun {$user->email} berhasil diaktifkan.");
+        try {
+            DB::beginTransaction();
+
+            $user->update([
+                'status_user' => 'active',
+                'id_ref_role' => $request->id_ref_role
+            ]);
+
+            if ($user->id_person) {
+                $user->person->update([
+                    'id_ref_position' => $request->id_ref_position,
+                    'id_work_assignment' => $request->id_work_assignment
+                ]);
+            }
+
+            DB::commit();
+            return back()->with('success', "Akun {$user->email} berhasil diaktifkan dan di-plotting.");
+        } catch (\Exception $e) {
+            DB::rollBack();
+            return back()->with('error', 'Gagal verifikasi: ' . $e->getMessage());
+        }
     }
 
     public function approveAll(Request $request)
