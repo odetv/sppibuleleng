@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Admin;
 
+use App\Exports\UserTemplateExport;
 use App\Http\Controllers\Controller;
 use App\Models\Person;
 use App\Models\RefPosition;
@@ -10,7 +11,9 @@ use App\Models\User;
 use App\Models\WorkAssignment;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Storage;
+use Maatwebsite\Excel\Facades\Excel;
 
 class UserController extends Controller
 {
@@ -49,6 +52,116 @@ class UserController extends Controller
             'positions',
             'workAssignments'
         ));
+    }
+
+    public function checkAvailability(Request $request)
+    {
+        $email = $request->query('email');
+        $phone = $request->query('phone');
+
+        // Cek masing-masing secara independen
+        $emailExists = User::where('email', $email)->exists();
+        $phoneExists = User::where('phone', $phone)->exists();
+
+        // Ambil daftar Role ID yang valid
+        $validRoles = RefRole::pluck('id_ref_role')->toArray();
+
+        return response()->json([
+            'email_duplicate' => $emailExists,
+            'phone_duplicate' => $phoneExists,
+            'valid_roles' => $validRoles
+        ]);
+    }
+
+    public function store(Request $request)
+    {
+        $request->validate([
+            'email' => 'required|email|unique:users,email',
+            'phone' => 'required|unique:users,phone',
+            'password' => 'required|min:8|confirmed',
+            'id_ref_role' => 'required'
+        ]);
+
+        // Admin hanya buat Akun (User), tidak buat Person
+        $user = User::create([
+            'email' => $request->email,
+            'phone' => $request->phone,
+            'password' => \Hash::make($request->password),
+            'id_ref_role' => $request->id_ref_role,
+            'status_user' => 'active',
+        ]);
+
+        return back()->with('success', 'Akun berhasil dibuat. Berikan akses login ke pengguna.');
+    }
+
+    public function exportExcel(Request $request)
+    {
+        // Validasi: Harus pilih kolom
+        $request->validate([
+            'columns' => 'required|array|min:1'
+        ], [
+            'columns.required' => 'Pilih minimal satu kolom data yang ingin diekspor!'
+        ]);
+
+        $selectedColumns = $request->input('columns');
+        $fileName = 'DATA_PENGGUNA_SPPI_' . now()->format('d_M_Y_H_i') . '.xlsx';
+
+        // Eksekusi menggunakan class export
+        return Excel::download(
+            new \App\Exports\UsersExport($selectedColumns),
+            $fileName
+        );
+    }
+
+    public function downloadTemplate()
+    {
+        return Excel::download(new UserTemplateExport, 'Template Upload Pengguna.xlsx');
+    }
+
+    public function importUsers(Request $request)
+    {
+        $data = json_decode($request->json_data, true);
+        $mode = $request->import_mode;
+        $adminEmail = auth()->user()->email;
+
+        if (!$data) return back()->with('error', 'Data tidak valid.');
+
+        // Ambil mapping role dari DB: ['administrator' => 1, 'author' => 2, ...]
+        $roleMapping = RefRole::all()->pluck('id_ref_role', 'slug_role')->toArray();
+
+        try {
+            if ($mode === 'replace') {
+                DB::statement('SET FOREIGN_KEY_CHECKS=0;');
+                DB::table('persons')->join('users', 'users.id_person', '=', 'persons.id_person')
+                    ->where('users.email', '!=', $adminEmail)->delete();
+                DB::table('users')->where('email', '!=', $adminEmail)->delete();
+                DB::statement('SET FOREIGN_KEY_CHECKS=1;');
+            }
+
+            DB::transaction(function () use ($data, $roleMapping) {
+                foreach ($data as $row) {
+                    // Konversi Nama Role di Excel ke Slug, lalu cari ID-nya
+                    $roleName = strtolower(trim($row['HAK AKSES (Administrator/Author/Editor/Subscriber/Guest)']));
+                    $roleId = $roleMapping[$roleName] ?? 5; // Default ke Guest (ID 5) jika tidak ditemukan
+
+                    DB::table('users')->insert([
+                        'id_person'   => null,
+                        'email'       => trim($row['EMAIL PENGGUNA']),
+                        'phone'       => trim($row['NOMOR WHATSAPP']),
+                        'id_ref_role' => $roleId,
+                        'password'    => Hash::make($row['PASSWORD']),
+                        'status_user' => 'active',
+                        'created_at'  => now(),
+                        'updated_at'  => now()
+                    ]);
+                }
+            });
+
+            return redirect()->route('admin.users.index')->with('success', 'Database berhasil diperbarui.');
+        } catch (\Exception $e) {
+            DB::statement('SET FOREIGN_KEY_CHECKS=1;');
+            return back()->with('error', 'Gagal: ' . $e->getMessage());
+        }
     }
 
     public function update(Request $request, $id)

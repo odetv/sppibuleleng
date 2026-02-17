@@ -69,11 +69,29 @@
                         <div class="shrink-0 flex flex-col items-center gap-4">
                             <label class="text-[11px] font-bold text-gray-500 uppercase tracking-wider">Pas Foto (4x6)</label>
                             <div class="relative group">
-                                <div class="h-60 w-40 rounded-2xl overflow-hidden border-4 border-white shadow-lg ring-1 ring-slate-100 bg-gray-50">
+                                <div class="h-60 w-40 rounded-2xl overflow-hidden border-4 border-white shadow-lg ring-1 ring-slate-100 bg-indigo-600 flex items-center justify-center">
+                                    @php
+                                    $userPerson = Auth::user()->person;
+                                    $displayInitial = substr($userPerson->name ?? Auth::user()->email, 0, 1);
+                                    @endphp
+
+                                    @if($userPerson && $userPerson->photo && Storage::disk('public')->exists($userPerson->photo))
                                     <img id="cropped-preview"
                                         class="h-full w-full object-cover cursor-pointer hover:opacity-90 transition-all"
-                                        src="{{ Auth::user()->person && Auth::user()->person->photo ? asset('storage/' . Auth::user()->person->photo) : 'https://ui-avatars.com/api/?name='.urlencode(Auth::user()->person->name ?? Auth::user()->name).'&size=512' }}"
-                                        alt="Preview">
+                                        src="{{ asset('storage/' . $userPerson->photo) }}"
+                                        alt="Preview"
+                                        onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
+
+                                    {{-- Inisial cadangan jika file di storage tiba-tiba hilang --}}
+                                    <div class="hidden text-white text-6xl uppercase tracking-tighter w-full h-full items-center justify-center">
+                                        {{ $displayInitial }}
+                                    </div>
+                                    @else
+                                    {{-- Tampilan inisial jika memang tidak ada foto --}}
+                                    <div id="initial-placeholder" class="text-white text-6xl uppercase tracking-tighter">
+                                        {{ $displayInitial }}
+                                    </div>
+                                    @endif
                                 </div>
                                 <label for="photo-input" class="absolute bottom-3 right-3 p-2.5 bg-indigo-600 text-white rounded-xl shadow-xl cursor-pointer hover:bg-indigo-700 transition-all hover:scale-110">
                                     <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -203,8 +221,8 @@
                                 <label class="text-[11px] font-bold text-gray-500 uppercase tracking-wider">Ukuran Sepatu</label>
                                 <select name="shoe_size" class="w-full mt-2 px-4 py-2.5 bg-gray-50 border-none rounded-lg text-sm focus:ring-2 focus:ring-indigo-500 transition-all">
                                     @for($i=35; $i<=50; $i++)
-                                    <option value="{{ $i }}" {{ old('shoe_size', Auth::user()->person->shoe_size ?? '') == $i ? 'selected' : '' }}>{{ $i }}</option>
-                                    @endfor
+                                        <option value="{{ $i }}" {{ old('shoe_size', Auth::user()->person->shoe_size ?? '') == $i ? 'selected' : '' }}>{{ $i }}</option>
+                                        @endfor
                                 </select>
                             </div>
                             <div>

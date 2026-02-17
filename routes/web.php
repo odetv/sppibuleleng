@@ -65,6 +65,11 @@ Route::middleware(['auth', 'role:administrator'])->prefix('admin')->name('admin.
     Route::delete('/users/{id}/force', [UserController::class, 'forceDelete'])->name('users.force-delete');
     Route::delete('/users/trash/clear', [UserController::class, 'forceDeleteAll'])->name('users.force-delete-all');
     Route::post('/users/{id}/restore', [UserController::class, 'restore'])->name('users.restore');
+    Route::post('/users/store', [UserController::class, 'store'])->name('users.store');
+    Route::get('/users/check-availability', [UserController::class, 'checkAvailability']);
+    Route::post('/users/export', [UserController::class, 'exportExcel'])->name('users.export');
+    Route::get('/users/template', [UserController::class, 'downloadTemplate'])->name('users.template');
+    Route::post('/users/import', [UserController::class, 'importUsers'])->name('users.import');
 
     // Manajemen Role
     Route::get('/roles', [RoleController::class, 'index'])->name('roles.index');
