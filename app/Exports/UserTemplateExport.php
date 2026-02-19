@@ -15,7 +15,7 @@ class UserTemplateExport implements FromArray, WithHeadings, WithStyles, ShouldA
         return [
             'EMAIL PENGGUNA',
             'NOMOR WHATSAPP',
-            'HAK AKSES (Administrator/Author/Editor/Subscriber/Guest)',
+            'HAK AKSES SISTEM (Administrator/Author/Editor/Subscriber/Guest)',
             'PASSWORD'
         ];
     }

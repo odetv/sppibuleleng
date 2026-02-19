@@ -4,7 +4,6 @@
 
 <aside
     id="sidebar"
-    {{-- Inisialisasi State Accordion berdasarkan Route Aktif --}}
     x-data="{ 
         selected: '{{ request()->routeIs('profile.*') ? 'profil' : (request()->routeIs('admin.*') ? 'admin_user' : (request()->routeIs('sppg.*') ? 'sppg' : '')) }}' 
     }"
@@ -16,6 +15,7 @@
     @mouseleave="isHovered = false"
     class="absolute left-0 top-0 z-99 flex h-screen flex-col overflow-y-hidden border-r border-gray-200 bg-white duration-300 ease-in-out lg:static shadow-sm">
 
+    {{-- LOGO SECTION --}}
     <div :class="(sidebarExpanded || isHovered || mobileSidebar) ? 'px-6' : 'justify-center'"
         class="flex items-center justify-between py-6 shrink-0 transition-all duration-300">
         <a href="{{ route('dashboard') }}" class="flex items-center gap-3 shrink-0">
@@ -24,9 +24,9 @@
         </a>
     </div>
 
+    {{-- MIDDLE CONTENT (SCROLLABLE MENU) --}}
     <div class="no-scrollbar flex flex-col overflow-y-auto duration-300 flex-1">
         <nav class="mt-2 px-3">
-
             {{-- 1. DASHBOARD --}}
             <ul class="mb-6 flex flex-col gap-1.5">
                 <li>
@@ -44,10 +44,8 @@
                 </li>
             </ul>
 
-            {{-- PENGECEKAN STATUS AKTIF UNTUK MENU UTAMA --}}
             @if(auth()->user()->status_user === 'active')
-
-            {{-- 2. MENU ADMIN (Hanya untuk Role Administrator) --}}
+            {{-- 2. MENU ADMIN --}}
             @if(auth()->user()->role->slug_role === 'administrator')
             <div>
                 <div class="flex items-center mb-2 transition-all duration-300"
@@ -57,7 +55,6 @@
                 </div>
                 <ul class="mb-6 flex flex-col gap-1.5">
                     <li>
-                        {{-- Button Manajemen Pengguna --}}
                         <button @click="selected = (selected === 'admin_user' ? '' : 'admin_user')"
                             :class="(sidebarExpanded || isHovered || mobileSidebar) ? 'px-4' : 'justify-center'"
                             class="w-full group relative flex items-center gap-3 rounded-lg py-2.5 text-[14px] font-medium transition-all duration-200 {{ request()->routeIs('admin.users.*', 'admin.roles.*', 'admin.positions.*') ? 'bg-indigo-50/50 text-indigo-600' : 'text-slate-600 hover:bg-indigo-50 hover:text-indigo-600' }}">
@@ -71,40 +68,17 @@
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
                             </svg>
                         </button>
-                        {{-- Sub-menu Manajemen Pengguna --}}
                         <ul x-show="selected === 'admin_user' && (sidebarExpanded || isHovered || mobileSidebar)" x-transition class="ml-9 mt-1 flex flex-col gap-1 border-l border-slate-100">
                             <li><a href="{{ route('admin.users.index') }}" class="block py-2 px-3 text-[13px] transition-colors {{ request()->routeIs('admin.users.index') ? 'text-indigo-600 font-bold' : 'text-slate-500 hover:text-indigo-600' }}">Daftar Pengguna</a></li>
                             <li><a href="{{ route('admin.roles.index') }}" class="block py-2 px-3 text-[13px] transition-colors {{ request()->routeIs('admin.roles.index') ? 'text-indigo-600 font-bold' : 'text-slate-500 hover:text-indigo-600' }}">Daftar Hak Akses</a></li>
                             <li><a href="{{ route('admin.positions.index') }}" class="block py-2 px-3 text-[13px] transition-colors {{ request()->routeIs('admin.positions.index') ? 'text-indigo-600 font-bold' : 'text-slate-500 hover:text-indigo-600' }}">Daftar Jabatan</a></li>
                         </ul>
                     </li>
-                    <li>
-                        {{-- Button Manajemen SPPG --}}
-                        <button @click="selected = (selected === 'admin_sppg' ? '' : 'admin_sppg')"
-                            :class="(sidebarExpanded || isHovered || mobileSidebar) ? 'px-4' : 'justify-center'"
-                            class="w-full group relative flex items-center gap-3 rounded-lg py-2.5 text-[14px] font-medium transition-all duration-200 {{ request()->routeIs('admin.sppg.*') ? 'bg-indigo-50/50 text-indigo-600' : 'text-slate-600 hover:bg-indigo-50 hover:text-indigo-600' }}">
-                            <div class="shrink-0 flex items-center justify-center">
-                                <svg class="w-5.5 h-5.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01" />
-                                </svg>
-                            </div>
-                            <span x-show="sidebarExpanded || isHovered || mobileSidebar" class="flex-1 text-left whitespace-nowrap">Manajemen SPPG</span>
-                            <svg x-show="sidebarExpanded || isHovered || mobileSidebar" class="w-4 h-4 transition-transform duration-200" :class="selected === 'admin_sppg' ? 'rotate-180' : ''" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
-                            </svg>
-                        </button>
-                        {{-- Sub-menu Manajemen SPPG --}}
-                        <ul x-show="selected === 'admin_sppg' && (sidebarExpanded || isHovered || mobileSidebar)" x-transition class="ml-9 mt-1 flex flex-col gap-1 border-l border-slate-100">
-                            <li><a href="{{ route('admin.sppg.index') }}" class="block py-2 px-3 text-[13px] transition-colors {{ request()->routeIs('admin.sppg.index') ? 'text-indigo-600 font-bold' : 'text-slate-500 hover:text-indigo-600' }}">Daftar SPPG</a></li>
-                            <li><a href="{{ route('admin.sppg.pm') }}" class="block py-2 px-3 text-[13px] transition-colors {{ request()->routeIs('admin.sppg.pm') ? 'text-indigo-600 font-bold' : 'text-slate-500 hover:text-indigo-600' }}">Daftar PM</a></li>
-                            <li><a href="{{ route('admin.sppg.supplier') }}" class="block py-2 px-3 text-[13px] transition-colors {{ request()->routeIs('admin.sppg.supplier') ? 'text-indigo-600 font-bold' : 'text-slate-500 hover:text-indigo-600' }}">Daftar Supplier MBG</a></li>
-                        </ul>
-                    </li>
                 </ul>
             </div>
             @endif
 
-            {{-- 3. MENU SPPG (Hanya untuk Jabatan: KaSPPG, Ahli Gizi, Akuntansi, dan Administrator) --}}
+            {{-- 3. MENU UNIT --}}
             @php
             $allowedPositions = ['kasppg', 'ag', 'ak'];
             $userPosition = auth()->user()->person?->position?->slug_position;
@@ -119,7 +93,6 @@
                     <hr x-show="!(sidebarExpanded || isHovered || mobileSidebar)" class="w-5 border-slate-200">
                 </div>
                 <ul class="mb-6 flex flex-col gap-1.5">
-                    {{-- Menu Yayasan --}}
                     <li>
                         <a href="{{ route('sppg.yayasan') }}"
                             :class="(sidebarExpanded || isHovered || mobileSidebar) ? 'px-4' : 'justify-center'"
@@ -132,7 +105,6 @@
                             <span x-show="sidebarExpanded || isHovered || mobileSidebar" class="whitespace-nowrap">Yayasan</span>
                         </a>
                     </li>
-
                     {{-- Dropdown SPPG --}}
                     <li>
                         <button @click="selected = (selected === 'sppg' ? '' : 'sppg')"
@@ -160,51 +132,51 @@
             </div>
             @endif
             @endif
-
-            {{-- 4. PENGATURAN --}}
-            <div>
-                <div class="flex items-center mb-2 transition-all duration-300"
-                    :class="(sidebarExpanded || isHovered || mobileSidebar) ? 'ml-4' : 'justify-center'">
-                    <h3 x-show="sidebarExpanded || isHovered || mobileSidebar" class="text-[11px] font-semibold text-slate-400 uppercase tracking-[2px]">PENGATURAN</h3>
-                    <hr x-show="!(sidebarExpanded || isHovered || mobileSidebar)" class="w-5 border-slate-200">
-                </div>
-                <ul class="mb-6 flex flex-col gap-1.5">
-                    <li>
-                        <button @click="selected = (selected === 'profil' ? '' : 'profil')"
-                            :class="(sidebarExpanded || isHovered || mobileSidebar) ? 'px-4' : 'justify-center'"
-                            class="w-full group relative flex items-center gap-3 rounded-lg py-2.5 text-[14px] font-medium transition-all duration-200 {{ request()->routeIs('profile.*') ? 'bg-indigo-50/50 text-indigo-600' : 'text-slate-600 hover:bg-indigo-50 hover:text-indigo-600' }}">
-                            <div class="shrink-0 flex items-center justify-center">
-                                <svg class="w-5.5 h-5.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
-                                </svg>
-                            </div>
-                            <span x-show="sidebarExpanded || isHovered || mobileSidebar" class="flex-1 text-left whitespace-nowrap">Profil</span>
-                            <svg x-show="sidebarExpanded || isHovered || mobileSidebar" class="w-4 h-4 transition-transform duration-200" :class="selected === 'profil' ? 'rotate-180' : ''" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
-                            </svg>
-                        </button>
-                        <ul x-show="selected === 'profil' && (sidebarExpanded || isHovered || mobileSidebar)" x-transition class="ml-9 mt-1 flex flex-col gap-1 border-l border-slate-100">
-                            <li><a href="{{ route('profile.show') }}" class="block py-2 px-3 text-[13px] transition-colors {{ request()->routeIs('profile.show') ? 'text-indigo-600 font-bold' : 'text-slate-500 hover:text-indigo-600' }}">Biodata</a></li>
-                            <li><a href="{{ route('profile.edit') }}" class="block py-2 px-3 text-[13px] transition-colors {{ request()->routeIs('profile.edit') ? 'text-indigo-600 font-bold' : 'text-slate-500 hover:text-indigo-600' }}">Edit Profil</a></li>
-                        </ul>
-                    </li>
-                    <li>
-                        <form method="POST" action="{{ route('logout') }}">
-                            @csrf
-                            <button type="submit" @click="selected = ''"
-                                :class="(sidebarExpanded || isHovered || mobileSidebar) ? 'px-4 w-full' : 'justify-center w-full'"
-                                class="group relative flex items-center gap-3 py-2.5 text-[14px] font-medium text-red-600 duration-300 ease-in-out hover:bg-red-50 rounded-lg text-left cursor-pointer border-none bg-transparent">
-                                <div class="shrink-0 flex items-center justify-center">
-                                    <svg class="w-5.5 h-5.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
-                                    </svg>
-                                </div>
-                                <span x-show="sidebarExpanded || isHovered || mobileSidebar" class="whitespace-nowrap font-medium">Keluar</span>
-                            </button>
-                        </form>
-                    </li>
-                </ul>
-            </div>
         </nav>
+    </div>
+
+    {{-- BOTTOM SECTION (PENGATURAN & KELUAR) --}}
+    <div class="mt-auto border-t border-slate-100 px-3 py-4 shrink-0">
+        <div class="flex items-center mb-2 transition-all duration-300"
+            :class="(sidebarExpanded || isHovered || mobileSidebar) ? 'ml-4' : 'justify-center'">
+            <h3 x-show="sidebarExpanded || isHovered || mobileSidebar" class="text-[11px] font-semibold text-slate-400 uppercase tracking-[2px]">PENGATURAN</h3>
+            <hr x-show="!(sidebarExpanded || isHovered || mobileSidebar)" class="w-5 border-slate-200">
+        </div>
+        <ul class="flex flex-col gap-1.5">
+            <li>
+                <button @click="selected = (selected === 'profil' ? '' : 'profil')"
+                    :class="(sidebarExpanded || isHovered || mobileSidebar) ? 'px-4' : 'justify-center'"
+                    class="w-full group relative flex items-center gap-3 rounded-lg py-2.5 text-[14px] font-medium transition-all duration-200 {{ request()->routeIs('profile.*') ? 'bg-indigo-50/50 text-indigo-600' : 'text-slate-600 hover:bg-indigo-50 hover:text-indigo-600' }}">
+                    <div class="shrink-0 flex items-center justify-center">
+                        <svg class="w-5.5 h-5.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+                        </svg>
+                    </div>
+                    <span x-show="sidebarExpanded || isHovered || mobileSidebar" class="flex-1 text-left whitespace-nowrap">Profil</span>
+                    <svg x-show="sidebarExpanded || isHovered || mobileSidebar" class="w-4 h-4 transition-transform duration-200" :class="selected === 'profil' ? 'rotate-180' : ''" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+                    </svg>
+                </button>
+                <ul x-show="selected === 'profil' && (sidebarExpanded || isHovered || mobileSidebar)" x-transition class="ml-9 mt-1 flex flex-col gap-1 border-l border-slate-100">
+                    <li><a href="{{ route('profile.show') }}" class="block py-2 px-3 text-[13px] transition-colors {{ request()->routeIs('profile.show') ? 'text-indigo-600 font-bold' : 'text-slate-500 hover:text-indigo-600' }}">Biodata</a></li>
+                    <li><a href="{{ route('profile.edit') }}" class="block py-2 px-3 text-[13px] transition-colors {{ request()->routeIs('profile.edit') ? 'text-indigo-600 font-bold' : 'text-slate-500 hover:text-indigo-600' }}">Edit Profil</a></li>
+                </ul>
+            </li>
+            <li>
+                <form method="POST" action="{{ route('logout') }}">
+                    @csrf
+                    <button type="submit"
+                        :class="(sidebarExpanded || isHovered || mobileSidebar) ? 'px-4 w-full' : 'justify-center w-full'"
+                        class="group relative flex items-center gap-3 py-2.5 text-[14px] font-medium text-red-600 duration-300 ease-in-out hover:bg-red-50 rounded-lg text-left cursor-pointer border-none bg-transparent">
+                        <div class="shrink-0 flex items-center justify-center">
+                            <svg class="w-5.5 h-5.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
+                            </svg>
+                        </div>
+                        <span x-show="sidebarExpanded || isHovered || mobileSidebar" class="whitespace-nowrap font-medium">Keluar</span>
+                    </button>
+                </form>
+            </li>
+        </ul>
     </div>
 </aside>

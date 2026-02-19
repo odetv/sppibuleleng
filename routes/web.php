@@ -5,7 +5,26 @@ use App\Http\Controllers\Admin\RoleController;
 use App\Http\Controllers\Admin\UserController;
 use App\Http\Controllers\PersonController;
 use App\Http\Controllers\ProfileController;
+use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Route;
+
+Route::get('/test-email', function () {
+    $detail = [
+        'title' => 'Email Testing Portal SPPI Buleleng',
+        'body' => 'Jika Anda menerima email ini, berarti konfigurasi SMTP Gmail Anda sudah BENAR!'
+    ];
+
+    try {
+        Mail::raw($detail['body'], function ($message) use ($detail) {
+            $message->to('gelgel.abdiutama@gmail.com')
+                ->subject($detail['title']);
+        });
+
+        return "Email berhasil dikirim! Silakan cek inbox (atau folder spam) Anda.";
+    } catch (\Exception $e) {
+        return "Gagal mengirim email. Error: " . $e->getMessage();
+    }
+});
 
 // 1. Landing Page
 Route::get('/', function () {

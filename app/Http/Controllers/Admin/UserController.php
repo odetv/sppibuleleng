@@ -26,13 +26,13 @@ class UserController extends Controller
             'incomplete' => User::whereNull('id_person')->count(),
         ];
 
-        $users = User::with(['person.position', 'person.workAssignment.sppgUnit', 'person.workAssignment.decree', 'role'])
+        $users = User::with(['person.position', 'person.workAssignment.sppgUnit', 'person.workAssignment.decree', 'person.socialMedia', 'role'])
             ->where('status_user', 'pending')
             ->whereNotNull('id_person')
             ->latest()
             ->get();
 
-        $allUsers = User::with(['person.position', 'person.workAssignment.sppgUnit', 'role'])->latest()->get();
+        $allUsers = User::with(['person.position', 'person.workAssignment.sppgUnit', 'person.workAssignment.decree', 'person.socialMedia', 'role'])->latest()->get();
 
         $trashedUsers = User::onlyTrashed()->with(['person' => function ($query) {
             $query->withTrashed();
@@ -177,6 +177,9 @@ class UserController extends Controller
             'batch' => 'nullable|in:1,2,3,Non-SPPI',
             'employment_status' => 'nullable|in:ASN,Non-ASN',
             'last_education' => 'nullable|in:D-III,D-IV,S-1',
+            'facebook_url'  => 'nullable|url',
+            'instagram_url' => 'nullable|url',
+            'tiktok_url'    => 'nullable|url',
         ]);
 
         $user = User::findOrFail($id);
@@ -193,8 +196,8 @@ class UserController extends Controller
             if ($user->id_person) {
                 $person = Person::findOrFail($user->id_person);
 
-                // Ambil semua input kecuali yang spesifik tabel users
-                $data = $request->except(['photo', '_token', '_method', 'email', 'phone', 'id_ref_role']);
+                // Ambil data person kecuali yang milik table users dan link sosmed
+                $data = $request->except(['photo', '_token', '_method', 'email', 'phone', 'id_ref_role', 'facebook_url', 'instagram_url', 'tiktok_url']);
 
                 if ($request->filled('date_birthday')) {
                     $data['age'] = \Carbon\Carbon::parse($request->date_birthday)->age;
@@ -209,6 +212,16 @@ class UserController extends Controller
 
                 // Update data person (termasuk id_work_assignment & id_ref_position)
                 $person->update($data);
+
+                // SIMPAN / UPDATE SOSIAL MEDIA
+                $person->socialMedia()->updateOrCreate(
+                    ['socialable_id' => $person->id_person, 'socialable_type' => Person::class],
+                    [
+                        'facebook_url'  => $request->facebook_url,
+                        'instagram_url' => $request->instagram_url,
+                        'tiktok_url'    => $request->tiktok_url,
+                    ]
+                );
             }
 
             DB::commit();
@@ -343,11 +356,16 @@ class UserController extends Controller
 
     public function approve(Request $request, $id)
     {
-        // Saat approve, admin bisa langsung set Role dan Jabatannya
+        // Saat approve, kita validasi bahwa admin HARUS memilih sesuatu di dropdown
+        // Atribut required di Blade akan mencegah pengiriman jika value="", 
+        // tapi di server kita pastikan datanya masuk.
         $request->validate([
             'id_ref_role' => 'required|exists:ref_roles,id_ref_role',
-            'id_ref_position' => 'nullable|exists:ref_positions,id_ref_position',
-            'id_work_assignment' => 'nullable|exists:work_assignments,id_work_assignment',
+            'id_ref_position' => 'required',
+            'id_work_assignment' => 'required',
+            'facebook_url'  => 'nullable|url',
+            'instagram_url' => 'nullable|url',
+            'tiktok_url'    => 'nullable|url',
         ]);
 
         $user = User::findOrFail($id);
@@ -355,20 +373,33 @@ class UserController extends Controller
         try {
             DB::beginTransaction();
 
+            // 1. Update status user menjadi active dan set Hak Akses
             $user->update([
                 'status_user' => 'active',
                 'id_ref_role' => $request->id_ref_role
             ]);
 
             if ($user->id_person) {
+                // 2. Logic khusus: Jika admin memilih "none", simpan sebagai NULL di database.
+                // Jika selain "none", simpan ID yang dipilih.
                 $user->person->update([
-                    'id_ref_position' => $request->id_ref_position,
-                    'id_work_assignment' => $request->id_work_assignment
+                    'id_ref_position' => $request->id_ref_position === 'none' ? null : $request->id_ref_position,
+                    'id_work_assignment' => $request->id_work_assignment === 'none' ? null : $request->id_work_assignment
                 ]);
+
+                // 3. Update atau buat data Sosial Media
+                $user->person->socialMedia()->updateOrCreate(
+                    ['socialable_id' => $user->person->id_person, 'socialable_type' => Person::class],
+                    [
+                        'facebook_url'  => $request->facebook_url,
+                        'instagram_url' => $request->instagram_url,
+                        'tiktok_url'    => $request->tiktok_url,
+                    ]
+                );
             }
 
             DB::commit();
-            return back()->with('success', "Akun {$user->email} berhasil diaktifkan dan di-plotting.");
+            return back()->with('success', "Akun {$user->email} berhasil diaktifkan dan diverifikasi.");
         } catch (\Exception $e) {
             DB::rollBack();
             return back()->with('error', 'Gagal verifikasi: ' . $e->getMessage());
@@ -377,13 +408,53 @@ class UserController extends Controller
 
     public function approveAll(Request $request)
     {
-        $request->validate(['id_ref_role' => 'required']);
-
-        User::where('status_user', 'pending')->update([
-            'status_user' => 'active',
-            'id_ref_role' => $request->id_ref_role
+        // 1. Validasi input: Admin wajib memilih sesuatu di modal
+        $request->validate([
+            'id_ref_role' => 'required|exists:ref_roles,id_ref_role',
+            'id_ref_position' => 'required',
+            'id_work_assignment' => 'required',
         ]);
 
-        return back()->with('success', 'Semua pendaftar berhasil diverifikasi.');
+        try {
+            DB::beginTransaction();
+
+            // 2. Ambil semua ID user yang sedang pending
+            $pendingUserIds = User::where('status_user', 'pending')->pluck('id_user');
+
+            if ($pendingUserIds->isEmpty()) {
+                return back()->with('info', 'Tidak ada pendaftar dalam antrian.');
+            }
+
+            // 3. Update tabel users (Status & Role)
+            User::whereIn('id_user', $pendingUserIds)->update([
+                'status_user' => 'active',
+                'id_ref_role'  => $request->id_ref_role,
+                'updated_at'   => now()
+            ]);
+
+            // 4. Update tabel persons (Penugasan & Jabatan)
+            // Terjemahkan 'none' menjadi null
+            $positionVal = $request->id_ref_position === 'none' ? null : $request->id_ref_position;
+            $assignmentVal = $request->id_work_assignment === 'none' ? null : $request->id_work_assignment;
+
+            // Ambilsemua id_person dari user yang baru saja diupdate
+            $personIds = User::whereIn('id_user', $pendingUserIds)
+                ->whereNotNull('id_person')
+                ->pluck('id_person');
+
+            if ($personIds->isNotEmpty()) {
+                Person::whereIn('id_person', $personIds)->update([
+                    'id_ref_position'    => $positionVal,
+                    'id_work_assignment' => $assignmentVal,
+                    'updated_at'         => now()
+                ]);
+            }
+
+            DB::commit();
+            return back()->with('success', count($pendingUserIds) . ' pendaftar berhasil diverifikasi massal.');
+        } catch (\Exception $e) {
+            DB::rollBack();
+            return back()->with('error', 'Gagal verifikasi massal: ' . $e->getMessage());
+        }
     }
 }

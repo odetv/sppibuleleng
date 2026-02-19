@@ -51,6 +51,12 @@
             -webkit-appearance: none;
             margin: 0;
         }
+
+        .input-disabled {
+            background-color: #f3f4f6 !important;
+            cursor: not-allowed;
+            color: #6b7280;
+        }
     </style>
 </head>
 
@@ -98,10 +104,18 @@
                         </div>
                         <div class="flex items-center gap-3 text-left text-[11px] text-blue-200 mb-2">
                             <div class="w-5 h-5 rounded-full bg-blue-500/20 flex items-center justify-center">5</div>
-                            <span>Alamat & GPS</span>
+                            <span>Alamat Sesuai KTP</span>
+                        </div>
+                        <div class="flex items-center gap-3 text-left text-[11px] text-blue-200 mb-2">
+                            <div class="w-5 h-5 rounded-full bg-blue-500/20 flex items-center justify-center">6</div>
+                            <span>Alamat Domisili & GPS</span>
+                        </div>
+                        <div class="flex items-center gap-3 text-left text-[11px] text-blue-200 mb-2">
+                            <div class="w-5 h-5 rounded-full bg-blue-500/20 flex items-center justify-center">7</div>
+                            <span>Media Sosial</span>
                         </div>
                         <div class="flex items-center gap-3 text-left text-[11px] text-blue-200">
-                            <div class="w-5 h-5 rounded-full bg-blue-500/20 flex items-center justify-center">6</div>
+                            <div class="w-5 h-5 rounded-full bg-blue-500/20 flex items-center justify-center">8</div>
                             <span>Pas Foto</span>
                         </div>
                     </div>
@@ -137,28 +151,45 @@
                                 <label class="text-[11px] font-bold text-gray-500 uppercase">Unit Penugasan (Sesuai SK)</label>
                                 <select name="id_work_assignment" id="id_work_assignment" required class="w-full mt-2 px-3 py-2.5 bg-gray-50 border-none rounded-lg text-sm focus:ring-2 focus:ring-blue-500 persist validate-field">
                                     <option value="" disabled selected>Pilih Unit Penugasan</option>
+                                    <option value="none" {{ old('id_work_assignment', $user->person?->id_work_assignment) == null ? 'selected' : '' }}>Belum Penugasan</option>
                                     @foreach($workAssignments as $wa)
-                                    <option value="{{ $wa->id_work_assignment }}" {{ old('id_work_assignment') == $wa->id_work_assignment ? 'selected' : '' }}>
+                                    <option value="{{ $wa->id_work_assignment }}" {{ old('id_work_assignment', $user->person?->id_work_assignment) == $wa->id_work_assignment ? 'selected' : '' }}>
                                         {{ $wa->sppgUnit->name }} - {{ $wa->decree->no_sk }}
                                     </option>
                                     @endforeach
                                 </select>
                             </div>
+
+                            {{-- TAMBAHAN: PILIH JABATAN --}}
+                            <div class="sm:col-span-2">
+                                <label class="text-[11px] font-bold text-gray-500 uppercase">Jabatan Sekarang</label>
+                                <select name="id_ref_position" id="id_ref_position" required class="w-full mt-2 px-3 py-2.5 bg-gray-50 border-none rounded-lg text-sm focus:ring-2 focus:ring-blue-500 persist validate-field">
+                                    <option value="" disabled selected>Pilih Jabatan</option>
+                                    {{-- Menggunakan value "none" agar sinkron dengan logic Controller kita sebelumnya --}}
+                                    <option value="none" {{ old('id_ref_position', $user->person?->id_ref_position) == null ? 'selected' : '' }}>Belum Menjabat</option>
+                                    @foreach($positions as $pos)
+                                    <option value="{{ $pos->id_ref_position }}" {{ old('id_ref_position', $user->person?->id_ref_position) == $pos->id_ref_position ? 'selected' : '' }}>
+                                        {{ $pos->name_position }}
+                                    </option>
+                                    @endforeach
+                                </select>
+                            </div>
+
                             <div>
                                 <label class="text-[11px] font-bold text-gray-500 uppercase">Batch</label>
                                 <select name="batch" id="batch" required class="w-full mt-2 px-3 py-2.5 bg-gray-50 border-none rounded-lg text-sm focus:ring-2 focus:ring-blue-500 persist validate-field">
                                     <option value="" disabled selected>Pilih Batch</option>
                                     @foreach(['1', '2', '3', 'Non-SPPI'] as $b)
-                                    <option value="{{ $b }}" {{ old('batch') == $b ? 'selected' : '' }}>{{ $b }}</option>
+                                    <option value="{{ $b }}" {{ old('batch', $user->person?->batch) == $b ? 'selected' : '' }}>{{ $b }}</option>
                                     @endforeach
                                 </select>
                             </div>
                             <div>
                                 <label class="text-[11px] font-bold text-gray-500 uppercase">Status Kerja</label>
                                 <select name="employment_status" id="employment_status" required class="w-full mt-2 px-3 py-2.5 bg-gray-50 border-none rounded-lg text-sm focus:ring-2 focus:ring-blue-500 persist validate-field">
-                                    <option value="" disabled selected>Pilih Status</option>
-                                    <option value="ASN" {{ old('employment_status') == 'ASN' ? 'selected' : '' }}>ASN</option>
-                                    <option value="Non-ASN" {{ old('employment_status') == 'Non-ASN' ? 'selected' : '' }}>Non-ASN</option>
+                                    <option value="" disabled selected>Pilih Status Kerja</option>
+                                    <option value="ASN" {{ old('employment_status', $user->person?->employment_status) == 'ASN' ? 'selected' : '' }}>ASN</option>
+                                    <option value="Non-ASN" {{ old('employment_status', $user->person?->employment_status) == 'Non-ASN' ? 'selected' : '' }}>Non-ASN</option>
                                 </select>
                             </div>
                         </div>
@@ -191,6 +222,17 @@
                             <div>
                                 <label class="text-[11px] font-bold text-gray-500 uppercase">Nama Rekening</label>
                                 <input type="text" name="payroll_bank_account_name" id="payroll_bank_account_name" value="{{ old('payroll_bank_account_name') }}" required class="w-full mt-2 px-4 py-2.5 bg-gray-50 border-none rounded-lg text-sm focus:ring-2 focus:ring-blue-500 persist validate-field" placeholder="Sesuai Buku Tabungan">
+                            </div>
+
+                        </div>
+                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-4">
+                            <div>
+                                <label class="text-[11px] font-bold text-gray-500 uppercase">No. BPJS Kesehatan</label>
+                                <input type="number" name="no_bpjs_kes" id="no_bpjs_kes" value="{{ old('no_bpjs_kes') }}" class="w-full mt-2 px-4 py-2.5 bg-gray-50 border-none rounded-lg text-sm focus:ring-2 focus:ring-blue-500 persist" placeholder="Masukkan No. BPJS Kesehatan">
+                            </div>
+                            <div>
+                                <label class="text-[11px] font-bold text-gray-500 uppercase">No. BPJS Ketenagakerjaan</label>
+                                <input type="number" name="no_bpjs_tk" id="no_bpjs_tk" value="{{ old('no_bpjs_tk') }}" class="w-full mt-2 px-4 py-2.5 bg-gray-50 border-none rounded-lg text-sm focus:ring-2 focus:ring-blue-500 persist" placeholder="Masukkan No. BPJS Ketenagakerjaan">
                             </div>
                         </div>
                     </section>
@@ -297,9 +339,11 @@
                                 <label class="text-[11px] font-bold text-gray-500 uppercase">Tempat Lahir</label>
                                 <input id="place_birthday" type="text" name="place_birthday" value="{{ old('place_birthday') }}" required class="w-full mt-2 px-4 py-2.5 bg-gray-50 border-none rounded-lg text-sm focus:ring-2 focus:ring-blue-500 persist validate-field" placeholder="Sesuai KTP">
                             </div>
+                        </div>
+                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-4">
                             <div>
-                                <label class="text-[11px] font-bold text-indigo-500 uppercase">Ukuran Baju</label>
-                                <select name="clothing_size" id="clothing_size" required class="w-full mt-2 px-3 py-2.5 bg-indigo-50 border-none rounded-lg text-sm focus:ring-2 focus:ring-indigo-500 persist validate-field">
+                                <label class="text-[11px] font-bold text-gray-500 uppercase">Ukuran Baju</label>
+                                <select name="clothing_size" id="clothing_size" required class="w-full mt-2 px-3 py-2.5 bg-gray-50 border-none rounded-lg text-sm focus:ring-2 focus:ring-indigo-500 persist validate-field">
                                     <option value="" disabled selected>Pilih Ukuran Baju</option>
                                     @foreach(['XS', 'S', 'M', 'L', 'XL', 'XXL', 'XXXL', 'XXXXL', '4XL', '5XL', '6XL', '7XL', '8XL', '9XL', '10XL'] as $size)
                                     <option value="{{ $size }}" {{ old('clothing_size') == $size ? 'selected' : '' }}>{{ $size }}</option>
@@ -307,8 +351,8 @@
                                 </select>
                             </div>
                             <div>
-                                <label class="text-[11px] font-bold text-indigo-500 uppercase">Ukuran Sepatu</label>
-                                <select name="shoe_size" id="shoe_size" required class="w-full mt-2 px-3 py-2.5 bg-indigo-50 border-none rounded-lg text-sm focus:ring-2 focus:ring-indigo-500 persist validate-field">
+                                <label class="text-[11px] font-bold text-gray-500 uppercase">Ukuran Sepatu</label>
+                                <select name="shoe_size" id="shoe_size" required class="w-full mt-2 px-3 py-2.5 bg-gray-50 border-none rounded-lg text-sm focus:ring-2 focus:ring-indigo-500 persist validate-field">
                                     <option value="" disabled selected>Pilih Ukuran Sepatu</option>
                                     @for($i = 35; $i <= 50; $i++)
                                         <option value="{{ $i }}" {{ old('shoe_size') == $i ? 'selected' : '' }}>{{ $i }}</option>
@@ -319,50 +363,108 @@
                     </section>
 
                     {{-- SECTION 5: ALAMAT & GPS --}}
+                    {{-- SECTION ALAMAT KTP --}}
                     <section>
                         <div class="flex items-center gap-2 mb-4 pt-4 border-t border-gray-100">
-                            <span class="p-1.5 bg-blue-50 text-darkblue rounded-lg">
-                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"></path>
-                                </svg>
-                            </span>
-                            <h3 class="font-bold text-darkblue uppercase text-xs tracking-widest">Alamat & GPS</h3>
+                            <span class="p-1.5 bg-blue-50 text-darkblue rounded-lg"><svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"></path>
+                                </svg></span>
+                            <h3 class="font-bold text-darkblue uppercase text-xs tracking-widest">Alamat Sesuai KTP</h3>
                         </div>
-
                         <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
                             <div>
                                 <label class="text-[11px] font-bold text-gray-500 uppercase">Provinsi</label>
-                                <select name="province" id="province" required class="w-full mt-2 px-3 py-2.5 bg-gray-50 border-none rounded-lg text-sm focus:ring-2 focus:ring-blue-500 persist validate-field">
-                                    <option value="Bali" selected>Bali</option>
-                                </select>
+                                <input type="text" name="province_ktp" id="province_ktp" required placeholder="Cth: Bali" class="w-full mt-2 px-4 py-2.5 bg-gray-50 border-none rounded-lg text-sm persist validate-field">
                             </div>
                             <div>
                                 <label class="text-[11px] font-bold text-gray-500 uppercase">Kabupaten</label>
-                                <select name="regency" id="regency" required class="w-full mt-2 px-3 py-2.5 bg-gray-50 border-none rounded-lg text-sm focus:ring-2 focus:ring-blue-500 persist validate-field">
-                                    <option value="Buleleng" selected>Buleleng</option>
-                                </select>
+                                <input type="text" name="regency_ktp" id="regency_ktp" required placeholder="Cth: Buleleng" class="w-full mt-2 px-4 py-2.5 bg-gray-50 border-none rounded-lg text-sm persist validate-field">
                             </div>
                             <div>
                                 <label class="text-[11px] font-bold text-gray-500 uppercase">Kecamatan</label>
-                                <select name="district" id="district" required class="w-full mt-2 px-3 py-2.5 bg-gray-50 border-none rounded-lg text-sm focus:ring-2 focus:ring-blue-500 persist validate-field">
-                                    <option value="" disabled selected>Pilih Kecamatan</option>
-                                    @foreach(['Tejakula', 'Kubutambahan', 'Sawan', 'Sukasada', 'Buleleng', 'Banjar', 'Seririt', 'Busungbiu', 'Gerokgak'] as $kec)
-                                    <option value="{{ $kec }}" {{ old('district') == $kec ? 'selected' : '' }}>{{ $kec }}</option>
-                                    @endforeach
-                                </select>
+                                <input type="text" name="district_ktp" id="district_ktp" required placeholder="Cth: Sukasada" class="w-full mt-2 px-4 py-2.5 bg-gray-50 border-none rounded-lg text-sm persist validate-field">
                             </div>
                             <div>
                                 <label class="text-[11px] font-bold text-gray-500 uppercase">Desa/Kelurahan</label>
-                                <input id="village" type="text" name="village" value="{{ old('village') }}" required class="w-full mt-2 px-4 py-2.5 bg-gray-50 border-none rounded-lg text-sm focus:ring-2 focus:ring-blue-500 persist validate-field" placeholder="Nama Desa/Kelurahan">
+                                <input type="text" name="village_ktp" id="village_ktp" required placeholder="Cth: Panji Anom" class="w-full mt-2 px-4 py-2.5 bg-gray-50 border-none rounded-lg text-sm persist validate-field">
                             </div>
                             <div class="sm:col-span-2">
                                 <label class="text-[11px] font-bold text-gray-500 uppercase">Alamat Lengkap</label>
-                                <textarea id="address" name="address" rows="2" class="w-full mt-2 px-4 py-2.5 bg-gray-50 border-none rounded-lg text-sm focus:ring-2 focus:ring-blue-500 persist validate-field" placeholder="Cth: Jl. Singaraja Bedugul No. 04, Br. Dinas Widya Bali">{{ old('address') }}</textarea>
+                                <textarea name="address_ktp" id="address_ktp" rows="2" placeholder="Cth: Jl. Kibarak Panji Sakti No. 1X, Br. Dinas Panji" class="w-full mt-2 px-4 py-2.5 bg-gray-50 border-none rounded-lg text-sm persist validate-field"></textarea>
+                            </div>
+                        </div>
+                    </section>
+
+                    {{-- SECTION ALAMAT DOMISILI --}}
+                    <section>
+                        <div class="flex items-center justify-between gap-2 mb-4 pt-4 border-t border-gray-100">
+                            <div class="flex items-center gap-2">
+                                <span class="p-1.5 bg-blue-50 text-darkblue rounded-lg"><svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"></path>
+                                    </svg></span>
+                                <h3 class="font-bold text-darkblue uppercase text-xs tracking-widest">Alamat Domisili & GPS</h3>
+                            </div>
+                            <label class="flex items-center gap-2 cursor-pointer">
+                                <input type="checkbox" id="same_as_ktp" class="w-4 h-4 text-darkblue border-gray-300 rounded focus:ring-darkblue">
+                                <span class="text-[10px] font-bold text-gray-500 uppercase">Gunakan Alamat KTP</span>
+                            </label>
+                        </div>
+                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                            <div><label class="text-[11px] font-bold text-gray-500 uppercase">Provinsi</label>
+                                <input type="text" name="province_domicile" id="province_domicile" required placeholder="Cth: Bali" class="w-full mt-2 px-4 py-2.5 bg-gray-50 border-none rounded-lg text-sm persist validate-field dom-input">
+                            </div>
+                            <div><label class="text-[11px] font-bold text-gray-500 uppercase">Kabupaten</label>
+                                <input type="text" name="regency_domicile" id="regency_domicile" required placeholder="Cth: Buleleng" class="w-full mt-2 px-4 py-2.5 bg-gray-50 border-none rounded-lg text-sm persist validate-field dom-input">
+                            </div>
+                            <div><label class="text-[11px] font-bold text-gray-500 uppercase">Kecamatan</label>
+                                <input type="text" name="district_domicile" id="district_domicile" required placeholder="Cth: Sukasada" class="w-full mt-2 px-4 py-2.5 bg-gray-50 border-none rounded-lg text-sm persist validate-field dom-input">
+                            </div>
+                            <div><label class="text-[11px] font-bold text-gray-500 uppercase">Desa/Kelurahan</label>
+                                <input type="text" name="village_domicile" id="village_domicile" required placeholder="Cth: Panji Anom" class="w-full mt-2 px-4 py-2.5 bg-gray-50 border-none rounded-lg text-sm persist validate-field dom-input">
                             </div>
                             <div class="sm:col-span-2">
-                                <label class="text-[11px] font-bold text-gray-500 uppercase tracking-wider">Koordinat GPS (Klik Pada Peta)</label>
-                                <input id="gps_coordinates" type="text" name="gps_coordinates" value="{{ old('gps_coordinates') }}" readonly required class="w-full mt-2 px-4 py-2.5 bg-blue-50 text-blue-700 font-mono text-xs border-none rounded-lg focus:ring-0 validate-field" placeholder="Titik akan muncul saat peta diklik">
+                                <label class="text-[11px] font-bold text-gray-500 uppercase">Alamat Lengkap</label>
+                                <textarea name="address_domicile" id="address_domicile" rows="2" placeholder="Cth: Jl. Kibarak Panji Sakti No. 1X, Br. Dinas Panji" class="w-full mt-2 px-4 py-2.5 bg-gray-50 border-none rounded-lg text-sm persist validate-field dom-input"></textarea>
+                            </div>
+                            <div class="sm:col-span-2">
+                                <div class="flex gap-2">
+                                    <input id="latitude_gps_domicile" type="text" name="latitude_gps_domicile" readonly required class="w-1/2 px-4 py-2.5 bg-blue-50 text-blue-700 font-mono text-xs border-none rounded-lg validate-field persist" placeholder="Latitude: Klik pada Peta">
+                                    <input id="longitude_gps_domicile" type="text" name="longitude_gps_domicile" readonly required class="w-1/2 px-4 py-2.5 bg-blue-50 text-blue-700 font-mono text-xs border-none rounded-lg validate-field persist" placeholder="Longitude: Klik pada Peta">
+                                </div>
                                 <div id="map"></div>
+                            </div>
+                        </div>
+                    </section>
+
+                    {{-- SECTION 5.5: SOSIAL MEDIA (TAMBAHAN) --}}
+                    <section>
+                        <div class="flex items-center gap-2 mb-4 pt-4 border-t border-gray-100">
+                            <span class="p-1.5 bg-indigo-50 text-darkblue rounded-lg">
+                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1"></path>
+                                </svg>
+                            </span>
+                            <h3 class="font-bold text-darkblue uppercase text-xs tracking-widest">Media Sosial</h3>
+                        </div>
+
+                        <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                            <div>
+                                <label class="text-[11px] font-bold text-gray-500 uppercase">Facebook URL</label>
+                                <input type="url" name="facebook_url" id="facebook_url" value="{{ old('facebook_url') }}"
+                                    class="w-full mt-2 px-4 py-2.5 bg-gray-50 border-none rounded-lg text-sm focus:ring-2 focus:ring-blue-500 persist"
+                                    placeholder="https://facebook.com/..">
+                            </div>
+                            <div>
+                                <label class="text-[11px] font-bold text-gray-500 uppercase">Instagram URL</label>
+                                <input type="url" name="instagram_url" id="instagram_url" value="{{ old('instagram_url') }}"
+                                    class="w-full mt-2 px-4 py-2.5 bg-gray-50 border-none rounded-lg text-sm focus:ring-2 focus:ring-blue-500 persist"
+                                    placeholder="https://instagram.com/..">
+                            </div>
+                            <div>
+                                <label class="text-[11px] font-bold text-gray-500 uppercase">TikTok URL</label>
+                                <input type="url" name="tiktok_url" id="tiktok_url" value="{{ old('tiktok_url') }}"
+                                    class="w-full mt-2 px-4 py-2.5 bg-gray-50 border-none rounded-lg text-sm focus:ring-2 focus:ring-blue-500 persist"
+                                    placeholder="https://tiktok.com/@..">
                             </div>
                         </div>
                     </section>
@@ -442,75 +544,127 @@
             const dateBirthdayInput = document.getElementById('date_birthday');
             const ageInput = document.getElementById('age');
 
-            // --- 1. PERSISTENCE LOGIC ---
+            // --- 1. PERSISTENCE LOGIC (REVISED) ---
             persistFields.forEach(field => {
-                const savedValue = localStorage.getItem('profile_' + (field.id || field.name));
-                if (savedValue && !field.value) {
+                const storageKey = 'profile_' + (field.id || field.name);
+                const savedValue = localStorage.getItem(storageKey);
+
+                // PAKSA isi dari storage jika ada (menimpa data old() dari server saat error)
+                if (savedValue !== null) {
                     field.value = savedValue;
                 }
+
                 field.addEventListener('input', () => {
-                    localStorage.setItem('profile_' + (field.id || field.name), field.value);
+                    localStorage.setItem(storageKey, field.value);
                     if (field.value.trim() !== "") clearError(field);
                 });
             });
 
-            // --- 2. MAP LOGIC ---
-            const coordsField = document.getElementById('gps_coordinates');
-            const savedCoords = localStorage.getItem('profile_gps_coordinates');
-            let initialCoords = [-8.112, 115.091];
-            if (savedCoords && savedCoords.includes(',')) {
-                const parts = savedCoords.split(',');
-                initialCoords = [parseFloat(parts[0]), parseFloat(parts[1])];
-                coordsField.value = savedCoords;
+            // --- 1. LOGIC COPY ALAMAT & PERSISTENCE ---
+            const sameAsKtp = document.getElementById('same_as_ktp');
+            const addressFields = ['province', 'regency', 'district', 'village', 'address'];
+
+            function syncAddress() {
+                addressFields.forEach(key => {
+                    const ktpInput = document.getElementById(key + '_ktp');
+                    const domInput = document.getElementById(key + '_domicile');
+
+                    if (sameAsKtp.checked) {
+                        // Ambil dari storage KTP agar datanya konsisten
+                        const ktpVal = localStorage.getItem('profile_' + ktpInput.id) || ktpInput.value;
+                        domInput.value = ktpVal;
+                        domInput.classList.add('input-disabled');
+                        domInput.readOnly = true;
+                        localStorage.setItem('profile_' + domInput.id, ktpVal);
+                    } else {
+                        domInput.classList.remove('input-disabled');
+                        domInput.readOnly = false;
+                    }
+                });
+                localStorage.setItem('profile_same_as_ktp', sameAsKtp.checked);
             }
 
-            const map = L.map('map').setView(initialCoords, 12);
+            sameAsKtp.addEventListener('change', syncAddress);
+
+            // Update otomatis saat KTP diketik jika checkbox aktif
+            addressFields.forEach(key => {
+                document.getElementById(key + '_ktp').addEventListener('input', () => {
+                    if (sameAsKtp.checked) syncAddress();
+                });
+            });
+
+            // --- 2. MAP LOGIC (PERSISTENCE & AUTO CENTER) ---
+            const latField = document.getElementById('latitude_gps_domicile');
+            const lngField = document.getElementById('longitude_gps_domicile');
+
+            const savedLat = localStorage.getItem('profile_latitude_gps_domicile');
+            const savedLng = localStorage.getItem('profile_longitude_gps_domicile');
+
+            let initialCoords = [-8.112, 115.091]; // Koordinat Default Buleleng
+
+            // Cek apakah ada koordinat tersimpan di storage
+            if (savedLat && savedLng) {
+                initialCoords = [parseFloat(savedLat), parseFloat(savedLng)];
+                latField.value = savedLat;
+                lngField.value = savedLng;
+            }
+
+            const map = L.map('map').setView(initialCoords, savedLat ? 15 : 12);
             L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png').addTo(map);
 
             let marker;
-
-            function placeMarker(latlng) {
-                if (marker) map.removeLayer(marker);
-                marker = L.marker(latlng).addTo(map);
-                map.panTo(latlng);
+            // Pasang marker otomatis jika data ada
+            if (savedLat && savedLng) {
+                marker = L.marker(initialCoords).addTo(map);
             }
-
-            if (savedCoords) placeMarker(initialCoords);
 
             map.on('click', function(e) {
                 const {
                     lat,
                     lng
                 } = e.latlng;
-                coordsField.value = `${lat}, ${lng}`;
-                localStorage.setItem('profile_gps_coordinates', coordsField.value);
-                placeMarker(e.latlng);
-                clearError(coordsField);
+                const fLat = lat.toFixed(8);
+                const fLng = lng.toFixed(8);
+
+                latField.value = fLat;
+                lngField.value = fLng;
+
+                // Simpan ke storage
+                localStorage.setItem('profile_latitude_gps_domicile', fLat);
+                localStorage.setItem('profile_longitude_gps_domicile', fLng);
+
+                if (marker) map.removeLayer(marker);
+                marker = L.marker(e.latlng).addTo(map);
+
+                // Auto Center & Zoom saat klik
+                map.setView(e.latlng, 15, {
+                    animate: true
+                });
+
+                clearError(latField);
             });
 
-            // --- 3. AUTO AGE CALCULATION ---
-            function calculateAge(birthDateValue) {
-                if (!birthDateValue) return "";
-                const birthDate = new Date(birthDateValue);
+            // --- 3. REVISED AUTO AGE (OTOMATIS) ---
+            function updateAge() {
+                if (!dateBirthdayInput.value) return;
+                const birthDate = new Date(dateBirthdayInput.value);
                 const today = new Date();
                 let age = today.getFullYear() - birthDate.getFullYear();
                 const m = today.getMonth() - birthDate.getMonth();
-                if (m < 0 || (m === 0 && today.getDate() < birthDate.getDate())) {
-                    age--;
-                }
-                return age;
-            }
+                if (m < 0 || (m === 0 && today.getDate() < birthDate.getDate())) age--;
 
-            dateBirthdayInput.addEventListener('change', function() {
-                const age = calculateAge(this.value);
                 ageInput.value = age;
                 localStorage.setItem('profile_age', age);
-            });
+            }
 
-            // Sync umur saat load/refresh
-            const currentBirthDate = localStorage.getItem('profile_date_birthday') || dateBirthdayInput.value;
-            if (currentBirthDate) {
-                ageInput.value = calculateAge(currentBirthDate);
+            dateBirthdayInput.addEventListener('change', updateAge);
+
+            // JALANKAN SINKRONISASI SAAT REFRESH
+            if (dateBirthdayInput.value) updateAge();
+
+            if (localStorage.getItem('profile_same_as_ktp') === 'true') {
+                sameAsKtp.checked = true;
+                syncAddress();
             }
 
             // --- 4. DRAG N DROP LOGIC ---
@@ -627,34 +781,20 @@
 
             // --- 6. SMART VALIDATION & ERROR HANDLING ---
             function showError(field, message) {
-                // Clear existing error message for this field to prevent duplicates
                 clearError(field);
-
                 field.classList.add('is-invalid');
-                let labelText = "Field";
-                const parentLabel = field.parentElement.querySelector('label');
-                const sectionLabel = field.closest('section')?.querySelector('h3');
 
-                if (labelName = field.getAttribute('data-label')) {
-                    labelText = labelName;
-                } else if (parentLabel) {
-                    labelText = parentLabel.innerText;
-                } else if (sectionLabel) {
-                    labelText = sectionLabel.innerText;
-                }
-
-                if (field.id === 'photo') {
-                    dropArea.classList.add('is-invalid');
-                }
+                // Khusus untuk foto, is-invalid dipasang di drop area
+                if (field.id === 'photo') dropArea.classList.add('is-invalid');
 
                 const errorDisplay = document.createElement('p');
-                errorDisplay.className = 'error-msg text-red-500 text-[10px] mt-2 font-bold italic';
-                errorDisplay.innerText = `* ${labelText}: ${message}`;
+                errorDisplay.className = 'error-msg text-red-500 text-[10px] mt-1 font-bold italic';
+                errorDisplay.innerText = `* ${message}`;
 
-                if (field.id === 'photo') {
-                    dropArea.after(errorDisplay);
-                } else {
-                    field.parentElement.appendChild(errorDisplay);
+                // Cari container pembungkus input (biasanya div)
+                const container = field.closest('div');
+                if (container) {
+                    container.appendChild(errorDisplay);
                 }
             }
 
@@ -662,16 +802,10 @@
                 field.classList.remove('is-invalid');
                 if (field.id === 'photo') dropArea.classList.remove('is-invalid');
 
-                // Find and remove error message specifically associated with this field
-                let existingError;
-                if (field.id === 'photo') {
-                    existingError = dropArea.nextElementSibling;
-                } else {
-                    existingError = field.parentElement.querySelector('.error-msg');
-                }
-
-                if (existingError && existingError.classList.contains('error-msg')) {
-                    existingError.remove();
+                const container = field.closest('div');
+                if (container) {
+                    const existingError = container.querySelector('.error-msg');
+                    if (existingError) existingError.remove();
                 }
             }
 
@@ -679,19 +813,37 @@
                 let isFormValid = true;
 
                 validateFields.forEach(field => {
+                    const val = field.value.trim();
+
+                    // 1. Validasi Required (Wajib Isi)
                     if (field.type === 'file') {
                         if (field.files.length === 0) {
-                            showError(field, 'Wajib diunggah');
+                            showError(field, 'Foto wajib diunggah');
                             isFormValid = false;
                         }
-                    } else if (!field.value || field.value.trim() === "") {
-                        showError(field, 'Wajib diisi');
+                    } else if (!val) {
+                        showError(field, 'Bagian ini wajib diisi');
                         isFormValid = false;
-                    } else if (field.minLength > 0 && field.value.length < field.minLength) {
-                        showError(field, `Kurang dari ${field.minLength} karakter`);
+                    }
+
+                    // 2. Validasi NIK & No KK (Harus 16 Digit)
+                    else if ((field.id === 'nik' || field.id === 'no_kk') && val.length !== 16) {
+                        showError(field, 'Harus tepat 16 digit angka');
+                        isFormValid = false;
+                    }
+
+                    // 3. Validasi Min Length
+                    else if (field.minLength > 0 && val.length < field.minLength) {
+                        showError(field, `Minimal ${field.minLength} karakter`);
                         isFormValid = false;
                     }
                 });
+
+                // 4. Validasi Khusus GPS
+                if (!latField.value || !lngField.value) {
+                    showError(latField, 'Titik lokasi belum dipilih pada peta');
+                    isFormValid = false;
+                }
 
                 if (!isFormValid) {
                     e.preventDefault();
@@ -702,12 +854,15 @@
                             block: 'center'
                         });
                     }
-                } else {
-                    persistFields.forEach(field => localStorage.removeItem('profile_' + (field.id || field.name)));
-                    localStorage.removeItem('profile_age');
-                    localStorage.removeItem('profile_gps_coordinates');
                 }
             });
+            if (localStorage.getItem('profile_same_as_ktp') === 'true') {
+                sameAsKtp.checked = true;
+                // Beri sedikit delay agar data KTP dimuat dulu oleh persistence logic baru di-copy ke domisili
+                setTimeout(() => {
+                    syncAddress();
+                }, 100);
+            }
         });
     </script>
 </body>

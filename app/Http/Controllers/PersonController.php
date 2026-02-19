@@ -3,10 +3,12 @@
 namespace App\Http\Controllers;
 
 use App\Models\Person;
+use App\Models\RefPosition;
 use App\Models\WorkAssignment;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 
 class PersonController extends Controller
 {
@@ -15,12 +17,17 @@ class PersonController extends Controller
      */
     public function create()
     {
+        // Jika user sudah punya profil, lempar ke dashboard
         if (Auth::user()->id_person) {
             return redirect()->route('dashboard');
         }
 
+        // Ambil variabel yang dibutuhkan oleh view complete.blade.php
+        $user = Auth::user();
         $workAssignments = WorkAssignment::with(['sppgUnit', 'decree'])->get();
-        return view('profile.complete', compact('workAssignments'));
+        $positions = RefPosition::all(); // Tambahkan pengambilan data jabatan
+
+        return view('profile.complete', compact('user', 'workAssignments', 'positions'));
     }
 
     /**
@@ -50,36 +57,86 @@ class PersonController extends Controller
             'date_birthday'     => 'required|date',
             'religion'          => 'required|string',
             'marital_status'    => 'required|string',
-            'village'           => 'required|string',
-            'district'          => 'required|string',
-            'regency'           => 'required|string',
-            'province'          => 'required|string',
-            'address'           => 'required|string',
-            'gps_coordinates'   => 'required|string',
-            'id_work_assignment' => 'nullable|exists:work_assignments,id_work_assignment',
+
+            'no_bpjs_kes'       => 'nullable|string|max:20',
+            'no_bpjs_tk'        => 'nullable|string|max:20',
+
+            'village_ktp'       => 'required|string|max:255',
+            'district_ktp'      => 'required|string|max:255',
+            'regency_ktp'       => 'required|string|max:255',
+            'province_ktp'      => 'required|string|max:255',
+            'address_ktp'       => 'required|string',
+
+            'village_domicile'  => 'required|string|max:255',
+            'district_domicile' => 'required|string|max:255',
+            'regency_domicile'  => 'required|string|max:255',
+            'province_domicile' => 'required|string|max:255',
+            'address_domicile'  => 'required|string',
+
+            'latitude_gps_domicile'  => 'required|numeric',
+            'longitude_gps_domicile' => 'required|numeric',
+
+            // Validasi id_work_assignment (mendukung 'none')
+            'id_work_assignment' => [
+                'required',
+                function ($attribute, $value, $fail) {
+                    if ($value !== 'none' && !DB::table('work_assignments')->where('id_work_assignment', $value)->exists()) {
+                        $fail('Unit Penugasan yang dipilih tidak valid.');
+                    }
+                }
+            ],
+
+            // TAMBAHAN: Validasi id_ref_position (mendukung 'none')
+            'id_ref_position' => [
+                'required',
+                function ($attribute, $value, $fail) {
+                    if ($value !== 'none' && !DB::table('ref_positions')->where('id_ref_position', $value)->exists()) {
+                        $fail('Jabatan yang dipilih tidak valid.');
+                    }
+                }
+            ],
+
+            'facebook_url'       => 'nullable|url',
+            'instagram_url'      => 'nullable|url',
+            'tiktok_url'         => 'nullable|url',
         ]);
 
-        // Hitung Umur
-        $birthDate = Carbon::parse($request->date_birthday);
-        $age = $birthDate->age;
+        return DB::transaction(function () use ($request) {
 
-        $data = $request->all();
-        $data['age'] = $age;
+            $birthDate = Carbon::parse($request->date_birthday);
+            $age = $birthDate->age;
 
-        // Foto
-        if ($request->hasFile('photo')) {
-            $path = $request->file('photo')->store('photos', 'public');
-            $data['photo'] = $path;
-        }
+            $dataPerson = $request->except(['facebook_url', 'instagram_url', 'tiktok_url']);
+            $dataPerson['age'] = $age;
 
-        // Simpan ke database
-        $person = Person::create($data);
+            // Konversi 'none' menjadi null untuk database (Penugasan)
+            if ($request->id_work_assignment === 'none') {
+                $dataPerson['id_work_assignment'] = null;
+            }
 
-        // Hubungkan ke User
-        auth()->user()->update([
-            'id_person' => $person->id_person
-        ]);
+            // TAMBAHAN: Konversi 'none' menjadi null untuk database (Jabatan)
+            if ($request->id_ref_position === 'none') {
+                $dataPerson['id_ref_position'] = null;
+            }
 
-        return redirect()->route('dashboard')->with('success', 'Profil lengkap berhasil disimpan!');
+            if ($request->hasFile('photo')) {
+                $path = $request->file('photo')->store('photos', 'public');
+                $dataPerson['photo'] = $path;
+            }
+
+            $person = Person::create($dataPerson);
+
+            $person->socialMedia()->create([
+                'facebook_url'  => $request->facebook_url,
+                'instagram_url' => $request->instagram_url,
+                'tiktok_url'    => $request->tiktok_url,
+            ]);
+
+            auth()->user()->update([
+                'id_person' => $person->id_person
+            ]);
+
+            return redirect()->route('dashboard')->with('success', 'Profil lengkap berhasil disimpan!');
+        });
     }
 }

@@ -60,7 +60,7 @@
                     <p class="text-xs text-slate-500 truncate mt-0.5">{{ Auth::user()->email }}</p>
                     <div class="mt-1">
                         <span class="inline-flex items-center px-2 py-0.5 rounded text-[10px] font-bold bg-green-100 text-green-700 uppercase tracking-wider">
-                            {{ auth()->user()->person->position->name_position ?? 'No Position' }} </span>
+                            {{ auth()->user()->person->position->name_position ?? 'Belum Menjabat' }} </span>
                         <span class="inline-flex items-center px-2 py-0.5 rounded text-[10px] font-bold bg-indigo-100 text-indigo-700 uppercase tracking-wider">
                             {{ Auth::user()->role->name_role ?? 'User' }} </span>
                     </div>

@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\MorphOne;
 
 class SppgUnit extends Model
 {
@@ -18,4 +19,13 @@ class SppgUnit extends Model
         'date_ops',
         'name'
     ];
+
+    /**
+     * Relasi Polymorphic ke SocialMedia secara Horizontal.
+     */
+    public function socialMedia(): MorphOne
+    {
+        // 'socialable' harus sama dengan yang ada di Person.php dan Migration nanti
+        return $this->morphOne(SocialMedia::class, 'socialable');
+    }
 }
