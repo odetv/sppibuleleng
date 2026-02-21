@@ -55,7 +55,7 @@
                 class="absolute right-0 mt-4 w-64 rounded-xl border border-slate-200 bg-white shadow-xl z-999 overflow-hidden"
                 x-cloak>
 
-                <div class="px-6 py-4 border-b border-slate-100 bg-slate-50/50">
+                <div class="px-6 py-4 border-b border-slate-100 bg-slate-50/50 text-left">
                     <p class="text-sm font-semibold text-slate-800">{{ Auth::user()->person->name }}</p>
                     <p class="text-xs text-slate-500 truncate mt-0.5">{{ Auth::user()->email }}</p>
                     <div class="mt-1">
@@ -68,6 +68,14 @@
 
                 <ul class="flex flex-col gap-1 p-2">
                     <li>
+                        <a href="/" class="flex items-center gap-3.5 px-4 py-2.5 text-[13px] font-medium text-slate-600 duration-300 ease-in-out hover:text-indigo-600 hover:bg-slate-50 rounded-lg">
+                            <svg class="w-4.5 h-4.5 opacity-70" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"></path>
+                            </svg>
+                            Beranda
+                        </a>
+                    </li>
+                    <li>
                         <a href="{{ route('profile.show') }}" class="flex items-center gap-3.5 px-4 py-2.5 text-[13px] font-medium text-slate-600 duration-300 ease-in-out hover:text-indigo-600 hover:bg-slate-50 rounded-lg">
                             <svg class="w-4.5 h-4.5 opacity-70" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path>
@@ -77,7 +85,7 @@
                     </li>
                 </ul>
 
-                <div class="p-2 mt-1 border-t border-slate-100">
+                <div class="p-2 mt-1 border-t border-slate-100 text-left">
                     <form method="POST" action="{{ route('logout') }}">
                         @csrf
                         <button type="submit" class="flex w-full items-center gap-3.5 px-4 py-2.5 text-[13px] font-medium text-red-600 duration-300 ease-in-out hover:bg-red-50 rounded-lg text-left cursor-pointer">
