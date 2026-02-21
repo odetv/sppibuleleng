@@ -52,6 +52,7 @@
             background-color: #f8fafc !important;
             color: #94a3b8 !important;
             cursor: not-allowed !important;
+            pointer-events: none;
         }
     </style>
 
@@ -103,35 +104,35 @@
                         <div class="flex-1 grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-6 text-sm">
                             <div>
                                 <label class="text-[11px] font-bold text-gray-500 uppercase tracking-wider">Nama Lengkap (Sesuai KTP)</label>
-                                <input type="text" name="name" id="ktp_name" value="{{ old('name', $userPerson->name ?? '') }}" class="text-sm w-full mt-2 px-4 py-2.5 bg-gray-50 border-none rounded-lg focus:ring-2 focus:ring-indigo-500 transition-all">
+                                <input required type="text" name="name" id="ktp_name" value="{{ old('name', $userPerson->name ?? '') }}" class="text-sm w-full mt-2 px-4 py-2.5 bg-gray-50 border-none rounded-lg focus:ring-2 focus:ring-indigo-500 transition-all">
                             </div>
                             <div>
                                 <label class="text-[11px] font-bold text-gray-500 uppercase tracking-wider">Telepon</label>
-                                <input type="number" name="phone" id="phone" value="{{ old('phone', $userPerson->user->phone ?? '') }}" class="text-sm w-full mt-2 px-4 py-2.5 bg-gray-50 border-none rounded-lg focus:ring-2 focus:ring-indigo-500 transition-all">
+                                <input required type="number" name="phone" id="phone" value="{{ old('phone', $userPerson->user->phone ?? '') }}" class="text-sm w-full mt-2 px-4 py-2.5 bg-gray-50 border-none rounded-lg focus:ring-2 focus:ring-indigo-500 transition-all">
                             </div>
                             <div>
                                 <label class="text-[11px] font-bold text-gray-500 uppercase tracking-wider text-nowrap">NIK (16 Digit)</label>
-                                <input type="number" name="nik" value="{{ old('nik', $userPerson->nik ?? '') }}" class="text-sm w-full mt-2 px-4 py-2.5 bg-gray-50 border-none rounded-lg focus:ring-2 focus:ring-indigo-500 transition-all">
+                                <input required type="number" name="nik" value="{{ old('nik', $userPerson->nik ?? '') }}" class="text-sm w-full mt-2 px-4 py-2.5 bg-gray-50 border-none rounded-lg focus:ring-2 focus:ring-indigo-500 transition-all">
                             </div>
                             <div>
                                 <label class="text-[11px] font-bold text-gray-500 uppercase tracking-wider text-nowrap">Nomor KK (16 Digit)</label>
-                                <input type="number" name="no_kk" value="{{ old('no_kk', $userPerson->no_kk ?? '') }}" class="text-sm w-full mt-2 px-4 py-2.5 bg-gray-50 border-none rounded-lg focus:ring-2 focus:ring-indigo-500 transition-all">
+                                <input required type="number" name="no_kk" value="{{ old('no_kk', $userPerson->no_kk ?? '') }}" class="text-sm w-full mt-2 px-4 py-2.5 bg-gray-50 border-none rounded-lg focus:ring-2 focus:ring-indigo-500 transition-all">
                             </div>
                             <div>
                                 <label class="text-[11px] font-bold text-gray-500 uppercase tracking-wider uppercase">NIP</label>
-                                <input type="number" name="nip" value="{{ old('nip', $userPerson->nip ?? '') }}" class="text-sm w-full mt-2 px-4 py-2.5 bg-gray-50 border-none rounded-lg focus:ring-2 focus:ring-indigo-500 transition-all">
+                                <input required type="number" name="nip" value="{{ old('nip', $userPerson->nip ?? '') }}" class="text-sm w-full mt-2 px-4 py-2.5 bg-gray-50 border-none rounded-lg focus:ring-2 focus:ring-indigo-500 transition-all">
                             </div>
                             <div>
                                 <label class="text-[11px] font-bold text-gray-500 uppercase tracking-wider uppercase text-nowrap">NPWP</label>
-                                <input type="number" name="npwp" value="{{ old('npwp', $userPerson->npwp ?? '') }}" class="text-sm w-full mt-2 px-4 py-2.5 bg-gray-50 border-none rounded-lg focus:ring-2 focus:ring-indigo-500 transition-all">
+                                <input required type="number" name="npwp" value="{{ old('npwp', $userPerson->npwp ?? '') }}" class="text-sm w-full mt-2 px-4 py-2.5 bg-gray-50 border-none rounded-lg focus:ring-2 focus:ring-indigo-500 transition-all">
                             </div>
                             <div>
                                 <label class="text-[11px] font-bold text-gray-500 uppercase tracking-wider text-nowrap">No. BPJS Kesehatan</label>
-                                <input type="number" name="no_bpjs_kes" value="{{ old('no_bpjs_kes', $userPerson->no_bpjs_kes ?? '') }}" class="text-sm w-full mt-2 px-4 py-2.5 bg-gray-50 border-none rounded-lg focus:ring-2 focus:ring-indigo-500 transition-all">
+                                <input required type="number" name="no_bpjs_kes" value="{{ old('no_bpjs_kes', $userPerson->no_bpjs_kes ?? '') }}" class="text-sm w-full mt-2 px-4 py-2.5 bg-gray-50 border-none rounded-lg focus:ring-2 focus:ring-indigo-500 transition-all">
                             </div>
                             <div>
                                 <label class="text-[11px] font-bold text-gray-500 uppercase tracking-wider text-nowrap">No. BPJS Ketenagakerjaan</label>
-                                <input type="number" name="no_bpjs_tk" value="{{ old('no_bpjs_tk', $userPerson->no_bpjs_tk ?? '') }}" class="text-sm w-full mt-2 px-4 py-2.5 bg-gray-50 border-none rounded-lg focus:ring-2 focus:ring-indigo-500 transition-all">
+                                <input required type="number" name="no_bpjs_tk" value="{{ old('no_bpjs_tk', $userPerson->no_bpjs_tk ?? '') }}" class="text-sm w-full mt-2 px-4 py-2.5 bg-gray-50 border-none rounded-lg focus:ring-2 focus:ring-indigo-500 transition-all">
                             </div>
                         </div>
                     </div>
@@ -150,22 +151,22 @@
                     <div class="p-8 grid grid-cols-1 md:grid-cols-4 gap-8 text-sm text-left">
                         <div>
                             <label class="text-[11px] font-bold text-gray-500 uppercase tracking-wider">Tempat Lahir</label>
-                            <input type="text" name="place_birthday" value="{{ old('place_birthday', $userPerson->place_birthday ?? '') }}" class="text-sm w-full mt-2 px-4 py-2.5 bg-gray-50 border-none rounded-lg focus:ring-2 focus:ring-indigo-500 transition-all">
+                            <input required type="text" name="place_birthday" value="{{ old('place_birthday', $userPerson->place_birthday ?? '') }}" class="text-sm w-full mt-2 px-4 py-2.5 bg-gray-50 border-none rounded-lg focus:ring-2 focus:ring-indigo-500 transition-all">
                         </div>
                         <div>
                             <label class="text-[11px] font-bold text-gray-500 uppercase tracking-wider">Tanggal Lahir</label>
-                            <input type="date" name="date_birthday" id="date_birthday" value="{{ old('date_birthday', $userPerson->date_birthday ?? '') }}" class="text-sm w-full mt-2 px-4 py-2.5 bg-gray-50 border-none rounded-lg focus:ring-2 focus:ring-indigo-500 transition-all">
+                            <input required type="date" name="date_birthday" id="date_birthday" value="{{ old('date_birthday', $userPerson->date_birthday ?? '') }}" class="text-sm w-full mt-2 px-4 py-2.5 bg-gray-50 border-none rounded-lg focus:ring-2 focus:ring-indigo-500 transition-all">
                         </div>
                         <div>
                             <label class="text-[11px] font-bold text-gray-500 uppercase tracking-wider">Jenis Kelamin</label>
-                            <select name="gender" class="text-sm w-full mt-2 px-4 py-2.5 bg-gray-50 border-none rounded-lg focus:ring-2 focus:ring-indigo-500 transition-all">
+                            <select required name="gender" class="text-sm w-full mt-2 px-4 py-2.5 bg-gray-50 border-none rounded-lg focus:ring-2 focus:ring-indigo-500 transition-all">
                                 <option value="L" {{ old('gender', $userPerson->gender ?? '') == 'L' ? 'selected' : '' }}>Laki-laki</option>
                                 <option value="P" {{ old('gender', $userPerson->gender ?? '') == 'P' ? 'selected' : '' }}>Perempuan</option>
                             </select>
                         </div>
                         <div>
                             <label class="text-[11px] font-bold text-gray-500 uppercase tracking-wider">Agama</label>
-                            <select name="religion" class="text-sm w-full mt-2 px-4 py-2.5 bg-gray-50 border-none rounded-lg focus:ring-2 focus:ring-indigo-500 transition-all">
+                            <select required name="religion" class="text-sm w-full mt-2 px-4 py-2.5 bg-gray-50 border-none rounded-lg focus:ring-2 focus:ring-indigo-500 transition-all">
                                 @foreach(['Islam', 'Kristen', 'Katholik', 'Hindu', 'Buddha', 'Khonghucu'] as $rel)
                                 <option value="{{ $rel }}" {{ old('religion', $userPerson->religion ?? '') == $rel ? 'selected' : '' }}>{{ $rel }}</option>
                                 @endforeach
@@ -173,7 +174,7 @@
                         </div>
                         <div>
                             <label class="text-[11px] font-bold text-gray-500 uppercase tracking-wider">Status Pernikahan</label>
-                            <select name="marital_status" class="text-sm w-full mt-2 px-4 py-2.5 bg-gray-50 border-none rounded-lg focus:ring-2 focus:ring-indigo-500 transition-all">
+                            <select required name="marital_status" class="text-sm w-full mt-2 px-4 py-2.5 bg-gray-50 border-none rounded-lg focus:ring-2 focus:ring-indigo-500 transition-all">
                                 @foreach(['Belum Kawin', 'Kawin', 'Janda', 'Duda'] as $status)
                                 <option value="{{ $status }}" {{ old('marital_status', $userPerson->marital_status ?? '') == $status ? 'selected' : '' }}>{{ $status }}</option>
                                 @endforeach
@@ -181,7 +182,7 @@
                         </div>
                         <div>
                             <label class="text-[11px] font-bold text-gray-500 uppercase tracking-wider">Ukuran Baju</label>
-                            <select name="clothing_size" class="text-sm w-full mt-2 px-4 py-2.5 bg-gray-50 border-none rounded-lg focus:ring-2 focus:ring-indigo-500 transition-all">
+                            <select required name="clothing_size" class="text-sm w-full mt-2 px-4 py-2.5 bg-gray-50 border-none rounded-lg focus:ring-2 focus:ring-indigo-500 transition-all">
                                 @foreach(['XS', 'S', 'M', 'L', 'XL', 'XXL', 'XXXL', '4XL', '5XL'] as $size)
                                 <option value="{{ $size }}" {{ old('clothing_size', $userPerson->clothing_size ?? '') == $size ? 'selected' : '' }}>{{ $size }}</option>
                                 @endforeach
@@ -189,7 +190,7 @@
                         </div>
                         <div>
                             <label class="text-[11px] font-bold text-gray-500 uppercase tracking-wider text-nowrap">Ukuran Sepatu</label>
-                            <select name="shoe_size" class="text-sm w-full mt-2 px-4 py-2.5 bg-gray-50 border-none rounded-lg focus:ring-2 focus:ring-indigo-500 transition-all">
+                            <select required name="shoe_size" class="text-sm w-full mt-2 px-4 py-2.5 bg-gray-50 border-none rounded-lg focus:ring-2 focus:ring-indigo-500 transition-all">
                                 @for($i=35; $i<=50; $i++)
                                     <option value="{{ $i }}" {{ old('shoe_size', $userPerson->shoe_size ?? '') == $i ? 'selected' : '' }}>{{ $i }}</option>
                                     @endfor
@@ -197,7 +198,7 @@
                         </div>
                         <div>
                             <label class="text-[11px] font-bold text-gray-500 uppercase tracking-wider">Usia</label>
-                            <input type="text" id="age_display" value="{{ $userPerson->age ?? '-' }} Tahun" readonly class="text-sm w-full mt-2 px-4 py-2.5 bg-slate-50 border-none rounded-lg text-slate-400 cursor-not-allowed">
+                            <input required type="text" id="age_display" value="{{ $userPerson->age ?? '-' }} Tahun" readonly class="text-sm w-full mt-2 px-4 py-2.5 bg-slate-50 border-none rounded-lg text-slate-400 cursor-not-allowed">
                         </div>
                     </div>
                 </div>
@@ -215,7 +216,7 @@
                     <div class="p-8 grid grid-cols-1 md:grid-cols-3 gap-8 text-sm">
                         <div>
                             <label class="text-[11px] font-bold text-gray-500 uppercase tracking-wider">Pendidikan Terakhir</label>
-                            <select name="last_education" class="text-sm w-full mt-2 px-4 py-2.5 bg-gray-50 border-none rounded-lg">
+                            <select required name="last_education" class="text-sm w-full mt-2 px-4 py-2.5 bg-gray-50 border-none rounded-lg">
                                 @foreach(['D-III', 'D-IV', 'S-1', 'S-2'] as $edu)
                                 <option value="{{ $edu }}" {{ old('last_education', $userPerson->last_education ?? '') == $edu ? 'selected' : '' }}>{{ $edu }}</option>
                                 @endforeach
@@ -223,11 +224,11 @@
                         </div>
                         <div>
                             <label class="text-[11px] font-bold text-gray-500 uppercase tracking-wider">Gelar Belakang</label>
-                            <input type="text" name="title_education" value="{{ old('title_education', $userPerson->title_education ?? '') }}" class="text-sm w-full mt-2 px-4 py-2.5 bg-gray-50 border-none rounded-lg focus:ring-2 focus:ring-indigo-500 transition-all">
+                            <input required type="text" name="title_education" value="{{ old('title_education', $userPerson->title_education ?? '') }}" class="text-sm w-full mt-2 px-4 py-2.5 bg-gray-50 border-none rounded-lg focus:ring-2 focus:ring-indigo-500 transition-all">
                         </div>
                         <div>
                             <label class="text-[11px] font-bold text-gray-500 uppercase tracking-wider">Jurusan/Program Studi</label>
-                            <input type="text" name="major_education" value="{{ old('major_education', $userPerson->major_education ?? '') }}" class="text-sm w-full mt-2 px-4 py-2.5 bg-gray-50 border-none rounded-lg focus:ring-2 focus:ring-indigo-500 transition-all">
+                            <input required type="text" name="major_education" value="{{ old('major_education', $userPerson->major_education ?? '') }}" class="text-sm w-full mt-2 px-4 py-2.5 bg-gray-50 border-none rounded-lg focus:ring-2 focus:ring-indigo-500 transition-all">
                         </div>
                         <div>
                             <label class="text-[11px] font-bold text-gray-500 uppercase tracking-wider">Jabatan</label>
@@ -257,7 +258,7 @@
                         </div>
                         <div>
                             <label class="text-[11px] font-bold text-gray-500 uppercase tracking-wider">Batch</label>
-                            <select name="batch" class="text-sm w-full mt-2 px-4 py-2.5 bg-gray-50 border-none rounded-lg">
+                            <select required name="batch" class="text-sm w-full mt-2 px-4 py-2.5 bg-gray-50 border-none rounded-lg">
                                 @foreach(['1', '2', '3', 'Non-SPPI'] as $b)
                                 <option value="{{ $b }}" {{ old('batch', $userPerson->batch ?? '') == $b ? 'selected' : '' }}>{{ $b }}</option>
                                 @endforeach
@@ -265,7 +266,7 @@
                         </div>
                         <div>
                             <label class="text-[11px] font-bold text-gray-500 uppercase tracking-wider text-nowrap">Status Kerja</label>
-                            <select name="employment_status" class="text-sm w-full mt-2 px-4 py-2.5 bg-gray-50 border-none rounded-lg">
+                            <select required name="employment_status" class="text-sm w-full mt-2 px-4 py-2.5 bg-gray-50 border-none rounded-lg">
                                 <option value="ASN" {{ old('employment_status', $userPerson->employment_status ?? '') == 'ASN' ? 'selected' : '' }}>ASN</option>
                                 <option value="Non-ASN" {{ old('employment_status', $userPerson->employment_status ?? '') == 'Non-ASN' ? 'selected' : '' }}>Non-ASN</option>
                             </select>
@@ -273,7 +274,7 @@
                     </div>
                 </div>
 
-                {{-- 4. ALAMAT KTP --}}
+                {{-- SECTION 4: ALAMAT KTP --}}
                 <div class="bg-white shadow-sm rounded-2xl border border-gray-100 overflow-hidden mb-8 text-left">
                     <div class="border-b border-gray-50 px-8 py-5 bg-slate-50/30 flex items-center gap-3">
                         <span class="p-1.5 bg-white text-indigo-600 rounded-lg shadow-sm">
@@ -287,29 +288,37 @@
                         <div class="grid grid-cols-2 gap-4">
                             <div>
                                 <label class="text-gray-400 text-[10px] font-bold uppercase tracking-widest mb-1">Provinsi</label>
-                                <input type="text" id="ktp_province" name="province_ktp" value="{{ old('province_ktp', $userPerson->province_ktp ?? '') }}" class="w-full px-4 py-2.5 bg-gray-50 border-none rounded-lg text-sm">
+                                <select required id="f_ktp_prov" name="province_ktp" data-selected="{{ $userPerson->province_ktp ?? '' }}" class="w-full px-4 py-2.5 bg-gray-50 border-none rounded-lg text-sm">
+                                    <option value="" disabled selected>Pilih Provinsi</option>
+                                </select>
                             </div>
                             <div>
                                 <label class="text-gray-400 text-[10px] font-bold uppercase tracking-widest mb-1">Kabupaten</label>
-                                <input type="text" id="ktp_regency" name="regency_ktp" value="{{ old('regency_ktp', $userPerson->regency_ktp ?? '') }}" class="w-full px-4 py-2.5 bg-gray-50 border-none rounded-lg text-sm">
+                                <select required id="f_ktp_reg" name="regency_ktp" data-selected="{{ $userPerson->regency_ktp ?? '' }}" disabled class="w-full px-4 py-2.5 bg-gray-50 border-none rounded-lg text-sm">
+                                    <option value="" disabled selected>Pilih Kabupaten</option>
+                                </select>
                             </div>
                             <div>
                                 <label class="text-gray-400 text-[10px] font-bold uppercase tracking-widest mb-1 text-nowrap">Kecamatan</label>
-                                <input type="text" id="ktp_district" name="district_ktp" value="{{ old('district_ktp', $userPerson->district_ktp ?? '') }}" class="w-full px-4 py-2.5 bg-gray-50 border-none rounded-lg text-sm">
+                                <select required id="f_ktp_dist" name="district_ktp" data-selected="{{ $userPerson->district_ktp ?? '' }}" disabled class="w-full px-4 py-2.5 bg-gray-50 border-none rounded-lg text-sm">
+                                    <option value="" disabled selected>Pilih Kecamatan</option>
+                                </select>
                             </div>
                             <div>
                                 <label class="text-gray-400 text-[10px] font-bold uppercase tracking-widest mb-1">Desa/Kelurahan</label>
-                                <input type="text" id="ktp_village" name="village_ktp" value="{{ old('village_ktp', $userPerson->village_ktp ?? '') }}" class="w-full px-4 py-2.5 bg-gray-50 border-none rounded-lg text-sm">
+                                <select required id="f_ktp_vill" name="village_ktp" data-selected="{{ $userPerson->village_ktp ?? '' }}" disabled class="w-full px-4 py-2.5 bg-gray-50 border-none rounded-lg text-sm">
+                                    <option value="" disabled selected>Pilih Desa</option>
+                                </select>
                             </div>
                         </div>
                         <div class="flex flex-col text-left">
-                            <label class="text-gray-400 text-[10px] font-bold uppercase tracking-widest mb-1">Alamat Lengkap KTP</label>
-                            <textarea id="ktp_address" name="address_ktp" rows="3" class="w-full h-full px-4 py-2.5 bg-gray-50 border-none rounded-lg text-sm focus:ring-2 focus:ring-indigo-500 transition-all">{{ old('address_ktp', $userPerson->address_ktp ?? '') }}</textarea>
+                            <label class="text-gray-400 text-[10px] font-bold uppercase tracking-widest mb-1">Alamat Jalan/Rumah</label>
+                            <textarea required id="ktp_address" name="address_ktp" rows="3" class="w-full h-full px-4 py-2.5 bg-gray-50 border-none rounded-lg text-sm focus:ring-2 focus:ring-indigo-500 transition-all">{{ old('address_ktp', $userPerson->address_ktp ?? '') }}</textarea>
                         </div>
                     </div>
                 </div>
 
-                {{-- 5. DOMISILI & GPS --}}
+                {{-- SECTION 5: DOMISILI & GPS --}}
                 <div class="bg-white shadow-sm rounded-2xl border border-gray-100 overflow-hidden mb-8 text-left">
                     <div class="border-b border-gray-50 px-8 py-5 bg-slate-50/30 flex items-center justify-between">
                         <div class="flex items-center gap-3">
@@ -330,30 +339,38 @@
                             <div class="grid grid-cols-2 gap-4">
                                 <div>
                                     <label class="text-gray-400 text-[10px] font-bold uppercase tracking-widest mb-1">Provinsi</label>
-                                    <input type="text" id="dom_province" name="province_domicile" value="{{ old('province_domicile', $userPerson->province_domicile ?? '') }}" class="w-full px-4 py-2.5 bg-gray-50 border-none rounded-lg text-sm">
+                                    <select required id="f_dom_prov" name="province_domicile" data-selected="{{ $userPerson->province_domicile ?? '' }}" class="w-full px-4 py-2.5 bg-gray-50 border-none rounded-lg text-sm">
+                                        <option value="" disabled selected>Pilih Provinsi</option>
+                                    </select>
                                 </div>
                                 <div>
                                     <label class="text-gray-400 text-[10px] font-bold uppercase tracking-widest mb-1">Kabupaten</label>
-                                    <input type="text" id="dom_regency" name="regency_domicile" value="{{ old('regency_domicile', $userPerson->regency_domicile ?? '') }}" class="w-full px-4 py-2.5 bg-gray-50 border-none rounded-lg text-sm">
+                                    <select required id="f_dom_reg" name="regency_domicile" data-selected="{{ $userPerson->regency_domicile ?? '' }}" disabled class="w-full px-4 py-2.5 bg-gray-50 border-none rounded-lg text-sm">
+                                        <option value="" disabled selected>Pilih Kabupaten</option>
+                                    </select>
                                 </div>
                                 <div>
-                                    <label class="text-gray-400 text-[10px] font-bold uppercase tracking-widest mb-1 text-nowrap">Kecamatan</label>
-                                    <input type="text" id="dom_district" name="district_domicile" value="{{ old('district_domicile', $userPerson->district_domicile ?? '') }}" class="w-full px-4 py-2.5 bg-gray-50 border-none rounded-lg text-sm">
+                                    <label class="text-gray-400 text-[10px] font-bold uppercase tracking-widest mb-1">Kecamatan</label>
+                                    <select required id="f_dom_dist" name="district_domicile" data-selected="{{ $userPerson->district_domicile ?? '' }}" disabled class="w-full px-4 py-2.5 bg-gray-50 border-none rounded-lg text-sm">
+                                        <option value="" disabled selected>Pilih Kecamatan</option>
+                                    </select>
                                 </div>
                                 <div>
-                                    <label class="text-gray-400 text-[10px] font-bold uppercase tracking-widest mb-1">Desa / Kelurahan</label>
-                                    <input type="text" id="dom_village" name="village_domicile" value="{{ old('village_domicile', $userPerson->village_domicile ?? '') }}" class="w-full px-4 py-2.5 bg-gray-50 border-none rounded-lg text-sm">
+                                    <label class="text-gray-400 text-[10px] font-bold uppercase tracking-widest mb-1">Desa/Kelurahan</label>
+                                    <select required id="f_dom_vill" name="village_domicile" data-selected="{{ $userPerson->village_domicile ?? '' }}" disabled class="w-full px-4 py-2.5 bg-gray-50 border-none rounded-lg text-sm">
+                                        <option value="" disabled selected>Pilih Desa</option>
+                                    </select>
                                 </div>
                             </div>
                             <div>
-                                <label class="text-gray-400 text-[10px] font-bold uppercase tracking-widest mb-1">Alamat Lengkap Domisili</label>
-                                <textarea id="dom_address" name="address_domicile" rows="2" class="w-full px-4 py-2.5 bg-gray-50 border-none rounded-lg text-sm focus:ring-2 focus:ring-indigo-500 transition-all">{{ old('address_domicile', $userPerson->address_domicile ?? '') }}</textarea>
+                                <label class="text-gray-400 text-[10px] font-bold uppercase tracking-widest mb-1">Alamat Jalan/Rumah</label>
+                                <textarea required id="dom_address" name="address_domicile" rows="2" class="w-full px-4 py-2.5 bg-gray-50 border-none rounded-lg text-sm focus:ring-2 focus:ring-indigo-500 transition-all">{{ old('address_domicile', $userPerson->address_domicile ?? '') }}</textarea>
                             </div>
                             <div>
                                 <label class="text-gray-400 text-[10px] font-bold uppercase tracking-widest mb-1 leading-none text-nowrap">Koordinat GPS (Klik Pada Peta)</label>
                                 <div class="flex gap-2 mt-2">
-                                    <input type="text" id="lat_field" name="latitude_gps_domicile" value="{{ old('latitude_gps_domicile', $userPerson->latitude_gps_domicile ?? '') }}" readonly class="w-1/2 px-4 py-2.5 bg-gray-50 text-sm rounded-lg border-none focus:ring-0 input-disabled">
-                                    <input type="text" id="lng_field" name="longitude_gps_domicile" value="{{ old('longitude_gps_domicile', $userPerson->longitude_gps_domicile ?? '') }}" readonly class="w-1/2 px-4 py-2.5 bg-gray-50 text-sm rounded-lg border-none focus:ring-0 input-disabled">
+                                    <input required type="text" id="lat_field" name="latitude_gps_domicile" value="{{ old('latitude_gps_domicile', $userPerson->latitude_gps_domicile ?? '') }}" readonly class="w-1/2 px-4 py-2.5 bg-gray-50 text-sm rounded-lg border-none focus:ring-0 input-disabled">
+                                    <input required type="text" id="lng_field" name="longitude_gps_domicile" value="{{ old('longitude_gps_domicile', $userPerson->longitude_gps_domicile ?? '') }}" readonly class="w-1/2 px-4 py-2.5 bg-gray-50 text-sm rounded-lg border-none focus:ring-0 input-disabled">
                                 </div>
                             </div>
                         </div>
@@ -374,7 +391,7 @@
                     <div class="p-8 grid grid-cols-1 md:grid-cols-3 gap-8">
                         <div>
                             <label class="text-[11px] font-bold text-gray-500 uppercase tracking-wider mb-1">Nama Bank</label>
-                            <select name="payroll_bank_name" class="w-full mt-2 px-4 py-2.5 bg-gray-50 border-none rounded-lg text-sm focus:ring-2 focus:ring-indigo-500 transition-all">
+                            <select required name="payroll_bank_name" class="w-full mt-2 px-4 py-2.5 bg-gray-50 border-none rounded-lg text-sm focus:ring-2 focus:ring-indigo-500 transition-all">
                                 @foreach(['BNI', 'Mandiri', 'BCA', 'BTN', 'BSI', 'BPD Bali'] as $bank)
                                 <option value="{{ $bank }}" {{ old('payroll_bank_name', $userPerson->payroll_bank_name ?? '') == $bank ? 'selected' : '' }}>{{ $bank }}</option>
                                 @endforeach
@@ -382,11 +399,11 @@
                         </div>
                         <div>
                             <label class="text-[11px] font-bold text-gray-500 uppercase tracking-wider mb-1">Nomor Rekening</label>
-                            <input type="number" name="payroll_bank_account_number" value="{{ old('payroll_bank_account_number', $userPerson->payroll_bank_account_number ?? '') }}" class="w-full mt-2 px-4 py-2.5 bg-gray-50 border-none rounded-lg text-sm focus:ring-2 focus:ring-indigo-500 transition-all">
+                            <input required type="number" name="payroll_bank_account_number" value="{{ old('payroll_bank_account_number', $userPerson->payroll_bank_account_number ?? '') }}" class="w-full mt-2 px-4 py-2.5 bg-gray-50 border-none rounded-lg text-sm focus:ring-2 focus:ring-indigo-500 transition-all">
                         </div>
                         <div>
                             <label class="text-[11px] font-bold text-gray-500 uppercase tracking-wider mb-1">Nama Pemilik Rekening</label>
-                            <input type="text" name="payroll_bank_account_name" value="{{ old('payroll_bank_account_name', $userPerson->payroll_bank_account_name ?? '') }}" class="w-full mt-2 px-4 py-2.5 bg-gray-50 border-none rounded-lg text-sm focus:ring-2 focus:ring-indigo-500 transition-all">
+                            <input required type="text" name="payroll_bank_account_name" value="{{ old('payroll_bank_account_name', $userPerson->payroll_bank_account_name ?? '') }}" class="w-full mt-2 px-4 py-2.5 bg-gray-50 border-none rounded-lg text-sm focus:ring-2 focus:ring-indigo-500 transition-all">
                         </div>
                     </div>
                 </div>
@@ -488,45 +505,237 @@
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
     <script>
         document.addEventListener('DOMContentLoaded', function() {
-            // SINKRONISASI ALAMAT LOGIC
-            const syncCheckbox = document.getElementById('sync_address');
-            const ktpFields = {
-                province: document.getElementById('ktp_province'),
-                regency: document.getElementById('ktp_regency'),
-                district: document.getElementById('ktp_district'),
-                village: document.getElementById('ktp_village'),
-                address: document.getElementById('ktp_address')
-            };
-            const domFields = {
-                province: document.getElementById('dom_province'),
-                regency: document.getElementById('dom_regency'),
-                district: document.getElementById('dom_district'),
-                village: document.getElementById('dom_village'),
-                address: document.getElementById('dom_address')
-            };
+            const apiBase = "/api-wilayah";
+            const sleep = (ms) => new Promise(resolve => setTimeout(resolve, ms));
+            let mapObj, markerObj;
 
-            function updateDomFields() {
-                if (syncCheckbox.checked) {
-                    Object.keys(ktpFields).forEach(key => {
-                        domFields[key].value = ktpFields[key].value;
-                        domFields[key].classList.add('input-disabled');
-                        domFields[key].readOnly = true;
+            // 1. POPULATE DROPDOWN
+            async function populateSelect(selectId, urlPath, placeholder, targetValue = null) {
+                const select = document.getElementById(selectId);
+                if (!select) return null;
+                const savedValue = select.getAttribute('data-selected');
+                let valueToMatch = (targetValue || savedValue || "").toString().toUpperCase().trim();
+
+                select.innerHTML = `<option value="">Mohon tunggu...</option>`;
+                select.disabled = true;
+
+                try {
+                    const response = await fetch(`${apiBase}/${urlPath}`);
+                    const result = await response.json();
+                    const data = result.data;
+
+                    let options = `<option value="" disabled selected>${placeholder}</option>`;
+                    data.forEach(item => {
+                        let cleanName = item.name.replace(/^(KABUPATEN|KOTA)\s+/i, "");
+                        options += `<option value="${cleanName}" data-code="${item.code}">${cleanName}</option>`;
                     });
-                } else {
-                    Object.keys(domFields).forEach(key => {
-                        domFields[key].classList.remove('input-disabled');
-                        domFields[key].readOnly = false;
-                    });
+
+                    select.innerHTML = options;
+
+                    // Logic Disabled: Jangan buka jika Sync aktif di Domisili
+                    const isSyncActive = document.getElementById('sync_address').checked;
+                    if (!(selectId.startsWith('f_dom_') && isSyncActive)) {
+                        select.disabled = false;
+                        select.classList.remove('input-disabled');
+                    } else {
+                        select.disabled = true;
+                        select.classList.add('input-disabled');
+                    }
+
+                    if (valueToMatch) {
+                        for (let i = 0; i < select.options.length; i++) {
+                            if (select.options[i].value.toUpperCase() === valueToMatch) {
+                                select.selectedIndex = i;
+                                return select.options[i].getAttribute('data-code');
+                            }
+                        }
+                    }
+                } catch (e) {
+                    select.innerHTML = `<option value="" disabled selected>Gagal memuat</option>`;
+                }
+                return null;
+            }
+
+            // 2. CHAIN LOADING
+            async function runChain(prefix) {
+                const provCode = await populateSelect(`f_${prefix}_prov`, 'provinces.json', "Pilih Provinsi");
+                if (provCode) {
+                    const regCode = await populateSelect(`f_${prefix}_reg`, `regencies/${provCode}.json`, "Pilih Kabupaten");
+                    if (regCode) {
+                        const distCode = await populateSelect(`f_${prefix}_dist`, `districts/${regCode}.json`, "Pilih Kecamatan");
+                        if (distCode) {
+                            await populateSelect(`f_${prefix}_vill`, `villages/${distCode}.json`, "Pilih Desa");
+                        }
+                    }
                 }
             }
 
-            syncCheckbox.addEventListener('change', updateDomFields);
+            // 3. MAP AUTO MOVE
+            async function autoMoveMap() {
+                const prov = document.getElementById('f_dom_prov')?.value;
+                const reg = document.getElementById('f_dom_reg')?.value;
+                const dist = document.getElementById('f_dom_dist')?.value;
+                const vill = document.getElementById('f_dom_vill')?.value;
+                let address = [vill, dist, reg, prov].filter(Boolean).join(", ");
+                if (!address || !mapObj) return;
 
-            Object.keys(ktpFields).forEach(key => {
-                ktpFields[key].addEventListener('input', () => {
-                    if (syncCheckbox.checked) domFields[key].value = ktpFields[key].value;
+                try {
+                    const resp = await fetch(`/api-map-search?q=${encodeURIComponent(address)}`);
+                    const data = await resp.json();
+                    if (data && data.length > 0) {
+                        const newLat = parseFloat(data[0].lat);
+                        const newLng = parseFloat(data[0].lon);
+                        let zoom = vill ? 16 : (dist ? 14 : (reg ? 12 : 9));
+                        mapObj.setView([newLat, newLng], zoom, {
+                            animate: true
+                        });
+                    }
+                } catch (e) {}
+            }
+
+            // 4. BIND EVENTS
+            const bindEvents = (p) => {
+                ['prov', 'reg', 'dist', 'vill'].forEach(f => {
+                    const el = document.getElementById(`f_${p}_${f}`);
+                    if (!el) return;
+
+                    el.addEventListener('change', async function() {
+                        // Proteksi Sync
+                        if (p === 'dom' && document.getElementById('sync_address').checked) return;
+
+                        const code = this.options[this.selectedIndex]?.getAttribute('data-code');
+                        const nextMap = {
+                            'prov': {
+                                next: 'reg',
+                                path: 'regencies',
+                                reset: ['reg', 'dist', 'vill'],
+                                label: 'Kabupaten'
+                            },
+                            'reg': {
+                                next: 'dist',
+                                path: 'districts',
+                                reset: ['dist', 'vill'],
+                                label: 'Kecamatan'
+                            },
+                            'dist': {
+                                next: 'vill',
+                                path: 'villages',
+                                reset: ['vill'],
+                                label: 'Desa'
+                            }
+                        };
+
+                        if (nextMap[f]) {
+                            const cfg = nextMap[f];
+                            cfg.reset.forEach(target => {
+                                const targetEl = document.getElementById(`f_${p}_${target}`);
+                                if (targetEl) {
+                                    targetEl.innerHTML = `<option value="" disabled selected>Pilih...</option>`;
+                                    targetEl.disabled = true;
+                                    targetEl.classList.remove('input-disabled');
+                                }
+                            });
+                            if (code) await populateSelect(`f_${p}_${cfg.next}`, `${cfg.path}/${code}.json`, `Pilih ${cfg.label}`);
+                        }
+                        if (p === 'dom') setTimeout(autoMoveMap, 200);
+                    });
+                });
+            };
+
+            // 5. SYNC ADDRESS LOGIC
+            const syncCheckbox = document.getElementById('sync_address');
+            ['prov', 'reg', 'dist', 'vill'].forEach(key => {
+                document.getElementById(`f_ktp_${key}`).addEventListener('change', async function() {
+                    if (syncCheckbox.checked) {
+                        document.getElementById(`f_dom_${key}`).setAttribute('data-selected', this.value);
+                        await runChain('dom');
+
+                        // Re-Lock
+                        ['prov', 'reg', 'dist', 'vill'].forEach(k => {
+                            const el = document.getElementById(`f_dom_${k}`);
+                            el.disabled = true;
+                            el.classList.add('input-disabled');
+                        });
+                        setTimeout(autoMoveMap, 500);
+                    }
                 });
             });
+
+            document.getElementById('ktp_address').addEventListener('input', function() {
+                if (syncCheckbox.checked) {
+                    const domAddr = document.getElementById('dom_address');
+                    domAddr.value = this.value;
+                    domAddr.readOnly = true;
+                    domAddr.classList.add('input-disabled');
+                }
+            });
+
+            syncCheckbox.addEventListener('change', async function() {
+                const fields = ['prov', 'reg', 'dist', 'vill'];
+                const domAddr = document.getElementById('dom_address');
+                if (this.checked) {
+                    fields.forEach(f => {
+                        const ktpVal = document.getElementById(`f_ktp_${f}`).value;
+                        const domEl = document.getElementById(`f_dom_${f}`);
+                        domEl.setAttribute('data-selected', ktpVal);
+                        domEl.disabled = true;
+                        domEl.classList.add('input-disabled');
+                    });
+                    domAddr.value = document.getElementById('ktp_address').value;
+                    domAddr.readOnly = true;
+                    domAddr.classList.add('input-disabled');
+                    await runChain('dom');
+                    setTimeout(autoMoveMap, 500);
+                } else {
+                    fields.forEach(f => {
+                        const domEl = document.getElementById(`f_dom_${f}`);
+                        domEl.disabled = false;
+                        domEl.classList.remove('input-disabled');
+                    });
+                    domAddr.readOnly = false;
+                    domAddr.classList.remove('input-disabled');
+                }
+            });
+
+            // 6. INITIALIZE MAP (KLIK TETAP BISA)
+            function initMap() {
+                const latF = document.getElementById('lat_field');
+                const lngF = document.getElementById('lng_field');
+                let coords = [latF.value || -8.112, lngF.value || 115.091];
+
+                mapObj = L.map('map').setView(coords, 14);
+                L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png').addTo(mapObj);
+                markerObj = L.marker(coords).addTo(mapObj);
+
+                mapObj.on('click', function(e) {
+                    // Klik tetap diizinkan meskipun Sync aktif
+                    latF.value = e.latlng.lat.toFixed(7);
+                    lngF.value = e.latlng.lng.toFixed(7);
+                    if (markerObj) mapObj.removeLayer(markerObj);
+                    markerObj = L.marker(e.latlng).addTo(mapObj);
+                });
+            }
+
+            // 7. RUN INITIALIZATION
+            initMap();
+            bindEvents('ktp');
+            bindEvents('dom');
+            runChain('ktp');
+            runChain('dom');
+
+            // 8. FORM SUBMIT HANDLER (Mencegah Error Required saat Sync)
+            const profileForm = document.getElementById('profileForm');
+            if (profileForm) {
+                profileForm.addEventListener('submit', function() {
+                    // Cari semua elemen yang disabled di dalam form ini
+                    const disabledElements = profileForm.querySelectorAll('select:disabled, input:disabled');
+
+                    // Aktifkan semuanya tepat sebelum data dikirim ke server
+                    disabledElements.forEach(el => {
+                        el.disabled = false;
+                    });
+                });
+            }
 
             // UMUR AUTO UPDATE LOGIC
             const dateInput = document.getElementById('date_birthday');
@@ -542,27 +751,6 @@
                     age--;
                 }
                 ageDisplay.value = age + " Tahun";
-            });
-
-            // MAP LOGIC
-            const latField = document.getElementById('lat_field');
-            const lngField = document.getElementById('lng_field');
-            let initialCoords = [-8.112, 115.091];
-            if (latField.value && lngField.value) {
-                initialCoords = [parseFloat(latField.value), parseFloat(lngField.value)];
-            }
-            const map = L.map('map').setView(initialCoords, 14);
-            L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png').addTo(map);
-            let marker = L.marker(initialCoords).addTo(map);
-            map.on('click', function(e) {
-                const {
-                    lat,
-                    lng
-                } = e.latlng;
-                latField.value = lat.toFixed(7);
-                lngField.value = lng.toFixed(7);
-                if (marker) map.removeLayer(marker);
-                marker = L.marker(e.latlng).addTo(map);
             });
 
             // CROPPER LOGIC

@@ -7,6 +7,21 @@ use App\Http\Controllers\PersonController;
 use App\Http\Controllers\ProfileController;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Route;
+use Illuminate\Support\Facades\Http;
+
+Route::get('/api-wilayah/{path}', function ($path) {
+    $url = "https://wilayah.id/api/" . $path;
+    $response = Http::get($url);
+    return $response->json();
+})->where('path', '.*');
+
+Route::get('/api-map-search', function (Illuminate\Http\Request $request) {
+    $query = $request->query('q');
+    $url = "https://nominatim.openstreetmap.org/search?format=json&q=" . urlencode($query) . "&limit=1";
+    return Illuminate\Support\Facades\Http::withHeaders([
+        'User-Agent' => 'Laravel-App'
+    ])->get($url)->json();
+});
 
 Route::get('/test-email', function () {
     $detail = [
@@ -16,7 +31,7 @@ Route::get('/test-email', function () {
 
     try {
         Mail::raw($detail['body'], function ($message) use ($detail) {
-            $message->to('gelgel.abdiutama@gmail.com')
+            $message->to('test@gmail.com')
                 ->subject($detail['title']);
         });
 

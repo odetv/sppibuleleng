@@ -7,6 +7,7 @@
             background-color: #f8fafc !important;
             color: #94a3b8 !important;
             cursor: not-allowed !important;
+            pointer-events: none;
         }
     </style>
 
@@ -745,16 +746,16 @@
                         <div class="flex-1 grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-6">
                             <div class="md:col-span-2">
                                 <label class="text-[11px] font-bold text-gray-500 uppercase tracking-wider">Nama Lengkap (Sesuai KTP)</label>
-                                <input type="text" name="name" id="f_name" class="w-full mt-2 px-4 py-2.5 bg-gray-50 border-none rounded-lg text-sm focus:ring-2 focus:ring-indigo-500">
+                                <input required type="text" name="name" id="f_name" class="w-full mt-2 px-4 py-2.5 bg-gray-50 border-none rounded-lg text-sm focus:ring-2 focus:ring-indigo-500">
                             </div>
-                            <div><label class="text-[11px] font-bold text-gray-500 uppercase tracking-wider">Email</label><input type="email" name="email" id="f_email" class="w-full mt-2 px-4 py-2.5 bg-slate-100 border-none rounded-lg text-sm text-slate-400 cursor-not-allowed" readonly></div>
-                            <div><label class="text-[11px] font-bold text-gray-500 uppercase tracking-wider">Telepon</label><input type="number" name="phone" id="f_phone" class="w-full mt-2 px-4 py-2.5 bg-gray-50 border-none rounded-lg text-sm focus:ring-2 focus:ring-indigo-500"></div>
-                            <div><label class="text-[11px] font-bold text-gray-500 uppercase tracking-wider">NIK (16 Digit)</label><input type="number" name="nik" id="f_nik" class="w-full mt-2 px-4 py-2.5 bg-gray-50 border-none rounded-lg text-sm"></div>
-                            <div><label class="text-[11px] font-bold text-gray-500 uppercase tracking-wider">Nomor KK (16 Digit)</label><input type="number" name="no_kk" id="f_no_kk" class="w-full mt-2 px-4 py-2.5 bg-gray-50 border-none rounded-lg text-sm"></div>
-                            <div><label class="text-[11px] font-bold text-gray-500 uppercase tracking-wider">NIP</label><input type="number" name="nip" id="f_nip" class="w-full mt-2 px-4 py-2.5 bg-gray-50 border-none rounded-lg text-sm focus:ring-2 focus:ring-indigo-500"></div>
-                            <div><label class="text-[11px] font-bold text-gray-500 uppercase tracking-wider">NPWP</label><input type="number" name="npwp" id="f_npwp" class="w-full mt-2 px-4 py-2.5 bg-gray-50 border-none rounded-lg text-sm focus:ring-2 focus:ring-indigo-500"></div>
-                            <div><label class="text-[11px] font-bold text-gray-500 uppercase tracking-wider">No. BPJS Kesehatan</label><input type="number" name="no_bpjs_kes" id="f_bpjs_kes" class="w-full mt-2 px-4 py-2.5 bg-gray-50 border-none rounded-lg text-sm focus:ring-2 focus:ring-indigo-500"></div>
-                            <div><label class="text-[11px] font-bold text-gray-500 uppercase tracking-wider">No. BPJS Ketenagakerjaan</label><input type="number" name="no_bpjs_tk" id="f_bpjs_tk" class="w-full mt-2 px-4 py-2.5 bg-gray-50 border-none rounded-lg text-sm focus:ring-2 focus:ring-indigo-500"></div>
+                            <div><label class="text-[11px] font-bold text-gray-500 uppercase tracking-wider">Email</label><input required type="email" name="email" id="f_email" class="w-full mt-2 px-4 py-2.5 bg-slate-100 border-none rounded-lg text-sm text-slate-400 cursor-not-allowed" readonly></div>
+                            <div><label class="text-[11px] font-bold text-gray-500 uppercase tracking-wider">Telepon</label><input required type="number" name="phone" id="f_phone" class="w-full mt-2 px-4 py-2.5 bg-gray-50 border-none rounded-lg text-sm focus:ring-2 focus:ring-indigo-500"></div>
+                            <div><label class="text-[11px] font-bold text-gray-500 uppercase tracking-wider">NIK (16 Digit)</label><input required type="number" name="nik" id="f_nik" class="w-full mt-2 px-4 py-2.5 bg-gray-50 border-none rounded-lg text-sm"></div>
+                            <div><label class="text-[11px] font-bold text-gray-500 uppercase tracking-wider">Nomor KK (16 Digit)</label><input required type="number" name="no_kk" id="f_no_kk" class="w-full mt-2 px-4 py-2.5 bg-gray-50 border-none rounded-lg text-sm"></div>
+                            <div><label class="text-[11px] font-bold text-gray-500 uppercase tracking-wider">NIP</label><input required type="number" name="nip" id="f_nip" class="w-full mt-2 px-4 py-2.5 bg-gray-50 border-none rounded-lg text-sm focus:ring-2 focus:ring-indigo-500"></div>
+                            <div><label class="text-[11px] font-bold text-gray-500 uppercase tracking-wider">NPWP</label><input required type="number" name="npwp" id="f_npwp" class="w-full mt-2 px-4 py-2.5 bg-gray-50 border-none rounded-lg text-sm focus:ring-2 focus:ring-indigo-500"></div>
+                            <div><label class="text-[11px] font-bold text-gray-500 uppercase tracking-wider">No. BPJS Kesehatan</label><input required type="number" name="no_bpjs_kes" id="f_bpjs_kes" class="w-full mt-2 px-4 py-2.5 bg-gray-50 border-none rounded-lg text-sm focus:ring-2 focus:ring-indigo-500"></div>
+                            <div><label class="text-[11px] font-bold text-gray-500 uppercase tracking-wider">No. BPJS Ketenagakerjaan</label><input required type="number" name="no_bpjs_tk" id="f_bpjs_tk" class="w-full mt-2 px-4 py-2.5 bg-gray-50 border-none rounded-lg text-sm focus:ring-2 focus:ring-indigo-500"></div>
                         </div>
                     </div>
 
@@ -769,8 +770,8 @@
                                     @foreach($workAssignments as $wa) <option value="{{ $wa->id_work_assignment }}">{{ $wa->sppgUnit->name }} - {{ $wa->decree->no_sk }}</option> @endforeach
                                 </select>
                             </div>
-                            <div><label class="text-[11px] font-bold text-gray-500 uppercase tracking-wider">Batch</label><select name="batch" id="f_batch" class="w-full mt-2 px-3 py-2.5 bg-gray-50 border-none rounded-lg text-sm">@foreach(['1', '2', '3', 'Non-SPPI'] as $b) <option value="{{ $b }}">{{ $b }}</option> @endforeach</select></div>
-                            <div><label class="text-[11px] font-bold text-gray-500 uppercase tracking-wider">Hak Akses Sistem</label><select name="id_ref_role" id="f_role" class="w-full mt-2 px-3 py-2.5 bg-gray-50 border-none rounded-lg text-sm">@foreach($roles as $r)<option value="{{$r->id_ref_role}}">{{$r->name_role}}</option>@endforeach</select></div>
+                            <div><label class="text-[11px] font-bold text-gray-500 uppercase tracking-wider">Batch</label><select required name="batch" id="f_batch" class="w-full mt-2 px-3 py-2.5 bg-gray-50 border-none rounded-lg text-sm">@foreach(['1', '2', '3', 'Non-SPPI'] as $b) <option value="{{ $b }}">{{ $b }}</option> @endforeach</select></div>
+                            <div><label class="text-[11px] font-bold text-gray-500 uppercase tracking-wider">Hak Akses Sistem</label><select required name="id_ref_role" id="f_role" class="w-full mt-2 px-3 py-2.5 bg-gray-50 border-none rounded-lg text-sm">@foreach($roles as $r)<option value="{{$r->id_ref_role}}">{{$r->name_role}}</option>@endforeach</select></div>
                             <div>
                                 <label class="text-[11px] font-bold text-gray-500 uppercase tracking-wider">Jabatan</label>
                                 <select name="id_ref_position" id="f_pos" class="w-full mt-2 px-3 py-2.5 bg-gray-50 border-none rounded-lg text-sm focus:ring-2 focus:ring-indigo-500 transition-all">
@@ -790,24 +791,24 @@
                     <div class="pt-10 border-t border-gray-100">
                         <h3 class="text-sm font-bold uppercase tracking-widest text-indigo-600 mb-6">Detail Personal & Pendidikan</h3>
                         <div class="grid grid-cols-2 md:grid-cols-4 gap-6">
-                            <div><label class="text-[11px] font-bold text-gray-500 uppercase tracking-wider">Pendidikan Terakhir</label><select name="last_education" id="f_last_edu" class="w-full mt-1 px-3 py-2 bg-gray-50 border-none rounded-lg text-sm">@foreach(['D-III', 'D-IV', 'S-1', 'S-2'] as $edu)<option value="{{ $edu }}">{{ $edu }}</option>@endforeach</select></div>
-                            <div><label class="text-[11px] font-bold text-gray-500 uppercase tracking-wider">Gelar Belakang</label><input type="text" name="title_education" id="f_title_edu" placeholder="S.Kom." class="w-full mt-1 px-4 py-2 bg-gray-50 border-none rounded-lg text-sm"></div>
-                            <div><label class="text-[11px] font-bold text-gray-500 uppercase tracking-wider">Jurusan / Prodi</label><input type="text" name="major_education" id="f_major" placeholder="Ilmu Kelautan" class="w-full mt-1 px-4 py-2 bg-gray-50 border-none rounded-lg text-sm"></div>
-                            <div><label class="text-[11px] font-bold text-gray-500 uppercase tracking-wider">Status Kerja</label><select name="employment_status" id="f_emp" class="w-full mt-1 px-3 py-2 bg-gray-50 border-none rounded-lg text-sm">
+                            <div><label class="text-[11px] font-bold text-gray-500 uppercase tracking-wider">Pendidikan Terakhir</label><select required name="last_education" id="f_last_edu" class="w-full mt-1 px-3 py-2 bg-gray-50 border-none rounded-lg text-sm">@foreach(['D-III', 'D-IV', 'S-1', 'S-2'] as $edu)<option value="{{ $edu }}">{{ $edu }}</option>@endforeach</select></div>
+                            <div><label class="text-[11px] font-bold text-gray-500 uppercase tracking-wider">Gelar Belakang</label><input required type="text" name="title_education" id="f_title_edu" placeholder="S.Kom." class="w-full mt-1 px-4 py-2 bg-gray-50 border-none rounded-lg text-sm"></div>
+                            <div><label class="text-[11px] font-bold text-gray-500 uppercase tracking-wider">Jurusan / Prodi</label><input required type="text" name="major_education" id="f_major" placeholder="Ilmu Kelautan" class="w-full mt-1 px-4 py-2 bg-gray-50 border-none rounded-lg text-sm"></div>
+                            <div><label class="text-[11px] font-bold text-gray-500 uppercase tracking-wider">Status Kerja</label><select required name="employment_status" id="f_emp" class="w-full mt-1 px-3 py-2 bg-gray-50 border-none rounded-lg text-sm">
                                     <option value="ASN">ASN</option>
                                     <option value="Non-ASN">Non-ASN</option>
                                 </select></div>
-                            <div><label class="text-[11px] font-bold text-gray-500 uppercase tracking-wider">Tempat Lahir</label><input type="text" name="place_birthday" id="f_place" class="w-full mt-1 px-4 py-2 bg-gray-50 border-none rounded-lg text-sm"></div>
-                            <div><label class="text-[11px] font-bold text-gray-500 uppercase tracking-wider">Tanggal Lahir</label><input type="date" name="date_birthday" id="f_date" class="w-full mt-1 px-4 py-2 bg-gray-50 border-none rounded-lg text-sm"></div>
-                            <div><label class="text-[11px] font-bold text-gray-500 uppercase tracking-wider">Umur</label><input type="text" id="f_age" readonly class="w-full mt-1 px-4 py-2 bg-slate-50 border-none rounded-lg text-sm text-slate-400 cursor-not-allowed"></div>
-                            <div><label class="text-[11px] font-bold text-gray-500 uppercase tracking-wider">Agama</label><select name="religion" id="f_religion" class="w-full mt-1 px-3 py-2 bg-gray-50 border-none rounded-lg text-sm">@foreach(['Islam', 'Kristen', 'Katholik', 'Hindu', 'Buddha', 'Khonghucu'] as $rel)<option value="{{ $rel }}">{{ $rel }}</option>@endforeach</select></div>
-                            <div><label class="text-[11px] font-bold text-gray-500 uppercase tracking-wider">Gender</label><select name="gender" id="f_gender" class="w-full mt-1 px-3 py-2 bg-gray-50 border-none rounded-lg text-sm">
+                            <div><label class="text-[11px] font-bold text-gray-500 uppercase tracking-wider">Tempat Lahir</label><input required type="text" name="place_birthday" id="f_place" class="w-full mt-1 px-4 py-2 bg-gray-50 border-none rounded-lg text-sm"></div>
+                            <div><label class="text-[11px] font-bold text-gray-500 uppercase tracking-wider">Tanggal Lahir</label><input required type="date" name="date_birthday" id="f_date" class="w-full mt-1 px-4 py-2 bg-gray-50 border-none rounded-lg text-sm"></div>
+                            <div><label class="text-[11px] font-bold text-gray-500 uppercase tracking-wider">Umur</label><input required type="text" id="f_age" readonly class="w-full mt-1 px-4 py-2 bg-slate-50 border-none rounded-lg text-sm text-slate-400 cursor-not-allowed"></div>
+                            <div><label class="text-[11px] font-bold text-gray-500 uppercase tracking-wider">Agama</label><select required name="religion" id="f_religion" class="w-full mt-1 px-3 py-2 bg-gray-50 border-none rounded-lg text-sm">@foreach(['Islam', 'Kristen', 'Katholik', 'Hindu', 'Buddha', 'Khonghucu'] as $rel)<option value="{{ $rel }}">{{ $rel }}</option>@endforeach</select></div>
+                            <div><label class="text-[11px] font-bold text-gray-500 uppercase tracking-wider">Gender</label><select required name="gender" id="f_gender" class="w-full mt-1 px-3 py-2 bg-gray-50 border-none rounded-lg text-sm">
                                     <option value="L">Laki-laki</option>
                                     <option value="P">Perempuan</option>
                                 </select></div>
-                            <div><label class="text-[11px] font-bold text-gray-500 uppercase tracking-wider">Status Pernikahan</label><select name="marital_status" id="f_marital" class="w-full mt-1 px-3 py-2 bg-gray-50 border-none rounded-lg text-sm">@foreach(['Belum Kawin', 'Kawin', 'Janda', 'Duda'] as $status)<option value="{{ $status }}">{{ $status }}</option>@endforeach</select></div>
-                            <div><label class="text-[11px] font-bold text-gray-500 uppercase tracking-wider">Ukuran Baju</label><select name="clothing_size" id="f_cloth" class="w-full mt-1 px-3 py-2 bg-gray-50 border-none rounded-lg text-sm">@foreach(['XS', 'S', 'M', 'L', 'XL', 'XXL', 'XXXL', '4XL', '5XL'] as $size)<option value="{{ $size }}">{{ $size }}</option>@endforeach</select></div>
-                            <div><label class="text-[11px] font-bold text-gray-500 uppercase tracking-wider">Ukuran Sepatu</label><select name="shoe_size" id="f_shoe" class="w-full mt-1 px-3 py-2 bg-gray-50 border-none rounded-lg text-sm">@for($i=35; $i<=50; $i++)<option value="{{ $i }}">{{ $i }}</option>@endfor</select></div>
+                            <div><label class="text-[11px] font-bold text-gray-500 uppercase tracking-wider">Status Pernikahan</label><select required name="marital_status" id="f_marital" class="w-full mt-1 px-3 py-2 bg-gray-50 border-none rounded-lg text-sm">@foreach(['Belum Kawin', 'Kawin', 'Janda', 'Duda'] as $status)<option value="{{ $status }}">{{ $status }}</option>@endforeach</select></div>
+                            <div><label class="text-[11px] font-bold text-gray-500 uppercase tracking-wider">Ukuran Baju</label><select required name="clothing_size" id="f_cloth" class="w-full mt-1 px-3 py-2 bg-gray-50 border-none rounded-lg text-sm">@foreach(['XS', 'S', 'M', 'L', 'XL', 'XXL', 'XXXL', '4XL', '5XL'] as $size)<option value="{{ $size }}">{{ $size }}</option>@endforeach</select></div>
+                            <div><label class="text-[11px] font-bold text-gray-500 uppercase tracking-wider">Ukuran Sepatu</label><select required name="shoe_size" id="f_shoe" class="w-full mt-1 px-3 py-2 bg-gray-50 border-none rounded-lg text-sm">@for($i=35; $i<=50; $i++)<option value="{{ $i }}">{{ $i }}</option>@endfor</select></div>
                         </div>
                     </div>
 
@@ -815,11 +816,31 @@
                     <div class="pt-10 border-t border-gray-100">
                         <h3 class="text-sm font-bold uppercase tracking-widest text-indigo-600 mb-6">Alamat KTP</h3>
                         <div class="grid grid-cols-2 md:grid-cols-4 gap-6 text-sm">
-                            <div><label class="text-[11px] font-bold text-gray-500 uppercase tracking-wider">Provinsi</label><input type="text" name="province_ktp" id="f_ktp_prov" class="w-full px-4 py-2 bg-gray-50 border-none rounded-lg text-sm"></div>
-                            <div><label class="text-[11px] font-bold text-gray-500 uppercase tracking-wider">Kabupaten</label><input type="text" name="regency_ktp" id="f_ktp_reg" class="w-full px-4 py-2 bg-gray-50 border-none rounded-lg text-sm"></div>
-                            <div><label class="text-[11px] font-bold text-gray-500 uppercase tracking-wider">Kecamatan</label><input type="text" name="district_ktp" id="f_ktp_dist" class="w-full px-4 py-2 bg-gray-50 border-none rounded-lg text-sm"></div>
-                            <div><label class="text-[11px] font-bold text-gray-500 uppercase tracking-wider">Desa/Kelurahan</label><input type="text" name="village_ktp" id="f_ktp_vill" class="w-full px-4 py-2 bg-gray-50 border-none rounded-lg text-sm"></div>
-                            <div class="md:col-span-4"><label class="text-[11px] font-bold text-gray-500 uppercase tracking-wider">Alamat Jalan/Rumah</label><textarea name="address_ktp" id="f_ktp_address" rows="2" class="w-full mt-1 px-4 py-2 bg-gray-50 border-none rounded-lg text-sm"></textarea></div>
+                            <div>
+                                <label class="text-[11px] font-bold text-gray-500 uppercase tracking-wider">Provinsi</label>
+                                <select required name="province_ktp" id="f_ktp_prov" data-selected="{{ $user->province_ktp ?? '' }}" class="w-full px-4 py-2 bg-gray-50 border-none rounded-lg text-sm">
+                                    <option value="" disabled selected>Pilih Provinsi</option>
+                                </select>
+                            </div>
+                            <div>
+                                <label class="text-[11px] font-bold text-gray-500 uppercase tracking-wider">Kabupaten</label>
+                                <select required name="regency_ktp" id="f_ktp_reg" data-selected="{{ $user->regency_ktp ?? '' }}" class="w-full px-4 py-2 bg-gray-50 border-none rounded-lg text-sm" disabled>
+                                    <option value="" disabled selected>Pilih Kabupaten</option>
+                                </select>
+                            </div>
+                            <div>
+                                <label class="text-[11px] font-bold text-gray-500 uppercase tracking-wider">Kecamatan</label>
+                                <select required name="district_ktp" id="f_ktp_dist" data-selected="{{ $user->district_ktp ?? '' }}" class="w-full px-4 py-2 bg-gray-50 border-none rounded-lg text-sm" disabled>
+                                    <option value="" disabled selected>Pilih Kecamatan</option>
+                                </select>
+                            </div>
+                            <div>
+                                <label class="text-[11px] font-bold text-gray-500 uppercase tracking-wider">Desa/Kelurahan</label>
+                                <select required name="village_ktp" id="f_ktp_vill" data-selected="{{ $user->village_ktp ?? '' }}" class="w-full px-4 py-2 bg-gray-50 border-none rounded-lg text-sm" disabled>
+                                    <option value="" disabled selected>Pilih Desa</option>
+                                </select>
+                            </div>
+                            <div class="md:col-span-4"><label class="text-[11px] font-bold text-gray-500 uppercase tracking-wider">Alamat Jalan/Rumah</label><textarea required name="address_ktp" id="f_ktp_address" rows="2" class="w-full mt-1 px-4 py-2 bg-gray-50 border-none rounded-lg text-sm">{{ $user->address_ktp ?? '' }}</textarea></div>
                         </div>
                     </div>
 
@@ -835,21 +856,41 @@
                         <div class="grid grid-cols-1 md:grid-cols-2 gap-8 text-sm">
                             <div class="space-y-6">
                                 <div class="grid grid-cols-2 gap-4">
-                                    <div><label class="text-[11px] font-bold text-gray-500 uppercase tracking-wider">Provinsi</label><input type="text" name="province_domicile" id="f_dom_prov" class="w-full px-4 py-2 bg-gray-50 border-none rounded-lg text-sm"></div>
-                                    <div><label class="text-[11px] font-bold text-gray-500 uppercase tracking-wider">Kabupaten</label><input type="text" name="regency_domicile" id="f_dom_reg" class="w-full px-4 py-2 bg-gray-50 border-none rounded-lg text-sm"></div>
-                                    <div><label class="text-[11px] font-bold text-gray-500 uppercase tracking-wider">Kecamatan</label><input type="text" name="district_domicile" id="f_dom_dist" class="w-full px-4 py-2 bg-gray-50 border-none rounded-lg text-sm"></div>
-                                    <div><label class="text-[11px] font-bold text-gray-500 uppercase tracking-wider">Desa/Kelurahan</label><input type="text" name="village_domicile" id="f_dom_vill" class="w-full px-4 py-2 bg-gray-50 border-none rounded-lg text-sm"></div>
+                                    <div>
+                                        <label class="text-[11px] font-bold text-gray-500 uppercase tracking-wider">Provinsi</label>
+                                        <select required name="province_domicile" id="f_dom_prov" data-selected="{{ $user->province_domicile ?? '' }}" class="w-full px-4 py-2 bg-gray-50 border-none rounded-lg text-sm">
+                                            <option value="" disabled selected>Pilih Provinsi</option>
+                                        </select>
+                                    </div>
+                                    <div>
+                                        <label class="text-[11px] font-bold text-gray-500 uppercase tracking-wider">Kabupaten</label>
+                                        <select required name="regency_domicile" id="f_dom_reg" data-selected="{{ $user->regency_domicile ?? '' }}" class="w-full px-4 py-2 bg-gray-50 border-none rounded-lg text-sm" disabled>
+                                            <option value="" disabled selected>Pilih Kabupaten</option>
+                                        </select>
+                                    </div>
+                                    <div>
+                                        <label class="text-[11px] font-bold text-gray-500 uppercase tracking-wider">Kecamatan</label>
+                                        <select required name="district_domicile" id="f_dom_dist" data-selected="{{ $user->district_domicile ?? '' }}" class="w-full px-4 py-2 bg-gray-50 border-none rounded-lg text-sm" disabled>
+                                            <option value="" disabled selected>Pilih Kecamatan</option>
+                                        </select>
+                                    </div>
+                                    <div>
+                                        <label class="text-[11px] font-bold text-gray-500 uppercase tracking-wider">Desa/Kelurahan</label>
+                                        <select required name="village_domicile" id="f_dom_vill" data-selected="{{ $user->village_domicile ?? '' }}" class="w-full px-4 py-2 bg-gray-50 border-none rounded-lg text-sm" disabled>
+                                            <option value="" disabled selected>Pilih Desa</option>
+                                        </select>
+                                    </div>
                                 </div>
-                                <div><label class="text-[11px] font-bold text-gray-500 uppercase tracking-wider">Alamat Jalan/Rumah</label><textarea name="address_domicile" id="f_dom_address" rows="2" class="w-full mt-1 px-4 py-2 bg-gray-50 border-none rounded-lg text-sm focus:ring-2 focus:ring-indigo-500"></textarea></div>
+                                <div><label class="text-[11px] font-bold text-gray-500 uppercase tracking-wider">Alamat Jalan/Rumah</label><textarea required name="address_domicile" id="f_dom_address" rows="2" class="w-full mt-1 px-4 py-2 bg-gray-50 border-none rounded-lg text-sm focus:ring-2 focus:ring-indigo-500"></textarea></div>
                                 <div>
                                     <label class="text-[11px] font-bold text-gray-500 uppercase tracking-wider">Koordinat GPS (Klik Pada Peta)</label>
                                     <div class="flex gap-2 mt-2 text-nowrap">
-                                        <input type="text" id="f_dom_lat" name="latitude_gps_domicile" readonly class="w-1/2 px-4 py-2.5 bg-gray-50 border-none rounded-lg text-sm input-disabled">
-                                        <input type="text" id="f_dom_lng" name="longitude_gps_domicile" readonly class="w-1/2 px-4 py-2.5 bg-gray-50 border-none rounded-lg text-sm input-disabled">
+                                        <input required type="text" id="f_dom_lat" name="latitude_gps_domicile" readonly class="w-1/2 px-4 py-2.5 bg-gray-50 border-none rounded-lg text-sm input-disabled">
+                                        <input required type="text" id="f_dom_lng" name="longitude_gps_domicile" readonly class="w-1/2 px-4 py-2.5 bg-gray-50 border-none rounded-lg text-sm input-disabled">
                                     </div>
                                 </div>
                             </div>
-                            <div id="map"></div>
+                            <div id="map" style="min-height: 300px; background: #eee;"></div>
                         </div>
                     </div>
 
@@ -857,9 +898,9 @@
                     <div class="pt-10 border-t border-gray-100">
                         <h3 class="text-sm font-bold uppercase tracking-widest text-indigo-600 mb-6">Informasi Payroll</h3>
                         <div class="grid grid-cols-1 md:grid-cols-3 gap-8 text-sm">
-                            <div><label class="text-[11px] font-bold text-gray-500 uppercase tracking-wider">Nama Bank</label><select name="payroll_bank_name" id="f_bank_name" class="w-full px-4 py-2 bg-gray-50 border-none rounded-lg text-sm">@foreach(['BNI', 'Mandiri', 'BCA', 'BTN', 'BSI', 'BPD Bali'] as $bank)<option value="{{ $bank }}">{{ $bank }}</option>@endforeach</select></div>
-                            <div><label class="text-[11px] font-bold text-gray-500 uppercase tracking-wider">Nomor Rekening</label><input type="number" name="payroll_bank_account_number" id="f_bank_acc" class="w-full px-4 py-2 bg-gray-50 border-none rounded-lg text-sm"></div>
-                            <div><label class="text-[11px] font-bold text-gray-500 uppercase tracking-wider">Nama Pemilik Rekening</label><input type="text" name="payroll_bank_account_name" id="f_bank_owner" class="w-full px-4 py-2 bg-gray-50 border-none rounded-lg text-sm"></div>
+                            <div><label class="text-[11px] font-bold text-gray-500 uppercase tracking-wider">Nama Bank</label><select required name="payroll_bank_name" id="f_bank_name" class="w-full px-4 py-2 bg-gray-50 border-none rounded-lg text-sm">@foreach(['BNI', 'Mandiri', 'BCA', 'BTN', 'BSI', 'BPD Bali'] as $bank)<option value="{{ $bank }}">{{ $bank }}</option>@endforeach</select></div>
+                            <div><label class="text-[11px] font-bold text-gray-500 uppercase tracking-wider">Nomor Rekening</label><input required type="number" name="payroll_bank_account_number" id="f_bank_acc" class="w-full px-4 py-2 bg-gray-50 border-none rounded-lg text-sm"></div>
+                            <div><label class="text-[11px] font-bold text-gray-500 uppercase tracking-wider">Nama Pemilik Rekening</label><input required type="text" name="payroll_bank_account_name" id="f_bank_owner" class="w-full px-4 py-2 bg-gray-50 border-none rounded-lg text-sm"></div>
                         </div>
                     </div>
 
@@ -977,6 +1018,200 @@
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 
     <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const apiBase = "/api-wilayah";
+            const sleep = (ms) => new Promise(resolve => setTimeout(resolve, ms));
+
+            // 1. Fungsi Inti Fetch & Match
+            async function populateSelect(selectId, urlPath, placeholder, targetValue = null) {
+                const select = document.getElementById(selectId);
+                if (!select) return null;
+
+                // Ambil nilai yang baru saja disuntikkan ke atribut data-selected
+                const savedValue = select.getAttribute('data-selected');
+                let valueToMatch = (targetValue || savedValue || "").toString().toUpperCase().trim();
+
+                select.innerHTML = `<option value="">Mohon tunggu...</option>`;
+                select.disabled = true;
+
+                try {
+                    const response = await fetch(`${apiBase}/${urlPath}`);
+                    const result = await response.json();
+                    const data = result.data;
+
+                    let options = `<option value="">${placeholder}</option>`;
+                    data.forEach(item => {
+                        /**
+                         * LOGIKA PEMBERSIHAN NAMA:
+                         * Menghapus kata "KABUPATEN " atau "KOTA " hanya jika berada di awal string.
+                         * Regex /^.../i memastikan pengecekan dilakukan di awal dan tidak peka huruf besar/kecil.
+                         */
+                        let cleanName = item.name.replace(/^(KABUPATEN|KOTA)\s+/i, "");
+
+                        options += `<option value="${cleanName}" data-code="${item.code}">${cleanName}</option>`;
+                    });
+                    select.innerHTML = options;
+                    select.disabled = false;
+
+                    if (valueToMatch) {
+                        for (let i = 0; i < select.options.length; i++) {
+                            if (select.options[i].value.toUpperCase() === valueToMatch) {
+                                select.selectedIndex = i;
+                                return select.options[i].getAttribute('data-code');
+                            }
+                        }
+                    }
+                } catch (e) {
+                    console.error("Error loading " + selectId, e);
+                    select.innerHTML = `<option value="">Gagal memuat</option>`;
+                }
+                return null;
+            }
+
+            // 2. Fungsi Rantai Loading (Berurutan)
+            async function runChain(prefix) {
+                const provCode = await populateSelect(`f_${prefix}_prov`, 'provinces.json', "Pilih Provinsi");
+                if (provCode) {
+                    const regCode = await populateSelect(`f_${prefix}_reg`, `regencies/${provCode}.json`, "Pilih Kabupaten");
+                    if (regCode) {
+                        const distCode = await populateSelect(`f_${prefix}_dist`, `districts/${regCode}.json`, "Pilih Kecamatan");
+                        if (distCode) {
+                            await populateSelect(`f_${prefix}_vill`, `villages/${distCode}.json`, "Pilih Desa");
+                        }
+                    }
+                }
+            }
+
+            // 3. Integrasi ke Fungsi Modal Global
+            const oldOpenModal = window.openMasterEditModal;
+            window.openMasterEditModal = function(user, person, isApprove) {
+                // Jalankan fungsi pengisian field biasa (Nama, NIK, dll)
+                if (oldOpenModal) oldOpenModal(user, person, isApprove);
+
+                // Suntikkan data wilayah person ke atribut data-selected masing-masing select
+                const mapping = {
+                    'f_ktp_prov': person?.province_ktp,
+                    'f_ktp_reg': person?.regency_ktp,
+                    'f_ktp_dist': person?.district_ktp,
+                    'f_ktp_vill': person?.village_ktp,
+                    'f_dom_prov': person?.province_domicile,
+                    'f_dom_reg': person?.regency_domicile,
+                    'f_dom_dist': person?.district_domicile,
+                    'f_dom_vill': person?.village_domicile
+                };
+
+                Object.entries(mapping).forEach(([id, val]) => {
+                    const el = document.getElementById(id);
+                    if (el) el.setAttribute('data-selected', val || '');
+                });
+
+                // Jalankan loading wilayah secara otomatis setelah modal terbuka
+                setTimeout(() => {
+                    runChain('ktp');
+                    runChain('dom');
+                }, 500);
+            };
+
+            // 4. Listener Perubahan Manual (User klik sendiri)
+            const bindEvents = (p) => {
+                ['prov', 'reg', 'dist'].forEach(f => {
+                    const el = document.getElementById(`f_${p}_${f}`);
+                    if (!el) return;
+
+                    el.addEventListener('change', async function() {
+                        const isSyncActive = document.getElementById('sync_address_admin').checked;
+                        const code = this.options[this.selectedIndex]?.getAttribute('data-code');
+
+                        const nextMap = {
+                            'prov': ['reg', 'dist', 'vill'],
+                            'reg': ['dist', 'vill'],
+                            'dist': ['vill']
+                        };
+
+                        // --- FUNGSI RESET TOTAL ---
+                        const resetLevel = (prefix, fields) => {
+                            fields.forEach(target => {
+                                const targetEl = document.getElementById(`f_${prefix}_${target}`);
+                                if (targetEl) {
+                                    targetEl.innerHTML = '<option value="">Pilih...</option>';
+                                    // Jika dom & sync aktif, pastikan tetap terkunci
+                                    if (prefix === 'dom' && isSyncActive) {
+                                        targetEl.classList.add('input-disabled');
+                                        targetEl.disabled = true;
+                                    }
+                                }
+                            });
+                        };
+
+                        // Reset level bawah untuk prefix yang sedang diubah (KTP atau Dom)
+                        resetLevel(p, nextMap[f]);
+
+                        // Jika ubah KTP dan centang aktif, reset juga level bawah di Domisili
+                        if (p === 'ktp' && isSyncActive) {
+                            resetLevel('dom', nextMap[f]);
+                            // Samakan nilai dropdown yang baru saja dipilih
+                            const domSameLevel = document.getElementById(`f_dom_${f}`);
+                            if (domSameLevel) domSameLevel.value = this.value;
+                        }
+
+                        if (code) {
+                            const nextField = f === 'prov' ? 'reg' : (f === 'reg' ? 'dist' : 'vill');
+                            const path = f === 'prov' ? 'regencies' : (f === 'reg' ? 'districts' : 'villages');
+
+                            // Isi dropdown level berikutnya
+                            await populateSelect(`f_${p}_${nextField}`, `${path}/${code}.json`, "Pilih...");
+
+                            // Jika sync aktif, isi juga dropdown level berikutnya di domisili
+                            if (p === 'ktp' && isSyncActive) {
+                                await populateSelect(`f_dom_${nextField}`, `${path}/${code}.json`, "Pilih...");
+                                const domNextEl = document.getElementById(`f_dom_${nextField}`);
+                                if (domNextEl) {
+                                    domNextEl.classList.add('input-disabled');
+                                    domNextEl.disabled = true;
+                                }
+                            }
+                        }
+
+                        if (p === 'dom' || (p === 'ktp' && isSyncActive)) {
+                            setTimeout(autoMoveMap, 300);
+                        }
+                    });
+                });
+            };
+
+            bindEvents('ktp');
+            bindEvents('dom');
+
+            // 5. Fitur Sync (Gunakan Alamat KTP)
+            const syncBtn = document.getElementById('sync_address_admin');
+            if (syncBtn) {
+                syncBtn.addEventListener('change', async function() {
+                    if (this.checked) {
+                        const ktpData = {
+                            'f_dom_prov': document.getElementById('f_ktp_prov').value,
+                            'f_dom_reg': document.getElementById('f_ktp_reg').value,
+                            'f_dom_dist': document.getElementById('f_ktp_dist').value,
+                            'f_dom_vill': document.getElementById('f_ktp_vill').value
+                        };
+
+                        // Suntikkan nilai KTP ke data-selected Domisili
+                        Object.entries(ktpData).forEach(([id, val]) => {
+                            const el = document.getElementById(id);
+                            if (el) el.setAttribute('data-selected', val);
+                        });
+
+                        const ktpAddr = document.getElementById('f_ktp_address');
+                        const domAddr = document.getElementById('f_dom_address');
+                        if (ktpAddr && domAddr) domAddr.value = ktpAddr.value;
+
+                        // Jalankan ulang chain khusus untuk domisili
+                        runChain('dom');
+                    }
+                });
+            }
+        });
+
+
         // --- LOGIC SINKRONISASI ALAMAT DI ADMIN ---
         const syncBtnAdmin = document.getElementById('sync_address_admin');
         const addrMap = {
@@ -988,26 +1223,45 @@
         };
 
         function performSync() {
-            if (syncBtnAdmin.checked) {
-                for (const [ktpId, domId] of Object.entries(addrMap)) {
-                    const ktpEl = document.getElementById(ktpId);
-                    const domEl = document.getElementById(domId);
-                    if (ktpEl && domEl) {
+            const isChecked = document.getElementById('sync_address_admin').checked;
+            const fields = ['prov', 'reg', 'dist', 'vill', 'address'];
+
+            fields.forEach(field => {
+                const ktpEl = document.getElementById(`f_ktp_${field}`);
+                const domEl = document.getElementById(`f_dom_${field}`);
+
+                if (domEl && ktpEl) {
+                    if (isChecked) {
+                        // SINKRONKAN DATA
                         domEl.value = ktpEl.value;
                         domEl.classList.add('input-disabled');
-                        domEl.readOnly = true;
-                    }
-                }
-            } else {
-                for (const domId of Object.values(addrMap)) {
-                    const domEl = document.getElementById(domId);
-                    if (domEl) {
+
+                        if (domEl.tagName === 'SELECT') {
+                            domEl.disabled = true;
+                        } else {
+                            domEl.readOnly = true;
+                        }
+                    } else {
+                        // LEPASKAN KUNCI
                         domEl.classList.remove('input-disabled');
+                        domEl.disabled = false;
                         domEl.readOnly = false;
                     }
                 }
+            });
+
+            if (isChecked) {
+                runChain('dom'); // Muat ulang semua dropdown domisili agar sinkron
+                autoMoveMap();
             }
         }
+
+        document.getElementById('f_ktp_address').addEventListener('input', function() {
+            if (document.getElementById('sync_address_admin').checked) {
+                const domAddr = document.getElementById('f_dom_address');
+                domAddr.value = this.value;
+            }
+        });
 
         syncBtnAdmin.addEventListener('change', performSync);
 
@@ -1022,6 +1276,7 @@
         let mapObj, markerObj, cropperObj;
         const photoInputEl = document.getElementById('photo');
 
+        // 1. Fungsi Asli Anda (TIDAK ADA YANG DIUBAH)
         function setupMap(lat, lng) {
             if (mapObj) mapObj.remove();
 
@@ -1045,6 +1300,40 @@
                 if (latEl) latEl.value = e.latlng.lat.toFixed(8);
                 if (lngEl) lngEl.value = e.latlng.lng.toFixed(8);
             });
+        }
+
+        // 2. Fungsi Tambahan agar Peta Dinamis mengikuti Dropdown
+        async function autoMoveMap() {
+            const prov = document.getElementById('f_dom_prov')?.value;
+            const reg = document.getElementById('f_dom_reg')?.value;
+            const dist = document.getElementById('f_dom_dist')?.value;
+            const vill = document.getElementById('f_dom_vill')?.value;
+
+            let queryParts = [vill, dist, reg, prov].filter(Boolean);
+            let address = queryParts.join(", ");
+
+            if (!address || !mapObj) return;
+
+            try {
+                const resp = await fetch(`/api-map-search?q=${encodeURIComponent(address)}`);
+                const data = await resp.json();
+
+                if (data && data.length > 0) {
+                    const newLat = parseFloat(data[0].lat);
+                    const newLng = parseFloat(data[0].lon);
+
+                    let zoomLevel = 9;
+                    if (vill) zoomLevel = 16;
+                    else if (dist) zoomLevel = 14;
+                    else if (reg) zoomLevel = 12;
+
+                    mapObj.setView([newLat, newLng], zoomLevel, {
+                        animate: true
+                    });
+                }
+            } catch (e) {
+                console.error("Gagal koordinasi peta:", e);
+            }
         }
 
         // Fungsi untuk membuka modal download

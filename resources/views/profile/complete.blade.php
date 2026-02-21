@@ -53,9 +53,10 @@
         }
 
         .input-disabled {
-            background-color: #f3f4f6 !important;
-            cursor: not-allowed;
-            color: #6b7280;
+            background-color: #f8fafc !important;
+            color: #94a3b8 !important;
+            cursor: not-allowed !important;
+            pointer-events: none;
         }
     </style>
 </head>
@@ -366,31 +367,33 @@
                     {{-- SECTION ALAMAT KTP --}}
                     <section>
                         <div class="flex items-center gap-2 mb-4 pt-4 border-t border-gray-100">
-                            <span class="p-1.5 bg-blue-50 text-darkblue rounded-lg"><svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <span class="p-1.5 bg-blue-50 text-darkblue rounded-lg">
+                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"></path>
-                                </svg></span>
-                            <h3 class="font-bold text-darkblue uppercase text-xs tracking-widest">Alamat Sesuai KTP</h3>
+                                </svg>
+                            </span>
+                            <h3 class="font-bold text-darkblue uppercase text-xs tracking-widest">Alamat KTP</h3>
                         </div>
                         <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
                             <div>
                                 <label class="text-[11px] font-bold text-gray-500 uppercase">Provinsi</label>
-                                <input type="text" name="province_ktp" id="province_ktp" required placeholder="Cth: Bali" class="w-full mt-2 px-4 py-2.5 bg-gray-50 border-none rounded-lg text-sm persist validate-field">
+                                <select name="province_ktp" id="province_ktp" required class="w-full mt-2 px-4 py-2.5 bg-gray-50 border-none rounded-lg text-sm persist validate-field"></select>
                             </div>
                             <div>
                                 <label class="text-[11px] font-bold text-gray-500 uppercase">Kabupaten</label>
-                                <input type="text" name="regency_ktp" id="regency_ktp" required placeholder="Cth: Buleleng" class="w-full mt-2 px-4 py-2.5 bg-gray-50 border-none rounded-lg text-sm persist validate-field">
+                                <select name="regency_ktp" id="regency_ktp" required disabled class="w-full mt-2 px-4 py-2.5 bg-gray-50 border-none rounded-lg text-sm persist validate-field"></select>
                             </div>
                             <div>
                                 <label class="text-[11px] font-bold text-gray-500 uppercase">Kecamatan</label>
-                                <input type="text" name="district_ktp" id="district_ktp" required placeholder="Cth: Sukasada" class="w-full mt-2 px-4 py-2.5 bg-gray-50 border-none rounded-lg text-sm persist validate-field">
+                                <select name="district_ktp" id="district_ktp" required disabled class="w-full mt-2 px-4 py-2.5 bg-gray-50 border-none rounded-lg text-sm persist validate-field"></select>
                             </div>
                             <div>
                                 <label class="text-[11px] font-bold text-gray-500 uppercase">Desa/Kelurahan</label>
-                                <input type="text" name="village_ktp" id="village_ktp" required placeholder="Cth: Panji Anom" class="w-full mt-2 px-4 py-2.5 bg-gray-50 border-none rounded-lg text-sm persist validate-field">
+                                <select name="village_ktp" id="village_ktp" required disabled class="w-full mt-2 px-4 py-2.5 bg-gray-50 border-none rounded-lg text-sm persist validate-field"></select>
                             </div>
                             <div class="sm:col-span-2">
-                                <label class="text-[11px] font-bold text-gray-500 uppercase">Alamat Lengkap</label>
-                                <textarea name="address_ktp" id="address_ktp" rows="2" placeholder="Cth: Jl. Kibarak Panji Sakti No. 1X, Br. Dinas Panji" class="w-full mt-2 px-4 py-2.5 bg-gray-50 border-none rounded-lg text-sm persist validate-field"></textarea>
+                                <label class="text-[11px] font-bold text-gray-500 uppercase">Alamat Jalan/Rumah</label>
+                                <textarea required name="address_ktp" id="address_ktp" rows="2" placeholder="Cth: Jl. Utama No. 1" class="w-full mt-2 px-4 py-2.5 bg-gray-50 border-none rounded-lg text-sm persist validate-field"></textarea>
                             </div>
                         </div>
                     </section>
@@ -399,9 +402,11 @@
                     <section>
                         <div class="flex items-center justify-between gap-2 mb-4 pt-4 border-t border-gray-100">
                             <div class="flex items-center gap-2">
-                                <span class="p-1.5 bg-blue-50 text-darkblue rounded-lg"><svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <span class="p-1.5 bg-blue-50 text-darkblue rounded-lg">
+                                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                         <path d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"></path>
-                                    </svg></span>
+                                    </svg>
+                                </span>
                                 <h3 class="font-bold text-darkblue uppercase text-xs tracking-widest">Alamat Domisili & GPS</h3>
                             </div>
                             <label class="flex items-center gap-2 cursor-pointer">
@@ -410,29 +415,98 @@
                             </label>
                         </div>
                         <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                            <div><label class="text-[11px] font-bold text-gray-500 uppercase">Provinsi</label>
-                                <input type="text" name="province_domicile" id="province_domicile" required placeholder="Cth: Bali" class="w-full mt-2 px-4 py-2.5 bg-gray-50 border-none rounded-lg text-sm persist validate-field dom-input">
+
+                            <!-- PROVINSI -->
+                            <div>
+                                <label class="text-[11px] font-bold text-gray-500 uppercase">Provinsi</label>
+                                <select
+                                    name="province_domicile"
+                                    id="province_domicile"
+                                    required
+                                    class="w-full mt-2 px-4 py-2.5 bg-gray-50 border-none rounded-lg text-sm persist validate-field dom-input">
+                                    <option value="" disabled selected>Pilih Provinsi</option>
+                                </select>
                             </div>
-                            <div><label class="text-[11px] font-bold text-gray-500 uppercase">Kabupaten</label>
-                                <input type="text" name="regency_domicile" id="regency_domicile" required placeholder="Cth: Buleleng" class="w-full mt-2 px-4 py-2.5 bg-gray-50 border-none rounded-lg text-sm persist validate-field dom-input">
+
+                            <!-- KABUPATEN -->
+                            <div>
+                                <label class="text-[11px] font-bold text-gray-500 uppercase">Kabupaten</label>
+                                <select
+                                    name="regency_domicile"
+                                    id="regency_domicile"
+                                    required
+                                    class="w-full mt-2 px-4 py-2.5 bg-gray-50 border-none rounded-lg text-sm persist validate-field dom-input"
+                                    disabled>
+                                    <option value="" disabled selected>Pilih Kabupaten</option>
+                                </select>
                             </div>
-                            <div><label class="text-[11px] font-bold text-gray-500 uppercase">Kecamatan</label>
-                                <input type="text" name="district_domicile" id="district_domicile" required placeholder="Cth: Sukasada" class="w-full mt-2 px-4 py-2.5 bg-gray-50 border-none rounded-lg text-sm persist validate-field dom-input">
+
+                            <!-- KECAMATAN -->
+                            <div>
+                                <label class="text-[11px] font-bold text-gray-500 uppercase">Kecamatan</label>
+                                <select
+                                    name="district_domicile"
+                                    id="district_domicile"
+                                    required
+                                    class="w-full mt-2 px-4 py-2.5 bg-gray-50 border-none rounded-lg text-sm persist validate-field dom-input"
+                                    disabled>
+                                    <option value="" disabled selected>Pilih Kecamatan</option>
+                                </select>
                             </div>
-                            <div><label class="text-[11px] font-bold text-gray-500 uppercase">Desa/Kelurahan</label>
-                                <input type="text" name="village_domicile" id="village_domicile" required placeholder="Cth: Panji Anom" class="w-full mt-2 px-4 py-2.5 bg-gray-50 border-none rounded-lg text-sm persist validate-field dom-input">
+
+                            <!-- DESA -->
+                            <div>
+                                <label class="text-[11px] font-bold text-gray-500 uppercase">Desa / Kelurahan</label>
+                                <select
+                                    name="village_domicile"
+                                    id="village_domicile"
+                                    required
+                                    class="w-full mt-2 px-4 py-2.5 bg-gray-50 border-none rounded-lg text-sm persist validate-field dom-input"
+                                    disabled>
+                                    <option value="" disabled selected>Pilih Desa / Kelurahan</option>
+                                </select>
                             </div>
+
+                            <!-- ALAMAT -->
                             <div class="sm:col-span-2">
-                                <label class="text-[11px] font-bold text-gray-500 uppercase">Alamat Lengkap</label>
-                                <textarea name="address_domicile" id="address_domicile" rows="2" placeholder="Cth: Jl. Kibarak Panji Sakti No. 1X, Br. Dinas Panji" class="w-full mt-2 px-4 py-2.5 bg-gray-50 border-none rounded-lg text-sm persist validate-field dom-input"></textarea>
+                                <label class="text-[11px] font-bold text-gray-500 uppercase">Alamat Jalan / Rumah</label>
+                                <textarea
+                                    name="address_domicile"
+                                    id="address_domicile"
+                                    rows="2"
+                                    required
+                                    class="w-full mt-2 px-4 py-2.5 bg-gray-50 border-none rounded-lg text-sm persist validate-field dom-input"
+                                    placeholder="Contoh: Jl. Raya Sukasada No. 12"></textarea>
                             </div>
+
+                            <!-- GPS -->
                             <div class="sm:col-span-2">
-                                <div class="flex gap-2">
-                                    <input id="latitude_gps_domicile" type="text" name="latitude_gps_domicile" readonly required class="w-1/2 px-4 py-2.5 bg-blue-50 text-blue-700 font-mono text-xs border-none rounded-lg validate-field persist" placeholder="Latitude: Klik pada Peta">
-                                    <input id="longitude_gps_domicile" type="text" name="longitude_gps_domicile" readonly required class="w-1/2 px-4 py-2.5 bg-blue-50 text-blue-700 font-mono text-xs border-none rounded-lg validate-field persist" placeholder="Longitude: Klik pada Peta">
+                                <div class="flex gap-2 mb-2">
+                                    <input
+                                        id="latitude_gps_domicile"
+                                        type="text"
+                                        name="latitude_gps_domicile"
+                                        readonly
+                                        required
+                                        class="w-1/2 px-4 py-2.5 bg-blue-50 text-blue-700 font-mono text-xs border-none rounded-lg validate-field persist"
+                                        placeholder="Latitude">
+
+                                    <input
+                                        id="longitude_gps_domicile"
+                                        type="text"
+                                        name="longitude_gps_domicile"
+                                        readonly
+                                        required
+                                        class="w-1/2 px-4 py-2.5 bg-blue-50 text-blue-700 font-mono text-xs border-none rounded-lg validate-field persist"
+                                        placeholder="Longitude">
                                 </div>
-                                <div id="map"></div>
+
+                                <div
+                                    id="map"
+                                    style="height:300px;width:100%;border-radius:12px;border:2px solid #f3f4f6;">
+                                </div>
                             </div>
+
                         </div>
                     </section>
 
@@ -536,333 +610,402 @@
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
     <script>
         document.addEventListener('DOMContentLoaded', function() {
+            // --- 1. GLOBAL VARIABLES & ELEMENTS ---
             const form = document.getElementById('profileForm');
-            const validateFields = document.querySelectorAll('.validate-field');
-            const persistFields = document.querySelectorAll('.persist');
-            const dropArea = document.getElementById('drop-area');
+            const apiBase = "/api-wilayah";
+            const syncBtn = document.getElementById('same_as_ktp');
+
+            // Elements for Photo/Cropper
+            let cropper;
             const photoInput = document.getElementById('photo');
-            const dateBirthdayInput = document.getElementById('date_birthday');
-            const ageInput = document.getElementById('age');
+            const imageToCrop = document.getElementById('image-to-crop');
+            const previewImg = document.getElementById('cropped-preview');
+            const previewContainer = document.getElementById('preview-container');
+            const cropperModal = document.getElementById('cropperModal');
+            const dropArea = document.getElementById('drop-area');
+            let originalImageDataUrl = null;
 
-            // --- 1. PERSISTENCE LOGIC (REVISED) ---
-            persistFields.forEach(field => {
-                const storageKey = 'profile_' + (field.id || field.name);
-                const savedValue = localStorage.getItem(storageKey);
-
-                // PAKSA isi dari storage jika ada (menimpa data old() dari server saat error)
-                if (savedValue !== null) {
-                    field.value = savedValue;
-                }
-
-                field.addEventListener('input', () => {
-                    localStorage.setItem(storageKey, field.value);
-                    if (field.value.trim() !== "") clearError(field);
-                });
-            });
-
-            // --- 1. LOGIC COPY ALAMAT & PERSISTENCE ---
-            const sameAsKtp = document.getElementById('same_as_ktp');
-            const addressFields = ['province', 'regency', 'district', 'village', 'address'];
-
-            function syncAddress() {
-                addressFields.forEach(key => {
-                    const ktpInput = document.getElementById(key + '_ktp');
-                    const domInput = document.getElementById(key + '_domicile');
-
-                    if (sameAsKtp.checked) {
-                        // Ambil dari storage KTP agar datanya konsisten
-                        const ktpVal = localStorage.getItem('profile_' + ktpInput.id) || ktpInput.value;
-                        domInput.value = ktpVal;
-                        domInput.classList.add('input-disabled');
-                        domInput.readOnly = true;
-                        localStorage.setItem('profile_' + domInput.id, ktpVal);
-                    } else {
-                        domInput.classList.remove('input-disabled');
-                        domInput.readOnly = false;
-                    }
-                });
-                localStorage.setItem('profile_same_as_ktp', sameAsKtp.checked);
-            }
-
-            sameAsKtp.addEventListener('change', syncAddress);
-
-            // Update otomatis saat KTP diketik jika checkbox aktif
-            addressFields.forEach(key => {
-                document.getElementById(key + '_ktp').addEventListener('input', () => {
-                    if (sameAsKtp.checked) syncAddress();
-                });
-            });
-
-            // --- 2. MAP LOGIC (PERSISTENCE & AUTO CENTER) ---
+            // Elements for Map
+            let mapObj, markerObj;
             const latField = document.getElementById('latitude_gps_domicile');
             const lngField = document.getElementById('longitude_gps_domicile');
 
-            const savedLat = localStorage.getItem('profile_latitude_gps_domicile');
-            const savedLng = localStorage.getItem('profile_longitude_gps_domicile');
+            // Elements for Age
+            const dateBirthdayInput = document.getElementById('date_birthday');
+            const ageInput = document.getElementById('age');
 
-            let initialCoords = [-8.112, 115.091]; // Koordinat Default Buleleng
+            const addressFields = ['province', 'regency', 'district', 'village', 'address'];
+            const levels = ['province', 'regency', 'district', 'village'];
+            const labels = ['Provinsi', 'Kabupaten', 'Kecamatan', 'Desa/Kelurahan'];
+            const paths = {
+                'province': 'regencies',
+                'regency': 'districts',
+                'district': 'villages'
+            };
 
-            // Cek apakah ada koordinat tersimpan di storage
-            if (savedLat && savedLng) {
-                initialCoords = [parseFloat(savedLat), parseFloat(savedLng)];
-                latField.value = savedLat;
-                lngField.value = savedLng;
-            }
-
-            const map = L.map('map').setView(initialCoords, savedLat ? 15 : 12);
-            L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png').addTo(map);
-
-            let marker;
-            // Pasang marker otomatis jika data ada
-            if (savedLat && savedLng) {
-                marker = L.marker(initialCoords).addTo(map);
-            }
-
-            map.on('click', function(e) {
-                const {
-                    lat,
-                    lng
-                } = e.latlng;
-                const fLat = lat.toFixed(8);
-                const fLng = lng.toFixed(8);
-
-                latField.value = fLat;
-                lngField.value = fLng;
-
-                // Simpan ke storage
-                localStorage.setItem('profile_latitude_gps_domicile', fLat);
-                localStorage.setItem('profile_longitude_gps_domicile', fLng);
-
-                if (marker) map.removeLayer(marker);
-                marker = L.marker(e.latlng).addTo(map);
-
-                // Auto Center & Zoom saat klik
-                map.setView(e.latlng, 15, {
-                    animate: true
-                });
-
-                clearError(latField);
-            });
-
-            // --- 3. REVISED AUTO AGE (OTOMATIS) ---
-            function updateAge() {
-                if (!dateBirthdayInput.value) return;
-                const birthDate = new Date(dateBirthdayInput.value);
-                const today = new Date();
-                let age = today.getFullYear() - birthDate.getFullYear();
-                const m = today.getMonth() - birthDate.getMonth();
-                if (m < 0 || (m === 0 && today.getDate() < birthDate.getDate())) age--;
-
-                ageInput.value = age;
-                localStorage.setItem('profile_age', age);
-            }
-
-            dateBirthdayInput.addEventListener('change', updateAge);
-
-            // JALANKAN SINKRONISASI SAAT REFRESH
-            if (dateBirthdayInput.value) updateAge();
-
-            if (localStorage.getItem('profile_same_as_ktp') === 'true') {
-                sameAsKtp.checked = true;
-                syncAddress();
-            }
-
-            // --- 4. DRAG N DROP LOGIC ---
-            ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
-                dropArea.addEventListener(eventName, e => {
-                    e.preventDefault();
-                    e.stopPropagation();
-                }, false);
-            });
-
-            ['dragenter', 'dragover'].forEach(eventName => {
-                dropArea.addEventListener(eventName, () => dropArea.classList.add('drag-over'), false);
-            });
-
-            ['dragleave', 'drop'].forEach(eventName => {
-                dropArea.addEventListener(eventName, () => dropArea.classList.remove('drag-over'), false);
-            });
-
-            dropArea.addEventListener('drop', (e) => {
-                const dt = e.dataTransfer;
-                const files = dt.files;
-                if (files.length > 0) {
-                    handleFiles(files[0]);
-                }
-            }, false);
-
-            // --- 5. FILE & CROPPER LOGIC ---
-            let cropper;
-            const imageToCrop = document.getElementById('image-to-crop');
-            const applyBtn = document.getElementById('apply-crop');
-            const previewImg = document.getElementById('cropped-preview');
-            let originalImageDataUrl = null;
-            let lastCropData = null;
-
-            photoInput.addEventListener('change', (e) => {
-                if (e.target.files.length > 0) handleFiles(e.target.files[0]);
-            });
-
+            // --- 2. PHOTO CROPPER LOGIC ---
             function handleFiles(file) {
-                if (!file.type.startsWith('image/')) {
+                if (!file || !file.type.startsWith('image/')) {
                     alert('Mohon unggah file gambar saja.');
                     return;
                 }
                 const reader = new FileReader();
-                reader.onload = (event) => {
-                    originalImageDataUrl = event.target.result;
-                    lastCropData = null;
-                    openCropper(originalImageDataUrl);
+                reader.onload = (e) => {
+                    originalImageDataUrl = e.target.result;
+                    imageToCrop.src = originalImageDataUrl;
+                    cropperModal.classList.remove('hidden');
+                    cropperModal.style.setProperty('display', 'flex', 'important');
+                    cropperModal.style.zIndex = '9999';
+
+                    if (cropper) cropper.destroy();
+                    setTimeout(() => {
+                        cropper = new Cropper(imageToCrop, {
+                            aspectRatio: 2 / 3,
+                            viewMode: 2,
+                            autoCropArea: 1,
+                            responsive: true,
+                            checkOrientation: false
+                        });
+                    }, 200);
                 };
                 reader.readAsDataURL(file);
             }
 
-            function openCropper(imageSrc) {
-                imageToCrop.src = imageSrc;
-                document.getElementById('cropperModal').classList.remove('hidden');
+            photoInput.addEventListener('change', (e) => handleFiles(e.target.files[0]));
 
-                if (cropper) cropper.destroy();
-
-                cropper = new Cropper(imageToCrop, {
-                    aspectRatio: 2 / 3,
-                    viewMode: 2,
-                    dragMode: 'move',
-                    autoCropArea: 1,
-                    responsive: true,
-                    restore: false,
-                    ready: function() {
-                        if (lastCropData) {
-                            cropper.setData(lastCropData);
-                        }
-                    }
+            // Drag and Drop
+            ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eName => {
+                dropArea.addEventListener(eName, (e) => {
+                    e.preventDefault();
+                    e.stopPropagation();
                 });
-            }
-
-            previewImg.addEventListener('click', function() {
-                if (originalImageDataUrl) {
-                    openCropper(originalImageDataUrl);
-                }
             });
+            dropArea.addEventListener('drop', (e) => handleFiles(e.dataTransfer.files[0]));
 
-            applyBtn.addEventListener('click', () => {
-                lastCropData = cropper.getData();
+            document.getElementById('apply-crop').addEventListener('click', function() {
+                if (!cropper) return;
                 const canvas = cropper.getCroppedCanvas({
                     width: 400,
                     height: 600
                 });
-
                 canvas.toBlob((blob) => {
-                    const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
-                    let randomString = '';
-                    for (let i = 0; i < 40; i++) {
-                        randomString += chars.charAt(Math.floor(Math.random() * chars.length));
-                    }
-                    const uniqueFileName = `${randomString}.jpg`;
-                    const croppedFile = new File([blob], uniqueFileName, {
+                    const croppedFile = new File([blob], `crop_${Date.now()}.jpg`, {
                         type: "image/jpeg"
                     });
                     const dataTransfer = new DataTransfer();
                     dataTransfer.items.add(croppedFile);
-
                     photoInput.files = dataTransfer.files;
-                    const previewImg = document.getElementById('cropped-preview');
-                    previewImg.src = URL.createObjectURL(croppedFile);
 
-                    document.getElementById('preview-container').classList.remove('hidden');
-                    document.getElementById('cropperModal').classList.add('hidden');
+                    previewImg.src = URL.createObjectURL(croppedFile);
+                    previewContainer.classList.remove('hidden');
+                    closeCropper();
                     clearError(photoInput);
-                }, 'image/jpeg');
+                }, 'image/jpeg', 0.9);
             });
+
+            const closeCropper = () => {
+                cropperModal.classList.add('hidden');
+                cropperModal.style.display = 'none';
+            };
 
             document.getElementById('cancel-crop').addEventListener('click', () => {
-                document.getElementById('cropperModal').classList.add('hidden');
-                photoInput.value = "";
+                closeCropper();
+                if (!previewImg.src) photoInput.value = "";
             });
 
-            // --- 6. SMART VALIDATION & ERROR HANDLING ---
+            previewImg.addEventListener('click', () => {
+                if (originalImageDataUrl) {
+                    imageToCrop.src = originalImageDataUrl;
+                    cropperModal.classList.remove('hidden');
+                    cropperModal.style.display = 'flex';
+                }
+            });
+
+            // --- 3. MAP & GPS LOGIC ---
+            function initMap() {
+                const savedLat = localStorage.getItem('profile_latitude_gps_domicile');
+                const savedLng = localStorage.getItem('profile_longitude_gps_domicile');
+                const initialLat = savedLat ? parseFloat(savedLat) : -8.1127;
+                const initialLon = savedLng ? parseFloat(savedLng) : 115.0911;
+
+                mapObj = L.map('map').setView([initialLat, initialLon], savedLat ? 15 : 11);
+                L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png').addTo(mapObj);
+
+                if (savedLat && savedLng) placeMarker(initialLat, initialLon, false);
+
+                mapObj.on('click', (e) => placeMarker(e.latlng.lat, e.latlng.lng, true));
+            }
+
+            function placeMarker(lat, lon, updateStorage = true) {
+                if (markerObj) markerObj.setLatLng([lat, lon]);
+                else {
+                    markerObj = L.marker([lat, lon], {
+                        draggable: true
+                    }).addTo(mapObj);
+                    markerObj.on('dragend', () => {
+                        const pos = markerObj.getLatLng();
+                        updateGpsFields(pos.lat, pos.lng);
+                    });
+                }
+                if (updateStorage) updateGpsFields(lat, lon);
+                else {
+                    latField.value = lat.toFixed(8);
+                    lngField.value = lon.toFixed(8);
+                }
+            }
+
+            function updateGpsFields(lat, lon) {
+                const fLat = lat.toFixed(8);
+                const fLng = lon.toFixed(8);
+                latField.value = fLat;
+                lngField.value = fLng;
+                localStorage.setItem('profile_latitude_gps_domicile', fLat);
+                localStorage.setItem('profile_longitude_gps_domicile', fLng);
+                clearError(latField);
+            }
+
+            async function autoMoveMap() {
+                const getVal = (id) => {
+                    const el = document.getElementById(id);
+                    return (el && el.selectedIndex > 0) ? el.options[el.selectedIndex].text : '';
+                };
+                const query = `${getVal('village_domicile')} ${getVal('district_domicile')} ${getVal('regency_domicile')}`.trim();
+                if (query.length < 5) return;
+                try {
+                    const resp = await fetch(`/api-map-search?q=${encodeURIComponent(query)}`);
+                    const data = await resp.json();
+                    if (data && data.length > 0) mapObj.setView([data[0].lat, data[0].lon], 14);
+                } catch (e) {
+                    console.error("Map search error", e);
+                }
+            }
+
+            // --- 4. REGION DROPDOWN & SYNC LOGIC ---
+            async function populateSelect(id, path, placeholder, targetVal = null) {
+                const el = document.getElementById(id);
+                if (!el) return null;
+
+                const valueToMatch = targetVal || localStorage.getItem('profile_' + id);
+                el.innerHTML = '<option value="">Mohon tunggu...</option>';
+
+                try {
+                    const resp = await fetch(`${apiBase}/${path}`);
+                    const result = await resp.json();
+                    let options = `<option value="">${placeholder}</option>`;
+                    result.data.forEach(item => {
+                        let name = item.name.replace(/^(KABUPATEN|KOTA)\s+/i, "");
+                        options += `<option value="${name}" data-code="${item.code}">${name}</option>`;
+                    });
+                    el.innerHTML = options;
+                    el.disabled = false;
+
+                    if (valueToMatch) {
+                        for (let i = 0; i < el.options.length; i++) {
+                            if (el.options[i].value.toUpperCase() === valueToMatch.toUpperCase()) {
+                                el.selectedIndex = i;
+                                return el.options[i].getAttribute('data-code');
+                            }
+                        }
+                    }
+                } catch (e) {
+                    el.innerHTML = '<option value="">Gagal memuat</option>';
+                }
+                return null;
+            }
+
+            function bindWilayahEvents(p) {
+                levels.forEach((lv, idx) => {
+                    const el = document.getElementById(`${lv}_${p}`);
+                    el.addEventListener('change', async function() {
+                        const code = this.options[this.selectedIndex]?.getAttribute('data-code');
+                        localStorage.setItem('profile_' + this.id, this.value);
+
+                        // SYNC Logic
+                        if (p === 'ktp' && syncBtn.checked) {
+                            const domEl = document.getElementById(`${lv}_domicile`);
+                            localStorage.setItem('profile_' + domEl.id, this.value);
+                            // Inject option if not exist
+                            if (![...domEl.options].some(o => o.value === this.value)) {
+                                const opt = new Option(this.value, this.value, true, true);
+                                domEl.add(opt);
+                            }
+                            domEl.value = this.value;
+                        }
+
+                        // Load next level
+                        if (idx < levels.length - 1) {
+                            const next = levels[idx + 1];
+                            // Reset children
+                            levels.slice(idx + 1).forEach(l => {
+                                const target = document.getElementById(`${l}_${p}`);
+                                target.innerHTML = `<option value="">Pilih ${labels[levels.indexOf(l)]}</option>`;
+                                target.disabled = true;
+                                localStorage.removeItem('profile_' + target.id);
+                                if (p === 'ktp' && syncBtn.checked) {
+                                    const dTarget = document.getElementById(`${l}_domicile`);
+                                    dTarget.innerHTML = target.innerHTML;
+                                    dTarget.disabled = true;
+                                    localStorage.removeItem('profile_' + dTarget.id);
+                                }
+                            });
+
+                            if (code) {
+                                const nextPath = `${paths[lv]}/${code}.json`;
+                                const nextLabel = `Pilih ${labels[idx+1]}`;
+                                await populateSelect(`${next}_${p}`, nextPath, nextLabel);
+                                if (p === 'ktp' && syncBtn.checked) {
+                                    await populateSelect(`${next}_domicile`, nextPath, nextLabel);
+                                    document.getElementById(`${next}_domicile`).disabled = true;
+                                }
+                            }
+                        }
+                        autoMoveMap();
+                    });
+                });
+            }
+
+            syncBtn.addEventListener('change', async function() {
+                const isChecked = this.checked;
+                localStorage.setItem('profile_same_as_ktp', isChecked);
+
+                for (const f of addressFields) {
+                    const ktpEl = document.getElementById(`${f}_ktp`);
+                    const domEl = document.getElementById(`${f}_domicile`);
+                    if (isChecked) {
+                        domEl.value = ktpEl.value;
+                        domEl.classList.add('input-disabled');
+                        if (f === 'address') domEl.readOnly = true;
+                        else domEl.disabled = true;
+                        localStorage.setItem('profile_' + domEl.id, ktpEl.value);
+                    } else {
+                        domEl.classList.remove('input-disabled');
+                        domEl.disabled = false;
+                        domEl.readOnly = false;
+                    }
+                }
+                if (isChecked) {
+                    // Re-trigger chains to ensure dropdowns are populated
+                    restoreChains('domicile', true);
+                }
+            });
+
+            // Manual Address input sync
+            document.getElementById('address_ktp').addEventListener('input', function() {
+                localStorage.setItem('profile_address_ktp', this.value);
+                if (syncBtn.checked) {
+                    const dom = document.getElementById('address_domicile');
+                    dom.value = this.value;
+                    localStorage.setItem('profile_address_domicile', this.value);
+                }
+            });
+
+            // --- 5. AGE & PERSISTENCE ---
+            function updateAge() {
+                if (!dateBirthdayInput.value) return;
+                const birth = new Date(dateBirthdayInput.value);
+                const today = new Date();
+                let age = today.getFullYear() - birth.getFullYear();
+                if (today.getMonth() < birth.getMonth() || (today.getMonth() === birth.getMonth() && today.getDate() < birth.getDate())) age--;
+                const finalAge = age < 0 ? 0 : age;
+                ageInput.value = finalAge;
+                localStorage.setItem('profile_age', finalAge);
+            }
+            dateBirthdayInput.addEventListener('change', updateAge);
+
+            function initPersistence() {
+                document.querySelectorAll('.persist').forEach(field => {
+                    const saved = localStorage.getItem('profile_' + (field.id || field.name));
+                    if (saved !== null) field.value = saved;
+                    field.addEventListener('input', () => {
+                        localStorage.setItem('profile_' + (field.id || field.name), field.value);
+                        if (field.value.trim() !== "") clearError(field);
+                    });
+                });
+            }
+
+            // --- 6. INITIALIZATION & RESTORE ---
+            async function restoreChains(suffix = 'ktp', forceSync = false) {
+                let code = await populateSelect(`province_${suffix}`, 'provinces.json', "Pilih Provinsi");
+                if (code) {
+                    code = await populateSelect(`regency_${suffix}`, `regencies/${code}.json`, "Pilih Kabupaten");
+                    if (code) {
+                        code = await populateSelect(`district_${suffix}`, `districts/${code}.json`, "Pilih Kecamatan");
+                        if (code) await populateSelect(`village_${suffix}`, `villages/${code}.json`, "Pilih Desa/Kelurahan");
+                    }
+                }
+            }
+
+            // Main Init
+            initPersistence();
+            initMap();
+            bindWilayahEvents('ktp');
+            bindWilayahEvents('domicile');
+
+            (async () => {
+                await restoreChains('ktp');
+                const isSync = localStorage.getItem('profile_same_as_ktp') === 'true';
+                if (isSync) {
+                    syncBtn.checked = true;
+                    syncBtn.dispatchEvent(new Event('change'));
+                } else {
+                    await restoreChains('domicile');
+                }
+                updateAge();
+            })();
+
+            // --- 7. VALIDATION & SUBMIT ---
             function showError(field, message) {
                 clearError(field);
                 field.classList.add('is-invalid');
-
-                // Khusus untuk foto, is-invalid dipasang di drop area
                 if (field.id === 'photo') dropArea.classList.add('is-invalid');
-
-                const errorDisplay = document.createElement('p');
-                errorDisplay.className = 'error-msg text-red-500 text-[10px] mt-1 font-bold italic';
-                errorDisplay.innerText = `* ${message}`;
-
-                // Cari container pembungkus input (biasanya div)
-                const container = field.closest('div');
-                if (container) {
-                    container.appendChild(errorDisplay);
-                }
+                const err = document.createElement('p');
+                err.className = 'error-msg text-red-500 text-[10px] mt-1 font-bold italic';
+                err.innerText = `* ${message}`;
+                field.closest('div').appendChild(err);
             }
 
             function clearError(field) {
                 field.classList.remove('is-invalid');
                 if (field.id === 'photo') dropArea.classList.remove('is-invalid');
-
-                const container = field.closest('div');
-                if (container) {
-                    const existingError = container.querySelector('.error-msg');
-                    if (existingError) existingError.remove();
-                }
+                const old = field.closest('div').querySelector('.error-msg');
+                if (old) old.remove();
             }
 
             form.addEventListener('submit', function(e) {
                 let isFormValid = true;
 
-                validateFields.forEach(field => {
+                // Unlock for submission
+                form.querySelectorAll(':disabled').forEach(el => el.disabled = false);
+
+                document.querySelectorAll('.validate-field').forEach(field => {
                     const val = field.value.trim();
-
-                    // 1. Validasi Required (Wajib Isi)
-                    if (field.type === 'file') {
-                        if (field.files.length === 0) {
-                            showError(field, 'Foto wajib diunggah');
-                            isFormValid = false;
-                        }
+                    if (field.type === 'file' && field.files.length === 0) {
+                        showError(field, 'Foto wajib diunggah');
+                        isFormValid = false;
                     } else if (!val) {
-                        showError(field, 'Bagian ini wajib diisi');
+                        showError(field, 'Wajib diisi');
                         isFormValid = false;
-                    }
-
-                    // 2. Validasi NIK & No KK (Harus 16 Digit)
-                    else if ((field.id === 'nik' || field.id === 'no_kk') && val.length !== 16) {
-                        showError(field, 'Harus tepat 16 digit angka');
-                        isFormValid = false;
-                    }
-
-                    // 3. Validasi Min Length
-                    else if (field.minLength > 0 && val.length < field.minLength) {
-                        showError(field, `Minimal ${field.minLength} karakter`);
+                    } else if ((field.id === 'nik' || field.id === 'no_kk') && val.length !== 16) {
+                        showError(field, 'Harus 16 digit');
                         isFormValid = false;
                     }
                 });
 
-                // 4. Validasi Khusus GPS
-                if (!latField.value || !lngField.value) {
-                    showError(latField, 'Titik lokasi belum dipilih pada peta');
+                if (!latField.value) {
+                    showError(latField, 'Pilih lokasi di peta');
                     isFormValid = false;
                 }
 
                 if (!isFormValid) {
                     e.preventDefault();
-                    const firstError = document.querySelector('.is-invalid');
-                    if (firstError) {
-                        firstError.scrollIntoView({
-                            behavior: 'smooth',
-                            block: 'center'
+                    // Relock if sync was on
+                    if (syncBtn.checked) {
+                        addressFields.forEach(f => {
+                            if (f !== 'address') document.getElementById(`${f}_domicile`).disabled = true;
                         });
                     }
                 }
             });
-            if (localStorage.getItem('profile_same_as_ktp') === 'true') {
-                sameAsKtp.checked = true;
-                // Beri sedikit delay agar data KTP dimuat dulu oleh persistence logic baru di-copy ke domisili
-                setTimeout(() => {
-                    syncAddress();
-                }, 100);
-            }
         });
     </script>
 </body>
