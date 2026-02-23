@@ -8,20 +8,6 @@
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
                 </svg>
             </button>
-
-            <div class="hidden sm:block">
-                <form action="{{ route('dashboard') }}" method="GET">
-                    <div class="relative">
-                        <button type="submit" class="absolute left-0 pl-2 top-1/2 -translate-y-1/2 cursor-pointer">
-                            <svg class="w-5 h-5 text-gray-400 hover:text-indigo-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
-                            </svg>
-                        </button>
-                        <input type="text" name="search" value="{{ request('search') }}" placeholder="Cari sesuatu..."
-                            class="w-full bg-transparent pl-9 pr-4 text-sm font-medium focus:outline-none border-gray-200 rounded-lg ring-0 focus:ring-0 text-slate-600" />
-                    </div>
-                </form>
-            </div>
         </div>
 
         <div class="relative" x-data="{ dropdownOpen: false }" @click.away="dropdownOpen = false">

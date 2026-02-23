@@ -15,15 +15,14 @@ class UserTemplateExport implements FromArray, WithHeadings, WithStyles, ShouldA
         return [
             'EMAIL PENGGUNA',
             'NOMOR WHATSAPP',
-            'HAK AKSES SISTEM (Administrator/Author/Editor/Subscriber/Guest)',
-            'PASSWORD'
+            'HAK AKSES SISTEM (Administrator/Author/Editor/Subscriber/Guest)'
         ];
     }
 
     public function array(): array
     {
         return [
-            ['contoh@email.com', '081234567891', 'Guest', 'Password@123']
+            ['contoh@email.com', '081234567891', 'Guest']
         ];
     }
 

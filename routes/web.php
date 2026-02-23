@@ -5,7 +5,6 @@ use App\Http\Controllers\Admin\RoleController;
 use App\Http\Controllers\Admin\UserController;
 use App\Http\Controllers\PersonController;
 use App\Http\Controllers\ProfileController;
-use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Http;
 
@@ -21,24 +20,6 @@ Route::get('/api-map-search', function (Illuminate\Http\Request $request) {
     return Illuminate\Support\Facades\Http::withHeaders([
         'User-Agent' => 'Laravel-App'
     ])->get($url)->json();
-});
-
-Route::get('/test-email', function () {
-    $detail = [
-        'title' => 'Email Testing Portal SPPI Buleleng',
-        'body' => 'Jika Anda menerima email ini, berarti konfigurasi SMTP Gmail Anda sudah BENAR!'
-    ];
-
-    try {
-        Mail::raw($detail['body'], function ($message) use ($detail) {
-            $message->to('test@gmail.com')
-                ->subject($detail['title']);
-        });
-
-        return "Email berhasil dikirim! Silakan cek inbox (atau folder spam) Anda.";
-    } catch (\Exception $e) {
-        return "Gagal mengirim email. Error: " . $e->getMessage();
-    }
 });
 
 // 1. Landing Page

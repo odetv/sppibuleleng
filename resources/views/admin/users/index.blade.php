@@ -12,7 +12,7 @@
     </style>
 
     <div class="py-10 p-4 text-slate-800 text-[14px]">
-        <div class="w-full mx-auto sm:px-6 lg:px-8 space-y-10">
+        <div id="user-table-container" class="w-full mx-auto sm:px-6 lg:px-8 space-y-10">
 
             {{-- 1. HEADER SECTION --}}
             <div class="bg-white rounded-xl border border-slate-200 overflow-hidden shadow-sm">
@@ -27,7 +27,7 @@
                     </div>
                     <div class="flex items-center">
                         <span class="inline-flex items-center px-4 py-2 text-[10px] font-bold rounded bg-white text-slate-600 uppercase border border-slate-200 tracking-widest shadow-sm">
-                            {{ $allUsers->count() }} Pengguna Terdaftar
+                            {{ $allUsersDisplay->count() }} Pengguna Terdaftar
                         </span>
                     </div>
                 </div>
@@ -57,12 +57,44 @@
 
             {{-- 3. DAFTAR TUNGGU VERIFIKASI --}}
             <div class="bg-white rounded-xl border border-slate-200 overflow-hidden shadow-sm">
-                <div class="p-6 border-b border-slate-100 bg-slate-50/50 flex justify-between items-center">
-                    <h3 class="font-bold uppercase tracking-wider text-slate-700">Antrian Verifikasi Pengguna</h3>
-                    @php $pendingUsers = $allUsers->where('status_user', 'pending'); @endphp
-                    @if($pendingUsers->count() > 0)
-                    <button type="button" onclick="openApproveAllModal()" class="text-[11px] font-bold uppercase tracking-wider text-emerald-600 bg-white border border-emerald-200 px-4 py-2 rounded-lg hover:bg-emerald-600 hover:text-white transition-all cursor-pointer">Setujui Semua</button>
-                    @endif
+                <div class="p-6 border-b border-slate-100 bg-slate-50/50 flex flex-col md:flex-row md:justify-between md:items-center gap-4">
+                    {{-- Judul: Tetap di atas pada mobile, di kiri pada desktop --}}
+                    <h3 class="font-bold uppercase tracking-wider text-slate-700 text-[14px]">Daftar Verifikasi Pengguna</h3>
+
+                    {{-- Container Aksi: Berjejer (flex-row) baik di mobile maupun desktop --}}
+                    <div class="flex flex-row items-center gap-3 w-full md:w-auto">
+
+                        {{-- Tombol Setujui Semua: shrink-0 agar tidak gepeng, teks hidden di mobile kecil --}}
+                        @if($pendingUsers->total() > 0)
+                        <button type="button"
+                            onclick="openApproveAllModal()"
+                            class="shrink-0 text-[11px] font-bold uppercase tracking-wider text-emerald-600 bg-white border border-emerald-200 px-4 py-2.5 rounded-lg hover:bg-emerald-600 hover:text-white transition-all cursor-pointer shadow-sm flex items-center gap-2">
+                            {{-- Icon SVG Checklist --}}
+                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="w-4 h-4">
+                                <path fill-rule="evenodd" d="M8.603 3.799A4.49 4.49 0 0 1 12 2.25c1.357 0 2.573.6 3.397 1.549a4.49 4.49 0 0 1 3.498 1.307 4.491 4.491 0 0 1 1.307 3.497A4.49 4.49 0 0 1 21.75 12a4.49 4.49 0 0 1-1.549 3.397 4.491 4.491 0 0 1-1.307 3.497 4.491 4.491 0 0 1-3.497 1.307A4.49 4.49 0 0 1 12 21.75a4.49 4.49 0 0 1-3.397-1.549 4.49 4.49 0 0 1-3.498-1.307 4.491 4.491 0 0 1-1.307-3.497A4.49 4.49 0 0 1 2.25 12c0-1.357.6-2.573 1.549-3.397a4.49 4.49 0 0 1 1.307-3.497 4.49 4.49 0 0 1 3.497-1.307Zm7.007 6.387a.75.75 0 1 0-1.22-.872l-3.236 4.53L9.53 12.22a.75.75 0 0 0-1.06 1.06l2.25 2.25a.75.75 0 0 0 1.14-.094l3.75-5.25Z" clip-rule="evenodd" />
+                            </svg>
+                            {{-- Teks hanya muncul di desktop (md keatas) --}}
+                            <span class="hidden md:inline">Setujui Semua</span>
+                        </button>
+                        @endif
+
+                        {{-- Input Pencarian: flex-grow di mobile agar lebar, md:w-64 di desktop agar tetap ideal --}}
+                        <div class="relative flex-grow md:flex-initial md:w-64 text-slate-800">
+                            <span class="absolute inset-y-0 left-0 flex items-center pl-3 text-slate-400">
+                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                                </svg>
+                            </span>
+                            <input type="text"
+                                id="search-pending"
+                                data-table="pending"
+                                class="live-search-input text-xs border-slate-200 rounded-lg pl-9 pr-3 py-2.5 w-full focus:ring-2 focus:ring-indigo-500 outline-none transition-all bg-white shadow-sm"
+                                placeholder="Cari telepon atau email..."
+                                value="{{ request('search_pending') }}"
+                                autocomplete="off">
+                        </div>
+
+                    </div>
                 </div>
                 <div class="overflow-x-auto scrollbar-thin">
                     <table class="w-full text-left border-collapse text-sm">
@@ -72,6 +104,7 @@
                                 <th class="px-6 py-3 text-center">Jabatan / Unit</th>
                                 <th class="px-6 py-3 text-center">Batch / Status Kerja</th>
                                 <th class="px-6 py-3 text-center">Waktu Bergabung</th>
+                                <th class="px-6 py-3 text-center">Status Email</th>
                                 <th class="px-6 py-3 text-center">Aksi</th>
                             </tr>
                         </thead>
@@ -84,7 +117,7 @@
                                 </td>
                                 <td class="px-6 py-4 text-center">
                                     <span class="font-medium text-slate-500 text-xs block capitalize">{{ $user->person->position->name_position ?? '-' }}</span>
-                                    <span class="text-xs text-indigo-500 font-medium capitalize">{{ $user->person->workAssignment->sppgUnit->name ?? '-' }}</span>
+                                    <span class="text-xs text-slate-500 font-medium capitalize">{{ $user->person->workAssignment->sppgUnit->name ?? '-' }}</span>
                                 </td>
                                 <td class="px-6 py-4 text-center">
                                     <span class="text-xs block text-slate-500 font-medium whitespace-nowrap">
@@ -95,20 +128,40 @@
                                 <td class="px-6 py-4 text-center text-xs text-slate-500 font-medium whitespace-nowrap">
                                     {{ $user->created_at->translatedFormat('d F Y H:i:s') }} WITA
                                 </td>
+                                <td class="px-6 py-4 text-center">
+                                    @if($user->email_verified_at)
+                                    {{-- Icon Terverifikasi (Centang Hijau) --}}
+                                    <div class="flex justify-center text-emerald-500" title="Waktu Email Terverifikasi {{ $user->email_verified_at->translatedFormat('d F Y H:i:s') }} WITA">
+                                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="w-6 h-6">
+                                            <path fill-rule="evenodd" d="M2.25 12c0-5.385 4.365-9.75 9.75-9.75s9.75 4.365 9.75 9.75-4.365 9.75-9.75 9.75S2.25 17.385 2.25 12Zm13.36-1.814a.75.75 0 1 0-1.22-.872l-3.236 4.53L9.53 12.22a.75.75 0 0 0-1.06 1.06l2.25 2.25a.75.75 0 0 0 1.14-.094l3.75-5.25Z" clip-rule="evenodd" />
+                                        </svg>
+                                    </div>
+                                    @else
+                                    {{-- Icon Belum Terverifikasi (X Merah/Abu) --}}
+                                    <div class="flex justify-center text-rose-500" title="Email Belum Terverifikasi">
+                                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="w-6 h-6">
+                                            <path fill-rule="evenodd" d="M12 2.25c-5.385 0-9.75 4.365-9.75 9.75s4.365 9.75 9.75 9.75 9.75-4.365 9.75-9.75S17.385 2.25 12 2.25Zm-1.72 6.97a.75.75 0 1 0-1.06 1.06L10.94 12l-1.72 1.72a.75.75 0 1 0 1.06 1.06L12 13.06l1.72 1.72a.75.75 0 1 0 1.06-1.06L13.06 12l1.72-1.72a.75.75 0 1 0-1.06-1.06L12 10.94l-1.72-1.72Z" clip-rule="evenodd" />
+                                        </svg>
+                                    </div>
+                                    @endif
+                                </td>
                                 <td class="px-6 py-4">
                                     <form action="{{ route('admin.users.approve', $user->id_user) }}" method="POST" class="flex justify-end items-center gap-2">
                                         @csrf
 
                                         {{-- 1. PILIH PENUGASAN --}}
                                         <select name="id_work_assignment" required class="text-xs text-slate-500 font-medium whitespace-nowrap border-slate-200 rounded-md py-2 cursor-pointer outline-none focus:ring-1 focus:ring-emerald-500 max-w-48">
-                                            {{-- Label instruksi: WAJIB value="" dan disabled agar required bekerja --}}
-                                            <option value="" disabled {{ !$user->person?->id_work_assignment ? 'selected' : '' }}>
+                                            {{-- 1. Label Instruksi: Tetap ada, tidak bisa dipilih, dan TIDAK terpilih otomatis saat data null --}}
+                                            <option value="" disabled>
                                                 Pilih Penugasan
                                             </option>
 
-                                            {{-- Opsi Belum Penugasan: Berikan value "none" agar berbeda dengan string kosong --}}
-                                            <option value="none">Belum Penugasan</option>
+                                            {{-- 2. Opsi Belum Penugasan: Akan otomatis terpilih (selected) jika data di DB bernilai null --}}
+                                            <option value="none" {{ is_null($user->person?->id_work_assignment) ? 'selected' : '' }}>
+                                                Belum Penugasan
+                                            </option>
 
+                                            {{-- 3. Daftar Penugasan dari Database --}}
                                             @foreach($workAssignments as $wa)
                                             <option value="{{ $wa->id_work_assignment }}"
                                                 {{ $user->person?->id_work_assignment == $wa->id_work_assignment ? 'selected' : '' }}>
@@ -132,14 +185,17 @@
 
                                         {{-- 3. PILIH JABATAN --}}
                                         <select name="id_ref_position" required class="text-xs text-slate-500 font-medium whitespace-nowrap border-slate-200 rounded-md py-2 cursor-pointer outline-none focus:ring-1 focus:ring-emerald-500">
-                                            {{-- Label instruksi: WAJIB value="" dan disabled agar required bekerja --}}
-                                            <option value="" disabled {{ !$user->person?->id_ref_position ? 'selected' : '' }}>
+                                            {{-- 1. Label Instruksi: Tetap ada sebagai panduan, namun tidak bisa dikirim (disabled) --}}
+                                            <option value="" disabled>
                                                 Pilih Jabatan
                                             </option>
 
-                                            {{-- Opsi Belum Menjabat: Berikan value "none" agar bisa disubmit secara sah --}}
-                                            <option value="none">Belum Menjabat</option>
+                                            {{-- 2. Opsi Belum Menjabat: Otomatis terpilih (selected) jika id_ref_position bernilai null di database --}}
+                                            <option value="none" {{ is_null($user->person?->id_ref_position) ? 'selected' : '' }}>
+                                                Belum Menjabat
+                                            </option>
 
+                                            {{-- 3. Daftar Jabatan dari Database --}}
                                             @foreach($positions as $p)
                                             <option value="{{ $p->id_ref_position }}"
                                                 {{ $user->person?->id_ref_position == $p->id_ref_position ? 'selected' : '' }}>
@@ -156,7 +212,7 @@
                                             </svg>
                                         </button>
 
-                                        <button type="button" onclick="confirmDelete('{{ $user->id_user }}', '{{ $user->email }}', false)" class="p-2 text-rose-600 hover:bg-rose-50 rounded cursor-pointer transition-colors">
+                                        <button type="button" title="Hapus Sementara" onclick="confirmDelete('{{ $user->id_user }}', '{{ $user->email }}', false)" class="p-2 text-rose-600 hover:bg-rose-50 rounded cursor-pointer transition-colors">
                                             <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
                                                 <path d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path>
                                             </svg>
@@ -166,37 +222,88 @@
                             </tr>
                             @empty
                             <tr>
-                                <td colspan="4" class="px-6 py-6 text-center opacity-20 text-[11px] font-bold uppercase">Antrian Kosong</td>
+                                <td colspan="5" class="px-6 py-12 text-center">
+                                    <div class="flex flex-col items-center justify-center">
+                                        <div class="p-3 bg-slate-50 rounded-full mb-3">
+                                            <svg class="w-8 h-8 text-slate-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
+                                            </svg>
+                                        </div>
+                                        <p class="text-[11px] font-bold uppercase tracking-[0.2em] text-slate-400">
+                                            {{ request('search_pending') ? 'Pengguna Tidak Ditemukan' : 'Antrian Kosong' }}
+                                        </p>
+                                        @if(request('search_pending'))
+                                        <p class="text-[10px] text-slate-400 mt-1 italic">Coba gunakan kata kunci yang berbeda</p>
+                                        @endif
+                                    </div>
+                                </td>
                             </tr>
                             @endforelse
                         </tbody>
                     </table>
                 </div>
+                <div class="px-6 py-4 bg-white border-t border-slate-100 
+    [&_nav]:flex [&_nav]:justify-between [&_nav]:items-center
+    [&_a]:bg-white [&_a]:text-slate-600 [&_a]:border-slate-200 [&_a]:rounded-lg [&_a]:hover:bg-slate-50
+    [&_span]:bg-white [&_span]:text-slate-400 [&_span]:border-slate-200 [&_span]:rounded-lg
+    [&_.bg-gray-800]:bg-emerald-600 [&_.bg-gray-800]:text-white [&_.bg-gray-800]:border-emerald-600
+    [&_.dark\:bg-gray-800]:bg-white [&_.dark\:text-gray-400]:text-slate-500">
+                    {{ $pendingUsers->appends(request()->query())->links() }}
+                </div>
             </div>
 
             {{-- 4. DAFTAR SELURUH PENGGUNA --}}
             <div class="bg-white rounded-xl border border-slate-200 overflow-hidden shadow-sm">
-                <div class="p-6 border-b border-slate-100 bg-slate-50/50 flex justify-between items-center">
-                    <h3 class="font-bold text-slate-700 uppercase tracking-wider">Daftar Seluruh Pengguna</h3>
-                    <div class="flex items-center gap-2">
-                        <button type="button" onclick="openDownloadModal()" class="text-[11px] font-bold uppercase tracking-wider text-emerald-600 bg-white border border-emerald-200 px-4 py-2 rounded-lg hover:bg-emerald-600 hover:text-white transition-all cursor-pointer flex items-center gap-2">
-                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-4 h-4">
-                                <path stroke-linecap="round" stroke-linejoin="round" d="M3 16.5v2.25A2.25 2.25 0 0 0 5.25 21h13.5A2.25 2.25 0 0 0 21 18.75V16.5M16.5 12 12 16.5m0 0L7.5 12m4.5 4.5V3" />
-                            </svg>
-                            Export
-                        </button>
-                        <button type="button" onclick="openUploadModal()" class="text-[11px] font-bold uppercase tracking-wider text-amber-600 bg-white border border-amber-200 px-4 py-2 rounded-lg hover:bg-amber-600 hover:text-white transition-all cursor-pointer flex items-center gap-2">
-                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-4 h-4">
-                                <path stroke-linecap="round" stroke-linejoin="round" d="M3 16.5v2.25A2.25 2.25 0 0 0 5.25 21h13.5A2.25 2.25 0 0 0 21 18.75V16.5m-13.5-9L12 3m0 0 4.5 4.5M12 3v13.5" />
-                            </svg>
-                            Import
-                        </button>
-                        <button type="button" onclick="openAddUserModal()" class="text-[11px] font-bold uppercase tracking-wider text-indigo-600 bg-white border border-indigo-200 px-4 py-2 rounded-lg hover:bg-indigo-600 hover:text-white transition-all cursor-pointer flex items-center gap-2">
-                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" class="w-4 h-4">
-                                <path d="M10.75 4.75a.75.75 0 0 0-1.5 0v4.5h-4.5a.75.75 0 0 0 0 1.5h4.5v4.5a.75.75 0 0 0 1.5 0v-4.5h4.5a.75.75 0 0 0 0-1.5h-4.5v-4.5Z" />
-                            </svg>
-                            Tambah Pengguna
-                        </button>
+                <div class="p-6 border-b border-slate-100 bg-slate-50/50 flex flex-col md:flex-row md:justify-between md:items-center gap-4">
+                    {{-- 1. Judul --}}
+                    <h3 class="font-bold text-slate-700 uppercase tracking-wider text-[14px]">Daftar Seluruh Pengguna</h3>
+
+                    {{-- Container Aksi: Flex-row di mobile agar tombol & input sebaris --}}
+                    <div class="flex flex-row items-center gap-3 w-full md:w-auto">
+
+                        {{-- 2. Grup Tombol: Berjejer di kiri, teks hilang di layar kecil --}}
+                        <div class="flex items-center gap-2 shrink-0">
+                            {{-- Tombol Export --}}
+                            <button type="button" onclick="openDownloadModal()" class="flex items-center justify-center p-2.5 md:px-4 text-[11px] font-bold uppercase tracking-wider text-emerald-600 bg-white border border-emerald-200 rounded-lg hover:bg-emerald-600 hover:text-white transition-all cursor-pointer shadow-sm">
+                                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="w-4 h-4">
+                                    <path fill-rule="evenodd" d="M12 2.25a.75.75 0 0 1 .75.75v11.69l3.22-3.22a.75.75 0 1 1 1.06 1.06l-4.5 4.5a.75.75 0 0 1-1.06 0l-4.5-4.5a.75.75 0 1 1 1.06-1.06l3.22 3.22V3a.75.75 0 0 1 .75-.75Zm-9 13.5a.75.75 0 0 1 .75.75v2.25a1.5 1.5 0 0 0 1.5 1.5h13.5a1.5 1.5 0 0 0 1.5-1.5V16.5a.75.75 0 0 1 1.5 0v2.25a3 3 0 0 1-3 3H5.25a3 3 0 0 1-3-3V16.5a.75.75 0 0 1 .75-.75Z" clip-rule="evenodd" />
+                                </svg>
+                                <span class="hidden md:inline ml-2">Export</span>
+                            </button>
+
+                            {{-- Tombol Import --}}
+                            <button type="button" onclick="openUploadModal()" class="flex items-center justify-center p-2.5 md:px-4 text-[11px] font-bold uppercase tracking-wider text-amber-600 bg-white border border-amber-200 rounded-lg hover:bg-amber-600 hover:text-white transition-all cursor-pointer shadow-sm">
+                                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="w-4 h-4">
+                                    <path fill-rule="evenodd" d="M11.47 2.47a.75.75 0 0 1 1.06 0l4.5 4.5a.75.75 0 1 1-1.06 1.06l-3.22-3.22V16.5a.75.75 0 0 1-1.5 0V4.81L8.03 8.03a.75.75 0 0 1-1.06-1.06l4.5-4.5ZM3 15.75a.75.75 0 0 1 .75.75v2.25a1.5 1.5 0 0 0 1.5 1.5h13.5a1.5 1.5 0 0 0 1.5-1.5V16.5a.75.75 0 0 1 1.5 0v2.25a3 3 0 0 1-3 3H5.25a3 3 0 0 1-3-3V16.5a.75.75 0 0 1 .75-.75Z" clip-rule="evenodd" />
+                                </svg>
+                                <span class="hidden md:inline ml-2">Import</span>
+                            </button>
+
+                            {{-- Tombol Tambah --}}
+                            <button type="button" onclick="openAddUserModal()" class="flex items-center justify-center p-2.5 md:px-4 text-[11px] font-bold uppercase tracking-wider text-indigo-600 bg-white border border-indigo-200 rounded-lg hover:bg-indigo-600 hover:text-white transition-all cursor-pointer shadow-sm">
+                                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="w-4 h-4">
+                                    <path d="M6.25 6.375a4.125 4.125 0 1 1 8.25 0 4.125 4.125 0 0 1-8.25 0ZM3.25 19.125a7.125 7.125 0 0 1 14.25 0v.003l-.001.119a.75.75 0 0 1-.363.63 13.067 13.067 0 0 1-6.761 1.873c-2.472 0-4.786-.684-6.76-1.873a.75.75 0 0 1-.364-.63l-.001-.122ZM19.75 7.5a.75.75 0 0 0-1.5 0v2.25H16a.75.75 0 0 0 0 1.5h2.25v2.25a.75.75 0 0 0 1.5 0v-2.25H22a.75.75 0 0 0 0-1.5h-2.25V7.5Z" />
+                                </svg>
+                                <span class="hidden md:inline ml-2 text-nowrap">Tambah</span>
+                            </button>
+                        </div>
+
+                        {{-- 3. Input Pencarian: Melebar menggunakan flex-grow --}}
+                        <div class="relative flex-grow md:flex-initial md:w-64 text-slate-800">
+                            <span class="absolute inset-y-0 left-0 flex items-center pl-3 text-slate-400">
+                                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="w-4 h-4">
+                                    <path fill-rule="evenodd" d="M10.5 3.75a6.75 6.75 0 1 0 0 13.5 6.75 6.75 0 0 0 0-13.5ZM2.25 10.5a8.25 8.25 0 1 1 14.59 5.28l4.69 4.69a.75.75 0 1 1-1.06 1.06l-4.69-4.69A8.25 8.25 0 0 1 2.25 10.5Z" clip-rule="evenodd" />
+                                </svg>
+                            </span>
+                            <input type="text"
+                                id="search-all"
+                                data-table="all"
+                                class="live-search-input text-xs border-slate-200 rounded-lg pl-9 pr-3 py-2.5 w-full focus:ring-2 focus:ring-indigo-500 outline-none transition-all bg-white shadow-sm"
+                                placeholder="Cari nama atau email..."
+                                value="{{ request('search_all') }}"
+                                autocomplete="off">
+                        </div>
+
                     </div>
                 </div>
                 <div class="overflow-x-auto scrollbar-thin">
@@ -211,7 +318,7 @@
                             </tr>
                         </thead>
                         <tbody class="divide-y divide-slate-50">
-                            @foreach ($allUsers->where('status_user', '!=', 'inactive') as $u)
+                            @forelse ($allUsers->where('status_user', '!=', 'inactive') as $u)
                             @php
                             $person = $u->person;
                             $userName = $person->name ?? ($u->status_user == 'pending' ? 'User Belum Diverifikasi' : 'User Tanpa Profil');
@@ -238,7 +345,7 @@
                                 </td>
                                 <td class="px-6 py-4 text-center">
                                     <span class="font-medium text-slate-500 text-xs block capitalize">{{ $person->position->name_position ?? '-' }}</span>
-                                    <span class="text-xs text-indigo-500 font-medium capitalize">{{ $person->workAssignment->sppgUnit->name ?? '-' }}</span>
+                                    <span class="text-xs text-slate-500 font-medium capitalize">{{ $person->workAssignment->sppgUnit->name ?? '-' }}</span>
                                 </td>
                                 <td class="px-6 py-4 text-center">
                                     <span class="text-xs font-medium text-slate-500 block">{{ $u->person && $u->person->batch ? 'Batch ' . $u->person->batch : '-' }}</span>
@@ -252,14 +359,20 @@
                                 <td class="px-6 py-4 text-right">
                                     <div class="flex justify-end items-center gap-1">
                                         {{-- Tombol Edit --}}
-                                        @if($person)
-                                        <button onclick='openMasterEditModal(@json($u), @json($person), false)'
-                                            class="p-2 text-slate-400 hover:text-indigo-600 cursor-pointer transition-colors hover:bg-indigo-50 rounded-lg">
+                                        <button
+                                            @if($person)
+                                            onclick='openMasterEditModal(@json($u), @json($person), false)'
+                                            title="Edit"
+                                            class="p-2 text-slate-400 hover:text-indigo-600 cursor-pointer transition-colors hover:bg-indigo-50 rounded-lg"
+                                            @else
+                                            disabled
+                                            title="Profil Belum Dilengkapi"
+                                            class="p-2 text-slate-200 cursor-not-allowed"
+                                            @endif>
                                             <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
                                                 <path d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path>
                                             </svg>
                                         </button>
-                                        @endif
 
                                         {{-- Tombol Hapus --}}
                                         @php
@@ -270,9 +383,9 @@
                                             @if(!$isSelf)
                                             onclick="confirmDelete('{{ $u->id_user }}', '{{ $u->email }}', false)"
                                             @endif
-                                            class="p-2 transition-all {{ $isSelf ? 'text-rose-300 cursor-not-allowed' : 'text-rose-600 hover:bg-rose-50 cursor-pointer rounded-lg' }}"
+                                            class="p-2 transition-all {{ $isSelf ? 'text-rose-200 cursor-not-allowed' : 'text-rose-600 hover:bg-rose-50 cursor-pointer rounded-lg' }}"
                                             {{ $isSelf ? 'disabled' : '' }}
-                                            title="{{ $isSelf ? 'Anda tidak dapat menghapus akun sendiri' : 'Hapus User' }}">
+                                            title="{{ $isSelf ? 'Anda tidak dapat menghapus akun sendiri' : 'Hapus Sementara' }}">
 
                                             <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
                                                 <path d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path>
@@ -281,19 +394,74 @@
                                     </div>
                                 </td>
                             </tr>
-                            @endforeach
+                            @empty
+                            <tr>
+                                <td colspan="5" class="px-6 py-12 text-center">
+                                    <div class="flex flex-col items-center justify-center">
+                                        <div class="p-3 bg-slate-50 rounded-full mb-3">
+                                            <svg class="w-8 h-8 text-slate-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
+                                            </svg>
+                                        </div>
+                                        <p class="text-[11px] font-bold uppercase tracking-[0.2em] text-slate-400">
+                                            {{ request('search_all') ? 'Pengguna Tidak Ditemukan' : 'Belum Ada Pengguna Terdaftar' }}
+                                        </p>
+                                        @if(request('search_all'))
+                                        <p class="text-[10px] text-slate-400 mt-1 italic">Coba gunakan kata kunci yang berbeda</p>
+                                        @endif
+                                    </div>
+                                </td>
+                            </tr>
+                            @endforelse
                         </tbody>
                     </table>
+                </div>
+                <div class="px-6 py-4 bg-white border-t border-slate-100 
+    [&_nav]:flex [&_nav]:justify-between [&_nav]:items-center
+    [&_a]:bg-white [&_a]:text-slate-600 [&_a]:border-slate-200 [&_a]:rounded-lg [&_a]:hover:bg-slate-50
+    [&_span]:bg-white [&_span]:text-slate-400 [&_span]:border-slate-200 [&_span]:rounded-lg
+    [&_.bg-gray-800]:bg-indigo-600 [&_.bg-gray-800]:text-white [&_.bg-gray-800]:border-indigo-600
+    [&_.dark\:bg-gray-800]:bg-white [&_.dark\:text-gray-400]:text-slate-500">
+                    {{ $allUsers->appends(request()->query())->links() }}
                 </div>
             </div>
 
             {{-- 5. TABEL TEMPAT SAMPAH --}}
             <div class="bg-rose-50/20 rounded-xl border border-rose-100 overflow-hidden shadow-sm">
-                <div class="p-6 border-b border-rose-100 bg-rose-50 flex justify-between items-center text-rose-800">
-                    <h3 class="font-bold uppercase tracking-wider text-[14px]">Daftar Pengguna yang Telah Dihapus</h3>
-                    @if($trashedUsers->count() > 0)
-                    <button onclick="confirmDeleteAll()" class="text-[11px] font-bold uppercase tracking-wider text-rose-600 bg-white border border-rose-200 px-4 py-2 rounded-lg hover:bg-rose-600 hover:text-white transition-all cursor-pointer">Kosongkan Sampah</button>
-                    @endif
+                <div class="p-6 border-b border-rose-100 bg-rose-50 flex flex-col md:flex-row md:justify-between md:items-center gap-4 text-rose-800">
+                    {{-- Judul: Paling atas di mobile --}}
+                    <h3 class="font-bold uppercase tracking-wider text-[14px]">Daftar Pengguna Dihapus</h3>
+
+                    {{-- Container Aksi: flex-row agar tombol dan input berjejer di mobile --}}
+                    <div class="flex flex-row items-center gap-3 w-full md:w-auto">
+
+                        {{-- Tombol Kosongkan Sampah: shrink-0 agar ukuran tombol tetap stabil --}}
+                        @if($trashedUsers->count() > 0)
+                        <button onclick="confirmDeleteAll()"
+                            class="shrink-0 text-[11px] font-bold uppercase tracking-wider text-rose-600 bg-white border border-rose-200 px-4 py-2.5 rounded-lg hover:bg-rose-600 hover:text-white transition-all cursor-pointer shadow-sm flex items-center gap-2">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                            </svg>
+                            <span class="hidden md:inline">Kosongkan Sampah</span>
+                        </button>
+                        @endif
+
+                        {{-- Input Pencarian: flex-grow agar lebih lebar memenuhi ruang --}}
+                        <div class="relative flex-grow md:flex-initial md:w-64 text-slate-800">
+                            <span class="absolute inset-y-0 left-0 flex items-center pl-3 text-rose-300">
+                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                                </svg>
+                            </span>
+                            <input type="text"
+                                id="search-trash"
+                                data-table="trash"
+                                class="live-search-input text-xs border-rose-100 rounded-lg pl-9 pr-3 py-2.5 w-full focus:ring-2 focus:ring-rose-500 outline-none transition-all bg-white shadow-sm"
+                                placeholder="Cari nama atau email..."
+                                value="{{ request('search_trash') }}"
+                                autocomplete="off">
+                        </div>
+                    </div>
                 </div>
                 <div class="overflow-x-auto scrollbar-thin">
                     <table class="w-full text-left border-collapse text-sm">
@@ -335,7 +503,7 @@
                                 </td>
                                 <td class="px-6 py-4 text-center">
                                     <span class="text-slate-500 text-xs block capitalize font-medium">{{ $personTrashed->position->name_position ?? '-' }}</span>
-                                    <span class="text-xs text-rose-500 capitalize font-medium">{{ $personTrashed->workAssignment->sppgUnit->name ?? '-' }}</span>
+                                    <span class="text-xs text-slate-500 capitalize font-medium">{{ $personTrashed->workAssignment->sppgUnit->name ?? '-' }}</span>
                                 </td>
                                 <td class="px-6 py-4 text-center">
                                     <span class="text-xs font-medium text-slate-500 block">{{ $tu->personTrashed && $tu->personTrashed->batch ? 'Batch ' . $tu->personTrashed->batch : '-' }}</span>
@@ -367,11 +535,33 @@
                             </tr>
                             @empty
                             <tr>
-                                <td colspan="6" class="px-6 py-10 text-center opacity-20 text-[11px] font-bold uppercase">Sampah Kosong</td>
+                                <td colspan="6" class="px-6 py-12 text-center">
+                                    <div class="flex flex-col items-center justify-center">
+                                        <div class="p-3 bg-slate-50 rounded-full mb-3">
+                                            <svg class="w-8 h-8 text-slate-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
+                                            </svg>
+                                        </div>
+                                        <p class="text-[11px] font-bold uppercase tracking-[0.2em] text-slate-400">
+                                            {{ request('search_trash') ? 'Pengguna Tidak Ditemukan' : 'Sampah Kosong' }}
+                                        </p>
+                                        @if(request('search_trash'))
+                                        <p class="text-[10px] text-slate-400 mt-1 italic">Coba gunakan kata kunci yang berbeda</p>
+                                        @endif
+                                    </div>
+                                </td>
                             </tr>
                             @endforelse
                         </tbody>
                     </table>
+                </div>
+                <div class="px-6 py-4 bg-rose-50/20 border-t border-rose-100
+    [&_nav]:flex [&_nav]:justify-between [&_nav]:items-center
+    [&_a]:bg-white [&_a]:text-slate-600 [&_a]:border-slate-200 [&_a]:rounded-lg [&_a]:hover:bg-rose-50
+    [&_span]:bg-white [&_span]:text-slate-400 [&_span]:border-slate-200 [&_span]:rounded-lg
+    [&_.bg-gray-800]:bg-rose-600 [&_.bg-gray-800]:text-white [&_.bg-gray-800]:border-rose-600
+    [&_.dark\:bg-gray-800]:bg-white [&_.dark\:text-gray-400]:text-slate-500">
+                    {{ $trashedUsers->appends(request()->query())->links() }}
                 </div>
             </div>
         </div>
@@ -389,7 +579,7 @@
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 17v-2m3 2v-4m3 4v-6m2 10H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
                         </svg>
                     </span>
-                    <h3 class="font-bold uppercase tracking-widest text-slate-700">Kustomisasi Eksport Data Pengguna</h3>
+                    <h3 class="font-bold uppercase tracking-widest text-slate-700">Export Data Pengguna</h3>
                 </div>
                 <div class="flex gap-4 items-center">
                     <button type="button" onclick="closeDownloadModal()" class="text-slate-400 hover:text-slate-600 text-2xl">&times;</button>
@@ -487,7 +677,7 @@
 
                 <div class="p-6 border-t border-slate-100 bg-slate-50/50 flex gap-3">
                     <button type="button" onclick="closeDownloadModal()" class="flex-1 py-4 text-[11px] font-semibold uppercase tracking-wider text-slate-500 bg-white border border-slate-200 rounded-xl hover:bg-slate-50 transition-all">Batal</button>
-                    <button type="button" id="btn-submit-download" onclick="submitAndClose()" class="flex-1 py-4 text-[11px] font-semibold uppercase tracking-wider text-white bg-emerald-600 rounded-xl shadow-lg hover:bg-emerald-700 transition-all active:scale-[0.98]">Unduh File Excel (.xlsx)</button>
+                    <button type="button" id="btn-submit-download" onclick="submitAndClose()" class="flex-1 py-4 text-[11px] font-semibold uppercase tracking-wider text-white bg-emerald-600 rounded-xl shadow-lg hover:bg-emerald-700 transition-all active:scale-[0.98]">Unduh (.xlsx)</button>
                 </div>
             </form>
         </div>
@@ -524,7 +714,7 @@
                     </div>
 
                     <div class="space-y-4">
-                        <label class="text-[11px] font-bold text-gray-400 uppercase tracking-widest">Pilih File Excel (.xlsx):</label>
+                        <label class="text-[11px] font-bold text-gray-400 uppercase tracking-widest">Pilih File (.xlsx):</label>
                         <input type="file" id="excel_file" accept=".xlsx" class="w-full text-sm text-slate-500 file:mr-4 file:py-2.5 file:px-4 file:rounded-xl file:border-0 file:text-[11px] file:font-bold file:bg-slate-100 file:text-slate-700 hover:file:bg-indigo-50 cursor-pointer">
                         <button type="button" onclick="previewExcel()" class="w-full py-3 bg-slate-800 text-white text-[11px] font-bold uppercase rounded-xl hover:bg-black transition-all">Tampilkan Pratinjau Data</button>
                     </div>
@@ -614,7 +804,7 @@
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M18 9v3m0 0v3m0-3h3m-3 0h-3m-2-5a4 4 0 11-8 0 4 4 0 018 0zM3 20a6 6 0 0112 0v1H3v-1z"></path>
                         </svg>
                     </span>
-                    <h3 class="text-[14px] font-bold uppercase tracking-widest">Tambah Pengguna Baru</h3>
+                    <h3 class="text-[14px] font-bold uppercase tracking-widest">Tambah Akun Pengguna</h3>
                 </div>
                 <button type="button" onclick="closeAddUserModal()" class="text-slate-400 hover:text-slate-600 text-2xl cursor-pointer">&times;</button>
             </div>
@@ -655,7 +845,7 @@
                     </div>
 
                     {{-- Password Section --}}
-                    <div class="space-y-3 pt-4 border-t border-slate-50">
+                    <!-- <div class="space-y-3 pt-4 border-t border-slate-50" disabled>
                         <div class="flex justify-between items-center">
                             <label class="text-[11px] font-bold text-gray-500 uppercase tracking-wider">Kata Sandi</label>
                             <button type="button" onclick="generateStrongPassword()" class="text-[10px] font-bold text-indigo-600 hover:text-indigo-800 uppercase bg-indigo-50 px-2 py-1 rounded transition-colors">Dapatkan Acak</button>
@@ -690,7 +880,7 @@
                                 </svg>
                             </button>
                         </div>
-                    </div>
+                    </div> -->
                 </div>
 
                 <div class="p-6 border-t border-slate-100 bg-slate-50/50 flex gap-3">
@@ -837,7 +1027,7 @@
                             <div>
                                 <label class="text-[11px] font-bold text-gray-500 uppercase tracking-wider">Desa/Kelurahan</label>
                                 <select required name="village_ktp" id="f_ktp_vill" data-selected="{{ $user->village_ktp ?? '' }}" class="w-full px-4 py-2 bg-gray-50 border-none rounded-lg text-sm" disabled>
-                                    <option value="" disabled selected>Pilih Desa</option>
+                                    <option value="" disabled selected>Pilih Desa/Kelurahan</option>
                                 </select>
                             </div>
                             <div class="md:col-span-4"><label class="text-[11px] font-bold text-gray-500 uppercase tracking-wider">Alamat Jalan/Rumah</label><textarea required name="address_ktp" id="f_ktp_address" rows="2" class="w-full mt-1 px-4 py-2 bg-gray-50 border-none rounded-lg text-sm">{{ $user->address_ktp ?? '' }}</textarea></div>
@@ -877,7 +1067,7 @@
                                     <div>
                                         <label class="text-[11px] font-bold text-gray-500 uppercase tracking-wider">Desa/Kelurahan</label>
                                         <select required name="village_domicile" id="f_dom_vill" data-selected="{{ $user->village_domicile ?? '' }}" class="w-full px-4 py-2 bg-gray-50 border-none rounded-lg text-sm" disabled>
-                                            <option value="" disabled selected>Pilih Desa</option>
+                                            <option value="" disabled selected>Pilih Desa/Kelurahan</option>
                                         </select>
                                     </div>
                                 </div>
@@ -1018,6 +1208,100 @@
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 
     <script>
+        let searchTimer;
+
+        // 1. Fungsi Utama Refresh
+        function refreshTable(url, focusId = null) {
+            const container = document.getElementById('user-table-container');
+            if (!container) return;
+
+            fetch(url, {
+                    headers: {
+                        "X-Requested-With": "XMLHttpRequest"
+                    }
+                })
+                .then(response => response.text())
+                .then(html => {
+                    let parser = new DOMParser();
+                    let doc = parser.parseFromString(html, 'text/html');
+                    let newContent = doc.getElementById('user-table-container').innerHTML;
+
+                    // Update konten
+                    container.innerHTML = newContent;
+
+                    // Sinkronisasi URL tanpa reload
+                    window.history.pushState({}, '', url);
+
+                    // KRUSIAL: Gunakan requestAnimationFrame agar fokus dipicu 
+                    // SETELAH browser selesai menggambar ulang (rendering) HTML baru
+                    if (focusId) {
+                        requestAnimationFrame(() => {
+                            const activeInput = document.getElementById(focusId);
+                            if (activeInput) {
+                                activeInput.focus();
+                                // Paksa kursor ke urutan terakhir teks
+                                const val = activeInput.value;
+                                activeInput.value = '';
+                                activeInput.value = val;
+                            }
+                        });
+                    }
+                })
+                .catch(error => console.error('Error:', error));
+        }
+
+        // 2. Event Listener untuk Mengetik (Otomatis & Enter)
+        document.addEventListener('keydown', function(e) {
+            if (e.target.classList.contains('live-search-input')) {
+                const inputEl = e.target;
+                const type = inputEl.getAttribute('data-table');
+                const inputId = inputEl.id;
+
+                // JIKA TEKAN ENTER
+                if (e.key === 'Enter') {
+                    e.preventDefault(); // Cegah reload halaman
+                    clearTimeout(searchTimer); // Batalkan timer otomatis karena langsung dieksekusi
+
+                    let currentUrl = new URL(window.location.href);
+                    currentUrl.searchParams.set('search_' + type, inputEl.value);
+                    currentUrl.searchParams.delete(type + '_page');
+
+                    refreshTable(currentUrl.toString(), inputId);
+                }
+            }
+        });
+
+        // 3. Event Listener untuk Timer Otomatis (Debounce)
+        document.addEventListener('input', function(e) {
+            if (e.target.classList.contains('live-search-input')) {
+                clearTimeout(searchTimer);
+
+                const inputEl = e.target;
+                const type = inputEl.getAttribute('data-table');
+                const inputId = inputEl.id;
+
+                searchTimer = setTimeout(() => {
+                    let currentUrl = new URL(window.location.href);
+                    currentUrl.searchParams.set('search_' + type, inputEl.value);
+                    currentUrl.searchParams.delete(type + '_page');
+
+                    refreshTable(currentUrl.toString(), inputId);
+                }, 700); // Jeda sedikit lebih lama (700ms) agar tidak terlalu sering request saat mengetik cepat
+            }
+        });
+
+        // 4. Listener Pagination (Tetap Sama)
+        document.addEventListener('click', function(e) {
+            let anchor = e.target.closest('#user-table-container nav a');
+            if (anchor && anchor.getAttribute('href')) {
+                let url = anchor.getAttribute('href');
+                if (url.includes('page=') && !url.startsWith('javascript')) {
+                    e.preventDefault();
+                    refreshTable(url);
+                }
+            }
+        });
+
         document.addEventListener('DOMContentLoaded', function() {
             const apiBase = "/api-wilayah";
             const sleep = (ms) => new Promise(resolve => setTimeout(resolve, ms));
@@ -1076,7 +1360,7 @@
                     if (regCode) {
                         const distCode = await populateSelect(`f_${prefix}_dist`, `districts/${regCode}.json`, "Pilih Kecamatan");
                         if (distCode) {
-                            await populateSelect(`f_${prefix}_vill`, `villages/${distCode}.json`, "Pilih Desa");
+                            await populateSelect(`f_${prefix}_vill`, `villages/${distCode}.json`, "Pilih Desa/Kelurahan");
                         }
                     }
                 }
@@ -1525,12 +1809,13 @@
             const formatErrorContainer = document.getElementById('format-error-msg');
             if (formatErrorContainer) formatErrorContainer.classList.add('hidden');
 
+            const roleKey = 'HAK AKSES SISTEM (Administrator/Author/Editor/Subscriber/Guest)';
+
             // 1. Validasi Struktur Kolom (Wajib sesuai template)
             const requiredColumns = [
                 'EMAIL PENGGUNA',
                 'NOMOR WHATSAPP',
-                'HAK AKSES SISTEM (Administrator/Author/Editor/Subscriber/Guest)',
-                'PASSWORD'
+                roleKey
             ];
 
             if (data.length > 0) {
@@ -1538,20 +1823,12 @@
                 const missing = requiredColumns.filter(col => !(col in firstRow));
 
                 if (missing.length > 0) {
-                    // Tampilkan pesan error di dalam modal tanpa alert
+                    // Tampilkan pesan error jika kolom tidak cocok
                     if (formatErrorContainer) {
-                        formatErrorContainer.innerHTML = `
-                    <div class="flex items-start gap-3">
-                        <svg class="w-5 h-5 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/></svg>
-                        <div>
-                            <p class="font-bold uppercase tracking-tight text-[11px]">Format Kolom Tidak Sesuai!</p>
-                            <p class="text-[10px] opacity-90">Kolom berikut hilang: ${missing.join(', ')}. Pastikan menggunakan template terbaru.</p>
-                        </div>
-                    </div>
-                `;
+                        formatErrorContainer.innerHTML = `<p class="font-bold text-[11px]">Kolom tidak cocok: ${missing.join(', ')}</p>`;
                         formatErrorContainer.classList.remove('hidden');
                     }
-                    return; // Hentikan proses
+                    return;
                 }
             }
 
@@ -1574,7 +1851,7 @@
             for (const item of data) {
                 const email = (item['EMAIL PENGGUNA'] || '').toString().trim();
                 const phone = (item['NOMOR WHATSAPP'] || '').toString().trim();
-                const rawRole = (item['HAK AKSES (Administrator/Author/Editor/Subscriber/Guest)'] || '').toString().toLowerCase().trim();
+                const rawRole = (item[roleKey] || '').toString().toLowerCase().trim();
                 let errors = [];
 
                 if (!email) errors.push('Email kosong');
@@ -1713,7 +1990,7 @@
 
             document.getElementById('error_email').classList.add('hidden');
             document.getElementById('error_phone').classList.add('hidden');
-            document.getElementById('copy_area').classList.add('hidden');
+            // document.getElementById('copy_area').classList.add('hidden');
 
             validateSubmitButton(); // Kunci tombol saat awal buka
             modal.classList.remove('hidden');
@@ -1778,42 +2055,42 @@
         });
 
         // --- Fungsi Password Tetap Sama ---
-        window.generateStrongPassword = function() {
-            const uppercase = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
-            const lowercase = "abcdefghijklmnopqrstuvwxyz";
-            const numbers = "0123456789";
-            const symbols = "!@#$%^&*()_+~}{[]";
-            const allChars = uppercase + lowercase + numbers + symbols;
-            let password = "";
-            password += uppercase[Math.floor(Math.random() * uppercase.length)];
-            password += lowercase[Math.floor(Math.random() * lowercase.length)];
-            password += numbers[Math.floor(Math.random() * numbers.length)];
-            password += symbols[Math.floor(Math.random() * symbols.length)];
-            for (let i = 0; i < 8; i++) {
-                password += allChars[Math.floor(Math.random() * allChars.length)];
-            }
-            password = password.split('').sort(() => 0.5 - Math.random()).join('');
-            document.getElementById('add_password').value = password;
-            document.getElementById('add_password_conf').value = password;
-            document.getElementById('pass_display').value = password;
-            document.getElementById('copy_area').classList.remove('hidden');
-        }
+        // window.generateStrongPassword = function() {
+        //     const uppercase = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+        //     const lowercase = "abcdefghijklmnopqrstuvwxyz";
+        //     const numbers = "0123456789";
+        //     const symbols = "!@#$%^&*()_+~}{[]";
+        //     const allChars = uppercase + lowercase + numbers + symbols;
+        //     let password = "";
+        //     password += uppercase[Math.floor(Math.random() * uppercase.length)];
+        //     password += lowercase[Math.floor(Math.random() * lowercase.length)];
+        //     password += numbers[Math.floor(Math.random() * numbers.length)];
+        //     password += symbols[Math.floor(Math.random() * symbols.length)];
+        //     for (let i = 0; i < 8; i++) {
+        //         password += allChars[Math.floor(Math.random() * allChars.length)];
+        //     }
+        //     password = password.split('').sort(() => 0.5 - Math.random()).join('');
+        //     document.getElementById('add_password').value = password;
+        //     document.getElementById('add_password_conf').value = password;
+        //     document.getElementById('pass_display').value = password;
+        //     document.getElementById('copy_area').classList.remove('hidden');
+        // }
 
-        window.copyToClipboard = function() {
-            const passVal = document.getElementById('pass_display');
-            passVal.select();
-            document.execCommand("copy");
-            const btn = document.getElementById('btn_copy');
-            btn.innerText = "Copied!";
-            setTimeout(() => {
-                btn.innerText = "Copy";
-            }, 2000);
-        }
+        // window.copyToClipboard = function() {
+        //     const passVal = document.getElementById('pass_display');
+        //     passVal.select();
+        //     document.execCommand("copy");
+        //     const btn = document.getElementById('btn_copy');
+        //     btn.innerText = "Copied!";
+        //     setTimeout(() => {
+        //         btn.innerText = "Copy";
+        //     }, 2000);
+        // }
 
-        window.togglePass = function(inputId, iconId) {
-            const input = document.getElementById(inputId);
-            input.type = (input.type === "password") ? "text" : "password";
-        }
+        // window.togglePass = function(inputId, iconId) {
+        //     const input = document.getElementById(inputId);
+        //     input.type = (input.type === "password") ? "text" : "password";
+        // }
 
         window.closeAddUserModal = function() {
             document.getElementById('addUserModal').classList.add('hidden');

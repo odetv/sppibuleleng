@@ -25,18 +25,31 @@ class AuthenticatedSessionController extends Controller
      */
     public function store(LoginRequest $request): RedirectResponse
     {
-        // Cek apakah email ini ada di data yang di-soft delete
-        $userTrashed = User::onlyTrashed()->where('email', $request->email)->first();
+        // 1. Cek User di database berdasarkan email saja
+        $user = User::withTrashed()->where('email', $request->email)->first();
 
-        if ($userTrashed) {
+        // 2. CEK SOFT DELETE: Jika user ada di sampah (Non-Aktif)
+        if ($user && $user->trashed()) {
             return back()->withErrors([
-                'email' => 'Akun Anda telah dinonaktifkan.',
-            ]);
+                'email' => 'Akun Anda telah dinonaktifkan oleh administrator.',
+            ])->withInput($request->only('email'));
         }
 
+        // 3. CEK AKTIVASI: Jika user ditemukan tapi belum verifikasi email
+        // Ini menangani user baru (Input Admin) yang mencoba login sebelum set password
+        if ($user && is_null($user->email_verified_at)) {
+            return back()->withErrors([
+                'email' => 'Akun Anda belum aktif. Silakan periksa email masuk (atau folder spam) untuk melakukan aktivasi dan pembuatan password.',
+            ])->withInput($request->only('email'));
+        }
+
+        // 4. Jika lolos pengecekan di atas, jalankan autentikasi bawaan Breeze
+        // Di sini Laravel baru akan mencocokkan Email dan Password
         $request->authenticate();
+
         $request->session()->regenerate();
 
+        // 5. Setelah login berhasil, arahkan ke dashboard
         return redirect()->intended(route('dashboard', absolute: false));
     }
 

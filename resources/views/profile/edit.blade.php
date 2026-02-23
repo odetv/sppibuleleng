@@ -307,7 +307,7 @@
                             <div>
                                 <label class="text-gray-400 text-[10px] font-bold uppercase tracking-widest mb-1">Desa/Kelurahan</label>
                                 <select required id="f_ktp_vill" name="village_ktp" data-selected="{{ $userPerson->village_ktp ?? '' }}" disabled class="w-full px-4 py-2.5 bg-gray-50 border-none rounded-lg text-sm">
-                                    <option value="" disabled selected>Pilih Desa</option>
+                                    <option value="" disabled selected>Pilih Desa/Kelurahan</option>
                                 </select>
                             </div>
                         </div>
@@ -358,7 +358,7 @@
                                 <div>
                                     <label class="text-gray-400 text-[10px] font-bold uppercase tracking-widest mb-1">Desa/Kelurahan</label>
                                     <select required id="f_dom_vill" name="village_domicile" data-selected="{{ $userPerson->village_domicile ?? '' }}" disabled class="w-full px-4 py-2.5 bg-gray-50 border-none rounded-lg text-sm">
-                                        <option value="" disabled selected>Pilih Desa</option>
+                                        <option value="" disabled selected>Pilih Desa/Kelurahan</option>
                                     </select>
                                 </div>
                             </div>
@@ -564,7 +564,7 @@
                     if (regCode) {
                         const distCode = await populateSelect(`f_${prefix}_dist`, `districts/${regCode}.json`, "Pilih Kecamatan");
                         if (distCode) {
-                            await populateSelect(`f_${prefix}_vill`, `villages/${distCode}.json`, "Pilih Desa");
+                            await populateSelect(`f_${prefix}_vill`, `villages/${distCode}.json`, "Pilih Desa/Kelurahan");
                         }
                     }
                 }

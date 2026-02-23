@@ -9,16 +9,63 @@ use App\Models\RefPosition;
 use App\Models\RefRole;
 use App\Models\User;
 use App\Models\WorkAssignment;
+use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Password;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Facades\Validator;
+use Illuminate\Support\Str;
 use Maatwebsite\Excel\Facades\Excel;
 
 class UserController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
+        $allUsersDisplay = User::with(['person.position', 'person.workAssignment.sppgUnit', 'person.workAssignment.decree', 'person.socialMedia', 'role'])->latest()->get();
+
+        // Ambil keyword masing-masing
+        $searchPending = $request->query('search_pending');
+        $searchAll = $request->query('search_all');
+        $searchTrash = $request->query('search_trash');
+
+        // 1. Antrian Verifikasi (Pending)
+        $pendingQuery = User::query()->with(['person.position', 'person.workAssignment.sppgUnit', 'role'])
+            ->where('status_user', 'pending');
+        if ($searchPending) {
+            $pendingQuery->where(function ($q) use ($searchPending) {
+                $q->where('email', 'like', "%{$searchPending}%")
+                    ->orWhere('phone', 'like', "%{$searchPending}%")
+                    ->orWhereHas('person', fn($qp) => $qp->where('name', 'like', "%{$searchPending}%"));
+            });
+        }
+        $pendingUsers = $pendingQuery->latest()->paginate(5, ['*'], 'pending_page');
+
+        // 2. Daftar Seluruh Pengguna (Active)
+        $allQuery = User::query()->with(['person.position', 'person.workAssignment.sppgUnit', 'role'])
+            ->where('status_user', 'active');
+        if ($searchAll) {
+            $allQuery->where(function ($q) use ($searchAll) {
+                $q->where('email', 'like', "%{$searchAll}%")
+                    ->orWhere('phone', 'like', "%{$searchAll}%")
+                    ->orWhereHas('person', fn($qp) => $qp->where('name', 'like', "%{$searchAll}%"));
+            });
+        }
+        $allUsers = $allQuery->latest()->paginate(5, ['*'], 'all_page');
+
+        // 3. Tempat Sampah (Trashed)
+        $trashQuery = User::onlyTrashed()->with(['person' => fn($q) => $q->withTrashed(), 'role']);
+        if ($searchTrash) {
+            $trashQuery->where(function ($q) use ($searchTrash) {
+                $q->where('email', 'like', "%{$searchTrash}%")
+                    ->orWhere('phone', 'like', "%{$searchTrash}%")
+                    ->orWhereHas('person', fn($qp) => $qp->where('name', 'like', "%{$searchTrash}%"));
+            });
+        }
+        $trashedUsers = $trashQuery->latest()->paginate(5, ['*'], 'trash_page');
+
+        // Stats & Data Master tetap sama
         $stats = [
             'total' => User::count(),
             'active' => User::where('status_user', 'active')->count(),
@@ -26,32 +73,15 @@ class UserController extends Controller
             'incomplete' => User::whereNull('id_person')->count(),
         ];
 
-        $users = User::with(['person.position', 'person.workAssignment.sppgUnit', 'person.workAssignment.decree', 'person.socialMedia', 'role'])
-            ->where('status_user', 'pending')
-            ->whereNotNull('id_person')
-            ->latest()
-            ->get();
-
-        $allUsers = User::with(['person.position', 'person.workAssignment.sppgUnit', 'person.workAssignment.decree', 'person.socialMedia', 'role'])->latest()->get();
-
-        $trashedUsers = User::onlyTrashed()->with(['person' => function ($query) {
-            $query->withTrashed();
-        }, 'role'])->latest()->get();
-
         $roles = RefRole::all();
         $positions = RefPosition::all();
-
         $workAssignments = WorkAssignment::with(['sppgUnit', 'decree'])->get();
 
-        return view('admin.users.index', compact(
-            'users',
-            'allUsers',
-            'trashedUsers',
-            'stats',
-            'roles',
-            'positions',
-            'workAssignments'
-        ));
+        if ($request->ajax()) {
+            return view('admin.users.index', compact('pendingUsers', 'allUsersDisplay', 'allUsers', 'trashedUsers', 'stats', 'roles', 'positions', 'workAssignments'))->render();
+        }
+
+        return view('admin.users.index', compact('pendingUsers', 'allUsersDisplay', 'allUsers', 'trashedUsers', 'stats', 'roles', 'positions', 'workAssignments'));
     }
 
     public function checkAvailability(Request $request)
@@ -75,23 +105,37 @@ class UserController extends Controller
 
     public function store(Request $request)
     {
+        // 1. Validasi: Menggunakan rfc,dns untuk memastikan domain email nyata
         $request->validate([
-            'email' => 'required|email|unique:users,email',
+            'email' => 'required|email:rfc,dns|unique:users,email',
             'phone' => 'required|unique:users,phone',
-            'password' => 'required|min:8|confirmed',
             'id_ref_role' => 'required'
         ]);
 
-        // Admin hanya buat Akun (User), tidak buat Person
-        $user = User::create([
-            'email' => $request->email,
-            'phone' => $request->phone,
-            'password' => \Hash::make($request->password),
-            'id_ref_role' => $request->id_ref_role,
-            'status_user' => 'active',
-        ]);
+        try {
+            return DB::transaction(function () use ($request) {
+                // 2. Buat User sementara (belum commit ke DB permanen)
+                $user = User::create([
+                    'email' => $request->email,
+                    'phone' => $request->phone,
+                    'password' => Hash::make(Str::random(32)),
+                    'id_ref_role' => $request->id_ref_role,
+                    'status_user' => 'active',
+                    'email_verified_at' => null, 
+                ]);
 
-        return back()->with('success', 'Akun berhasil dibuat. Berikan akses login ke pengguna.');
+                // 3. Kirim Link Aktivasi
+                // Jika server email menolak (alamat fiktif), ini akan melempar Exception
+                $token = Password::createToken($user);
+                $user->sendPasswordResetNotification($token);
+
+                // Jika sampai sini, berarti email berhasil diterima server SMTP
+                return back()->with('success', 'Akun berhasil dibuat. Link aktivasi telah dikirim ke email pengguna.');
+            });
+        } catch (Exception $e) {
+            // Jika Exception dilempar (karena email fiktif), DB::transaction otomatis rollback
+            return back()->with('error', 'Gagal membuat akun: Alamat email tidak dapat dijangkau atau fiktif.');
+        }
     }
 
     public function exportExcel(Request $request)
@@ -104,7 +148,7 @@ class UserController extends Controller
         ]);
 
         $selectedColumns = $request->input('columns');
-        $fileName = 'DATA_PENGGUNA_SPPI_' . now()->format('d_M_Y_H_i') . '.xlsx';
+        $fileName = 'DATA_PENGGUNA_' . now()->format('d_M_Y_H_i') . '.xlsx';
 
         // Eksekusi menggunakan class export
         return Excel::download(
@@ -115,7 +159,7 @@ class UserController extends Controller
 
     public function downloadTemplate()
     {
-        return Excel::download(new UserTemplateExport, 'Template Upload Pengguna.xlsx');
+        return Excel::download(new UserTemplateExport, 'Template Import Akun Pengguna.xlsx');
     }
 
     public function importUsers(Request $request)
@@ -123,11 +167,13 @@ class UserController extends Controller
         $data = json_decode($request->json_data, true);
         $mode = $request->import_mode;
         $adminEmail = auth()->user()->email;
+        $roleKey = 'HAK AKSES SISTEM (Administrator/Author/Editor/Subscriber/Guest)';
 
         if (!$data) return back()->with('error', 'Data tidak valid.');
 
-        // Ambil mapping role dari DB: ['administrator' => 1, 'author' => 2, ...]
         $roleMapping = RefRole::all()->pluck('id_ref_role', 'slug_role')->toArray();
+        $successCount = 0;
+        $errorDetails = [];
 
         try {
             if ($mode === 'replace') {
@@ -138,29 +184,47 @@ class UserController extends Controller
                 DB::statement('SET FOREIGN_KEY_CHECKS=1;');
             }
 
-            DB::transaction(function () use ($data, $roleMapping) {
-                foreach ($data as $row) {
-                    // Konversi Nama Role di Excel ke Slug, lalu cari ID-nya
-                    $roleName = strtolower(trim($row['HAK AKSES (Administrator/Author/Editor/Subscriber/Guest)']));
-                    $roleId = $roleMapping[$roleName] ?? 5; // Default ke Guest (ID 5) jika tidak ditemukan
+            foreach ($data as $row) {
+                $email = trim($row['EMAIL PENGGUNA']);
 
-                    DB::table('users')->insert([
-                        'id_person'   => null,
-                        'email'       => trim($row['EMAIL PENGGUNA']),
-                        'phone'       => trim($row['NOMOR WHATSAPP']),
-                        'id_ref_role' => $roleId,
-                        'password'    => Hash::make($row['PASSWORD']),
-                        'status_user' => 'active',
-                        'created_at'  => now(),
-                        'updated_at'  => now()
-                    ]);
+                try {
+                    DB::transaction(function () use ($row, $roleMapping, $email, $roleKey, &$successCount) {
+                        // 1. Validasi DNS tetap dijalankan untuk kebersihan data
+                        $v = Validator::make(['email' => $email], ['email' => 'required|email:rfc,dns|unique:users,email']);
+                        if ($v->fails()) throw new Exception($v->errors()->first());
+
+                        $roleName = strtolower(trim($row[$roleKey] ?? 'guest'));
+                        $roleId = $roleMapping[$roleName] ?? 5;
+
+                        // 2. Buat user dengan password acak
+                        $user = User::create([
+                            'id_person'   => null,
+                            'email'       => $email,
+                            'phone'       => trim($row['NOMOR WHATSAPP']),
+                            'id_ref_role' => $roleId,
+                            'password'    => Hash::make(Str::random(32)), // Password random otomatis
+                            'status_user' => 'active',
+                            'email_verified_at' => null, // Wajib aktivasi email
+                        ]);
+
+                        // 3. Kirim notifikasi aktivasi (Set Password)
+                        $token = Password::createToken($user);
+                        $user->sendPasswordResetNotification($token);
+
+                        $successCount++;
+                    });
+                } catch (Exception $e) {
+                    $errorDetails[] = "Baris Email $email: " . $e->getMessage();
                 }
-            });
+            }
 
-            return redirect()->route('admin.users.index')->with('success', 'Database berhasil diperbarui.');
-        } catch (\Exception $e) {
+            $response = redirect()->route('admin.users.index');
+            return empty($errorDetails)
+                ? $response->with('success', "Berhasil mengimpor $successCount pengguna.")
+                : $response->with('success', "Berhasil mengimpor $successCount pengguna.")->withErrors($errorDetails);
+        } catch (Exception $e) {
             DB::statement('SET FOREIGN_KEY_CHECKS=1;');
-            return back()->with('error', 'Gagal: ' . $e->getMessage());
+            return back()->with('error', 'Gagal sistem: ' . $e->getMessage());
         }
     }
 
@@ -226,7 +290,7 @@ class UserController extends Controller
 
             DB::commit();
             return back()->with('success', 'Data pengguna dan plotting penugasan berhasil diperbarui.');
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             DB::rollBack();
             return back()->with('error', 'Gagal memperbarui data: ' . $e->getMessage());
         }
@@ -251,7 +315,7 @@ class UserController extends Controller
 
             DB::commit();
             return back()->with('success', 'Pengguna berhasil dipindahkan ke tempat sampah.');
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             DB::rollBack();
             return back()->with('error', 'Gagal menghapus pengguna.');
         }
@@ -290,7 +354,7 @@ class UserController extends Controller
 
             DB::commit();
             return back()->with('success', 'Data pengguna dan profil berhasil dibuang permanen.');
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             DB::rollBack();
             // Log error untuk debug jika diperlukan: \Log::error($e->getMessage());
             return back()->with('error', 'Gagal hapus permanen: ' . $e->getMessage());
@@ -325,7 +389,7 @@ class UserController extends Controller
 
             DB::commit();
             return back()->with('success', 'Tempat sampah berhasil dikosongkan total.');
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             DB::rollBack();
             return back()->with('error', 'Gagal mengosongkan sampah.');
         }
@@ -348,7 +412,7 @@ class UserController extends Controller
 
             DB::commit();
             return back()->with('success', "Akun {$user->email} berhasil dipulihkan.");
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             DB::rollBack();
             return back()->with('error', "Gagal memulihkan pengguna.");
         }
@@ -400,7 +464,7 @@ class UserController extends Controller
 
             DB::commit();
             return back()->with('success', "Akun {$user->email} berhasil diaktifkan dan diverifikasi.");
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             DB::rollBack();
             return back()->with('error', 'Gagal verifikasi: ' . $e->getMessage());
         }
@@ -452,7 +516,7 @@ class UserController extends Controller
 
             DB::commit();
             return back()->with('success', count($pendingUserIds) . ' pendaftar berhasil diverifikasi massal.');
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             DB::rollBack();
             return back()->with('error', 'Gagal verifikasi massal: ' . $e->getMessage());
         }

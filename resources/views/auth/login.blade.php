@@ -32,15 +32,48 @@
                         <p class="text-gray-500 text-sm">Masuk menggunakan akun Anda yang telah terdaftar</p>
                     </div>
 
-                    <x-auth-session-status class="mb-4" :status="session('status')" />
+                    {{-- WADAH NOTIFIKASI TERPADU (SUKSES & ERROR) --}}
+                    @if (session('status') || session('error') || $errors->any())
+                    @php
+                    // Tentukan tema warna berdasarkan jenis pesan
+                    $isError = session('error') || $errors->any();
+                    $bgColor = $isError ? 'bg-rose-50' : 'bg-emerald-50';
+                    $borderColor = $isError ? 'border-rose-100' : 'border-emerald-100';
+                    $textColor = $isError ? 'text-rose-600' : 'text-emerald-600';
+                    $iconBg = $isError ? 'bg-rose-500' : 'bg-emerald-500';
+                    $shadowColor = $isError ? 'shadow-rose-200' : 'shadow-emerald-200';
+                    @endphp
 
-                    {{-- TAMBAHAN: ALERT UNTUK ERROR SESSION (MISAL: AKUN DINONAKTIFKAN) --}}
-                    @if (session('error'))
-                    <div class="mb-4 p-3 rounded-lg bg-red-50 border border-red-100 text-red-600 text-sm font-medium flex items-center gap-2">
-                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 shrink-0" viewBox="0 0 20 20" fill="currentColor">
-                            <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clip-rule="evenodd" />
-                        </svg>
-                        {{ session('error') }}
+                    <div class="mb-6 p-4 rounded-xl {{ $bgColor }} border {{ $borderColor }} {{ $textColor }} text-xs font-semibold uppercase tracking-tight flex items-start gap-3 shadow-sm">
+                        {{-- Ikon Dinamis --}}
+                        <div class="{{ $iconBg }} text-white p-1 rounded-full shadow-lg {{ $shadowColor }} shrink-0 mt-0.5">
+                            @if($isError)
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 20 20" fill="currentColor">
+                                <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clip-rule="evenodd" />
+                            </svg>
+                            @else
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 20 20" fill="currentColor">
+                                <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd" />
+                            </svg>
+                            @endif
+                        </div>
+
+                        {{-- Konten Pesan Dinamis --}}
+                        <div class="flex flex-col gap-1">
+                            @if (session('status'))
+                            <span class="leading-relaxed">{{ session('status') }}</span>
+                            @endif
+
+                            @if (session('error'))
+                            <span class="leading-relaxed">{{ session('error') }}</span>
+                            @endif
+
+                            @if ($errors->any())
+                            @foreach ($errors->all() as $error)
+                            <span class="leading-relaxed block">{{ $error }}</span>
+                            @endforeach
+                            @endif
+                        </div>
                     </div>
                     @endif
 
@@ -59,7 +92,6 @@
                                     class="w-full pl-10 pr-4 py-3 bg-[#eef4ff] border-none rounded-lg focus:ring-2 focus:ring-blue-500 text-sm text-gray-700"
                                     placeholder="Masukkan Email">
                             </div>
-                            <x-input-error :messages="$errors->get('email')" class="mt-2" />
                         </div>
 
                         <div x-data="{ show: false }">
@@ -85,7 +117,6 @@
                                     </svg>
                                 </button>
                             </div>
-                            <x-input-error :messages="$errors->get('password')" class="mt-2" />
                         </div>
 
                         <div class="flex items-center justify-end">
