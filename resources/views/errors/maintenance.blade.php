@@ -21,9 +21,13 @@
                     </a>
 
                     <h1 class="text-2xl font-bold text-slate-800 mb-3 tracking-tight">Sistem Sedang Diperbarui</h1>
-                    <p class="text-slate-500 text-sm leading-relaxed mb-8">
+                    <p class="text-slate-500 text-sm leading-relaxed mb-6">
                         Kami sedang melakukan pemeliharaan rutin untuk meningkatkan layanan Portal SPPI Buleleng. Silakan coba kembali beberapa saat lagi.
                     </p>
+
+                    <div class="mt-4 flex items-center justify-center gap-1.5 text-[10px] font-medium uppercase tracking-wider text-slate-400">
+                        Mengecek otomatis sistem dalam <span id="timer"></span> detik
+                    </div>
 
                     <div class="flex flex-col gap-4 items-center">
                         {{-- Tampilkan tombol logout JIKA user sedang login --}}
@@ -55,6 +59,24 @@
                 <p>© {{ now()->format('Y') }} - Tim Data SPPI Buleleng Bali</p>
                 <p class="italic mt-1">Bagimu Negeri Jiwa Raga Kami</p>
             </div>
+
         </div>
     </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            let seconds = 60;
+            const display = document.querySelector('#timer');
+
+            const countdown = setInterval(function() {
+                seconds--;
+                display.textContent = seconds;
+
+                if (seconds <= 0) {
+                    clearInterval(countdown);
+                    window.location.reload();
+                }
+            }, 1000);
+        });
+    </script>
 </x-auth-layout>

@@ -29,7 +29,10 @@ class CheckMaintenanceMode
             }
 
             // Blokir selain itu
-            return response()->view('errors.maintenance', [], 503);
+            return response()->view('errors.maintenance', [
+                'isMaintenance' => true, // Kirim tanda bahwa sistem sedang maintenance
+                'title' => 'Sistem Sedang Diperbarui'
+            ], 503);
         }
 
         return $next($request);
