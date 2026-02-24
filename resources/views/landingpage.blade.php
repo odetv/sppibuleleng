@@ -138,7 +138,7 @@
                         <div class="absolute inset-0 bg-black/10 transition-colors group-hover:bg-black/20"></div>
                         <div class="absolute bottom-4 left-4 right-4">
                             <div class="rounded-2xl p-4 text-center backdrop-blur-md shadow-lg">
-                                <h4 class="text-lg font-bold text-white">kelompok Lainnya</h4>
+                                <h4 class="text-lg font-bold text-white">Kelompok Lainnya</h4>
                                 <p class="text-xs font-medium text-white/90">Pendidik & Tenaga Kependidikan</p>
                             </div>
                         </div>
