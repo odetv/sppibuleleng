@@ -74,7 +74,9 @@ Route::middleware('auth')->group(function () {
 
 // 4. Grup Middleware ADMINISTRATOR
 Route::middleware(['auth', 'role:administrator', 'profile.completed'])->prefix('admin')->name('admin.')->group(function () {
-
+    Route::post('/maintenance/toggle', [App\Http\Controllers\Admin\SettingController::class, 'toggleMaintenance'])
+        ->name('maintenance.toggle');
+        
     // Manajemen Pengguna
     Route::get('/users', [UserController::class, 'index'])->name('users.index');
     Route::post('/users/{id}/approve', [UserController::class, 'approve'])->name('users.approve');

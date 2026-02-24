@@ -16,6 +16,23 @@
                 </div>
             </div>
 
+            @php
+            $isMaintenance = \App\Models\Setting::get('is_maintenance', '0') === '1';
+            @endphp
+            <form action="{{ route('admin.maintenance.toggle') }}" method="POST">
+                @csrf
+                <button type="submit"
+                    class="flex items-center gap-2 px-6 py-2.5 rounded-xl font-bold text-[10px] uppercase tracking-wider transition-all shadow-lg 
+        {{ $isMaintenance ? 'bg-rose-500 text-white shadow-rose-200' : 'bg-emerald-500 text-white shadow-emerald-200' }}">
+
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z" />
+                    </svg>
+
+                    {{ $isMaintenance ? 'Matikan Mode Pemeliharaan' : 'Aktifkan Mode Pemeliharaan' }}
+                </button>
+            </form>
+
             {{-- LOGIKA TAMBAHAN: JIKA PENDING TAMPILKAN PESAN VERIFIKASI --}}
             @if(auth()->user()->status_user === 'pending')
             <div class="bg-white rounded-2xl border-2 border-dashed border-amber-200 p-8 shadow-sm text-center">
