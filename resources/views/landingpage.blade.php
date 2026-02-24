@@ -1,19 +1,4 @@
-<!doctype html>
-<html>
-
-<head>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    @vite('resources/css/app.css')
-    @vite('resources/js/app.js')
-    <title>SPPI Buleleng</title>
-    <!-- PWA  -->
-    <meta name="theme-color" content="#6777ef" />
-    <link rel="apple-touch-icon" href="{{ asset('assets/images/logo-sppi.png') }}">
-    <link rel="manifest" href="{{ asset('manifest.json') }}">
-</head>
-
-<body class="bg-white">
+<x-landingpage-layout title="SPPI Buleleng">
     <x-pwa-install-banner />
 
     <x-navbar />
@@ -153,7 +138,7 @@
                         <div class="absolute inset-0 bg-black/10 transition-colors group-hover:bg-black/20"></div>
                         <div class="absolute bottom-4 left-4 right-4">
                             <div class="rounded-2xl p-4 text-center backdrop-blur-md shadow-lg">
-                                <h4 class="text-lg font-bold text-white">kelompok Lainnya</h4>
+                                <h4 class="text-lg font-bold text-white">Kelompok Lainnya</h4>
                                 <p class="text-xs font-medium text-white/90">Pendidik & Tenaga Kependidikan</p>
                             </div>
                         </div>
@@ -545,6 +530,4 @@
     </section>
 
     <x-footer />
-</body>
-
-</html>
+</x-landingpage-layout>
