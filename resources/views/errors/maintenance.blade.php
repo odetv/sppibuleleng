@@ -1,4 +1,4 @@
-<x-auth-layout title="Maintenance Mode">
+<x-auth-layout title="Maintenance">
     <div class="min-h-screen flex items-center justify-center p-6 bg-slate-50">
         <div class="max-w-md w-full text-center">
             <div class="mb-8 flex justify-center gap-4">

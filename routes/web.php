@@ -2,11 +2,12 @@
 
 use App\Http\Controllers\Admin\PositionController;
 use App\Http\Controllers\Admin\RoleController;
+use App\Http\Controllers\Admin\SettingController;
 use App\Http\Controllers\Admin\UserController;
 use App\Http\Controllers\PersonController;
 use App\Http\Controllers\ProfileController;
-use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Http;
+use Illuminate\Support\Facades\Route;
 
 Route::get('/api-wilayah/{path}', function ($path) {
     $url = "https://wilayah.id/api/" . $path;
@@ -17,7 +18,7 @@ Route::get('/api-wilayah/{path}', function ($path) {
 Route::get('/api-map-search', function (Illuminate\Http\Request $request) {
     $query = $request->query('q');
     $url = "https://nominatim.openstreetmap.org/search?format=json&q=" . urlencode($query) . "&limit=1";
-    return Illuminate\Support\Facades\Http::withHeaders([
+    return Http::withHeaders([
         'User-Agent' => 'Laravel-App'
     ])->get($url)->json();
 });
@@ -74,7 +75,11 @@ Route::middleware('auth')->group(function () {
 
 // 4. Grup Middleware ADMINISTRATOR
 Route::middleware(['auth', 'role:administrator', 'profile.completed'])->prefix('admin')->name('admin.')->group(function () {
-    Route::post('/maintenance/toggle', [App\Http\Controllers\Admin\SettingController::class, 'toggleMaintenance'])
+    Route::get('/settings', function () {
+        return view('admin.settings.index');
+    })->name('settings.index');
+
+    Route::post('/maintenance/toggle', [SettingController::class, 'toggleMaintenance'])
         ->name('maintenance.toggle');
         
     // Manajemen Pengguna

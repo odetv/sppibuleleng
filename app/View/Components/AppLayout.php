@@ -14,7 +14,7 @@ class AppLayout extends Component
      */
     public function __construct($title = null)
     {
-        $this->title = "SPPI Buleleng | " . $title;
+        $this->title = config('app.name') . " | " . $title;
     }
     /**
      * Get the view / contents that represents the component.

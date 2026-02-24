@@ -14,7 +14,7 @@ class LandingpageLayout extends Component
      */
     public function __construct($title = null)
     {
-        $this->title = $title;
+        $this->title = config('app.name');
     }
 
     /**

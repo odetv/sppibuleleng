@@ -44,7 +44,6 @@
                 </li>
             </ul>
 
-            {{-- MENU YANG HANYA UNTUK USER ACTIVE --}}
             @if(auth()->user()->status_user === 'active')
             {{-- 2. MENU ADMIN --}}
             @if(auth()->user()->role->slug_role === 'administrator')
@@ -133,12 +132,27 @@
             @endif
             @endif
 
-            {{-- MENU PENGATURAN KHUSUS MOBILE (DILUAR KONDISI ACTIVE) --}}
+            {{-- MENU PENGATURAN KHUSUS MOBILE --}}
             <div class="lg:hidden">
                 <div class="flex items-center mb-2 transition-all duration-300 ml-4">
-                    <h3 class="text-[11px] font-semibold text-slate-400 uppercase tracking-[2px]">PENGATURAN</h3>
+                    <h3 class="text-[11px] font-semibold text-slate-400 uppercase tracking-[2px]">LAINNYA</h3>
                 </div>
                 <ul class="flex flex-col gap-1.5 mb-6">
+                    {{-- Setting Admin (Hanya Administrator) --}}
+                    @if(auth()->user()->role->slug_role === 'administrator')
+                    <li>
+                        <a href="{{ route('admin.settings.index') }}"
+                            class="w-full group relative flex items-center gap-3 rounded-lg px-4 py-2.5 text-[14px] font-medium transition-all duration-200 {{ request()->routeIs('settings.index') ? 'bg-indigo-50 text-indigo-600 font-bold shadow-sm' : 'text-slate-600 hover:bg-indigo-50 hover:text-indigo-600' }}">
+                            <div class="shrink-0 flex items-center justify-center">
+                                <svg class="w-5.5 h-5.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                                </svg>
+                            </div>
+                            <span class="whitespace-nowrap">Pengaturan</span>
+                        </a>
+                    </li>
+                    @endif
                     <li>
                         <button @click="selected = (selected === 'profil_mob' ? '' : 'profil_mob')"
                             class="w-full group relative flex items-center gap-3 rounded-lg px-4 py-2.5 text-[14px] font-medium transition-all duration-200 {{ request()->routeIs('profile.*') ? 'bg-indigo-50/50 text-indigo-600' : 'text-slate-600 hover:bg-indigo-50 hover:text-indigo-600' }}">
@@ -175,14 +189,30 @@
         </nav>
     </div>
 
-    {{-- BOTTOM SECTION (PENGATURAN & KELUAR - TAMPIL HANYA DI DESKTOP - DILUAR KONDISI ACTIVE) --}}
+    {{-- BOTTOM SECTION (PENGATURAN & KELUAR - TAMPIL HANYA DI DESKTOP) --}}
     <div class="mt-auto border-t border-slate-100 px-3 py-4 shrink-0 hidden lg:block">
         <div class="flex items-center mb-2 transition-all duration-300"
             :class="(sidebarExpanded || isHovered) ? 'ml-4' : 'justify-center'">
-            <h3 x-show="sidebarExpanded || isHovered" class="text-[11px] font-semibold text-slate-400 uppercase tracking-[2px]">PENGATURAN</h3>
+            <h3 x-show="sidebarExpanded || isHovered" class="text-[11px] font-semibold text-slate-400 uppercase tracking-[2px]">LAINNYA</h3>
             <hr x-show="!(sidebarExpanded || isHovered)" class="w-5 border-slate-200">
         </div>
         <ul class="flex flex-col gap-1.5">
+            {{-- Setting Admin (Hanya Administrator) --}}
+            @if(auth()->user()->role->slug_role === 'administrator')
+            <li>
+                <a href="{{ route('admin.settings.index') }}"
+                    :class="(sidebarExpanded || isHovered) ? 'px-4' : 'justify-center'"
+                    class="w-full group relative flex items-center gap-3 rounded-lg py-2.5 text-[14px] font-medium transition-all duration-200 {{ request()->routeIs('admin.settings.index') ? 'bg-indigo-50 text-indigo-600 font-bold shadow-sm' : 'text-slate-600 hover:bg-indigo-50 hover:text-indigo-600' }}">
+                    <div class="shrink-0 flex items-center justify-center">
+                        <svg class="w-5.5 h-5.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                        </svg>
+                    </div>
+                    <span x-show="sidebarExpanded || isHovered" class="whitespace-nowrap">Pengaturan</span>
+                </a>
+            </li>
+            @endif
             <li>
                 <button @click="selected = (selected === 'profil' ? '' : 'profil')"
                     :class="(sidebarExpanded || isHovered) ? 'px-4' : 'justify-center'"
