@@ -29,7 +29,7 @@
                         Mengecek otomatis sistem dalam <span id="timer"></span> detik
                     </div>
 
-                    <div class="flex flex-col gap-4 items-center">
+                    <div class="flex flex-col gap-4 items-center mt-4">
                         {{-- Tampilkan tombol logout JIKA user sedang login --}}
                         @auth
                         <form method="POST" action="{{ route('logout') }}">
