@@ -279,7 +279,9 @@ class UserController extends Controller
 
                 // SIMPAN / UPDATE SOSIAL MEDIA
                 $person->socialMedia()->updateOrCreate(
+                    // Search condition: pastikan relasi polymorphic ini ditemukan
                     ['socialable_id' => $person->id_person, 'socialable_type' => Person::class],
+                    // Values to update/create
                     [
                         'facebook_url'  => $request->facebook_url,
                         'instagram_url' => $request->instagram_url,

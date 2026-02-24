@@ -21,7 +21,8 @@ class SocialMediaSeeder extends Seeder
         // Isi Sosmed untuk Unit SPPG
         SppgUnit::all()->each(function ($unit) {
             $unit->socialMedia()->create([
-                'facebook_url' => 'https://facebook.com/unit-' . $unit->no_sppg,
+                // Gunakan str()->slug dari nama unit karena no_sppg mungkin tidak ada di model
+                'facebook_url' => 'https://facebook.com/unit-' . str()->slug($unit->name),
             ]);
         });
     }

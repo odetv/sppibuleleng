@@ -5,7 +5,7 @@
 <aside
     id="sidebar"
     x-data="{ 
-        selected: '{{ request()->routeIs('profile.*') ? 'profil' : (request()->routeIs('admin.*') ? 'admin_user' : (request()->routeIs('sppg.*') ? 'sppg' : '')) }}' 
+        selected: '{{ request()->routeIs('profile.*') ? 'profil' : (request()->routeIs('admin.users.*', 'admin.roles.*', 'admin.positions.*') ? 'admin_user' : (request()->routeIs('sppg.*') && !request()->routeIs('admin.sppg.*') ? 'sppg' : '')) }}' 
     }"
     :class="[
         (sidebarExpanded || isHovered || mobileSidebar) ? 'w-72' : 'w-20',
@@ -54,6 +54,7 @@
                     <hr x-show="!(sidebarExpanded || isHovered || mobileSidebar)" class="w-5 border-slate-200">
                 </div>
                 <ul class="mb-6 flex flex-col gap-1.5">
+                    {{-- Manajemen Pengguna (Dropdown) --}}
                     <li>
                         <button @click="selected = (selected === 'admin_user' ? '' : 'admin_user')"
                             :class="(sidebarExpanded || isHovered || mobileSidebar) ? 'px-4' : 'justify-center'"
@@ -73,6 +74,21 @@
                             <li><a href="{{ route('admin.roles.index') }}" class="block py-2 px-3 text-[13px] transition-colors {{ request()->routeIs('admin.roles.index') ? 'text-indigo-600 font-bold' : 'text-slate-500 hover:text-indigo-600' }}">Daftar Hak Akses</a></li>
                             <li><a href="{{ route('admin.positions.index') }}" class="block py-2 px-3 text-[13px] transition-colors {{ request()->routeIs('admin.positions.index') ? 'text-indigo-600 font-bold' : 'text-slate-500 hover:text-indigo-600' }}">Daftar Jabatan</a></li>
                         </ul>
+                    </li>
+
+                    {{-- Manajemen SPPG (Single Link) --}}
+                    <li>
+                        <a href="{{ route('admin.sppg.index') }}"
+                            @click="selected = 'admin_sppg'"
+                            :class="(sidebarExpanded || isHovered || mobileSidebar) ? 'px-4' : 'justify-center'"
+                            class="group relative flex items-center gap-3 rounded-lg py-2.5 text-[14px] font-medium transition-all duration-200 {{ request()->routeIs('admin.sppg.*') ? 'bg-indigo-50 text-indigo-600 font-bold shadow-sm' : 'text-slate-600 hover:bg-indigo-50 hover:text-indigo-600' }}">
+                            <div class="shrink-0 flex items-center justify-center">
+                                <svg class="w-5.5 h-5.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
+                                </svg>
+                            </div>
+                            <span x-show="sidebarExpanded || isHovered || mobileSidebar" class="whitespace-nowrap">Manajemen SPPG</span>
+                        </a>
                     </li>
                 </ul>
             </div>
@@ -99,7 +115,7 @@
                             class="group relative flex items-center gap-3 rounded-lg py-2.5 text-[14px] font-medium transition-all duration-200 {{ request()->routeIs('sppg.yayasan') ? 'bg-indigo-50 text-indigo-600 font-bold shadow-sm' : 'text-slate-600 hover:bg-indigo-50 hover:text-indigo-600' }}">
                             <div class="shrink-0 flex items-center justify-center">
                                 <svg class="w-5.5 h-5.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 14v3m4-3v3m4-3v3M3 21h18M3 10h18M3 7l9-4 9 4M4 10h16v11H4V10z" />
                                 </svg>
                             </div>
                             <span x-show="sidebarExpanded || isHovered || mobileSidebar" class="whitespace-nowrap">Yayasan</span>
@@ -108,10 +124,10 @@
                     <li>
                         <button @click="selected = (selected === 'sppg' ? '' : 'sppg')"
                             :class="(sidebarExpanded || isHovered || mobileSidebar) ? 'px-4' : 'justify-center'"
-                            class="w-full group relative flex items-center gap-3 rounded-lg py-2.5 text-[14px] font-medium transition-all duration-200 {{ request()->routeIs('sppg.pks', 'sppg.sertifikasi', 'sppg.petugas', 'sppg.pm', 'sppg.supplier') ? 'bg-indigo-50/50 text-indigo-600' : 'text-slate-600 hover:bg-indigo-50 hover:text-indigo-600' }}">
+                            class="w-full group relative flex items-center gap-3 rounded-lg py-2.5 text-[14px] font-medium transition-all duration-200 {{ request()->routeIs('sppg.*') && !request()->routeIs('sppg.yayasan') && !request()->routeIs('admin.sppg.*') ? 'bg-indigo-50/50 text-indigo-600' : 'text-slate-600 hover:bg-indigo-50 hover:text-indigo-600' }}">
                             <div class="shrink-0 flex items-center justify-center">
                                 <svg class="w-5.5 h-5.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
                                 </svg>
                             </div>
                             <span x-show="sidebarExpanded || isHovered || mobileSidebar" class="flex-1 text-left whitespace-nowrap">SPPG</span>
@@ -138,11 +154,10 @@
                     <h3 class="text-[11px] font-semibold text-slate-400 uppercase tracking-[2px]">LAINNYA</h3>
                 </div>
                 <ul class="flex flex-col gap-1.5 mb-6">
-                    {{-- Setting Admin (Hanya Administrator) --}}
                     @if(auth()->user()->role->slug_role === 'administrator')
                     <li>
                         <a href="{{ route('admin.settings.index') }}"
-                            class="w-full group relative flex items-center gap-3 rounded-lg px-4 py-2.5 text-[14px] font-medium transition-all duration-200 {{ request()->routeIs('settings.index') ? 'bg-indigo-50 text-indigo-600 font-bold shadow-sm' : 'text-slate-600 hover:bg-indigo-50 hover:text-indigo-600' }}">
+                            class="w-full group relative flex items-center gap-3 rounded-lg px-4 py-2.5 text-[14px] font-medium transition-all duration-200 {{ request()->routeIs('admin.settings.index') ? 'bg-indigo-50 text-indigo-600 font-bold shadow-sm' : 'text-slate-600 hover:bg-indigo-50 hover:text-indigo-600' }}">
                             <div class="shrink-0 flex items-center justify-center">
                                 <svg class="w-5.5 h-5.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />
@@ -156,7 +171,7 @@
                     <li>
                         <button @click="selected = (selected === 'profil_mob' ? '' : 'profil_mob')"
                             class="w-full group relative flex items-center gap-3 rounded-lg px-4 py-2.5 text-[14px] font-medium transition-all duration-200 {{ request()->routeIs('profile.*') ? 'bg-indigo-50/50 text-indigo-600' : 'text-slate-600 hover:bg-indigo-50 hover:text-indigo-600' }}">
-                            <div class="shrink-0 flex items-center justify-center">
+                            <div class="shrink-0 flex items-center justify-center text-slate-600">
                                 <svg class="w-5.5 h-5.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
                                 </svg>
@@ -174,7 +189,7 @@
                     <li>
                         <form method="POST" action="{{ route('logout') }}">
                             @csrf
-                            <button type="submit" class="w-full group relative flex items-center gap-3 px-4 py-2.5 text-[14px] font-medium text-red-600 hover:bg-red-50 rounded-lg text-left cursor-pointer border-none bg-transparent transition-all">
+                            <button type="submit" class="w-full group relative flex items-center gap-3 px-4 py-2.5 text-[14px] font-medium text-red-600 hover:bg-red-50 rounded-lg text-left transition-all">
                                 <div class="shrink-0 flex items-center justify-center">
                                     <svg class="w-5.5 h-5.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
@@ -189,7 +204,7 @@
         </nav>
     </div>
 
-    {{-- BOTTOM SECTION (PENGATURAN & KELUAR - TAMPIL HANYA DI DESKTOP) --}}
+    {{-- BOTTOM SECTION (DESKTOP) --}}
     <div class="mt-auto border-t border-slate-100 px-3 py-4 shrink-0 hidden lg:block">
         <div class="flex items-center mb-2 transition-all duration-300"
             :class="(sidebarExpanded || isHovered) ? 'ml-4' : 'justify-center'">
@@ -197,13 +212,12 @@
             <hr x-show="!(sidebarExpanded || isHovered)" class="w-5 border-slate-200">
         </div>
         <ul class="flex flex-col gap-1.5">
-            {{-- Setting Admin (Hanya Administrator) --}}
             @if(auth()->user()->role->slug_role === 'administrator')
             <li>
                 <a href="{{ route('admin.settings.index') }}"
                     :class="(sidebarExpanded || isHovered) ? 'px-4' : 'justify-center'"
                     class="w-full group relative flex items-center gap-3 rounded-lg py-2.5 text-[14px] font-medium transition-all duration-200 {{ request()->routeIs('admin.settings.index') ? 'bg-indigo-50 text-indigo-600 font-bold shadow-sm' : 'text-slate-600 hover:bg-indigo-50 hover:text-indigo-600' }}">
-                    <div class="shrink-0 flex items-center justify-center">
+                    <div class="shrink-0 flex items-center justify-center text-slate-600 group-hover:text-indigo-600 {{ request()->routeIs('admin.settings.index') ? 'text-indigo-600' : '' }}">
                         <svg class="w-5.5 h-5.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
@@ -217,7 +231,7 @@
                 <button @click="selected = (selected === 'profil' ? '' : 'profil')"
                     :class="(sidebarExpanded || isHovered) ? 'px-4' : 'justify-center'"
                     class="w-full group relative flex items-center gap-3 rounded-lg py-2.5 text-[14px] font-medium transition-all duration-200 {{ request()->routeIs('profile.*') ? 'bg-indigo-50/50 text-indigo-600' : 'text-slate-600 hover:bg-indigo-50 hover:text-indigo-600' }}">
-                    <div class="shrink-0 flex items-center justify-center">
+                    <div class="shrink-0 flex items-center justify-center text-slate-600 group-hover:text-indigo-600 {{ request()->routeIs('profile.*') ? 'text-indigo-600' : '' }}">
                         <svg class="w-5.5 h-5.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
                         </svg>
@@ -237,7 +251,7 @@
                     @csrf
                     <button type="submit"
                         :class="(sidebarExpanded || isHovered) ? 'px-4 w-full' : 'justify-center w-full'"
-                        class="group relative flex items-center gap-3 py-2.5 text-[14px] font-medium text-red-600 duration-300 ease-in-out hover:bg-red-50 rounded-lg text-left cursor-pointer border-none bg-transparent transition-all">
+                        class="group relative flex items-center gap-3 py-2.5 text-[14px] font-medium text-red-600 hover:bg-red-50 rounded-lg transition-all">
                         <div class="shrink-0 flex items-center justify-center">
                             <svg class="w-5.5 h-5.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />

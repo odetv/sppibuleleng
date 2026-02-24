@@ -15,6 +15,13 @@ class Person extends Model
     protected $table = 'persons';
     protected $primaryKey = 'id_person';
 
+    /**
+     * EAGER LOADING OTOMATIS
+     * Ini akan memastikan data social_media selalu ada saat objek 
+     * diubah menjadi JSON untuk modal @json($person)
+     */
+    protected $with = ['socialMedia', 'position', 'workAssignment'];
+
     protected $fillable = [
         'id_ref_position',
         'id_work_assignment',

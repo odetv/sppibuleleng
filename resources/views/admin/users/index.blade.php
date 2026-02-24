@@ -944,8 +944,8 @@
                             <div><label class="text-[11px] font-bold text-gray-500 uppercase tracking-wider">Nomor KK (16 Digit)</label><input required type="number" name="no_kk" id="f_no_kk" class="w-full mt-2 px-4 py-2.5 bg-gray-50 border-none rounded-lg text-sm"></div>
                             <div><label class="text-[11px] font-bold text-gray-500 uppercase tracking-wider">NIP</label><input required type="number" name="nip" id="f_nip" class="w-full mt-2 px-4 py-2.5 bg-gray-50 border-none rounded-lg text-sm focus:ring-2 focus:ring-indigo-500"></div>
                             <div><label class="text-[11px] font-bold text-gray-500 uppercase tracking-wider">NPWP</label><input required type="number" name="npwp" id="f_npwp" class="w-full mt-2 px-4 py-2.5 bg-gray-50 border-none rounded-lg text-sm focus:ring-2 focus:ring-indigo-500"></div>
-                            <div><label class="text-[11px] font-bold text-gray-500 uppercase tracking-wider">No. BPJS Kesehatan</label><input required type="number" name="no_bpjs_kes" id="f_bpjs_kes" class="w-full mt-2 px-4 py-2.5 bg-gray-50 border-none rounded-lg text-sm focus:ring-2 focus:ring-indigo-500"></div>
-                            <div><label class="text-[11px] font-bold text-gray-500 uppercase tracking-wider">No. BPJS Ketenagakerjaan</label><input required type="number" name="no_bpjs_tk" id="f_bpjs_tk" class="w-full mt-2 px-4 py-2.5 bg-gray-50 border-none rounded-lg text-sm focus:ring-2 focus:ring-indigo-500"></div>
+                            <div><label class="text-[11px] font-bold text-gray-500 uppercase tracking-wider">No. BPJS Kesehatan</label><input type="number" name="no_bpjs_kes" id="f_bpjs_kes" class="w-full mt-2 px-4 py-2.5 bg-gray-50 border-none rounded-lg text-sm focus:ring-2 focus:ring-indigo-500"></div>
+                            <div><label class="text-[11px] font-bold text-gray-500 uppercase tracking-wider">No. BPJS Ketenagakerjaan</label><input type="number" name="no_bpjs_tk" id="f_bpjs_tk" class="w-full mt-2 px-4 py-2.5 bg-gray-50 border-none rounded-lg text-sm focus:ring-2 focus:ring-indigo-500"></div>
                         </div>
                     </div>
 
@@ -1098,9 +1098,19 @@
                     <div class="pt-10 border-t border-gray-100">
                         <h3 class="text-sm font-bold uppercase tracking-widest text-indigo-600 mb-6">Tautan Media Sosial</h3>
                         <div class="grid grid-cols-1 md:grid-cols-3 gap-8 text-sm">
-                            <div><label class="text-[11px] font-bold text-gray-500 uppercase tracking-wider">Facebook</label><input type="url" name="facebook_url" id="f_fb" class="w-full mt-1 px-4 py-2 bg-gray-50 border-none rounded-lg text-sm" placeholder="https://facebook.com/.."></div>
-                            <div><label class="text-[11px] font-bold text-gray-500 uppercase tracking-wider">Instagram</label><input type="url" name="instagram_url" id="f_ig" class="w-full mt-1 px-4 py-2 bg-gray-50 border-none rounded-lg text-sm" placeholder="https://instagram.com/.."></div>
-                            <div><label class="text-[11px] font-bold text-gray-500 uppercase tracking-wider">TikTok</label><input type="url" name="tiktok_url" id="f_tt" class="w-full mt-1 px-4 py-2 bg-gray-50 border-none rounded-lg text-sm" placeholder="https://tiktok.com/@.."></div>
+                            {{-- Atribut id (f_fb, f_ig, f_tt) sangat krusial untuk JavaScript --}}
+                            <div>
+                                <label class="text-[11px] font-bold text-gray-500 uppercase tracking-wider">Facebook</label>
+                                <input type="url" name="facebook_url" id="f_fb" class="w-full mt-1 px-4 py-2 bg-gray-50 border-none rounded-lg text-sm" placeholder="https://facebook.com/..">
+                            </div>
+                            <div>
+                                <label class="text-[11px] font-bold text-gray-500 uppercase tracking-wider">Instagram</label>
+                                <input type="url" name="instagram_url" id="f_ig" class="w-full mt-1 px-4 py-2 bg-gray-50 border-none rounded-lg text-sm" placeholder="https://instagram.com/..">
+                            </div>
+                            <div>
+                                <label class="text-[11px] font-bold text-gray-500 uppercase tracking-wider">TikTok</label>
+                                <input type="url" name="tiktok_url" id="f_tt" class="w-full mt-1 px-4 py-2 bg-gray-50 border-none rounded-lg text-sm" placeholder="https://tiktok.com/@..">
+                            </div>
                         </div>
                     </div>
                 </div>

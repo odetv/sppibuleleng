@@ -30,7 +30,7 @@
                     Saat ini akun Anda sedang dalam proses peninjauan oleh Administrator. Silakan hubungi admin terkait untuk mempercepat proses verifikasi.
                 </p>
                 <div class="flex flex-row gap-4 justify-center">
-                    <a href="{{ route('profile.show') }}" class="px-8 py-3 bg-slate-800 text-white rounded-xl font-bold text-[11px] uppercase tracking-widest hover:bg-slate-900 transition-all shadow-lg">
+                    <a href="{{ route('profile.show') }}" class="px-8 py-3 bg-slate-800 text-white rounded-xl font-bold text-[11px] uppercase tracking-widest hover:bg-slate-900 transition-all">
                         Lihat Profil
                     </a>
                     <form method="POST" action="{{ route('logout') }}">

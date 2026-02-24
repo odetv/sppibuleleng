@@ -107,14 +107,20 @@ Route::middleware(['auth', 'role:administrator', 'profile.completed'])->prefix('
 
     // Manajemen SPPG (Level Admin)
     Route::prefix('manage-sppg')->name('sppg.')->group(function () {
-        Route::get('/list', function () {
-            return "Halaman Dummy Admin: Daftar SPPG";
-        })->name('index');
+        // Route CRUD Utama
+        Route::get('/list', [App\Http\Controllers\Admin\SppgUnitController::class, 'index'])->name('index');
+        Route::get('/create', [App\Http\Controllers\Admin\SppgUnitController::class, 'create'])->name('create');
+        Route::post('/store', [App\Http\Controllers\Admin\SppgUnitController::class, 'store'])->name('store');
+        Route::get('/{id}/edit', [App\Http\Controllers\Admin\SppgUnitController::class, 'edit'])->name('edit');
+        Route::patch('/{id}/update', [App\Http\Controllers\Admin\SppgUnitController::class, 'update'])->name('update');
+        Route::delete('/{id}', [App\Http\Controllers\Admin\SppgUnitController::class, 'destroy'])->name('destroy');
+
+        // Route lainnya tetap dummy atau sesuaikan nanti
         Route::get('/pm', function () {
-            return "Halaman Dummy Admin: Daftar PM";
+            return "Halaman: Daftar PM";
         })->name('pm');
         Route::get('/supplier', function () {
-            return "Halaman Dummy Admin: Daftar Supplier MBG";
+            return "Halaman: Daftar Supplier";
         })->name('supplier');
     });
 });

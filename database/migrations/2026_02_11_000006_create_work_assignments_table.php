@@ -13,9 +13,17 @@ return new class extends Migration
     {
         Schema::create('work_assignments', function (Blueprint $table) {
             $table->id('id_work_assignment');
-            // Menghubungkan ke SK dan Unit
+
+            // Relasi ke SK (Tetap foreignId karena di tabel asalnya biasanya bigInt auto-increment)
             $table->foreignId('id_assignment_decree')->constrained('assignment_decrees', 'id_assignment_decree');
-            $table->foreignId('id_sppg_unit')->constrained('sppg_units', 'id_sppg_unit');
+
+            // Relasi ke Unit SPPG (Wajib String agar cocok dengan tabel sppg_units)
+            $table->string('id_sppg_unit');
+            $table->foreign('id_sppg_unit')
+                ->references('id_sppg_unit')
+                ->on('sppg_units')
+                ->onDelete('cascade');
+
             $table->timestamps();
         });
     }

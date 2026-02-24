@@ -11,17 +11,20 @@ return new class extends Migration
         Schema::create('persons', function (Blueprint $table) {
             $table->id('id_person');
 
-            // --- RELASI JABATAN & PENUGASAN ---
-            $table->foreignId('id_ref_position')
-                ->nullable()
-                ->constrained('ref_positions', 'id_ref_position')
-                ->onDelete('set null');
+            // // --- RELASI JABATAN & PENUGASAN ---
+            // $table->foreignId('id_ref_position')
+            //     ->nullable()
+            //     ->constrained('ref_positions', 'id_ref_position')
+            //     ->onDelete('set null');
 
-            $table->foreignId('id_work_assignment')
-                ->nullable()
-                ->constrained('work_assignments', 'id_work_assignment')
-                ->onDelete('set null');
-            // ----------------------------------
+            // $table->foreignId('id_work_assignment')
+            //     ->nullable()
+            //     ->constrained('work_assignments', 'id_work_assignment')
+            //     ->onDelete('set null');
+            // // ----------------------------------
+
+            $table->unsignedBigInteger('id_ref_position')->nullable();
+            $table->unsignedBigInteger('id_work_assignment')->nullable();
 
             $table->string('nik', 16)->unique();
             $table->string('no_kk', 16);
