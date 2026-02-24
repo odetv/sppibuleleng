@@ -44,6 +44,7 @@
                 </li>
             </ul>
 
+            {{-- MENU YANG HANYA UNTUK USER ACTIVE --}}
             @if(auth()->user()->status_user === 'active')
             {{-- 2. MENU ADMIN --}}
             @if(auth()->user()->role->slug_role === 'administrator')
@@ -86,13 +87,13 @@
             @endphp
 
             @if($isAdmin || in_array($userPosition, $allowedPositions))
-            <div>
+            <div class="mb-6">
                 <div class="flex items-center mb-2 transition-all duration-300"
                     :class="(sidebarExpanded || isHovered || mobileSidebar) ? 'ml-4' : 'justify-center'">
                     <h3 x-show="sidebarExpanded || isHovered || mobileSidebar" class="text-[11px] font-semibold text-slate-400 uppercase tracking-[2px]">UNIT</h3>
                     <hr x-show="!(sidebarExpanded || isHovered || mobileSidebar)" class="w-5 border-slate-200">
                 </div>
-                <ul class="mb-6 flex flex-col gap-1.5">
+                <ul class="flex flex-col gap-1.5">
                     <li>
                         <a href="{{ route('sppg.yayasan') }}"
                             :class="(sidebarExpanded || isHovered || mobileSidebar) ? 'px-4' : 'justify-center'"
@@ -105,7 +106,6 @@
                             <span x-show="sidebarExpanded || isHovered || mobileSidebar" class="whitespace-nowrap">Yayasan</span>
                         </a>
                     </li>
-                    {{-- Dropdown SPPG --}}
                     <li>
                         <button @click="selected = (selected === 'sppg' ? '' : 'sppg')"
                             :class="(sidebarExpanded || isHovered || mobileSidebar) ? 'px-4' : 'justify-center'"
@@ -132,32 +132,72 @@
             </div>
             @endif
             @endif
+
+            {{-- MENU PENGATURAN KHUSUS MOBILE (DILUAR KONDISI ACTIVE) --}}
+            <div class="lg:hidden">
+                <div class="flex items-center mb-2 transition-all duration-300 ml-4">
+                    <h3 class="text-[11px] font-semibold text-slate-400 uppercase tracking-[2px]">PENGATURAN</h3>
+                </div>
+                <ul class="flex flex-col gap-1.5 mb-6">
+                    <li>
+                        <button @click="selected = (selected === 'profil_mob' ? '' : 'profil_mob')"
+                            class="w-full group relative flex items-center gap-3 rounded-lg px-4 py-2.5 text-[14px] font-medium transition-all duration-200 {{ request()->routeIs('profile.*') ? 'bg-indigo-50/50 text-indigo-600' : 'text-slate-600 hover:bg-indigo-50 hover:text-indigo-600' }}">
+                            <div class="shrink-0 flex items-center justify-center">
+                                <svg class="w-5.5 h-5.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+                                </svg>
+                            </div>
+                            <span class="flex-1 text-left whitespace-nowrap">Profil</span>
+                            <svg class="w-4 h-4 transition-transform duration-200" :class="selected === 'profil_mob' ? 'rotate-180' : ''" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+                            </svg>
+                        </button>
+                        <ul x-show="selected === 'profil_mob'" x-transition class="ml-9 mt-1 flex flex-col gap-1 border-l border-slate-100">
+                            <li><a href="{{ route('profile.show') }}" class="block py-2 px-3 text-[13px] transition-colors {{ request()->routeIs('profile.show') ? 'text-indigo-600 font-bold' : 'text-slate-500 hover:text-indigo-600' }}">Biodata</a></li>
+                            <li><a href="{{ route('profile.edit') }}" class="block py-2 px-3 text-[13px] transition-colors {{ request()->routeIs('profile.edit') ? 'text-indigo-600 font-bold' : 'text-slate-500 hover:text-indigo-600' }}">Edit Profil</a></li>
+                        </ul>
+                    </li>
+                    <li>
+                        <form method="POST" action="{{ route('logout') }}">
+                            @csrf
+                            <button type="submit" class="w-full group relative flex items-center gap-3 px-4 py-2.5 text-[14px] font-medium text-red-600 hover:bg-red-50 rounded-lg text-left cursor-pointer border-none bg-transparent transition-all">
+                                <div class="shrink-0 flex items-center justify-center">
+                                    <svg class="w-5.5 h-5.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
+                                    </svg>
+                                </div>
+                                <span class="whitespace-nowrap font-medium">Keluar</span>
+                            </button>
+                        </form>
+                    </li>
+                </ul>
+            </div>
         </nav>
     </div>
 
-    {{-- BOTTOM SECTION (PENGATURAN & KELUAR) --}}
-    <div class="mt-auto border-t border-slate-100 px-3 py-4 shrink-0">
+    {{-- BOTTOM SECTION (PENGATURAN & KELUAR - TAMPIL HANYA DI DESKTOP - DILUAR KONDISI ACTIVE) --}}
+    <div class="mt-auto border-t border-slate-100 px-3 py-4 shrink-0 hidden lg:block">
         <div class="flex items-center mb-2 transition-all duration-300"
-            :class="(sidebarExpanded || isHovered || mobileSidebar) ? 'ml-4' : 'justify-center'">
-            <h3 x-show="sidebarExpanded || isHovered || mobileSidebar" class="text-[11px] font-semibold text-slate-400 uppercase tracking-[2px]">PENGATURAN</h3>
-            <hr x-show="!(sidebarExpanded || isHovered || mobileSidebar)" class="w-5 border-slate-200">
+            :class="(sidebarExpanded || isHovered) ? 'ml-4' : 'justify-center'">
+            <h3 x-show="sidebarExpanded || isHovered" class="text-[11px] font-semibold text-slate-400 uppercase tracking-[2px]">PENGATURAN</h3>
+            <hr x-show="!(sidebarExpanded || isHovered)" class="w-5 border-slate-200">
         </div>
         <ul class="flex flex-col gap-1.5">
             <li>
                 <button @click="selected = (selected === 'profil' ? '' : 'profil')"
-                    :class="(sidebarExpanded || isHovered || mobileSidebar) ? 'px-4' : 'justify-center'"
+                    :class="(sidebarExpanded || isHovered) ? 'px-4' : 'justify-center'"
                     class="w-full group relative flex items-center gap-3 rounded-lg py-2.5 text-[14px] font-medium transition-all duration-200 {{ request()->routeIs('profile.*') ? 'bg-indigo-50/50 text-indigo-600' : 'text-slate-600 hover:bg-indigo-50 hover:text-indigo-600' }}">
                     <div class="shrink-0 flex items-center justify-center">
                         <svg class="w-5.5 h-5.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
                         </svg>
                     </div>
-                    <span x-show="sidebarExpanded || isHovered || mobileSidebar" class="flex-1 text-left whitespace-nowrap">Profil</span>
-                    <svg x-show="sidebarExpanded || isHovered || mobileSidebar" class="w-4 h-4 transition-transform duration-200" :class="selected === 'profil' ? 'rotate-180' : ''" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <span x-show="sidebarExpanded || isHovered" class="flex-1 text-left whitespace-nowrap">Profil</span>
+                    <svg x-show="sidebarExpanded || isHovered" class="w-4 h-4 transition-transform duration-200" :class="selected === 'profil' ? 'rotate-180' : ''" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
                     </svg>
                 </button>
-                <ul x-show="selected === 'profil' && (sidebarExpanded || isHovered || mobileSidebar)" x-transition class="ml-9 mt-1 flex flex-col gap-1 border-l border-slate-100">
+                <ul x-show="selected === 'profil' && (sidebarExpanded || isHovered)" x-transition class="ml-9 mt-1 flex flex-col gap-1 border-l border-slate-100">
                     <li><a href="{{ route('profile.show') }}" class="block py-2 px-3 text-[13px] transition-colors {{ request()->routeIs('profile.show') ? 'text-indigo-600 font-bold' : 'text-slate-500 hover:text-indigo-600' }}">Biodata</a></li>
                     <li><a href="{{ route('profile.edit') }}" class="block py-2 px-3 text-[13px] transition-colors {{ request()->routeIs('profile.edit') ? 'text-indigo-600 font-bold' : 'text-slate-500 hover:text-indigo-600' }}">Edit Profil</a></li>
                 </ul>
@@ -166,14 +206,14 @@
                 <form method="POST" action="{{ route('logout') }}">
                     @csrf
                     <button type="submit"
-                        :class="(sidebarExpanded || isHovered || mobileSidebar) ? 'px-4 w-full' : 'justify-center w-full'"
-                        class="group relative flex items-center gap-3 py-2.5 text-[14px] font-medium text-red-600 duration-300 ease-in-out hover:bg-red-50 rounded-lg text-left cursor-pointer border-none bg-transparent">
+                        :class="(sidebarExpanded || isHovered) ? 'px-4 w-full' : 'justify-center w-full'"
+                        class="group relative flex items-center gap-3 py-2.5 text-[14px] font-medium text-red-600 duration-300 ease-in-out hover:bg-red-50 rounded-lg text-left cursor-pointer border-none bg-transparent transition-all">
                         <div class="shrink-0 flex items-center justify-center">
                             <svg class="w-5.5 h-5.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
                             </svg>
                         </div>
-                        <span x-show="sidebarExpanded || isHovered || mobileSidebar" class="whitespace-nowrap font-medium">Keluar</span>
+                        <span x-show="sidebarExpanded || isHovered" class="whitespace-nowrap font-medium">Keluar</span>
                     </button>
                 </form>
             </li>

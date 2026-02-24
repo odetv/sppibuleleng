@@ -5,20 +5,31 @@
             {{-- 1. UTAMA: KARTU IDENTITAS --}}
             <div class="bg-white overflow-hidden rounded-xl border border-gray-100 shadow-sm">
                 <div class="p-8">
-                    <div class="flex flex-wrap justify-between items-center mb-8 gap-4 border-b border-gray-50 pb-4">
-                        <div class="flex items-center text-[11px] text-gray-400 space-x-6 uppercase tracking-widest">
-                            <span class="flex items-center">
-                                <svg class="w-3.5 h-3.5 mr-2 text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
+                    <div class="flex flex-col md:flex-row md:justify-between md:items-center mb-8 gap-4 border-b border-gray-50 pb-6 md:pb-4">
+                        {{-- Container Utama: flex-wrap agar bisa turun ke bawah jika tidak muat --}}
+                        <div class="flex flex-wrap items-center text-[9px] md:text-[10px] text-gray-400 gap-x-6 gap-y-2 uppercase tracking-widest">
+
+                            {{-- Waktu Dibuat --}}
+                            <div class="flex items-center">
+                                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="w-3.5 h-3.5 mr-2 text-gray-300 shrink-0">
+                                    <path d="M12.75 12.75a.75.75 0 1 1-1.5 0 .75.75 0 0 1 1.5 0ZM7.5 15.75a.75.75 0 1 0 0-1.5.75.75 0 0 0 0 1.5ZM8.25 17.25a.75.75 0 1 1-1.5 0 .75.75 0 0 1 1.5 0ZM9.75 15.75a.75.75 0 1 0 0-1.5.75.75 0 0 0 0 1.5ZM10.5 17.25a.75.75 0 1 1-1.5 0 .75.75 0 0 1 1.5 0ZM12 15.75a.75.75 0 1 0 0-1.5.75.75 0 0 0 0 1.5ZM12.75 17.25a.75.75 0 1 1-1.5 0 .75.75 0 0 1 1.5 0ZM14.25 15.75a.75.75 0 1 0 0-1.5.75.75 0 0 0 0 1.5ZM15 17.25a.75.75 0 1 1-1.5 0 .75.75 0 0 1 1.5 0ZM16.5 15.75a.75.75 0 1 0 0-1.5.75.75 0 0 0 0 1.5ZM15 12.75a.75.75 0 1 1-1.5 0 .75.75 0 0 1 1.5 0ZM16.5 13.5a.75.75 0 1 0 0-1.5.75.75 0 0 0 0 1.5Z" />
+                                    <path fill-rule="evenodd" d="M6.75 2.25A.75.75 0 0 1 7.5 3v1.5h9V3A.75.75 0 0 1 18 3v1.5h.75a3 3 0 0 1 3 3v11.25a3 3 0 0 1-3 3H5.25a3 3 0 0 1-3-3V7.5a3 3 0 0 1 3-3H6V3a.75.75 0 0 1 .75-.75Zm13.5 9h-16.5v7.5a1.5 1.5 0 0 0 1.5 1.5h13.5a1.5 1.5 0 0 0 1.5-1.5v-7.5Z" clip-rule="evenodd" />
                                 </svg>
-                                Dibuat: {{ Auth::user()->created_at->translatedFormat('d F Y H:i') }}
-                            </span>
-                            <span class="flex items-center">
-                                <svg class="w-3.5 h-3.5 mr-2 text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path>
+                                {{-- Teks Label: Sembunyi di mobile (hidden), muncul di desktop (md:inline) --}}
+                                <span class="hidden md:inline mr-1">Waktu Dibuat:</span>
+                                <span>{{ Auth::user()->created_at->translatedFormat('d F Y H:i:s') }} WITA</span>
+                            </div>
+
+                            {{-- Waktu Diperbarui --}}
+                            <div class="flex items-center">
+                                <svg class="w-3.5 h-3.5 mr-2 text-gray-300 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path>
                                 </svg>
-                                Update: {{ Auth::user()->person ? Auth::user()->person->updated_at->translatedFormat('d F Y H:i') : '-' }}
-                            </span>
+                                {{-- Teks Label: Sembunyi di mobile (hidden), muncul di desktop (md:inline) --}}
+                                <span class="hidden md:inline mr-1">Waktu Diperbarui:</span>
+                                <span>{{ Auth::user()->person ? Auth::user()->person->updated_at->translatedFormat('d F Y H:i:s') . ' WITA' : '-' }}</span>
+                            </div>
+
                         </div>
                     </div>
 
@@ -43,11 +54,19 @@
                                 $fullName .= ', ' . Auth::user()->person->title_education;
                                 }
                                 @endphp
-                                <h3 class="text-xl sm:text-3xl font-bold text-gray-900 mb-2">{{ $fullName }}</h3>
-                                <div class="flex flex-wrap items-center justify-center md:justify-start gap-3 mt-3">
-                                    <span class="px-3 py-1.5 text-[10px] font-bold rounded-md bg-indigo-50 text-indigo-600 uppercase border border-indigo-100">{{ Auth::user()->role->name_role ?? '-' }}</span>
-                                    <span class="px-3 py-1.5 text-[10px] font-bold rounded-md {{ Auth::user()->status_user == 'active' ? 'bg-green-50 text-green-600 border-green-100' : 'bg-yellow-50 text-yellow-600 border-yellow-100' }} uppercase border">{{ Auth::user()->status_user }}</span>
-                                    <a href="{{ route('profile.edit') }}" class="px-4 py-1.5 bg-white border border-slate-200 rounded-lg font-bold text-[10px] text-slate-700 uppercase hover:bg-slate-50 transition shadow-sm">Edit Profil</a>
+                                <h3 class="text-lg sm:text-2xl font-bold text-gray-900 mb-2">{{ $fullName }}</h3>
+                                <div class="flex flex-row items-center justify-center md:justify-start gap-3 mt-3">
+                                    <span class="px-3 py-2 text-[10px] font-bold rounded-md bg-indigo-50 text-indigo-600 uppercase border border-indigo-100">{{ Auth::user()->role->name_role ?? '-' }}</span>
+                                    <span class="px-3 py-2 text-[10px] font-bold rounded-md {{ Auth::user()->status_user == 'active' ? 'bg-green-50 text-green-600 border-green-100' : 'bg-yellow-50 text-yellow-600 border-yellow-100' }} uppercase border">{{ Auth::user()->status_user }}</span>
+                                    <a href="{{ route('profile.edit') }}"
+                                        class="inline-flex items-center gap-2.5 px-4 py-2 bg-white border border-slate-200 rounded-md font-bold text-[10px] text-slate-700 uppercase hover:bg-slate-50 hover:border-indigo-200 transition-all group">
+                                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor"
+                                            class="w-4 h-4 text-slate-400 group-hover:text-indigo-600 transition-colors">
+                                            <path stroke-linecap="round" stroke-linejoin="round" d="M16.862 4.487l1.687-1.688a1.875 1.875 0 112.652 2.652L10.582 16.07a4.5 4.5 0 01-1.897 1.13L6 18l.8-2.685a4.5 4.5 0 011.13-1.897l8.932-8.931zm0 0L19.5 7.125M18 14v4.75A2.25 2.25 0 0115.75 21H5.25A2.25 2.25 0 013 18.75V8.25A2.25 2.25 0 015.25 6H10" />
+                                        </svg>
+
+                                        <span>Edit</span>
+                                    </a>
                                 </div>
                             </div>
 
@@ -334,9 +353,9 @@
             <div class="bg-white rounded-xl border border-gray-100 p-8 shadow-sm">
                 <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-8 border-b border-gray-50 pb-4 gap-4">
                     <h4 class="text-sm font-bold text-indigo-600 flex items-center uppercase tracking-wider">
-                            <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 20l-5.447-2.724A1 1 0 013 16.382V5.618a1 1 0 011.447-.894L9 7m0 13l6-3m-6 3V7m6 10l4.553 2.276A1 1 0 0021 18.382V7.618a1 1 0 00-.553-.894L15 4m0 13V4m0 0L9 7"></path>
-                            </svg>
+                        <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 20l-5.447-2.724A1 1 0 013 16.382V5.618a1 1 0 011.447-.894L9 7m0 13l6-3m-6 3V7m6 10l4.553 2.276A1 1 0 0021 18.382V7.618a1 1 0 00-.553-.894L15 4m0 13V4m0 0L9 7"></path>
+                        </svg>
                         Lokasi Koordinat GPS
                     </h4>
                     @if(Auth::user()->person && Auth::user()->person->latitude_gps_domicile)
@@ -351,7 +370,7 @@
                 <div class="flex flex-col sm:flex-row items-center justify-between gap-4 p-4 bg-slate-50 rounded-2xl border border-slate-100">
                     <div class="flex items-center gap-3">
                         <div class="w-2.5 h-2.5 rounded-full bg-emerald-500 animate-pulse ring-4 ring-emerald-100"></div>
-                        <span class="text-[11px] font-bold text-slate-400 tracking-widest leading-none">Status Sinyal GPS</span>
+                        <span class="text-[11px] font-bold text-slate-400 tracking-widest leading-none">Titik Koordinat GPS</span>
                     </div>
                     <div class="flex gap-4 text-[11px]">
                         <span class="text-indigo-600 font-semibold px-4 py-2 bg-white rounded-xl shadow-sm border border-indigo-50">Lat: {{ Auth::user()->person->latitude_gps_domicile ?? '-' }}</span>

@@ -13,7 +13,7 @@
         <div class="relative" x-data="{ dropdownOpen: false }" @click.away="dropdownOpen = false">
             <button @click.prevent="dropdownOpen = !dropdownOpen" class="flex items-center gap-4 focus:outline-none cursor-pointer">
                 <span class="hidden text-right lg:block">
-                    <span class="block text-sm font-semibold text-slate-800 leading-none">{{ Auth::user()->person->name }}</span>
+                    <span class="block text-sm font-semibold text-slate-800 leading-none">{{ Auth::user()->person->name ?? 'Profil Belum Dilengkapi' }}</span>
                 </span>
 
                 <div class="h-11 w-11 rounded-full border border-gray-200 p-0.5 overflow-hidden">
@@ -21,7 +21,7 @@
                     <img src="{{ asset('storage/' . Auth::user()->person->photo) }}" class="h-full w-full rounded-full object-cover">
                     @else
                     <div class="flex h-full w-full items-center justify-center rounded-full bg-indigo-100 text-indigo-600 font-medium uppercase text-[14px]">
-                        {{ substr(Auth::user()->person->name, 0, 1) }}
+                        {{ substr(Auth::user()->person->name ?? Auth::user()->email, 0, 1) }}
                     </div>
                     @endif
                 </div>
@@ -42,7 +42,7 @@
                 x-cloak>
 
                 <div class="px-6 py-4 border-b border-slate-100 bg-slate-50/50 text-left">
-                    <p class="text-sm font-semibold text-slate-800">{{ Auth::user()->person->name }}</p>
+                    <p class="text-sm font-semibold text-slate-800">{{ Auth::user()->person->name ?? 'Profil Belum Dilengkapi'}}</p>
                     <p class="text-xs text-slate-500 truncate mt-0.5">{{ Auth::user()->email }}</p>
                     <div class="mt-1">
                         <span class="inline-flex items-center px-2 py-0.5 rounded text-[10px] font-bold bg-green-100 text-green-700 uppercase tracking-wider">

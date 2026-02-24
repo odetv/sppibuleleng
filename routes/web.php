@@ -27,49 +27,53 @@ Route::get('/', function () {
     return view('landingpage');
 });
 
-// 2. Dashboard (Bisa diakses semua role yang login)
-Route::get('/dashboard', function () {
-    return view('dashboard');
-})->middleware(['auth', 'verified', 'profile.completed'])->name('dashboard');
-
 // 3. Grup Middleware AUTH (Wajib Login)
 Route::middleware('auth')->group(function () {
 
-    // --- MENU PENGATURAN (Profil) ---
-    Route::get('/profile', [ProfileController::class, 'show'])->name('profile.show');
-    Route::get('/profile/edit', [ProfileController::class, 'edit'])->name('profile.edit');
-    Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
-    Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
-
-    // Alur Lengkapi Profil (Person)
+    // --- AREA 1: Route yang BOLEH diakses meski profil BELUM LENGKAP ---
+    // User harus bisa akses ini untuk melengkapi datanya
     Route::get('/complete-profile', [PersonController::class, 'create'])->name('profile.complete');
     Route::post('/complete-profile', [PersonController::class, 'store'])->name('profile.store');
 
-    // --- MENU SPPG (Hanya KaSPPG, Ahli Gizi, Akuntansi) ---
-    Route::middleware(['auth', 'position:kasppg,ag,ak'])->prefix('sppg')->name('sppg.')->group(function () {
-        Route::get('/yayasan', function () {
-            return "Halaman: Yayasan";
-        })->name('yayasan');
-        Route::get('/pks', function () {
-            return "Halaman: Kerjasama (PKS)";
-        })->name('pks');
-        Route::get('/sertifikasi-sppg', function () {
-            return "Halaman: Sertifikasi SPPG";
-        })->name('sertifikasi');
-        Route::get('/petugas-sppg', function () {
-            return "Halaman: Petugas SPPG";
-        })->name('petugas');
-        Route::get('/kelompok-pm', function () {
-            return "Halaman: Kelompok PM";
-        })->name('pm');
-        Route::get('/supplier-mbg', function () {
-            return "Halaman: Supplier MBG";
-        })->name('supplier');
+    // --- AREA 2: Route yang WAJIB PROFIL LENGKAP ---
+    // Masukkan semua route yang butuh id_person ke dalam grup ini
+    Route::middleware('profile.completed')->group(function () {
+        Route::get('/dashboard', function () {
+            return view('dashboard');
+        })->name('dashboard');
+
+        // --- MENU PENGATURAN (Profil) ---
+        Route::get('/profile', [ProfileController::class, 'show'])->name('profile.show');
+        Route::get('/profile/edit', [ProfileController::class, 'edit'])->name('profile.edit');
+        Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
+        Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
+
+        // --- MENU SPPG (Hanya KaSPPG, Ahli Gizi, Akuntansi) ---
+        Route::middleware(['auth', 'position:kasppg,ag,ak'])->prefix('sppg')->name('sppg.')->group(function () {
+            Route::get('/yayasan', function () {
+                return "Halaman: Yayasan";
+            })->name('yayasan');
+            Route::get('/pks', function () {
+                return "Halaman: Kerjasama (PKS)";
+            })->name('pks');
+            Route::get('/sertifikasi-sppg', function () {
+                return "Halaman: Sertifikasi SPPG";
+            })->name('sertifikasi');
+            Route::get('/petugas-sppg', function () {
+                return "Halaman: Petugas SPPG";
+            })->name('petugas');
+            Route::get('/kelompok-pm', function () {
+                return "Halaman: Kelompok PM";
+            })->name('pm');
+            Route::get('/supplier-mbg', function () {
+                return "Halaman: Supplier MBG";
+            })->name('supplier');
+        });
     });
 });
 
 // 4. Grup Middleware ADMINISTRATOR
-Route::middleware(['auth', 'role:administrator'])->prefix('admin')->name('admin.')->group(function () {
+Route::middleware(['auth', 'role:administrator', 'profile.completed'])->prefix('admin')->name('admin.')->group(function () {
 
     // Manajemen Pengguna
     Route::get('/users', [UserController::class, 'index'])->name('users.index');

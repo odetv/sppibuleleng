@@ -18,19 +18,19 @@
 
             {{-- LOGIKA TAMBAHAN: JIKA PENDING TAMPILKAN PESAN VERIFIKASI --}}
             @if(auth()->user()->status_user === 'pending')
-            <div class="bg-white rounded-2xl border-2 border-dashed border-amber-200 p-12 shadow-sm text-center">
+            <div class="bg-white rounded-2xl border-2 border-dashed border-amber-200 p-8 shadow-sm text-center">
                 <div class="w-20 h-20 bg-amber-50 text-amber-500 rounded-full flex items-center justify-center mx-auto mb-6">
                     <svg class="w-10 h-10" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
                     </svg>
                 </div>
                 <h3 class="text-xl font-bold text-slate-800 uppercase tracking-widest mb-3">Akun Menunggu Verifikasi</h3>
-                <p class="text-slate-500 max-w-lg mx-auto mb-8 leading-relaxed">
-                    Halo **{{ auth()->user()->person->name ?? 'Pengguna' }}**. Profil Anda telah berhasil disimpan di sistem. <br>
+                <p class="text-slate-500 max-w-lg mx-auto mb-8 leading-relaxed text-sm">
+                    Hai, {{ auth()->user()->person->name ?? 'Pengguna' }}.<br>
                     Saat ini akun Anda sedang dalam proses peninjauan oleh Administrator. Silakan hubungi admin terkait untuk mempercepat proses verifikasi.
                 </p>
-                <div class="flex flex-col sm:flex-row gap-4 justify-center">
-                    <a href="{{ route('profile.edit') }}" class="px-8 py-3 bg-slate-800 text-white rounded-xl font-bold text-[11px] uppercase tracking-widest hover:bg-slate-900 transition-all shadow-lg">
+                <div class="flex flex-row gap-4 justify-center">
+                    <a href="{{ route('profile.show') }}" class="px-8 py-3 bg-slate-800 text-white rounded-xl font-bold text-[11px] uppercase tracking-widest hover:bg-slate-900 transition-all shadow-lg">
                         Lihat Profil
                     </a>
                     <form method="POST" action="{{ route('logout') }}">
