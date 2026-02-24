@@ -2,7 +2,7 @@
     <div class="font-sans antialiased text-gray-900 bg-gray-50 overflow-x-hidden">
         <div class="min-h-screen flex items-center justify-center p-4">
 
-            <div class="flex flex-col md:flex-row w-full max-w-5xl rounded-2xl overflow-hidden shadow-2xl border border-gray-100 bg-white md:max-h-[90vh]">
+            <div class="flex flex-col md:flex-row w-full max-w-6xl rounded-2xl overflow-hidden shadow-2xl border border-gray-100 bg-white md:max-h-[90vh]">
 
                 <div class="w-full md:w-1/2 bg-darkblue p-8 md:p-10 flex flex-col items-center justify-center text-center text-white relative">
                     <div class="absolute top-0 left-0 w-32 h-32 bg-white/5 rounded-full -translate-x-1/2 -translate-y-1/2"></div>
@@ -146,13 +146,6 @@
                             </a>
                         </div>
                     </form>
-
-                    <div class="mt-8 md:mt-auto pt-8 pb-4 text-center">
-                        <div class="text-xs text-gray-400 border-t pt-4">
-                            <p>© {{ now()->format('Y') }} - Tim Data SPPI Buleleng Bali</p>
-                            <p class="italic mt-1">Bagimu Negeri Jiwa Raga Kami</p>
-                        </div>
-                    </div>
                 </div>
             </div>
         </div>

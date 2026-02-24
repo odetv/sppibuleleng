@@ -26,7 +26,7 @@
                     </div>
                 </div>
 
-                <div class="w-full md:w-1/2 bg-white p-8 md:p-12 flex flex-col justify-center md:overflow-y-auto">
+                <div class="w-full md:w-1/2 bg-white p-8 md:p-12 flex flex-col justify-center">
                     <div class="mb-8">
                         <h2 class="text-2xl pb-2 font-bold text-darkblue">Buat Akun Baru</h2>
                         <p class="text-gray-500 text-sm">Lengkapi data di bawah ini untuk mendaftar</p>
@@ -137,12 +137,12 @@
                         </div>
                     </form>
 
-                    <div class="mt-8 md:mt-auto pt-8 pb-4 text-center">
+                    <!-- <div class="mt-8 md:mt-auto pt-8 pb-4 text-center">
                         <div class="text-xs text-gray-400 border-t pt-4">
                             <p>© {{ now()->format('Y') }} - Tim Data SPPI Buleleng Bali</p>
                             <p class="italic mt-1">Bagimu Negeri Jiwa Raga Kami</p>
                         </div>
-                    </div>
+                    </div> -->
                 </div>
             </div>
         </div>

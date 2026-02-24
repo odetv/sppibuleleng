@@ -61,13 +61,6 @@
                             </button>
                         </div>
                     </form>
-
-                    <div class="mt-auto pt-10 text-center">
-                        <div class="text-xs text-gray-400 border-t pt-4">
-                            <p>© {{ now()->format('Y') }} - Tim Data SPPI Buleleng Bali</p>
-                            <p class="italic mt-1">Bagimu Negeri Jiwa Raga Kami</p>
-                        </div>
-                    </div>
                 </div>
             </div>
         </div>

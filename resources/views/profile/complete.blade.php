@@ -578,6 +578,11 @@
                             SIMPAN PROFIL
                         </button>
                     </div>
+                    <div class="text-center">
+                        <a href="/" class="text-sm text-gray-400 hover:text-red-600 transition-colors">
+                            ← Kembali ke Beranda
+                        </a>
+                    </div>
 
                     <div class="mt-8 md:mt-auto pt-8 pb-4 text-center">
                         <div class="text-xs text-gray-400 border-t pt-4">
