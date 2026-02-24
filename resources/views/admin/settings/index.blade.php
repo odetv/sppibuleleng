@@ -5,7 +5,7 @@
             {{-- Header Halaman --}}
             <div class="flex flex-col gap-2">
                 <h2 class="text-2xl font-bold text-slate-800">Pengaturan Sistem</h2>
-                <p class="text-sm text-slate-500">Kelola konfigurasi global aplikasi SPPI Buleleng.</p>
+                <p class="text-sm text-slate-500">Kelola konfigurasi global Portal SPPI Buleleng</p>
             </div>
 
             <div class="grid grid-cols-1 gap-6">
