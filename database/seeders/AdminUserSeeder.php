@@ -17,7 +17,7 @@ class AdminUserSeeder extends Seeder
             'id_work_assignment' => 1,
             'nik'                => '1234567890123456',
             'no_kk'               => '1234567890123450',
-            'name'               => 'Administrator Utama',
+            'name'               => 'Gede Bagler Pradita',
             'nip'                => '123456789012000',
             'npwp'               => '123456789012000',
             'photo'              => '',
@@ -43,18 +43,18 @@ class AdminUserSeeder extends Seeder
             'no_bpjs_tk'         => '999123456789',
 
             // Alamat KTP
-            'village_ktp'        => 'Buleleng',
-            'district_ktp'       => 'Buleleng',
+            'village_ktp'        => 'Ambengan',
+            'district_ktp'       => 'Sukasada',
             'regency_ktp'        => 'Buleleng',
             'province_ktp'       => 'Bali',
-            'address_ktp'        => 'Jl. Utama Admin No. 1',
+            'address_ktp'        => 'Jl. Utama Niti Mandala No. 1',
 
             // Alamat Domisili
-            'village_domicile'   => 'Buleleng',
-            'district_domicile'  => 'Buleleng',
+            'village_domicile'   => 'Ambengan',
+            'district_domicile'  => 'Sukasada',
             'regency_domicile'   => 'Buleleng',
             'province_domicile'  => 'Bali',
-            'address_domicile'   => 'Jl. Utama Admin No. 1',
+            'address_domicile'   => 'Jl. Utama Niti Mandala No. 1',
             'latitude_gps_domicile'  => -8.11200000,
             'longitude_gps_domicile' => 115.09100000,
 
@@ -90,17 +90,17 @@ class AdminUserSeeder extends Seeder
             'marital_status'     => 'Kawin',
 
             // Field Baru
-            'no_bpjs_kes'        => null, // Contoh Nullable
+            'no_bpjs_kes'        => null,
             'no_bpjs_tk'         => null,
 
-            'village_ktp'        => 'Sawan',
-            'district_ktp'       => 'Sawan',
+            'village_ktp'        => 'Bondalem',
+            'district_ktp'       => 'Tejakula',
             'regency_ktp'        => 'Buleleng',
             'province_ktp'       => 'Bali',
             'address_ktp'        => 'Jl. Mawar Merah No. 45',
 
-            'village_domicile'   => 'Sawan',
-            'district_domicile'  => 'Sawan',
+            'village_domicile'   => 'Bondalem',
+            'district_domicile'  => 'Tejakula',
             'regency_domicile'   => 'Buleleng',
             'province_domicile'  => 'Bali',
             'address_domicile'   => 'Jl. Mawar Merah No. 45',
@@ -174,6 +174,7 @@ class AdminUserSeeder extends Seeder
                 'status_user' => 'active',
                 'created_at'  => now(),
                 'updated_at'  => now(),
+                'email_verified_at'  => now(),
             ]
         );
 
@@ -188,6 +189,7 @@ class AdminUserSeeder extends Seeder
                 'status_user' => 'active',
                 'created_at'  => now(),
                 'updated_at'  => now(),
+                'email_verified_at'  => now(),
             ]
         );
 
@@ -201,7 +203,8 @@ class AdminUserSeeder extends Seeder
                 'id_person'   => null,
                 'status_user' => 'pending',
                 'created_at'  => now(),
-                'updated_at'  => now(),
+                'updated_at'  => null,
+                'email_verified_at'  => null,
             ]
         );
 
@@ -216,6 +219,7 @@ class AdminUserSeeder extends Seeder
                 'status_user' => 'pending',
                 'created_at'  => now(),
                 'updated_at'  => now(),
+                'email_verified_at'  => now(),
                 'deleted_at'  => now(),
             ]
         );
