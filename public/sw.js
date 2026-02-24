@@ -15,15 +15,11 @@ const filesToCache = [
 ];
 
 const checkResponse = function (request) {
-    return new Promise(function (fulfill, reject) {
-        fetch(request).then(function (response) {
-            if (response.status !== 404) {
-                fulfill(response);
-            } else {
-                reject();
-            }
-        }, reject);
-    });
+  return new Promise(function (fulfill, reject) {
+    fetch(request).then(function (response) {
+      fulfill(response);
+    }, reject);
+  });
 };
 
 const addToCache = function (request) {
@@ -40,15 +36,15 @@ const addToCache = function (request) {
 
 
 const returnFromCache = function (request) {
-    return caches.open("offline").then(function (cache) {
-        return cache.match(request).then(function (matching) {
-            if (!matching || matching.status === 404) {
-                return cache.match("offline.html");
-            } else {
-                return matching;
-            }
-        });
+  return caches.open('offline').then(function (cache) {
+    return cache.match(request).then(function (matching) {
+      if (!matching) {
+        return cache.match('/offline.html');
+      } else {
+        return matching;
+      }
     });
+  });
 };
 
 self.addEventListener("fetch", function (event) {

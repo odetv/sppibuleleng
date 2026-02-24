@@ -11,7 +11,15 @@ return Application::configure(basePath: dirname(__DIR__))
         health: '/up',
     )
     ->withMiddleware(function (Middleware $middleware) {
-        //
+        $middleware->web(append: [
+            \App\Http\Middleware\CheckMaintenanceMode::class,
+        ]);
+        
+        $middleware->alias([
+            'profile.completed' => \App\Http\Middleware\EnsureProfileIsCompleted::class,
+            'role' => \App\Http\Middleware\EnsureUserHasRole::class,
+            'position' => \App\Http\Middleware\EnsureUserHasPosition::class,
+        ]);
     })
     ->withExceptions(function (Exceptions $exceptions) {
         //

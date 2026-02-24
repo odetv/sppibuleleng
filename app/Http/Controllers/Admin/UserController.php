@@ -1,0 +1,524 @@
+<?php
+
+namespace App\Http\Controllers\Admin;
+
+use App\Exports\UserTemplateExport;
+use App\Http\Controllers\Controller;
+use App\Models\Person;
+use App\Models\RefPosition;
+use App\Models\RefRole;
+use App\Models\User;
+use App\Models\WorkAssignment;
+use Exception;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Password;
+use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Facades\Validator;
+use Illuminate\Support\Str;
+use Maatwebsite\Excel\Facades\Excel;
+
+class UserController extends Controller
+{
+    public function index(Request $request)
+    {
+        $allUsersDisplay = User::with(['person.position', 'person.workAssignment.sppgUnit', 'person.workAssignment.decree', 'person.socialMedia', 'role'])->latest()->get();
+
+        // Ambil keyword masing-masing
+        $searchPending = $request->query('search_pending');
+        $searchAll = $request->query('search_all');
+        $searchTrash = $request->query('search_trash');
+
+        // 1. Antrian Verifikasi (Pending)
+        $pendingQuery = User::query()->with(['person.position', 'person.workAssignment.sppgUnit', 'role'])
+            ->where('status_user', 'pending');
+        if ($searchPending) {
+            $pendingQuery->where(function ($q) use ($searchPending) {
+                $q->where('email', 'like', "%{$searchPending}%")
+                    ->orWhere('phone', 'like', "%{$searchPending}%")
+                    ->orWhereHas('person', fn($qp) => $qp->where('name', 'like', "%{$searchPending}%"));
+            });
+        }
+        $pendingUsers = $pendingQuery->latest()->paginate(5, ['*'], 'pending_page');
+
+        // 2. Daftar Seluruh Pengguna (Active)
+        $allQuery = User::query()->with(['person.position', 'person.workAssignment.sppgUnit', 'role'])
+            ->where('status_user', 'active');
+        if ($searchAll) {
+            $allQuery->where(function ($q) use ($searchAll) {
+                $q->where('email', 'like', "%{$searchAll}%")
+                    ->orWhere('phone', 'like', "%{$searchAll}%")
+                    ->orWhereHas('person', fn($qp) => $qp->where('name', 'like', "%{$searchAll}%"));
+            });
+        }
+        $allUsers = $allQuery->latest()->paginate(5, ['*'], 'all_page');
+
+        // 3. Tempat Sampah (Trashed)
+        $trashQuery = User::onlyTrashed()->with(['person' => fn($q) => $q->withTrashed(), 'role']);
+        if ($searchTrash) {
+            $trashQuery->where(function ($q) use ($searchTrash) {
+                $q->where('email', 'like', "%{$searchTrash}%")
+                    ->orWhere('phone', 'like', "%{$searchTrash}%")
+                    ->orWhereHas('person', fn($qp) => $qp->where('name', 'like', "%{$searchTrash}%"));
+            });
+        }
+        $trashedUsers = $trashQuery->latest()->paginate(5, ['*'], 'trash_page');
+
+        // Stats & Data Master tetap sama
+        $stats = [
+            'total' => User::count(),
+            'active' => User::where('status_user', 'active')->count(),
+            'pending' => User::where('status_user', 'pending')->count(),
+            'incomplete' => User::whereNull('id_person')->count(),
+        ];
+
+        $roles = RefRole::all();
+        $positions = RefPosition::all();
+        $workAssignments = WorkAssignment::with(['sppgUnit', 'decree'])->get();
+
+        if ($request->ajax()) {
+            return view('admin.users.index', compact('pendingUsers', 'allUsersDisplay', 'allUsers', 'trashedUsers', 'stats', 'roles', 'positions', 'workAssignments'))->render();
+        }
+
+        return view('admin.users.index', compact('pendingUsers', 'allUsersDisplay', 'allUsers', 'trashedUsers', 'stats', 'roles', 'positions', 'workAssignments'));
+    }
+
+    public function checkAvailability(Request $request)
+    {
+        $email = $request->query('email');
+        $phone = $request->query('phone');
+
+        // Cek masing-masing secara independen
+        $emailExists = User::where('email', $email)->exists();
+        $phoneExists = User::where('phone', $phone)->exists();
+
+        // Ambil daftar Role ID yang valid
+        $validRoles = RefRole::pluck('id_ref_role')->toArray();
+
+        return response()->json([
+            'email_duplicate' => $emailExists,
+            'phone_duplicate' => $phoneExists,
+            'valid_roles' => $validRoles
+        ]);
+    }
+
+    public function store(Request $request)
+    {
+        // 1. Validasi: Menggunakan rfc,dns untuk memastikan domain email nyata
+        $request->validate([
+            'email' => 'required|email:rfc,dns|unique:users,email',
+            'phone' => 'required|unique:users,phone',
+            'id_ref_role' => 'required'
+        ]);
+
+        try {
+            return DB::transaction(function () use ($request) {
+                // 2. Buat User sementara (belum commit ke DB permanen)
+                $user = User::create([
+                    'email' => $request->email,
+                    'phone' => $request->phone,
+                    'password' => Hash::make(Str::random(32)),
+                    'id_ref_role' => $request->id_ref_role,
+                    'status_user' => 'active',
+                    'email_verified_at' => null, 
+                ]);
+
+                // 3. Kirim Link Aktivasi
+                // Jika server email menolak (alamat fiktif), ini akan melempar Exception
+                $token = Password::createToken($user);
+                $user->sendPasswordResetNotification($token);
+
+                // Jika sampai sini, berarti email berhasil diterima server SMTP
+                return back()->with('success', 'Akun berhasil dibuat. Link aktivasi telah dikirim ke email pengguna.');
+            });
+        } catch (Exception $e) {
+            // Jika Exception dilempar (karena email fiktif), DB::transaction otomatis rollback
+            return back()->with('error', 'Gagal membuat akun: Alamat email tidak dapat dijangkau atau fiktif.');
+        }
+    }
+
+    public function exportExcel(Request $request)
+    {
+        // Validasi: Harus pilih kolom
+        $request->validate([
+            'columns' => 'required|array|min:1'
+        ], [
+            'columns.required' => 'Pilih minimal satu kolom data yang ingin diekspor!'
+        ]);
+
+        $selectedColumns = $request->input('columns');
+        $fileName = 'DATA_PENGGUNA_' . now()->format('d_M_Y_H_i') . '.xlsx';
+
+        // Eksekusi menggunakan class export
+        return Excel::download(
+            new \App\Exports\UsersExport($selectedColumns),
+            $fileName
+        );
+    }
+
+    public function downloadTemplate()
+    {
+        return Excel::download(new UserTemplateExport, 'Template Import Akun Pengguna.xlsx');
+    }
+
+    public function importUsers(Request $request)
+    {
+        $data = json_decode($request->json_data, true);
+        $mode = $request->import_mode;
+        $adminEmail = auth()->user()->email;
+        $roleKey = 'HAK AKSES SISTEM (Administrator/Author/Editor/Subscriber/Guest)';
+
+        if (!$data) return back()->with('error', 'Data tidak valid.');
+
+        $roleMapping = RefRole::all()->pluck('id_ref_role', 'slug_role')->toArray();
+        $successCount = 0;
+        $errorDetails = [];
+
+        try {
+            if ($mode === 'replace') {
+                DB::statement('SET FOREIGN_KEY_CHECKS=0;');
+                DB::table('persons')->join('users', 'users.id_person', '=', 'persons.id_person')
+                    ->where('users.email', '!=', $adminEmail)->delete();
+                DB::table('users')->where('email', '!=', $adminEmail)->delete();
+                DB::statement('SET FOREIGN_KEY_CHECKS=1;');
+            }
+
+            foreach ($data as $row) {
+                $email = trim($row['EMAIL PENGGUNA']);
+
+                try {
+                    DB::transaction(function () use ($row, $roleMapping, $email, $roleKey, &$successCount) {
+                        // 1. Validasi DNS tetap dijalankan untuk kebersihan data
+                        $v = Validator::make(['email' => $email], ['email' => 'required|email:rfc,dns|unique:users,email']);
+                        if ($v->fails()) throw new Exception($v->errors()->first());
+
+                        $roleName = strtolower(trim($row[$roleKey] ?? 'guest'));
+                        $roleId = $roleMapping[$roleName] ?? 5;
+
+                        // 2. Buat user dengan password acak
+                        $user = User::create([
+                            'id_person'   => null,
+                            'email'       => $email,
+                            'phone'       => trim($row['NOMOR WHATSAPP']),
+                            'id_ref_role' => $roleId,
+                            'password'    => Hash::make(Str::random(32)), // Password random otomatis
+                            'status_user' => 'active',
+                            'email_verified_at' => null, // Wajib aktivasi email
+                        ]);
+
+                        // 3. Kirim notifikasi aktivasi (Set Password)
+                        $token = Password::createToken($user);
+                        $user->sendPasswordResetNotification($token);
+
+                        $successCount++;
+                    });
+                } catch (Exception $e) {
+                    $errorDetails[] = "Baris Email $email: " . $e->getMessage();
+                }
+            }
+
+            $response = redirect()->route('admin.users.index');
+            return empty($errorDetails)
+                ? $response->with('success', "Berhasil mengimpor $successCount pengguna.")
+                : $response->with('success', "Berhasil mengimpor $successCount pengguna.")->withErrors($errorDetails);
+        } catch (Exception $e) {
+            DB::statement('SET FOREIGN_KEY_CHECKS=1;');
+            return back()->with('error', 'Gagal sistem: ' . $e->getMessage());
+        }
+    }
+
+    public function update(Request $request, $id)
+    {
+        $request->validate([
+            'name' => 'required|string|max:255',
+            'email' => 'required|email|unique:users,email,' . $id . ',id_user',
+            'id_ref_role' => 'required',
+            'id_ref_position' => 'nullable',
+            'id_work_assignment' => 'nullable|exists:work_assignments,id_work_assignment',
+            'photo' => 'nullable|image|max:2048',
+            'date_birthday' => 'nullable|date',
+            'batch' => 'nullable|in:1,2,3,Non-SPPI',
+            'employment_status' => 'nullable|in:ASN,Non-ASN',
+            'last_education' => 'nullable|in:D-III,D-IV,S-1',
+            'facebook_url'  => 'nullable|url',
+            'instagram_url' => 'nullable|url',
+            'tiktok_url'    => 'nullable|url',
+        ]);
+
+        $user = User::findOrFail($id);
+
+        try {
+            DB::beginTransaction();
+
+            $user->update([
+                'email' => $request->email,
+                'phone' => $request->phone,
+                'id_ref_role' => $request->id_ref_role,
+            ]);
+
+            if ($user->id_person) {
+                $person = Person::findOrFail($user->id_person);
+
+                // Ambil data person kecuali yang milik table users dan link sosmed
+                $data = $request->except(['photo', '_token', '_method', 'email', 'phone', 'id_ref_role', 'facebook_url', 'instagram_url', 'tiktok_url']);
+
+                if ($request->filled('date_birthday')) {
+                    $data['age'] = \Carbon\Carbon::parse($request->date_birthday)->age;
+                }
+
+                if ($request->hasFile('photo')) {
+                    if ($person->photo) {
+                        Storage::disk('public')->delete($person->photo);
+                    }
+                    $data['photo'] = $request->file('photo')->store('photos', 'public');
+                }
+
+                // Update data person (termasuk id_work_assignment & id_ref_position)
+                $person->update($data);
+
+                // SIMPAN / UPDATE SOSIAL MEDIA
+                $person->socialMedia()->updateOrCreate(
+                    ['socialable_id' => $person->id_person, 'socialable_type' => Person::class],
+                    [
+                        'facebook_url'  => $request->facebook_url,
+                        'instagram_url' => $request->instagram_url,
+                        'tiktok_url'    => $request->tiktok_url,
+                    ]
+                );
+            }
+
+            DB::commit();
+            return back()->with('success', 'Data pengguna dan plotting penugasan berhasil diperbarui.');
+        } catch (Exception $e) {
+            DB::rollBack();
+            return back()->with('error', 'Gagal memperbarui data: ' . $e->getMessage());
+        }
+    }
+
+    public function destroy($id)
+    {
+        if ($id == auth()->id()) {
+            return back()->with('error', 'Anda tidak dapat menghapus akun sendiri.');
+        }
+
+        try {
+            DB::beginTransaction();
+            $user = User::findOrFail($id);
+
+            // JANGAN ubah kolom status_user, biarkan aslinya (active/pending)
+            // Cukup jalankan soft delete
+            if ($user->person) {
+                $user->person->delete();
+            }
+            $user->delete();
+
+            DB::commit();
+            return back()->with('success', 'Pengguna berhasil dipindahkan ke tempat sampah.');
+        } catch (Exception $e) {
+            DB::rollBack();
+            return back()->with('error', 'Gagal menghapus pengguna.');
+        }
+    }
+
+    public function forceDelete($id)
+    {
+        // Ambil user dari sampah beserta personnya (termasuk yang di-softdelete)
+        $user = User::onlyTrashed()->with(['person' => function ($q) {
+            $q->withTrashed();
+        }])->findOrFail($id);
+
+        try {
+            DB::beginTransaction();
+
+            if ($user->id_person) {
+                // Ambil instance person
+                $person = Person::withTrashed()->find($user->id_person);
+
+                if ($person) {
+                    // 1. Hapus File Fisik Foto
+                    if ($person->photo && Storage::disk('public')->exists($person->photo)) {
+                        Storage::disk('public')->delete($person->photo);
+                    }
+
+                    // 2. Putus hubungan di table users dulu (agar tidak melanggar constraint)
+                    $user->update(['id_person' => null]);
+
+                    // 3. Hapus Permanen dari table persons
+                    $person->forceDelete();
+                }
+            }
+
+            // 4. Hapus Permanen dari table users
+            $user->forceDelete();
+
+            DB::commit();
+            return back()->with('success', 'Data pengguna dan profil berhasil dibuang permanen.');
+        } catch (Exception $e) {
+            DB::rollBack();
+            // Log error untuk debug jika diperlukan: \Log::error($e->getMessage());
+            return back()->with('error', 'Gagal hapus permanen: ' . $e->getMessage());
+        }
+    }
+
+    public function forceDeleteAll()
+    {
+        try {
+            DB::beginTransaction();
+
+            // Ambil semua yang di sampah
+            $trashedUsers = User::onlyTrashed()->get();
+
+            foreach ($trashedUsers as $user) {
+                if ($user->id_person) {
+                    $person = Person::withTrashed()->find($user->id_person);
+                    if ($person) {
+                        // Hapus Foto
+                        if ($person->photo && Storage::disk('public')->exists($person->photo)) {
+                            Storage::disk('public')->delete($person->photo);
+                        }
+                        // Putus hubungan
+                        $user->update(['id_person' => null]);
+                        // Hapus Person
+                        $person->forceDelete();
+                    }
+                }
+                // Hapus User
+                $user->forceDelete();
+            }
+
+            DB::commit();
+            return back()->with('success', 'Tempat sampah berhasil dikosongkan total.');
+        } catch (Exception $e) {
+            DB::rollBack();
+            return back()->with('error', 'Gagal mengosongkan sampah.');
+        }
+    }
+
+    public function restore($id)
+    {
+        try {
+            DB::beginTransaction();
+
+            // Mengambil user dari sampah
+            $user = User::onlyTrashed()->findOrFail($id);
+            $user->restore(); // Status_user akan tetap seperti sebelum dihapus
+
+            // Pulihkan profil (person) yang terkait
+            $person = Person::withTrashed()->find($user->id_person);
+            if ($person) {
+                $person->restore();
+            }
+
+            DB::commit();
+            return back()->with('success', "Akun {$user->email} berhasil dipulihkan.");
+        } catch (Exception $e) {
+            DB::rollBack();
+            return back()->with('error', "Gagal memulihkan pengguna.");
+        }
+    }
+
+    public function approve(Request $request, $id)
+    {
+        // Saat approve, kita validasi bahwa admin HARUS memilih sesuatu di dropdown
+        // Atribut required di Blade akan mencegah pengiriman jika value="", 
+        // tapi di server kita pastikan datanya masuk.
+        $request->validate([
+            'id_ref_role' => 'required|exists:ref_roles,id_ref_role',
+            'id_ref_position' => 'required',
+            'id_work_assignment' => 'required',
+            'facebook_url'  => 'nullable|url',
+            'instagram_url' => 'nullable|url',
+            'tiktok_url'    => 'nullable|url',
+        ]);
+
+        $user = User::findOrFail($id);
+
+        try {
+            DB::beginTransaction();
+
+            // 1. Update status user menjadi active dan set Hak Akses
+            $user->update([
+                'status_user' => 'active',
+                'id_ref_role' => $request->id_ref_role
+            ]);
+
+            if ($user->id_person) {
+                // 2. Logic khusus: Jika admin memilih "none", simpan sebagai NULL di database.
+                // Jika selain "none", simpan ID yang dipilih.
+                $user->person->update([
+                    'id_ref_position' => $request->id_ref_position === 'none' ? null : $request->id_ref_position,
+                    'id_work_assignment' => $request->id_work_assignment === 'none' ? null : $request->id_work_assignment
+                ]);
+
+                // 3. Update atau buat data Sosial Media
+                $user->person->socialMedia()->updateOrCreate(
+                    ['socialable_id' => $user->person->id_person, 'socialable_type' => Person::class],
+                    [
+                        'facebook_url'  => $request->facebook_url,
+                        'instagram_url' => $request->instagram_url,
+                        'tiktok_url'    => $request->tiktok_url,
+                    ]
+                );
+            }
+
+            DB::commit();
+            return back()->with('success', "Akun {$user->email} berhasil diaktifkan dan diverifikasi.");
+        } catch (Exception $e) {
+            DB::rollBack();
+            return back()->with('error', 'Gagal verifikasi: ' . $e->getMessage());
+        }
+    }
+
+    public function approveAll(Request $request)
+    {
+        // 1. Validasi input: Admin wajib memilih sesuatu di modal
+        $request->validate([
+            'id_ref_role' => 'required|exists:ref_roles,id_ref_role',
+            'id_ref_position' => 'required',
+            'id_work_assignment' => 'required',
+        ]);
+
+        try {
+            DB::beginTransaction();
+
+            // 2. Ambil semua ID user yang sedang pending
+            $pendingUserIds = User::where('status_user', 'pending')->pluck('id_user');
+
+            if ($pendingUserIds->isEmpty()) {
+                return back()->with('info', 'Tidak ada pendaftar dalam antrian.');
+            }
+
+            // 3. Update tabel users (Status & Role)
+            User::whereIn('id_user', $pendingUserIds)->update([
+                'status_user' => 'active',
+                'id_ref_role'  => $request->id_ref_role,
+                'updated_at'   => now()
+            ]);
+
+            // 4. Update tabel persons (Penugasan & Jabatan)
+            // Terjemahkan 'none' menjadi null
+            $positionVal = $request->id_ref_position === 'none' ? null : $request->id_ref_position;
+            $assignmentVal = $request->id_work_assignment === 'none' ? null : $request->id_work_assignment;
+
+            // Ambilsemua id_person dari user yang baru saja diupdate
+            $personIds = User::whereIn('id_user', $pendingUserIds)
+                ->whereNotNull('id_person')
+                ->pluck('id_person');
+
+            if ($personIds->isNotEmpty()) {
+                Person::whereIn('id_person', $personIds)->update([
+                    'id_ref_position'    => $positionVal,
+                    'id_work_assignment' => $assignmentVal,
+                    'updated_at'         => now()
+                ]);
+            }
+
+            DB::commit();
+            return back()->with('success', count($pendingUserIds) . ' pendaftar berhasil diverifikasi massal.');
+        } catch (Exception $e) {
+            DB::rollBack();
+            return back()->with('error', 'Gagal verifikasi massal: ' . $e->getMessage());
+        }
+    }
+}
