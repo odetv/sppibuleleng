@@ -11,9 +11,7 @@ class SppgUnit extends Model
     protected $table = 'sppg_units';
     protected $primaryKey = 'id_sppg_unit';
 
-    /**
-     * PENTING: Karena ID menggunakan string unik (Contoh: 2DWFSVHQ).
-     */
+    // PENTING: ID diinput manual & bertipe string
     public $incrementing = false;
     protected $keyType = 'string';
 
@@ -24,28 +22,21 @@ class SppgUnit extends Model
         'status',
         'operational_date',
         'photo',
-        'province',
-        'regency',
-        'district',
-        'village',
+        'province',   // Pastikan ini ada
+        'regency',    // Pastikan ini ada
+        'district',   // Pastikan ini ada
+        'village',    // Pastikan ini ada
         'address',
-        'latitude_gps',
-        'longitude_gps',
+        'latitude_gps',  // Pastikan ini ada
+        'longitude_gps', // Pastikan ini ada
         'leader_id'
     ];
 
-    /**
-     * Relasi ke Person (Pemimpin Unit)
-     */
     public function leader(): BelongsTo
     {
-        // Arahkan ke model Person, bukan User
         return $this->belongsTo(Person::class, 'leader_id', 'id_person');
     }
 
-    /**
-     * Relasi Polymorphic ke SocialMedia secara Horizontal.
-     */
     public function socialMedia(): MorphOne
     {
         return $this->morphOne(SocialMedia::class, 'socialable');

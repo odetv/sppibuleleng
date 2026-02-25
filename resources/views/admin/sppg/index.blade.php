@@ -72,7 +72,7 @@
                         <p class="text-sm text-slate-400 font-medium mt-1">Manajemen Satuan Pelayanan Pemenuhan Gizi terdaftar</p>
                     </div>
                     <div class="flex items-center">
-                        <span class="inline-flex items-center px-4 py-2 text-[10px] font-bold rounded bg-slate-50 text-slate-600 uppercase border border-slate-200 tracking-widest shadow-sm">
+                        <span class="inline-flex items-center px-4 py-2 text-[10px] font-bold rounded bg-white text-slate-600 uppercase border border-slate-200 tracking-widest shadow-sm">
                             <span class="w-2 h-2 rounded-full bg-indigo-500 mr-2 animate-pulse"></span>
                             {{ $units->total() }} SPPG Terdaftar
                         </span>
@@ -190,7 +190,12 @@
                 </div>
 
                 @if($units->hasPages())
-                <div class="px-6 py-4 bg-slate-50/50 border-t border-slate-100">
+                <div class="px-6 py-4 bg-white border-t border-slate-100 
+    [&_nav]:flex [&_nav]:justify-between [&_nav]:items-center
+    [&_a]:bg-white [&_a]:text-slate-600 [&_a]:border-slate-200 [&_a]:rounded-lg [&_a]:hover:bg-slate-50
+    [&_span]:bg-white [&_span]:text-slate-400 [&_span]:border-slate-200 [&_span]:rounded-lg
+    [&_.bg-gray-800]:bg-emerald-600 [&_.bg-gray-800]:text-white [&_.bg-gray-800]:border-emerald-600
+    [&_.dark\:bg-gray-800]:bg-white [&_.dark\:text-gray-400]:text-slate-500">
                     {{ $units->links() }}
                 </div>
                 @endif

@@ -56,15 +56,15 @@
         }
     </style>
 
-    <div class="py-12 p-4 font-sans text-left">
-        <div class="w-full mx-auto sm:px-6 lg:px-8 space-y-8">
+    <div class="font-sans text-left py-8 w-full px-4 sm:px-6 lg:px-8 relative">
+        <div class="max-w-full mx-auto space-y-6">
 
             <form id="profileForm" method="post" action="{{ route('profile.update') }}" enctype="multipart/form-data">
                 @csrf
                 @method('patch')
 
                 {{-- SECTION 1: IDENTITAS & FOTO --}}
-                <div class="bg-white shadow-sm rounded-2xl border border-gray-100 overflow-hidden mb-8">
+                <div class="bg-white shadow-sm rounded-xl border border-gray-100 overflow-hidden mb-8">
                     <div class="border-b border-gray-50 px-8 py-5 bg-slate-50/50 flex items-center gap-3">
                         <span class="p-1.5 bg-white text-indigo-600 rounded-lg shadow-sm border border-slate-100">
                             <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1" stroke="currentColor" class="w-5 h-5">
@@ -139,7 +139,7 @@
                 </div>
 
                 {{-- 2. DETAIL PERSONAL --}}
-                <div class="bg-white shadow-sm rounded-2xl border border-gray-100 overflow-hidden mb-8">
+                <div class="bg-white shadow-sm rounded-xl border border-gray-100 overflow-hidden mb-8">
                     <div class="border-b border-gray-50 px-8 py-5 bg-slate-50/50 flex items-center gap-3">
                         <span class="p-1.5 bg-white text-indigo-600 rounded-lg shadow-sm">
                             <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -204,7 +204,7 @@
                 </div>
 
                 {{-- 3. PENDIDIKAN & KEDINASAN --}}
-                <div class="bg-white shadow-sm rounded-2xl border border-gray-100 overflow-hidden mb-8">
+                <div class="bg-white shadow-sm rounded-xl border border-gray-100 overflow-hidden mb-8">
                     <div class="border-b border-gray-50 px-8 py-5 bg-slate-50/50 flex items-center gap-3">
                         <span class="p-1.5 bg-white text-indigo-600 rounded-lg shadow-sm">
                             <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -275,7 +275,7 @@
                 </div>
 
                 {{-- SECTION 4: ALAMAT KTP --}}
-                <div class="bg-white shadow-sm rounded-2xl border border-gray-100 overflow-hidden mb-8 text-left">
+                <div class="bg-white shadow-sm rounded-xl border border-gray-100 overflow-hidden mb-8 text-left">
                     <div class="border-b border-gray-50 px-8 py-5 bg-slate-50/30 flex items-center gap-3">
                         <span class="p-1.5 bg-white text-indigo-600 rounded-lg shadow-sm">
                             <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -319,7 +319,7 @@
                 </div>
 
                 {{-- SECTION 5: DOMISILI & GPS --}}
-                <div class="bg-white shadow-sm rounded-2xl border border-gray-100 overflow-hidden mb-8 text-left">
+                <div class="bg-white shadow-sm rounded-xl border border-gray-100 overflow-hidden mb-8 text-left">
                     <div class="border-b border-gray-50 px-8 py-5 bg-slate-50/30 flex items-center justify-between">
                         <div class="flex items-center gap-3">
                             <span class="p-1.5 bg-white text-indigo-600 rounded-lg shadow-sm">
@@ -379,7 +379,7 @@
                 </div>
 
                 {{-- SECTION 6: INFORMASI PAYROLL --}}
-                <div class="bg-white shadow-sm rounded-2xl border border-gray-100 overflow-hidden mb-8 text-left">
+                <div class="bg-white shadow-sm rounded-xl border border-gray-100 overflow-hidden mb-8 text-left">
                     <div class="border-b border-gray-50 px-8 py-5 bg-slate-50/50 flex items-center gap-3">
                         <span class="p-1.5 bg-white text-indigo-600 rounded-lg shadow-sm">
                             <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -409,7 +409,7 @@
                 </div>
 
                 {{-- SECTION 7: MEDIA SOSIAL --}}
-                <div class="bg-white shadow-sm rounded-2xl border border-gray-100 overflow-hidden mb-8 text-left">
+                <div class="bg-white shadow-sm rounded-xl border border-gray-100 overflow-hidden mb-8 text-left">
                     <div class="border-b border-gray-50 px-8 py-5 bg-slate-50/30 flex items-center gap-3">
                         <span class="p-1.5 bg-white text-indigo-600 rounded-lg shadow-sm border border-slate-100">
                             <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1" stroke="currentColor" class="w-5 h-5">
@@ -447,7 +447,7 @@
             </form>
 
             {{-- 7. KATA SANDI --}}
-            <div class="bg-white shadow-sm rounded-2xl border border-gray-100 overflow-hidden text-left">
+            <div class="bg-white shadow-sm rounded-xl border border-gray-100 overflow-hidden text-left">
                 <div class="border-b border-gray-50 px-8 py-5 bg-slate-50/50 flex items-center gap-3">
                     <span class="p-1.5 bg-white text-indigo-600 rounded-lg shadow-sm">
                         <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">

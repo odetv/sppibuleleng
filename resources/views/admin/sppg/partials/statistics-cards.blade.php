@@ -37,7 +37,7 @@
             </svg>
         </div>
         <div>
-            <p class="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Belum Buka</p>
+            <p class="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Belum Operasional</p>
             <p class="text-xl font-bold text-slate-800">
                 {{ $units->getCollection()->where('status', 'Belum Operasional')->count() }}
             </p>
@@ -52,7 +52,7 @@
             </svg>
         </div>
         <div>
-            <p class="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Tutup Sem.</p>
+            <p class="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Tutup Sementara</p>
             <p class="text-xl font-bold text-slate-800">
                 {{ $units->getCollection()->where('status', 'Tutup Sementara')->count() }}
             </p>
@@ -67,7 +67,7 @@
             </svg>
         </div>
         <div>
-            <p class="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Tutup Perm.</p>
+            <p class="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Tutup Permanen</p>
             <p class="text-xl font-bold text-slate-800">
                 {{ $units->getCollection()->where('status', 'Tutup Permanen')->count() }}
             </p>

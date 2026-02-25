@@ -1,5 +1,5 @@
 <nav class="sticky top-0 z-40 flex w-full bg-white border-b border-gray-200 shadow-sm">
-    <div class="flex grow items-center justify-between px-4 py-4 md:px-6 2xl:px-11">
+    <div class="flex grow items-center justify-between px-4 py-4 sm:px-8">
 
         <div class="flex items-center gap-2 sm:gap-4">
             <button @click.stop="window.innerWidth < 1024 ? mobileSidebar = !mobileSidebar : sidebarExpanded = !sidebarExpanded"

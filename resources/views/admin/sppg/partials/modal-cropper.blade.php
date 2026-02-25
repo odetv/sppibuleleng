@@ -11,7 +11,7 @@
                         <path d="M7 21h10M12 3v18M3 7l18 10M3 17l18-10"></path>
                     </svg>
                 </span>
-                <h3 class="text-[14px] font-bold uppercase tracking-widest text-slate-700">Potong Foto Unit (4:3)</h3>
+                <h3 class="text-[14px] font-bold uppercase tracking-widest text-slate-700">Potong Foto SPPG (4:3)</h3>
             </div>
             <button type="button" id="cancel-crop-btn" class="text-slate-400 hover:text-slate-600 text-2xl">&times;</button>
         </div>
@@ -24,7 +24,7 @@
 
         <div class="p-6 border-t border-slate-100 bg-slate-50 flex gap-4">
             <button id="cancel-crop" type="button" class="flex-1 py-3 text-[11px] font-bold uppercase text-slate-500 bg-white border border-slate-200 rounded-xl hover:bg-slate-100 transition-all">Batal</button>
-            <button id="apply-crop" type="button" class="flex-1 py-3 text-[11px] font-bold uppercase text-white bg-slate-800 rounded-xl shadow-lg hover:bg-slate-900 transition-all active:scale-95">Gunakan Potongan</button>
+            <button id="apply-crop" type="button" class="flex-1 py-3 text-[11px] font-bold uppercase text-white bg-slate-800 rounded-xl shadow-lg hover:bg-slate-900 transition-all active:scale-95">Gunakan Foto</button>
         </div>
     </div>
 </div>

@@ -1,6 +1,6 @@
 <x-app-layout title="Profil Pengguna">
-    <div class="py-12 p-4">
-        <div class="w-full mx-auto sm:px-6 lg:px-8 space-y-8">
+    <div class="py-8 w-full px-4 sm:px-6 lg:px-8 relative">
+        <div class="max-w-full mx-auto space-y-6">
 
             {{-- 1. UTAMA: KARTU IDENTITAS --}}
             <div class="bg-white overflow-hidden rounded-xl border border-gray-100 shadow-sm">

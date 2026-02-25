@@ -11,8 +11,8 @@
         }
     </style>
 
-    <div class="py-10 p-4 text-slate-800 text-[14px]">
-        <div id="user-table-container" class="w-full mx-auto sm:px-6 lg:px-8 space-y-10">
+    <div class="text-slate-800 text-[14px] py-8 w-full px-4 sm:px-6 lg:px-8 relative">
+        <div id="user-table-container" class="max-w-full mx-auto space-y-6">
 
             {{-- 1. HEADER SECTION --}}
             <div class="bg-white rounded-xl border border-slate-200 overflow-hidden shadow-sm">
@@ -27,6 +27,7 @@
                     </div>
                     <div class="flex items-center">
                         <span class="inline-flex items-center px-4 py-2 text-[10px] font-bold rounded bg-white text-slate-600 uppercase border border-slate-200 tracking-widest shadow-sm">
+                            <span class="w-2 h-2 rounded-full bg-indigo-500 mr-2 animate-pulse"></span>
                             {{ $allUsersDisplay->count() }} Pengguna Terdaftar
                         </span>
                     </div>
