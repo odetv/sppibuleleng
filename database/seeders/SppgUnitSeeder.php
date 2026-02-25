@@ -2,14 +2,17 @@
 
 namespace Database\Seeders;
 
+use App\Models\SppgUnit;
 use Illuminate\Database\Seeder;
-use Illuminate\Support\Facades\DB;
 
 class SppgUnitSeeder extends Seeder
 {
+    /**
+     * Run the database seeds.
+     */
     public function run(): void
     {
-        DB::table('sppg_units')->insert([
+        $units = [
             [
                 'id_sppg_unit' => '2DWFSVHQ',
                 'code_sppg_unit' => '51.08.04.2014.01',
@@ -24,7 +27,12 @@ class SppgUnitSeeder extends Seeder
                 'latitude_gps' => -8.18644440,
                 'longitude_gps' => 114.97655560,
                 'leader_id' => 1,
-                'created_at' => now(),
+                'photo' => null, // Default null
+                'social' => [
+                    'facebook_url' => 'https://facebook.com/sppg.dencarik',
+                    'instagram_url' => 'https://instagram.com/sppg.dencarik',
+                    'tiktok_url' => null,
+                ]
             ],
             [
                 'id_sppg_unit' => '59QMIA7P',
@@ -40,13 +48,18 @@ class SppgUnitSeeder extends Seeder
                 'latitude_gps' => -8.15436110,
                 'longitude_gps' => 115.10819440,
                 'leader_id' => 2,
-                'created_at' => now(),
+                'photo' => null,
+                'social' => [
+                    'facebook_url' => null,
+                    'instagram_url' => 'https://instagram.com/sppg.pancasari',
+                    'tiktok_url' => 'https://tiktok.com/@sppg.pancasari',
+                ]
             ],
             [
                 'id_sppg_unit' => 'RQCH6R1P',
                 'code_sppg_unit' => '51.08.04.2015.02',
                 'name' => 'SPPG Buleleng Banjar Temukus',
-                'status' => null,
+                'status' => 'Belum Operasional',
                 'operational_date' => null,
                 'province' => 'Bali',
                 'regency' => 'Buleleng',
@@ -56,8 +69,25 @@ class SppgUnitSeeder extends Seeder
                 'latitude_gps' => -8.18411944,
                 'longitude_gps' => 114.98326230,
                 'leader_id' => null,
-                'created_at' => now(),
+                'photo' => null,
+                'social' => [
+                    'facebook_url' => null,
+                    'instagram_url' => null,
+                    'tiktok_url' => null,
+                ]
             ],
-        ]);
+        ];
+
+        foreach ($units as $unitData) {
+            // Pisahkan data social media dari data unit utama
+            $socialData = $unitData['social'];
+            unset($unitData['social']);
+
+            // Create Unit
+            $unit = SppgUnit::create($unitData);
+
+            // Create Social Media relation
+            $unit->socialMedia()->create($socialData);
+        }
     }
 }

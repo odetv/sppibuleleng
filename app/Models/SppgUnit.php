@@ -23,6 +23,7 @@ class SppgUnit extends Model
         'name',
         'status',
         'operational_date',
+        'photo',
         'province',
         'regency',
         'district',
@@ -34,11 +35,12 @@ class SppgUnit extends Model
     ];
 
     /**
-     * Relasi ke User (Pemimpin Unit)
+     * Relasi ke Person (Pemimpin Unit)
      */
     public function leader(): BelongsTo
     {
-        return $this->belongsTo(User::class, 'leader_id', 'id_user');
+        // Arahkan ke model Person, bukan User
+        return $this->belongsTo(Person::class, 'leader_id', 'id_person');
     }
 
     /**

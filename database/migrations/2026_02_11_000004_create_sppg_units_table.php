@@ -22,6 +22,7 @@ return new class extends Migration
                 'Tutup Permanen'
             ])->nullable();
             $table->date('operational_date')->nullable();
+            $table->string('photo')->nullable();
             $table->string('province')->nullable();
             $table->string('regency')->nullable();
             $table->string('district')->nullable();
