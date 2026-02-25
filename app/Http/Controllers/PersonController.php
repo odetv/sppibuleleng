@@ -106,32 +106,40 @@ class PersonController extends Controller
             $birthDate = Carbon::parse($request->date_birthday);
             $age = $birthDate->age;
 
-            $dataPerson = $request->except(['facebook_url', 'instagram_url', 'tiktok_url']);
+            $dataPerson = $request->except(['photo', 'facebook_url', 'instagram_url', 'tiktok_url']);
             $dataPerson['age'] = $age;
 
-            // Konversi 'none' menjadi null untuk database (Penugasan)
+            // TAMBAHKAN INI: Beri nilai string kosong agar MySQL tidak error
+            $dataPerson['photo'] = '';
+
             if ($request->id_work_assignment === 'none') {
                 $dataPerson['id_work_assignment'] = null;
             }
 
-            // TAMBAHAN: Konversi 'none' menjadi null untuk database (Jabatan)
             if ($request->id_ref_position === 'none') {
                 $dataPerson['id_ref_position'] = null;
             }
 
-            if ($request->hasFile('photo')) {
-                $path = $request->file('photo')->store('photos', 'public');
-                $dataPerson['photo'] = $path;
-            }
-
+            // 1. Simpan Person (sekarang kolom photo terisi string kosong '')
             $person = Person::create($dataPerson);
 
+            // 2. Handle Foto
+            if ($request->hasFile('photo')) {
+                $folderHash = md5($person->id_person . config('app.key'));
+                $path = $request->file('photo')->store("persons/{$folderHash}/photos", 'public');
+
+                // Update dengan path asli
+                $person->update(['photo' => $path]);
+            }
+
+            // 3. Simpan Sosial Media
             $person->socialMedia()->create([
                 'facebook_url'  => $request->facebook_url,
                 'instagram_url' => $request->instagram_url,
                 'tiktok_url'    => $request->tiktok_url,
             ]);
 
+            // 4. Hubungkan User dengan Person
             auth()->user()->update([
                 'id_person' => $person->id_person
             ]);

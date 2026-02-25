@@ -267,12 +267,19 @@ class UserController extends Controller
                     $data['age'] = \Carbon\Carbon::parse($request->date_birthday)->age;
                 }
 
+                // --- PERBAIKAN LOGIKA FOTO (HASH FOLDER) ---
                 if ($request->hasFile('photo')) {
-                    if ($person->photo) {
+                    if ($person->photo && Storage::disk('public')->exists($person->photo)) {
                         Storage::disk('public')->delete($person->photo);
                     }
-                    $data['photo'] = $request->file('photo')->store('photos', 'public');
+
+                    // Konsisten menggunakan id_person
+                    $folderHash = md5($person->id_person . config('app.key'));
+
+                    $path = $request->file('photo')->store("persons/{$folderHash}/photos", 'public');
+                    $data['photo'] = $path;
                 }
+                // -------------------------------------------
 
                 // Update data person (termasuk id_work_assignment & id_ref_position)
                 $person->update($data);
@@ -338,15 +345,23 @@ class UserController extends Controller
                 $person = Person::withTrashed()->find($user->id_person);
 
                 if ($person) {
-                    // 1. Hapus File Fisik Foto
-                    if ($person->photo && Storage::disk('public')->exists($person->photo)) {
-                        Storage::disk('public')->delete($person->photo);
+                    // --- PERBAIKAN LOGIKA HAPUS FOLDER & FILE ---
+
+                    // 1. Definisikan folder hash (sama dengan logika saat upload)
+                    $folderHash = md5($person->id_person . config('app.key'));
+                    $directoryPath = "persons/{$folderHash}";
+
+                    // 2. Hapus seluruh direktori person tersebut (termasuk subfolder photos & filenya)
+                    if (Storage::disk('public')->exists($directoryPath)) {
+                        Storage::disk('public')->deleteDirectory($directoryPath);
                     }
 
-                    // 2. Putus hubungan di table users dulu (agar tidak melanggar constraint)
+                    // --------------------------------------------
+
+                    // 3. Putus hubungan di table users dulu
                     $user->update(['id_person' => null]);
 
-                    // 3. Hapus Permanen dari table persons
+                    // 4. Hapus Permanen dari table persons
                     $person->forceDelete();
                 }
             }
@@ -368,32 +383,42 @@ class UserController extends Controller
         try {
             DB::beginTransaction();
 
-            // Ambil semua yang di sampah
-            $trashedUsers = User::onlyTrashed()->get();
+            // Ambil semua user yang ada di trash beserta data personnya
+            $trashedUsers = User::onlyTrashed()->with(['person' => function ($q) {
+                $q->withTrashed();
+            }])->get();
 
             foreach ($trashedUsers as $user) {
                 if ($user->id_person) {
                     $person = Person::withTrashed()->find($user->id_person);
+
                     if ($person) {
-                        // Hapus Foto
-                        if ($person->photo && Storage::disk('public')->exists($person->photo)) {
-                            Storage::disk('public')->delete($person->photo);
+                        // --- LOGIKA HAPUS FOLDER HASH ---
+                        $folderHash = md5($person->id_person . config('app.key'));
+                        $directoryPath = "persons/{$folderHash}";
+
+                        // Hapus folder beserta seluruh isinya
+                        if (Storage::disk('public')->exists($directoryPath)) {
+                            Storage::disk('public')->deleteDirectory($directoryPath);
                         }
-                        // Putus hubungan
+                        // -------------------------------
+
+                        // Putus hubungan di table users agar tidak melanggar foreign key
                         $user->update(['id_person' => null]);
-                        // Hapus Person
+
+                        // Hapus Person secara permanen
                         $person->forceDelete();
                     }
                 }
-                // Hapus User
+                // Hapus User secara permanen
                 $user->forceDelete();
             }
 
             DB::commit();
-            return back()->with('success', 'Tempat sampah berhasil dikosongkan total.');
+            return back()->with('success', 'Tempat sampah berhasil dikosongkan total beserta berkas fisiknya.');
         } catch (Exception $e) {
             DB::rollBack();
-            return back()->with('error', 'Gagal mengosongkan sampah.');
+            return back()->with('error', 'Gagal mengosongkan sampah: ' . $e->getMessage());
         }
     }
 

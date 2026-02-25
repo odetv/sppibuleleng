@@ -62,12 +62,15 @@ class ProfileController extends Controller
         $person = $user->person;
 
         if ($person) {
-            // 2. Handle Foto
             if ($request->hasFile('photo')) {
-                if ($person->photo) {
+                if ($person->photo && Storage::disk('public')->exists($person->photo)) {
                     Storage::disk('public')->delete($person->photo);
                 }
-                $path = $request->file('photo')->store('photos', 'public');
+
+                // PASTIKAN menggunakan id_person, bukan id
+                $folderHash = md5($person->id_person . config('app.key'));
+
+                $path = $request->file('photo')->store("persons/{$folderHash}/photos", 'public');
                 $person->photo = $path;
             }
 
