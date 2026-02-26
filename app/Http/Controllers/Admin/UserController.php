@@ -30,6 +30,10 @@ class UserController extends Controller
         $searchAll = $request->query('search_all');
         $searchTrash = $request->query('search_trash');
 
+        $perPagePending = $request->query('per_page_pending', 5);
+        $perPageAll = $request->query('per_page_all', 5);
+        $perPageTrash = $request->query('per_page_trash', 5);
+
         // 1. Antrian Verifikasi (Pending)
         $pendingQuery = User::query()->with(['person.position', 'person.workAssignment.sppgUnit', 'role'])
             ->where('status_user', 'pending');
@@ -40,7 +44,7 @@ class UserController extends Controller
                     ->orWhereHas('person', fn($qp) => $qp->where('name', 'like', "%{$searchPending}%"));
             });
         }
-        $pendingUsers = $pendingQuery->latest()->paginate(5, ['*'], 'pending_page');
+        $pendingUsers = $pendingQuery->latest()->paginate($perPagePending, ['*'], 'pending_page')->withQueryString();
 
         // 2. Daftar Seluruh Pengguna (Active)
         $allQuery = User::query()->with(['person.position', 'person.workAssignment.sppgUnit', 'role'])
@@ -52,7 +56,7 @@ class UserController extends Controller
                     ->orWhereHas('person', fn($qp) => $qp->where('name', 'like', "%{$searchAll}%"));
             });
         }
-        $allUsers = $allQuery->latest()->paginate(5, ['*'], 'all_page');
+        $allUsers = $allQuery->latest()->paginate($perPageAll, ['*'], 'all_page')->withQueryString();
 
         // 3. Tempat Sampah (Trashed)
         $trashQuery = User::onlyTrashed()->with(['person' => fn($q) => $q->withTrashed(), 'role']);
@@ -63,7 +67,7 @@ class UserController extends Controller
                     ->orWhereHas('person', fn($qp) => $qp->where('name', 'like', "%{$searchTrash}%"));
             });
         }
-        $trashedUsers = $trashQuery->latest()->paginate(5, ['*'], 'trash_page');
+        $trashedUsers = $trashQuery->latest('deleted_at')->paginate($perPageTrash, ['*'], 'trash_page')->withQueryString();
 
         // Stats & Data Master tetap sama
         $stats = [

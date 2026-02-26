@@ -49,9 +49,9 @@
             <button type="button" @click="showEditModal = false" class="text-slate-400 hover:text-slate-600 text-2xl cursor-pointer">&times;</button>
         </div>
 
-        <form :action="`/admin/sppg/${selectedUnit.id_sppg_unit}`" method="POST" enctype="multipart/form-data" id="editUnitForm">
+        <form :action="`/admin/manage-sppg/${selectedUnit.original_id || selectedUnit.id_sppg_unit}/update`" method="POST" enctype="multipart/form-data" id="editUnitForm">
             @csrf
-            @method('PUT')
+            @method('PATCH')
 
             {{-- Hidden Inputs Wilayah --}}
             <input type="hidden" name="province_name" id="e_prov_name" :value="selectedUnit.province_name">
@@ -113,7 +113,7 @@
                         <div>
                             <label class="text-[11px] font-bold text-gray-500 uppercase tracking-wider">Kepala SPPG</label>
                             <select name="leader_id" id="e_leader" x-model="selectedUnit.leader_id" class="w-full mt-2 px-3 py-2.5 bg-gray-50 border-none rounded-lg text-sm focus:ring-2 focus:ring-indigo-500">
-                                <option value="">Belum Ditugaskan</option>
+                                <option value="NULL">Belum Ditugaskan</option>
                                 @foreach($leaders as $leader)
                                 <option value="{{ $leader->id_person }}">{{ $leader->name }}</option>
                                 @endforeach
@@ -147,7 +147,7 @@
                         <div>
                             <label class="text-[11px] font-bold text-gray-500 uppercase tracking-wider">Desa/Kelurahan</label>
                             <select name="village" id="e_vill" class="w-full mt-1 px-4 py-2 border-none rounded-lg text-sm focus:ring-2 focus:ring-indigo-500">
-                                <option value="">Pilih Desa</option>
+                                <option value="">Pilih Desa/Kelurahan</option>
                             </select>
                         </div>
                         <div class="md:col-span-4">
@@ -180,12 +180,19 @@
     var editMapInstance = null;
     var editMarkerInstance = null;
     var editOriginalImageData = null;
+    var lastEditCropData = null;
 
     // --- 1. LISTENER UTAMA (DI TRIGGER SAAT TOMBOL EDIT DIKLIK) ---
-    window.addEventListener('init-edit-sppg', function() {
+    window.addEventListener('init-edit-sppg', function(e) {
+        // Reset state & file input saat modal edit pindah unit
+        editOriginalImageData = null;
+        lastEditCropData = null;
+        const photoInput = document.getElementById('edit_photo');
+        if (photoInput) photoInput.value = "";
+        
         initEditMapModal();
         initEditCropperLogic();
-        syncEditWilayah();
+        syncEditWilayah(e.detail);
     });
 
     // --- 2. LOGIKA PETA EDIT ---
@@ -234,12 +241,11 @@
         const photoInput = document.getElementById('edit_photo');
         const previewImg = document.getElementById('edit-cropped-preview');
         const placeholder = document.getElementById('edit-initial-placeholder');
-
-        // Elemen modal cropper global
         const imageToCrop = document.getElementById('image-to-crop');
         const cropperModal = document.getElementById('cropperModal');
         const applyBtn = document.getElementById('apply-crop');
         const cancelBtn = document.getElementById('cancel-crop');
+        const closeXBtn = document.getElementById('close-cropper-x');
 
         if (!photoInput) return;
 
@@ -249,51 +255,84 @@
                 const reader = new FileReader();
                 reader.onload = (event) => {
                     editOriginalImageData = event.target.result;
-                    imageToCrop.src = editOriginalImageData;
-
-                    // Munculkan Modal Cropper
-                    cropperModal.classList.remove('hidden');
-                    cropperModal.style.display = 'flex';
-
-                    if (window.cropperInstance) window.cropperInstance.destroy();
-
-                    setTimeout(() => {
-                        window.cropperInstance = new Cropper(imageToCrop, {
-                            aspectRatio: 4 / 3,
-                            viewMode: 2,
-                            autoCropArea: 1
-                        });
-
-                        // Re-bind fungsi simpan khusus untuk edit
-                        applyBtn.onclick = () => {
-                            const canvas = window.cropperInstance.getCroppedCanvas({
-                                width: 800,
-                                height: 600
-                            });
-                            canvas.toBlob((blob) => {
-                                const croppedFile = new File([blob], `edit_${Date.now()}.jpg`, {
-                                    type: 'image/jpeg'
-                                });
-                                const dataTransfer = new DataTransfer();
-                                dataTransfer.items.add(croppedFile);
-                                photoInput.files = dataTransfer.files;
-
-                                previewImg.src = URL.createObjectURL(blob);
-                                previewImg.classList.remove('hidden');
-                                placeholder.classList.add('hidden');
-
-                                closeCropper();
-                            }, 'image/jpeg', 0.9);
-                        };
-                    }, 200);
+                    lastEditCropData = null; // Reset saat file baru 
+                    openEditCropperModal(editOriginalImageData);
                 };
                 reader.readAsDataURL(file);
             }
         };
+
+        // Buka cropper saat gambar yang BARU DIPILIH (base64) diklik
+        previewImg.onclick = () => {
+             // Deteksi apakah sudah ada gambar source aslinya dari input file lokal
+             if (editOriginalImageData) {
+                 openEditCropperModal(editOriginalImageData);
+             }
+             // JIKA TIDAK ADA gambar lokal, sistem abai (tidak memunculkan cropper untuk gambar dari DB)
+        };
+
+        function openEditCropperModal(src) {
+            imageToCrop.src = src;
+            cropperModal.style.display = 'flex';
+            cropperModal.classList.remove('hidden');
+            if (window.cropperInstance) window.cropperInstance.destroy();
+
+            setTimeout(() => {
+                window.cropperInstance = new Cropper(imageToCrop, {
+                    aspectRatio: 4 / 3,
+                    viewMode: 2,
+                    autoCropArea: 1,
+                    ready() {
+                        if (lastEditCropData) {
+                            window.cropperInstance.setData(lastEditCropData);
+                        }
+                    }
+                });
+            }, 200);
+        }
+
+        // Terapkan aksi Crop (Potong) khusus edit. Ini Override Global applyBtn
+        if (applyBtn) applyBtn.onclick = () => {
+            if (!window.cropperInstance) return;
+            lastEditCropData = window.cropperInstance.getData(); // Simpan Data crop
+            const canvas = window.cropperInstance.getCroppedCanvas({
+                width: 800,
+                height: 600
+            });
+            canvas.toBlob((blob) => {
+                const croppedFile = new File([blob], `edit_${Date.now()}.jpg`, {
+                    type: 'image/jpeg'
+                });
+                const dataTransfer = new DataTransfer();
+                dataTransfer.items.add(croppedFile);
+                photoInput.files = dataTransfer.files;
+
+                previewImg.src = URL.createObjectURL(blob);
+                previewImg.classList.remove('hidden');
+                placeholder.classList.add('hidden');
+
+                if (typeof closeCropper === 'function') {
+                     closeCropper();
+                } else {
+                     cropperModal.style.display = 'none';
+                     cropperModal.classList.add('hidden');
+                     window.cropperInstance.destroy();
+                     window.cropperInstance = null;
+                }
+            }, 'image/jpeg', 0.9);
+        };
+        
+        // Memastikan tombol bisa berfungsi untuk menutup tanpa apply (kalau ada)
+        if (cancelBtn) cancelBtn.onclick = () => {
+             if (typeof closeCropper === 'function') closeCropper();
+        };
+        if (closeXBtn) closeXBtn.onclick = () => {
+             if (typeof closeCropper === 'function') closeCropper();
+        };
     }
 
     // --- 4. LOGIKA WILAYAH (API WILAYAH) ---
-    async function syncEditWilayah() {
+    async function syncEditWilayah(unitData) {
         const apiBase = "/api-wilayah";
         const sel = {
             p: document.getElementById('e_prov'),
@@ -308,31 +347,56 @@
             v: document.getElementById('e_vill_name')
         };
 
-        const unit = Alpine.raw(Alpine.store('selectedUnit')) || {};
+        const unit = unitData || {};
 
-        async function populate(target, path, label, selectedCode) {
+        // Mengatasi Issue DB menyimpan "Nama" tapi API Wilayah butuh "Code". 
+        // Kita bandingkan berdasarkan text namanya
+        async function populate(target, path, label, selectedName) {
             target.innerHTML = '<option value="">Memuat...</option>';
             try {
                 const resp = await fetch(`${apiBase}/${path}.json`);
                 const json = await resp.json();
                 let h = `<option value="">Pilih ${label}</option>`;
+                
+                let foundCode = null;
+
                 json.data.forEach(i => {
                     const name = i.name.replace(/^(KABUPATEN|KOTA|KAB\.)\s+/i, "").trim();
-                    const s = (i.code == selectedCode) ? 'selected' : '';
+                    // Pencocokan string nama
+                    let isSelected = false;
+                    if(selectedName && name.toUpperCase() === selectedName.toUpperCase()) {
+                        isSelected = true;
+                        foundCode = i.code; // Simpan kodenya untuk iterasi anak selanjutnya
+                    }
+                    const s = isSelected ? 'selected' : '';
                     h += `<option value="${i.code}" data-name="${name}" ${s}>${name}</option>`;
                 });
+                
                 target.innerHTML = h;
                 target.disabled = false;
+                
+                return foundCode; // Kembalikan ID (Code) Wilayah jika ketemu
             } catch (e) {
                 target.innerHTML = '<option value="">Gagal</option>';
+                return null;
             }
         }
 
-        // Fetch berantai sesuai data tersimpan
-        await populate(sel.p, 'provinces', 'Provinsi', unit.province);
-        if (unit.province) await populate(sel.r, `regencies/${unit.province}`, 'Kabupaten', unit.regency);
-        if (unit.regency) await populate(sel.d, `districts/${unit.regency}`, 'Kecamatan', unit.district);
-        if (unit.district) await populate(sel.v, `villages/${unit.district}`, 'Desa', unit.village);
+        // Fetch berantai sesuai data nama tersimpan
+        const pCode = await populate(sel.p, 'provinces', 'Provinsi', unit.province);
+        if (pCode) {
+            hid.p.value = unit.province;
+            const rCode = await populate(sel.r, `regencies/${pCode}`, 'Kabupaten', unit.regency);
+            if (rCode) {
+                hid.r.value = unit.regency;
+                const dCode = await populate(sel.d, `districts/${rCode}`, 'Kecamatan', unit.district);
+                if (dCode) {
+                    hid.d.value = unit.district;
+                    await populate(sel.v, `villages/${dCode}`, 'Desa', unit.village);
+                    if(unit.village) hid.v.value = unit.village;
+                }
+            }
+        }
 
         // Event Onchange (Persis Create)
         sel.p.onchange = async function() {
@@ -358,6 +422,8 @@
     // --- 5. LOGIKA SUBMIT ---
     document.getElementById('editUnitForm').onsubmit = async function(e) {
         e.preventDefault();
+        clearEditErrors();
+        
         const btn = document.getElementById('btnUpdateSppg');
         btn.disabled = true;
         btn.innerHTML = "Sedang Memproses...";
@@ -365,10 +431,11 @@
         try {
             const formData = new FormData(this);
             const response = await fetch(this.action, {
-                method: 'POST', // Override PUT ada di hidden input form
+                method: 'POST', // Override berjalan di hidden input _method
                 body: formData,
                 headers: {
-                    'X-Requested-With': 'XMLHttpRequest'
+                    'X-Requested-With': 'XMLHttpRequest',
+                    'Accept': 'application/json'
                 }
             });
             const result = await response.json();
@@ -378,12 +445,65 @@
             } else {
                 btn.disabled = false;
                 btn.innerHTML = "Simpan Perubahan";
-                // Render error server side jika ada (Gunakan fungsi showFieldError jika ingin detil)
-                alert('Gagal menyimpan. Cek kembali data Anda.');
+                
+                if (result.errors) {
+                    Object.keys(result.errors).forEach(key => {
+                        let fieldId = 'e_' + key;
+                        if (key === 'id_sppg_unit') fieldId = 'e_id';
+                        if (key === 'code_sppg_unit') fieldId = 'e_code';
+                        if (key === 'photo') fieldId = 'edit_photo';
+
+                        result.errors[key].forEach(msg => {
+                            showEditFieldError(fieldId, msg);
+                        });
+                    });
+
+                    // Scroll otomatis ke field error pertama (di dalam container scroll modal)
+                    const firstServerErr = document.querySelector('#editUnitForm .input-error');
+                    if (firstServerErr) {
+                         firstServerErr.scrollIntoView({
+                            behavior: 'smooth',
+                            block: 'center'
+                        });
+                    }
+                }
             }
         } catch (err) {
             btn.disabled = false;
             btn.innerHTML = "Simpan Perubahan";
+            alert('Terjadi kesalahan jaringan/server: ' + err.message);
         }
     };
+
+    // Fungsi tambahan khusus modal edit 
+    function clearEditErrors() {
+        document.querySelectorAll('#editUnitForm .input-error').forEach(el => el.classList.remove('input-error'));
+        document.querySelectorAll('#editUnitForm .text-error-custom').forEach(el => {
+            el.classList.add('hidden');
+            el.innerText = '';
+        });
+    }
+
+    function showEditFieldError(id, msg) {
+        const el = document.getElementById(id);
+        if (!el) return;
+
+        el.classList.add('input-error');
+
+        let errorEl = document.getElementById('error-' + id);
+        if (!errorEl) {
+            errorEl = document.createElement('span');
+            errorEl.id = 'error-' + id;
+            errorEl.className = 'text-error-custom';
+
+            // Penempatan khusus untuk foto
+            if (id === 'edit_photo') {
+                document.getElementById('error-edit_photo_container').appendChild(errorEl);
+            } else {
+                el.parentNode.appendChild(errorEl);
+            }
+        }
+        errorEl.innerText = '* ' + msg;
+        errorEl.classList.remove('hidden');
+    }
 </script>

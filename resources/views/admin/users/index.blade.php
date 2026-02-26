@@ -12,7 +12,7 @@
     </style>
 
     <div class="text-slate-800 text-[14px] py-8 w-full px-4 sm:px-6 lg:px-8 relative">
-        <div id="user-table-container" class="max-w-full mx-auto space-y-6">
+        <div class="max-w-full mx-auto space-y-6">
 
             {{-- 1. HEADER SECTION --}}
             <div class="bg-white rounded-xl border border-slate-200 overflow-hidden shadow-sm">
@@ -56,6 +56,9 @@
                 @endforeach
             </div>
 
+            {{-- CONTAINER TABEL AJAX (Memuat ke-3 tabel) --}}
+            <div id="user-table-container" class="space-y-6">
+
             {{-- 3. DAFTAR TUNGGU VERIFIKASI --}}
             <div class="bg-white rounded-xl border border-slate-200 overflow-hidden shadow-sm">
                 <div class="p-6 border-b border-slate-100 bg-slate-50/50 flex flex-col md:flex-row md:justify-between md:items-center gap-4">
@@ -69,7 +72,7 @@
                         @if($pendingUsers->total() > 0)
                         <button type="button"
                             onclick="openApproveAllModal()"
-                            class="shrink-0 text-[11px] font-bold uppercase tracking-wider text-emerald-600 bg-white border border-emerald-200 px-4 py-2.5 rounded-lg hover:bg-emerald-600 hover:text-white transition-all cursor-pointer shadow-sm flex items-center gap-2">
+                            class="shrink-0 text-[11px] font-bold uppercase tracking-wider text-emerald-600 bg-white border border-emerald-200 px-4 py-2 rounded-lg hover:bg-emerald-600 hover:text-white transition-all cursor-pointer shadow-sm flex items-center gap-2">
                             {{-- Icon SVG Checklist --}}
                             <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="w-5 h-5">
                                 <path fill-rule="evenodd" d="M8.603 3.799A4.49 4.49 0 0 1 12 2.25c1.357 0 2.573.6 3.397 1.549a4.49 4.49 0 0 1 3.498 1.307 4.491 4.491 0 0 1 1.307 3.497A4.49 4.49 0 0 1 21.75 12a4.49 4.49 0 0 1-1.549 3.397 4.491 4.491 0 0 1-1.307 3.497 4.491 4.491 0 0 1-3.497 1.307A4.49 4.49 0 0 1 12 21.75a4.49 4.49 0 0 1-3.397-1.549 4.49 4.49 0 0 1-3.498-1.307 4.491 4.491 0 0 1-1.307-3.497A4.49 4.49 0 0 1 2.25 12c0-1.357.6-2.573 1.549-3.397a4.49 4.49 0 0 1 1.307-3.497 4.49 4.49 0 0 1 3.497-1.307Zm7.007 6.387a.75.75 0 1 0-1.22-.872l-3.236 4.53L9.53 12.22a.75.75 0 0 0-1.06 1.06l2.25 2.25a.75.75 0 0 0 1.14-.094l3.75-5.25Z" clip-rule="evenodd" />
@@ -243,14 +246,33 @@
                         </tbody>
                     </table>
                 </div>
-                <div class="px-6 py-4 bg-white border-t border-slate-100 
-    [&_nav]:flex [&_nav]:justify-between [&_nav]:items-center
+                @if($pendingUsers->hasPages() || request('per_page_pending') > 5)
+                <div class="px-6 py-4 bg-white border-t border-slate-100 flex flex-col md:flex-row justify-between items-center gap-4 text-xs
+    [&_nav]:flex [&_nav]:justify-between [&_nav]:items-center [&_nav]:w-full md:[&_nav]:w-auto
     [&_a]:bg-white [&_a]:text-slate-600 [&_a]:border-slate-200 [&_a]:rounded-lg [&_a]:hover:bg-slate-50
-    [&_span]:bg-white [&_span]:text-slate-400 [&_span]:border-slate-200 [&_span]:rounded-lg
+    [&_span]:bg-white [&_span]:text-slate-600 [&_span]:border-slate-200 [&_span]:rounded-lg
     [&_.bg-gray-800]:bg-emerald-600 [&_.bg-gray-800]:text-white [&_.bg-gray-800]:border-emerald-600
-    [&_.dark\:bg-gray-800]:bg-white [&_.dark\:text-gray-400]:text-slate-500">
-                    {{ $pendingUsers->appends(request()->query())->links() }}
+    [&_.dark\:bg-gray-800]:bg-white [&_.dark\:text-gray-400]:text-slate-600">
+                    
+                    {{-- DROPDOWN PER PAGE --}}
+                    <div class="flex items-center gap-2">
+                        <span class="text-sm text-slate-600">Tampilkan</span>
+                        <select id="user-pending-per-page" class="per-page-select-pending border-slate-200 rounded-lg text-sm py-1.5 pl-3 pr-8 focus:ring-emerald-500 text-slate-600 font-medium cursor-pointer bg-slate-50 hover:bg-slate-100 transition-colors">
+                            <option value="5" {{ request('per_page_pending') == '5' ? 'selected' : '' }}>5</option>
+                            <option value="15" {{ request('per_page_pending') == '15' ? 'selected' : '' }}>15</option>
+                            <option value="50" {{ request('per_page_pending') == '50' ? 'selected' : '' }}>50</option>
+                            <option value="100" {{ request('per_page_pending') == '100' ? 'selected' : '' }}>100</option>
+                        </select>
+                        <span class="text-sm text-slate-600 hidden sm:inline">Baris</span>
+                    </div>
+
+                    {{-- LARAVEL PAGINATION --}}
+                    <div class="w-full md:w-auto overflow-x-auto pb-1 md:pb-0">
+                        {{ $pendingUsers->appends(request()->query())->links() }}
+                    </div>
+
                 </div>
+                @endif
             </div>
 
             {{-- 4. DAFTAR SELURUH PENGGUNA --}}
@@ -315,7 +337,7 @@
                                 <th class="px-6 py-4 text-center">Jabatan / Unit</th>
                                 <th class="px-6 py-4 text-center">Batch / Status Kerja</th>
                                 <th class="px-6 py-4 text-center">Status</th>
-                                <th class="px-6 py-4 text-right">Aksi</th>
+                                <th class="px-6 py-4 text-center">Aksi</th>
                             </tr>
                         </thead>
                         <tbody class="divide-y divide-slate-50">
@@ -358,7 +380,7 @@
                                     </span>
                                 </td>
                                 <td class="px-6 py-4 text-right">
-                                    <div class="flex justify-end items-center gap-1">
+                                    <div class="flex justify-center items-center gap-1">
                                         {{-- Tombol Edit --}}
                                         <button
                                             @if($person)
@@ -417,14 +439,33 @@
                         </tbody>
                     </table>
                 </div>
-                <div class="px-6 py-4 bg-white border-t border-slate-100 
-    [&_nav]:flex [&_nav]:justify-between [&_nav]:items-center
+                @if($allUsers->hasPages() || request('per_page_all') > 5)
+                <div class="px-6 py-4 bg-white border-t border-slate-100 flex flex-col md:flex-row justify-between items-center gap-4 text-xs
+    [&_nav]:flex [&_nav]:justify-between [&_nav]:items-center [&_nav]:w-full md:[&_nav]:w-auto
     [&_a]:bg-white [&_a]:text-slate-600 [&_a]:border-slate-200 [&_a]:rounded-lg [&_a]:hover:bg-slate-50
-    [&_span]:bg-white [&_span]:text-slate-400 [&_span]:border-slate-200 [&_span]:rounded-lg
+    [&_span]:bg-white [&_span]:text-slate-600 [&_span]:border-slate-200 [&_span]:rounded-lg
     [&_.bg-gray-800]:bg-indigo-600 [&_.bg-gray-800]:text-white [&_.bg-gray-800]:border-indigo-600
-    [&_.dark\:bg-gray-800]:bg-white [&_.dark\:text-gray-400]:text-slate-500">
-                    {{ $allUsers->appends(request()->query())->links() }}
+    [&_.dark\:bg-gray-800]:bg-white [&_.dark\:text-gray-400]:text-slate-600">
+                    
+                    {{-- DROPDOWN PER PAGE --}}
+                    <div class="flex items-center gap-2">
+                        <span class="text-sm text-slate-600">Tampilkan</span>
+                        <select id="user-all-per-page" class="per-page-select-all border-slate-200 rounded-lg text-sm py-1.5 pl-3 pr-8 focus:ring-indigo-500 text-slate-600 font-medium cursor-pointer bg-slate-50 hover:bg-slate-100 transition-colors">
+                            <option value="5" {{ request('per_page_all') == '5' ? 'selected' : '' }}>5</option>
+                            <option value="15" {{ request('per_page_all') == '15' ? 'selected' : '' }}>15</option>
+                            <option value="50" {{ request('per_page_all') == '50' ? 'selected' : '' }}>50</option>
+                            <option value="100" {{ request('per_page_all') == '100' ? 'selected' : '' }}>100</option>
+                        </select>
+                        <span class="text-sm text-slate-600 hidden sm:inline">Baris</span>
+                    </div>
+
+                    {{-- LARAVEL PAGINATION --}}
+                    <div class="w-full md:w-auto overflow-x-auto pb-1 md:pb-0">
+                        {{ $allUsers->appends(request()->query())->links() }}
+                    </div>
+
                 </div>
+                @endif
             </div>
 
             {{-- 5. TABEL TEMPAT SAMPAH --}}
@@ -473,7 +514,7 @@
                                 <th class="px-6 py-4 text-center">Batch / Status Kerja</th>
                                 <th class="px-6 py-4 text-center">Waktu Dihapus</th>
                                 <th class="px-6 py-4 text-center">Status</th>
-                                <th class="px-6 py-4 text-right">Aksi</th>
+                                <th class="px-6 py-4 text-center">Aksi</th>
                             </tr>
                         </thead>
                         <tbody class="divide-y divide-rose-50">
@@ -518,7 +559,7 @@
                                         {{ $tu->status_user }}
                                     </span>
                                 </td>
-                                <td class="px-6 py-4 text-right flex justify-end items-center gap-2">
+                                <td class="px-6 py-4 text-center flex justify-center items-center gap-2">
                                     <form action="{{ route('admin.users.restore', $tu->id_user) }}" method="POST">
                                         @csrf
                                         <button type="submit" class="p-2 text-indigo-600 hover:bg-indigo-50 cursor-pointer rounded-lg" title="Pulihkan">
@@ -556,14 +597,34 @@
                         </tbody>
                     </table>
                 </div>
-                <div class="px-6 py-4 bg-rose-50/20 border-t border-rose-100
-    [&_nav]:flex [&_nav]:justify-between [&_nav]:items-center
+                @if($trashedUsers->hasPages() || request('per_page_trash') > 5)
+                <div class="px-6 py-4 bg-rose-50/20 border-t border-rose-100 flex flex-col md:flex-row justify-between items-center gap-4 text-xs
+    [&_nav]:flex [&_nav]:justify-between [&_nav]:items-center [&_nav]:w-full md:[&_nav]:w-auto
     [&_a]:bg-white [&_a]:text-slate-600 [&_a]:border-slate-200 [&_a]:rounded-lg [&_a]:hover:bg-rose-50
-    [&_span]:bg-white [&_span]:text-slate-400 [&_span]:border-slate-200 [&_span]:rounded-lg
+    [&_span]:bg-white [&_span]:text-slate-600 [&_span]:border-slate-200 [&_span]:rounded-lg
     [&_.bg-gray-800]:bg-rose-600 [&_.bg-gray-800]:text-white [&_.bg-gray-800]:border-rose-600
-    [&_.dark\:bg-gray-800]:bg-white [&_.dark\:text-gray-400]:text-slate-500">
-                    {{ $trashedUsers->appends(request()->query())->links() }}
+    [&_.dark\:bg-gray-800]:bg-white [&_.dark\:text-gray-400]:text-slate-600">
+                    
+                    {{-- DROPDOWN PER PAGE --}}
+                    <div class="flex items-center gap-2">
+                        <span class="text-sm text-slate-600">Tampilkan</span>
+                        <select id="user-trash-per-page" class="per-page-select-trash border-slate-200 rounded-lg text-sm py-1.5 pl-3 pr-8 focus:ring-rose-500 text-slate-600 font-medium cursor-pointer bg-white hover:bg-slate-50 transition-colors">
+                            <option value="5" {{ request('per_page_trash') == '5' ? 'selected' : '' }}>5</option>
+                            <option value="15" {{ request('per_page_trash') == '15' ? 'selected' : '' }}>15</option>
+                            <option value="50" {{ request('per_page_trash') == '50' ? 'selected' : '' }}>50</option>
+                            <option value="100" {{ request('per_page_trash') == '100' ? 'selected' : '' }}>100</option>
+                        </select>
+                        <span class="text-sm text-slate-600 hidden sm:inline">Baris</span>
+                    </div>
+
+                    {{-- LARAVEL PAGINATION --}}
+                    <div class="w-full md:w-auto overflow-x-auto pb-1 md:pb-0">
+                        {{ $trashedUsers->appends(request()->query())->links() }}
+                    </div>
+
                 </div>
+                @endif
+            </div>
             </div>
         </div>
     </div>
@@ -1221,7 +1282,26 @@
     <script>
         let searchTimer;
 
-        // 1. Fungsi Utama Refresh
+        // 0. Helper Penarik Data Modifier (Search Keyword + Per-Page Limit)
+        function getCurrentUrlModifiersUser(tableType, inputEl = null) {
+            let currentUrl = new URL(window.location.href);
+
+            // 1. Ambil keyword search aktif 
+            const activeSearch = document.getElementById('search-' + tableType);
+            if (activeSearch) currentUrl.searchParams.set('search_' + tableType, activeSearch.value);
+
+            // 2. Ambil limit dropdown per page
+            const activePerPage = document.getElementById('user-' + tableType + '-per-page');
+            if (activePerPage) currentUrl.searchParams.set('per_page_' + tableType, activePerPage.value);
+
+            // 3. Batalkan nomor halaman (refresh ke halaman 1) saat pencarian atau ganti ukuran baris. 
+            // Jika dipanggil oleh klik pagination link, inputEl itu dibiarkan nol (null).
+            if (inputEl) currentUrl.searchParams.delete(tableType + '_page');
+
+            return currentUrl.toString();
+        }
+
+        // 1. Fungsi Utama Refresh AJAX
         function refreshTable(url, focusId = null) {
             const container = document.getElementById('user-table-container');
             if (!container) return;
@@ -1237,20 +1317,14 @@
                     let doc = parser.parseFromString(html, 'text/html');
                     let newContent = doc.getElementById('user-table-container').innerHTML;
 
-                    // Update konten
                     container.innerHTML = newContent;
-
-                    // Sinkronisasi URL tanpa reload
                     window.history.pushState({}, '', url);
 
-                    // KRUSIAL: Gunakan requestAnimationFrame agar fokus dipicu 
-                    // SETELAH browser selesai menggambar ulang (rendering) HTML baru
                     if (focusId) {
                         requestAnimationFrame(() => {
                             const activeInput = document.getElementById(focusId);
                             if (activeInput) {
                                 activeInput.focus();
-                                // Paksa kursor ke urutan terakhir teks
                                 const val = activeInput.value;
                                 activeInput.value = '';
                                 activeInput.value = val;
@@ -1261,54 +1335,65 @@
                 .catch(error => console.error('Error:', error));
         }
 
-        // 2. Event Listener untuk Mengetik (Otomatis & Enter)
+        // 2. Event Listener untuk Mengetik (Enter Key)
         document.addEventListener('keydown', function(e) {
             if (e.target.classList.contains('live-search-input')) {
                 const inputEl = e.target;
                 const type = inputEl.getAttribute('data-table');
-                const inputId = inputEl.id;
 
-                // JIKA TEKAN ENTER
                 if (e.key === 'Enter') {
-                    e.preventDefault(); // Cegah reload halaman
-                    clearTimeout(searchTimer); // Batalkan timer otomatis karena langsung dieksekusi
-
-                    let currentUrl = new URL(window.location.href);
-                    currentUrl.searchParams.set('search_' + type, inputEl.value);
-                    currentUrl.searchParams.delete(type + '_page');
-
-                    refreshTable(currentUrl.toString(), inputId);
+                    e.preventDefault(); 
+                    clearTimeout(searchTimer); 
+                    refreshTable(getCurrentUrlModifiersUser(type, inputEl), inputEl.id);
                 }
             }
         });
 
-        // 3. Event Listener untuk Timer Otomatis (Debounce)
+        // 3. Event Listener untuk Timer Otomatis Mengetik
         document.addEventListener('input', function(e) {
             if (e.target.classList.contains('live-search-input')) {
                 clearTimeout(searchTimer);
-
                 const inputEl = e.target;
                 const type = inputEl.getAttribute('data-table');
-                const inputId = inputEl.id;
 
                 searchTimer = setTimeout(() => {
-                    let currentUrl = new URL(window.location.href);
-                    currentUrl.searchParams.set('search_' + type, inputEl.value);
-                    currentUrl.searchParams.delete(type + '_page');
-
-                    refreshTable(currentUrl.toString(), inputId);
-                }, 700); // Jeda sedikit lebih lama (700ms) agar tidak terlalu sering request saat mengetik cepat
+                    refreshTable(getCurrentUrlModifiersUser(type, inputEl), inputEl.id);
+                }, 700); 
             }
         });
 
-        // 4. Listener Pagination (Tetap Sama)
+        // 4. Listener untuk Mengganti Dropdown Limit Baris
+        document.addEventListener('change', function(e) {
+            if (e.target.classList.contains('per-page-select-pending')) refreshTable(getCurrentUrlModifiersUser('pending', e.target));
+            if (e.target.classList.contains('per-page-select-all')) refreshTable(getCurrentUrlModifiersUser('all', e.target));
+            if (e.target.classList.contains('per-page-select-trash')) refreshTable(getCurrentUrlModifiersUser('trash', e.target));
+        });
+
+        // 5. Listener Memencet Nomor Navigasi Halaman Pagination
         document.addEventListener('click', function(e) {
             let anchor = e.target.closest('#user-table-container nav a');
             if (anchor && anchor.getAttribute('href')) {
-                let url = anchor.getAttribute('href');
-                if (url.includes('page=') && !url.startsWith('javascript')) {
+                let url = new URL(anchor.getAttribute('href'));
+                
+                // Cari tahu ia pagination dari mana (parameter yang ada kata "_page=")
+                const urlParams = url.searchParams.keys();
+                let type = null;
+                for (let param of urlParams) {
+                    if (param.endsWith('_page')) {
+                        type = param.replace('_page', '');
+                        break;
+                    }
+                }
+
+                if (type) {
+                    // Inject limit ukuran per data page pilihan sekarang ke var url parameter pagination
+                    const activePerPage = document.getElementById('user-' + type + '-per-page');
+                    if (activePerPage) url.searchParams.set('per_page_' + type, activePerPage.value);
+                }
+
+                if (url.toString().includes('page=') && !url.toString().startsWith('javascript')) {
                     e.preventDefault();
-                    refreshTable(url);
+                    refreshTable(url.toString());
                 }
             }
         });

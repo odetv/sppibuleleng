@@ -12,10 +12,26 @@ use Illuminate\Support\Facades\Storage;
 
 class SppgUnitController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
+        $search = $request->query('search');
+
         // Ambil data unit dengan eager loading relasi
-        $units = SppgUnit::with(['leader', 'socialMedia'])->latest()->paginate(5);
+        $query = SppgUnit::with(['leader', 'socialMedia'])->latest();
+
+        if ($search) {
+            $query->where(function ($q) use ($search) {
+                $q->where('name', 'like', "%{$search}%")
+                  ->orWhere('id_sppg_unit', 'like', "%{$search}%")
+                  ->orWhere('code_sppg_unit', 'like', "%{$search}%")
+                  ->orWhereHas('leader', function ($ql) use ($search) {
+                      $ql->where('name', 'like', "%{$search}%");
+                  });
+            });
+        }
+
+        $perPage = $request->query('per_page', 5);
+        $units = $query->paginate($perPage)->withQueryString();
 
         // Ambil data person untuk dropdown leader
         $leaders = Person::orderBy('name', 'asc')->get();
@@ -41,6 +57,7 @@ class SppgUnitController extends Controller
             'village_name'      => 'required|string',
             'latitude_gps'      => 'required',
             'longitude_gps'     => 'required',
+            'leader_id'         => 'required|string', // String valid karena kita kirim kata "NULL" bukan kosong
             'photo'             => 'required|image|max:2048',
         ]);
 
@@ -74,7 +91,7 @@ class SppgUnitController extends Controller
                 'address' => $data['address'],
                 'latitude_gps' => $data['latitude_gps'],
                 'longitude_gps' => $data['longitude_gps'],
-                'leader_id' => $data['leader_id'],
+                'leader_id' => $data['leader_id'] === 'NULL' ? null : $data['leader_id'],
                 'photo' => $data['photo'] ?? null,
             ]);
 
@@ -96,6 +113,7 @@ class SppgUnitController extends Controller
         $sppg = SppgUnit::where('id_sppg_unit', $id)->firstOrFail();
 
         $validator = \Validator::make($request->all(), [
+            'id_sppg_unit'      => 'required|string|unique:sppg_units,id_sppg_unit,' . $id . ',id_sppg_unit',
             'code_sppg_unit'    => 'nullable|string|unique:sppg_units,code_sppg_unit,' . $id . ',id_sppg_unit',
             'name'              => 'required|string|max:255',
             'status'            => 'required|in:Operasional,Belum Operasional,Tutup Sementara,Tutup Permanen',
@@ -113,28 +131,36 @@ class SppgUnitController extends Controller
         }
 
         try {
-            // Mapping manual field wilayah ke kolom database
-            $sppg->name = $request->name;
-            $sppg->status = $request->status;
-            $sppg->province = $request->province_name;
-            $sppg->regency = $request->regency_name;
-            $sppg->district = $request->district_name;
-            $sppg->village = $request->village_name;
-            $sppg->address = $request->address;
-            $sppg->latitude_gps = $request->latitude_gps;
-            $sppg->longitude_gps = $request->longitude_gps;
-            $sppg->leader_id = $request->leader_id;
+            $oldId = $sppg->id_sppg_unit;
 
+            // Foto handling jika ada 
+            $photoPath = $sppg->photo;
             if ($request->hasFile('photo')) {
                 // Hapus foto lama jika ada
                 if ($sppg->photo) {
                     Storage::disk('public')->delete($sppg->photo);
                 }
-                $folderHash = md5($sppg->id_sppg_unit . config('app.key'));
-                $sppg->photo = $request->file('photo')->store("sppgunits/{$folderHash}/photos", 'public');
+                $folderHash = md5($request->id_sppg_unit . config('app.key'));
+                $photoPath = $request->file('photo')->store("sppgunits/{$folderHash}/photos", 'public');
             }
 
-            $sppg->save();
+            // Update manual mem-bypass batasan PK eloquent
+            \DB::table('sppg_units')->where('id_sppg_unit', $oldId)->update([
+                'id_sppg_unit' => $request->id_sppg_unit,
+                'code_sppg_unit' => $request->code_sppg_unit,
+                'name' => $request->name,
+                'status' => $request->status,
+                'province' => $request->province_name,
+                'regency' => $request->regency_name,
+                'district' => $request->district_name,
+                'village' => $request->village_name,
+                'address' => $request->address,
+                'latitude_gps' => $request->latitude_gps,
+                'longitude_gps' => $request->longitude_gps,
+                'leader_id' => $request->leader_id === 'NULL' ? null : $request->leader_id,
+                'photo' => $photoPath,
+                'updated_at' => now(),
+            ]);
 
             return response()->json([
                 'success' => true,

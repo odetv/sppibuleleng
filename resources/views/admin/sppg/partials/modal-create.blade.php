@@ -43,7 +43,7 @@
                 </span>
                 <h3 class="text-[14px] font-bold uppercase tracking-widest" id="modal_header_title">Tambah SPPG</h3>
             </div>
-            <button type="button" onclick="closeMasterEditModal()" class="text-slate-400 hover:text-slate-600 text-2xl cursor-pointer">&times;</button>
+            <button type="button" @click="showCreateModal = false" class="text-slate-400 hover:text-slate-600 text-2xl cursor-pointer">&times;</button>
         </div>
 
         <form action="{{ route('admin.sppg.store') }}" method="POST" enctype="multipart/form-data" id="createUnitForm">
@@ -109,7 +109,7 @@
                             <label class="text-[11px] font-bold text-gray-500 uppercase tracking-wider">Kepala SPPG</label>
                             <select name="leader_id" id="f_leader" class="w-full mt-2 px-3 py-2.5 bg-gray-50 border-none rounded-lg text-sm focus:ring-2 focus:ring-indigo-500">
                                 <option value="" disabled selected>Pilih Kepala SPPG</option>
-                                <option value="">Belum Ditugaskan</option>
+                                <option value="NULL">Belum Ditugaskan</option>
                                 @foreach($leaders as $leader)
                                 <option value="{{ $leader->id_person }}">{{ $leader->name }}</option>
                                 @endforeach
@@ -143,7 +143,7 @@
                         <div>
                             <label class="text-[11px] font-bold text-gray-500 uppercase tracking-wider">Desa/Kelurahan</label>
                             <select name="village" id="f_vill" disabled class="input-disabled w-full mt-1 px-4 py-2 border-none rounded-lg text-sm focus:ring-2 focus:ring-indigo-500">
-                                <option value="">Pilih Desa</option>
+                                <option value="">Pilih Desa/Kelurahan</option>
                             </select>
                         </div>
                         <div class="md:col-span-4">
@@ -206,6 +206,19 @@
         errorEl.classList.remove('hidden');
     }
 
+    // 2.5 Fungsi membersihkan satu state error spesifik
+    function clearFieldError(id) {
+        const el = document.getElementById(id);
+        if (!el) return;
+        el.classList.remove('input-error');
+
+        let errorEl = document.getElementById('error-' + id);
+        if (errorEl) {
+            errorEl.classList.add('hidden');
+            errorEl.innerText = '';
+        }
+    }
+
     // 3. Logika Submit (AJAX + Real-time Validation)
     document.getElementById('createUnitForm').onsubmit = async function(e) {
         e.preventDefault();
@@ -218,11 +231,19 @@
         // Validasi Sisi Client (Data Kosong)
         const fields = [{
                 id: 'f_name',
-                msg: 'Nama Unit wajib diisi'
+                msg: 'Nama SPPG wajib diisi'
             },
             {
                 id: 'f_id',
-                msg: 'ID Unit wajib diisi'
+                msg: 'ID SPPG wajib diisi'
+            },
+            {
+                id: 'f_code',
+                msg: 'Kode SPPG wajib diisi'
+            },
+            {
+                id: 'f_leader',
+                msg: 'Pilihan Kepala SPPG tidak valid' // Karena "NULL" atau angka ID sekarang valid
             },
             {
                 id: 'f_status',
@@ -242,7 +263,7 @@
             },
             {
                 id: 'f_vill',
-                msg: 'Desa wajib dipilih'
+                msg: 'Desa/Kelurahan wajib dipilih'
             },
             {
                 id: 'f_address',
@@ -263,7 +284,7 @@
         });
 
         if (!document.getElementById('create_photo').files.length) {
-            showFieldError('create_photo', 'Foto unit wajib ada');
+            showFieldError('create_photo', 'Foto SPPG wajib ada');
             hasLocalError = true;
         }
 
@@ -320,7 +341,7 @@
             }
         } catch (err) {
             btnSubmit.disabled = false;
-            btnSubmit.innerHTML = "Simpan Unit SPPG Baru";
+            btnSubmit.innerHTML = "Simpan SPPG Baru";
             console.error(err);
         }
     };

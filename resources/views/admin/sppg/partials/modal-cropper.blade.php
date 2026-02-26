@@ -13,7 +13,7 @@
                 </span>
                 <h3 class="text-[14px] font-bold uppercase tracking-widest text-slate-700">Potong Foto SPPG (4:3)</h3>
             </div>
-            <button type="button" id="cancel-crop-btn" class="text-slate-400 hover:text-slate-600 text-2xl">&times;</button>
+            <button type="button" id="close-cropper-x" class="text-slate-400 hover:text-slate-600 text-2xl">&times;</button>
         </div>
 
         <div class="p-6 bg-slate-200 flex justify-center">

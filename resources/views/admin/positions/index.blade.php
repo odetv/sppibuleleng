@@ -1,6 +1,6 @@
 <x-app-layout title="Daftar Jabatan">
-    <div class="py-10 p-4 text-slate-800 text-[14px]">
-        <div class="w-full mx-auto sm:px-6 lg:px-8 space-y-10">
+    <div class="text-slate-800 text-[14px] py-8 w-full px-4 sm:px-6 lg:px-8 relative">
+        <div class="max-w-full mx-auto space-y-6">
 
             {{-- 2. SINGLE STATS CARD (Full Width) --}}
             <div class="w-full">

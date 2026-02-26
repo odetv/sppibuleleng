@@ -84,97 +84,123 @@
             @include('admin.sppg.partials.statistics-cards')
 
             {{-- 3. TABLE SECTION --}}
-            <div class="bg-white rounded-xl border border-slate-200 shadow-sm overflow-hidden">
-                <div class="p-5 border-b border-slate-100 flex flex-col md:flex-row md:items-center justify-between gap-4">
-                    <h3 class="font-bold text-slate-700 uppercase text-sm tracking-wide">Daftar Unit SPPG</h3>
-                    <div class="flex items-center gap-2">
-                        <button @click="showCreateModal = true" class="bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2 rounded-lg text-sm font-bold transition-all flex items-center gap-2 shadow-sm shadow-indigo-200">
-                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
-                            </svg>
-                            TAMBAH UNIT
-                        </button>
+            <div class="bg-white rounded-xl border border-slate-200 overflow-hidden shadow-sm">
+                <div class="p-6 border-b border-slate-100 bg-slate-50/50 flex flex-col md:flex-row md:justify-between md:items-center gap-4">
+                    <h3 class="font-bold text-slate-700 uppercase tracking-wider text-[14px]">Daftar Seluruh SPPG</h3>
+                    <div class="flex flex-wrap items-center gap-3">
+                        {{-- Tombol Export --}}
+                            <button type="button" class="flex items-center justify-center p-2.5 md:px-4 text-[11px] font-bold uppercase tracking-wider text-emerald-600 bg-white border border-emerald-200 rounded-lg hover:bg-emerald-600 hover:text-white transition-all cursor-pointer shadow-sm">
+                                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="w-4 h-4">
+                                    <path fill-rule="evenodd" d="M12 2.25a.75.75 0 0 1 .75.75v11.69l3.22-3.22a.75.75 0 1 1 1.06 1.06l-4.5 4.5a.75.75 0 0 1-1.06 0l-4.5-4.5a.75.75 0 1 1 1.06-1.06l3.22 3.22V3a.75.75 0 0 1 .75-.75Zm-9 13.5a.75.75 0 0 1 .75.75v2.25a1.5 1.5 0 0 0 1.5 1.5h13.5a1.5 1.5 0 0 0 1.5-1.5V16.5a.75.75 0 0 1 1.5 0v2.25a3 3 0 0 1-3 3H5.25a3 3 0 0 1-3-3V16.5a.75.75 0 0 1 .75-.75Z" clip-rule="evenodd" />
+                                </svg>
+                                <span class="hidden md:inline ml-2">Export</span>
+                            </button>
+
+                            {{-- Tombol Import --}}
+                            <button type="button" class="flex items-center justify-center p-2.5 md:px-4 text-[11px] font-bold uppercase tracking-wider text-amber-600 bg-white border border-amber-200 rounded-lg hover:bg-amber-600 hover:text-white transition-all cursor-pointer shadow-sm">
+                                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="w-4 h-4">
+                                    <path fill-rule="evenodd" d="M11.47 2.47a.75.75 0 0 1 1.06 0l4.5 4.5a.75.75 0 1 1-1.06 1.06l-3.22-3.22V16.5a.75.75 0 0 1-1.5 0V4.81L8.03 8.03a.75.75 0 0 1-1.06-1.06l4.5-4.5ZM3 15.75a.75.75 0 0 1 .75.75v2.25a1.5 1.5 0 0 0 1.5 1.5h13.5a1.5 1.5 0 0 0 1.5-1.5V16.5a.75.75 0 0 1 1.5 0v2.25a3 3 0 0 1-3 3H5.25a3 3 0 0 1-3-3V16.5a.75.75 0 0 1 .75-.75Z" clip-rule="evenodd" />
+                                </svg>
+                                <span class="hidden md:inline ml-2">Import</span>
+                            </button>
+
+                            {{-- Tombol Tambah --}}
+                            <button @click="showCreateModal = true" class="flex items-center justify-center p-2.5 md:px-4 text-[11px] font-bold uppercase tracking-wider text-indigo-600 bg-white border border-indigo-200 rounded-lg hover:bg-indigo-600 hover:text-white transition-all cursor-pointer shadow-sm">
+                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
+                    </svg>
+                                <span class="hidden md:inline ml-2 text-nowrap">Tambah</span>
+                            </button>
+
+                        {{-- Search Input (Live Search) --}}
+                        <div class="relative flex-grow md:flex-initial md:w-64 text-slate-800">
+                            <span class="absolute inset-y-0 left-0 flex items-center pl-3 text-slate-400">
+                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                                </svg>
+                            </span>
+                            <input type="text"
+                                id="search-pending"
+                                data-table="pending"
+                                class="live-search-input text-xs border-slate-200 rounded-lg pl-9 pr-3 py-2.5 w-full focus:ring-2 focus:ring-indigo-500 outline-none transition-all bg-white shadow-sm"
+                                placeholder="Cari ID, kode, atau nama..." value="{{ request('search') }}"
+                                autocomplete="off">
+                        </div>
                     </div>
                 </div>
 
-                <div class="overflow-x-auto">
-                    <table class="w-full text-left border-collapse">
+                <div id="sppg-table-container">
+                    <div class="overflow-x-auto scrollbar-thin">
+                    <table class="w-full text-left border-collapse text-sm">
                         <thead>
-                            <tr class="bg-white">
-                                <th class="px-6 py-4 text-[11px] font-bold text-slate-400 uppercase tracking-widest border-b border-slate-100">Informasi Unit</th>
-                                <th class="px-6 py-4 text-[11px] font-bold text-slate-400 uppercase tracking-widest border-b border-slate-100 text-center">Status & Tanggal Ops</th>
-                                <th class="px-6 py-4 text-[11px] font-bold text-slate-400 uppercase tracking-widest border-b border-slate-100 text-center">Kepala SPPG</th>
-                                <th class="px-6 py-4 text-[11px] font-bold text-slate-400 uppercase tracking-widest border-b border-slate-100 text-right">Aksi</th>
+                            <tr class="bg-slate-50 text-[11px] font-bold uppercase tracking-wider text-slate-400 border-b border-slate-100">
+                                <th class="px-6 py-4">INFORMASI UNIT</th>
+                                <th class="px-6 py-4 text-center">KEPALA SPPG / TANGGAL OPS</th>
+                                <th class="px-6 py-4 text-center">STATUS</th>
+                                <th class="px-6 py-4 text-center">AKSI</th>
                             </tr>
                         </thead>
                         <tbody class="divide-y divide-slate-100">
                             @forelse($units as $unit)
                             <tr class="hover:bg-slate-50/50 transition-colors group">
                                 {{-- INFORMASI UNIT --}}
-                                <td class="px-6 py-5">
+                                <td class="px-6 py-4">
                                     <div class="flex items-center gap-4">
-                                        <div class="w-12 h-10 rounded-lg bg-slate-100 border border-slate-200 overflow-hidden shrink-0 flex items-center justify-center">
+                                        <div class="w-16 h-12 rounded-md bg-indigo-600 text-white flex justify-center items-center text-sm font-bold shadow-sm shrink-0 overflow-hidden">
                                             @if($unit->photo)
                                             <img src="{{ asset('storage/' . $unit->photo) }}" class="w-full h-full object-cover">
                                             @else
-                                            <svg class="w-5 h-5 text-slate-300" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-                                                <path d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                                            <svg class="w-6 h-6 text-white/70" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
                                             </svg>
                                             @endif
                                         </div>
                                         <div>
-                                            <div class="font-extrabold text-slate-700 text-[15px] uppercase leading-tight">{{ $unit->name }}</div>
-                                            <div class="text-[12px] text-slate-400 font-medium mt-0.5 uppercase tracking-tight">
-                                                ID: {{ $unit->id_sppg_unit }} | Kode: {{ $unit->code_sppg_unit ?? '-' }}
+                                            <div class="font-bold text-slate-700 capitalize">{{ $unit->name }}</div>
+                                            <div class="text-xs text-slate-500 font-medium whitespace-nowrap">
+                                                ID: {{ $unit->id_sppg_unit }} <span class="mx-1">-</span> Kode: <span>{{ $unit->code_sppg_unit ?? '-' }}</span>
                                             </div>
                                         </div>
                                     </div>
                                 </td>
 
-                                {{-- STATUS & TANGGAL OPS --}}
-                                <td class="px-6 py-5 text-center">
-                                    @php
-                                    // Menentukan warna badge berdasarkan status
-                                    $statusStyles = match($unit->status) {
-                                    'Active', 'Operasional' => 'bg-emerald-50 text-emerald-500 border-emerald-100',
-                                    'Pending', 'Belum Operasional' => 'bg-amber-50 text-amber-500 border-amber-100',
-                                    'Inactive', 'Tutup Sementara' => 'bg-rose-50 text-rose-500 border-rose-100',
-                                    default => 'bg-slate-50 text-slate-500 border-slate-100'
-                                    };
-                                    @endphp
-                                    <span class="inline-flex items-center px-2.5 py-0.5 rounded text-[11px] font-bold border uppercase {{ $statusStyles }}">
-                                        {{ $unit->status }}
-                                    </span>
-                                    <div class="text-[12px] text-slate-400 mt-1 font-medium italic">
-                                        {{ $unit->operational_date ?? '-' }}
-                                    </div>
+                                {{-- KEPALA SPPG & TGL OPS --}}
+                                <td class="px-6 py-4 text-center">
+                                    <span class="text-slate-500 text-xs block capitalize font-medium">{{ $unit->leader->name ?? 'Belum Ditugaskan' }}</span>
+                                    <span class="text-xs text-slate-500 capitalize font-medium">{{ $unit->operational_date ? \Carbon\Carbon::parse($unit->operational_date)->translatedFormat('d F Y') : '-' }}</span>
                                 </td>
 
-                                {{-- KEPALA SPPG --}}
-                                <td class="px-6 py-5 text-center">
-                                    <div class="text-[13px] font-bold text-slate-600 uppercase tracking-tight">
-                                        {{ $unit->leader->name ?? 'Belum Ditugaskan' }}
-                                    </div>
+                                {{-- STATUS & TGL OPS --}}
+                                <td class="px-6 py-4 text-center">
+                                    @php
+                                        $statusStyles = match($unit->status) {
+                                            'Operasional' => 'bg-[#e0fdef] text-[#047857] border-emerald-200',
+                                            'Belum Operasional' => 'bg-amber-100 text-amber-600 border-amber-200',
+                                            'Tutup Sementara' => 'bg-rose-100 text-rose-600 border-rose-200',
+                                            'Tutup Permanen' => 'bg-black/50 text-white border-black/20',
+                                            default => 'bg-slate-100 text-slate-500 border-slate-200'
+                                        };
+                                    @endphp
+                                    <span class="text-xs font-medium px-1.5 py-0.5 rounded border capitalize {{ $statusStyles }}">
+                                        {{ $unit->status }}
+                                    </span>
                                 </td>
 
                                 {{-- AKSI --}}
-                                <td class="px-6 py-5 text-right">
-                                    <div class="flex justify-end items-center gap-2">
-                                        <button @click="selectedUnit = {{ json_encode($unit->load('socialMedia')) }}; showEditModal = true"
-                                            class="p-2 text-slate-300 hover:text-indigo-600 transition-colors">
+                                <td class="px-6 py-4 text-center">
+                                    <div class="flex justify-center items-center gap-1">
+                                        <button type="button" @click="selectedUnit = {{ json_encode($unit->load('socialMedia')) }}; selectedUnit.original_id = '{{ $unit->id_sppg_unit }}'; showEditModal = true; setTimeout(() => window.dispatchEvent(new CustomEvent('init-edit-sppg', { detail: selectedUnit })), 300)"
+                                            title="Edit" class="p-2 text-slate-400 hover:text-indigo-600 cursor-pointer transition-colors hover:bg-indigo-50 rounded-lg">
                                             <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-                                                <path d="M11 5H6a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2v-5M18.364 4.982a2.378 2.378 0 113.359 3.359L10.852 19.531l-4.243.606.606-4.243L18.364 4.982z" />
+                                                <path d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path>
                                             </svg>
                                         </button>
 
-                                        <form action="{{ route('admin.sppg.destroy', $unit->id_sppg_unit) }}" method="POST" class="inline" onsubmit="return confirm('Hapus unit ini?')">
-                                            @csrf @method('DELETE')
-                                            <button type="submit" class="p-2 text-slate-300 hover:text-red-400 transition-colors">
-                                                <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-                                                    <path d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
-                                                </svg>
-                                            </button>
-                                        </form>
+                                        <button type="button" title="Hapus" onclick="confirmDeleteSppg('{{ $unit->id_sppg_unit }}', '{{ addslashes($unit->name) }}')" class="p-2 text-rose-600 hover:bg-rose-50 cursor-pointer rounded-lg opacity-80 hover:opacity-100 transition-colors">
+                                            <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                                                <path d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path>
+                                            </svg>
+                                        </button>
                                     </div>
                                 </td>
                             </tr>
@@ -189,16 +215,34 @@
                     </table>
                 </div>
 
-                @if($units->hasPages())
-                <div class="px-6 py-4 bg-white border-t border-slate-100 
-    [&_nav]:flex [&_nav]:justify-between [&_nav]:items-center
+                @if($units->hasPages() || request('per_page') > 5)
+                <div class="px-6 py-4 bg-white border-t border-slate-100 flex flex-col md:flex-row justify-between items-center gap-4 text-xs
+    [&_nav]:flex [&_nav]:justify-between [&_nav]:items-center [&_nav]:w-full md:[&_nav]:w-auto
     [&_a]:bg-white [&_a]:text-slate-600 [&_a]:border-slate-200 [&_a]:rounded-lg [&_a]:hover:bg-slate-50
-    [&_span]:bg-white [&_span]:text-slate-400 [&_span]:border-slate-200 [&_span]:rounded-lg
+    [&_span]:bg-white [&_span]:text-slate-600 [&_span]:border-slate-200 [&_span]:rounded-lg
     [&_.bg-gray-800]:bg-emerald-600 [&_.bg-gray-800]:text-white [&_.bg-gray-800]:border-emerald-600
-    [&_.dark\:bg-gray-800]:bg-white [&_.dark\:text-gray-400]:text-slate-500">
-                    {{ $units->links() }}
+    [&_.dark\:bg-gray-800]:bg-white [&_.dark\:text-gray-400]:text-slate-600">
+                    
+                    {{-- DROPDOWN PER PAGE --}}
+                    <div class="flex items-center gap-2">
+                        <span class="text-sm text-slate-600">Tampilkan</span>
+                        <select id="sppg-per-page" class="per-page-select border-slate-200 rounded-lg text-sm py-1.5 pl-3 pr-8 focus:ring-emerald-500 text-slate-600 font-medium cursor-pointer bg-slate-50 hover:bg-slate-100 transition-colors">
+                            <option value="5" {{ request('per_page') == '5' ? 'selected' : '' }}>5</option>
+                            <option value="15" {{ request('per_page') == '15' ? 'selected' : '' }}>15</option>
+                            <option value="50" {{ request('per_page') == '50' ? 'selected' : '' }}>50</option>
+                            <option value="100" {{ request('per_page') == '100' ? 'selected' : '' }}>100</option>
+                        </select>
+                        <span class="text-sm text-slate-600 hidden sm:inline">Baris</span>
+                    </div>
+
+                    {{-- LARAVEL PAGINATION --}}
+                    <div class="w-full md:w-auto overflow-x-auto pb-1 md:pb-0">
+                        {{ $units->links() }}
+                    </div>
+
                 </div>
                 @endif
+                </div>
             </div>
         </div>
 
@@ -206,6 +250,7 @@
         @include('admin.sppg.partials.modal-create')
         @include('admin.sppg.partials.modal-edit')
         @include('admin.sppg.partials.modal-cropper')
+        @include('admin.sppg.partials.modal-delete')
     </div>
 
     {{-- SCRIPTS UTAMA --}}
@@ -229,6 +274,129 @@
                 subtree: true,
                 childList: true
             });
+        });
+
+        // ==========================
+        // MODAL KLIK & DELETE LOGIC
+        // ==========================
+        window.confirmDeleteSppg = function(unitId, unitName) {
+            const modal = document.getElementById('deleteModal');
+            const form = document.getElementById('deleteForm');
+            const info = document.getElementById('delete_modal_info');
+            
+            // Route asli Laravel Anda untuk SPPG adalah /admin/manage-sppg/{id}
+            form.action = `/admin/manage-sppg/${unitId}`;
+            info.innerHTML = `Data SPPG <b>${unitName}</b> akan dihapus secara permanen beserta foto dan media sosialnya.`;
+            
+            modal.classList.remove('hidden');
+        }
+
+        window.closeDeleteModal = function() {
+            document.getElementById('deleteModal').classList.add('hidden');
+        }
+
+        // ==========================
+        // FITUR LIVE SEARCH & PAGINATION AJAX
+        // ==========================
+        let searchTimer;
+
+        function getCurrentUrlModifiers(inputEl = null) {
+            let currentUrl = new URL(window.location.href);
+            
+            // 1. Ambil keyword search terbaru
+            const activeSearch = document.getElementById('sppg-search');
+            if(activeSearch) currentUrl.searchParams.set('search', activeSearch.value);
+            
+            // 2. Ambil nilai per-page terbaru
+            const activePerPage = document.getElementById('sppg-per-page');
+            if(activePerPage) currentUrl.searchParams.set('per_page', activePerPage.value);
+
+            // Jauhkan parameter page (kembali ke hlmn 1) jika pemicunya BUKAN memencet link pagination
+            if(inputEl) currentUrl.searchParams.delete('page');
+
+            return currentUrl.toString();
+        }
+
+        function refreshTable(url, focusId = null) {
+            const container = document.getElementById('sppg-table-container');
+            if (!container) return;
+
+            fetch(url, {
+                    headers: {
+                        "X-Requested-With": "XMLHttpRequest"
+                    }
+                })
+                .then(response => response.text())
+                .then(html => {
+                    let parser = new DOMParser();
+                    let doc = parser.parseFromString(html, 'text/html');
+                    let newContent = doc.getElementById('sppg-table-container').innerHTML;
+
+                    // Update konten
+                    container.innerHTML = newContent;
+
+                    // Sinkronisasi URL tanpa reload
+                    window.history.pushState({}, '', url);
+
+                    // Kembalikan fokus kursor
+                    if (focusId) {
+                        requestAnimationFrame(() => {
+                            const activeInput = document.getElementById(focusId);
+                            if (activeInput) {
+                                activeInput.focus();
+                                const val = activeInput.value;
+                                activeInput.value = '';
+                                activeInput.value = val;
+                            }
+                        });
+                    }
+                })
+                .catch(error => console.error('Error:', error));
+        }
+
+        // 2. Event Listener untuk Mengetik (Enter Key)
+        document.addEventListener('keydown', function(e) {
+            if (e.target.classList.contains('live-search-input')) {
+                if (e.key === 'Enter') {
+                    e.preventDefault();
+                    clearTimeout(searchTimer);
+                    refreshTable(getCurrentUrlModifiers(e.target), e.target.id);
+                }
+            }
+        });
+
+        // 3. Event Listener untuk Timer Otomatis (Debounce saat mengetik lambat)
+        document.addEventListener('input', function(e) {
+            if (e.target.classList.contains('live-search-input')) {
+                clearTimeout(searchTimer);
+                searchTimer = setTimeout(() => {
+                    refreshTable(getCurrentUrlModifiers(e.target), e.target.id);
+                }, 600);
+            }
+        });
+
+        // 4. Listener untuk Dropdown Per Page
+        document.addEventListener('change', function(e) {
+            if (e.target.classList.contains('per-page-select')) {
+                refreshTable(getCurrentUrlModifiers(e.target));
+            }
+        });
+
+        // 5. Listener Pagination AJAX Tanpa Refresh
+        document.addEventListener('click', function(e) {
+            let anchor = e.target.closest('#sppg-table-container nav a');
+            if (anchor && anchor.getAttribute('href')) {
+                let url = new URL(anchor.getAttribute('href'));
+                
+                // Pastikan nilai per_page terbawa saat memencet next page
+                const activePerPage = document.getElementById('sppg-per-page');
+                if(activePerPage) url.searchParams.set('per_page', activePerPage.value);
+
+                if (url.toString().includes('page=') && !url.toString().startsWith('javascript')) {
+                    e.preventDefault();
+                    refreshTable(url.toString());
+                }
+            }
         });
     </script>
 </x-app-layout>
