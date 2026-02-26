@@ -92,56 +92,58 @@ class SppgUnitController extends Controller
      */
     public function update(Request $request, $id)
     {
-        $sppg = SppgUnit::findOrFail($id);
+        // Cari menggunakan ID Primary Key (id_sppg_unit)
+        $sppg = SppgUnit::where('id_sppg_unit', $id)->firstOrFail();
 
-        $validated = $request->validate([
+        $validator = \Validator::make($request->all(), [
             'code_sppg_unit'    => 'nullable|string|unique:sppg_units,code_sppg_unit,' . $id . ',id_sppg_unit',
             'name'              => 'required|string|max:255',
             'status'            => 'required|in:Operasional,Belum Operasional,Tutup Sementara,Tutup Permanen',
-            'operational_date'  => 'nullable|date',
-            'leader_id'         => 'nullable',
-            'photo'             => 'nullable|image|mimes:jpeg,png,jpg|max:2048',
-            'province_name'     => 'nullable|string',
-            'regency_name'      => 'nullable|string',
-            'district_name'     => 'nullable|string',
-            'village_name'      => 'nullable|string',
-            'address'           => 'nullable|string',
-            'latitude_gps'      => 'nullable|numeric',
-            'longitude_gps'     => 'nullable|numeric',
+            'province_name'     => 'required|string',
+            'regency_name'      => 'required|string',
+            'district_name'     => 'required|string',
+            'village_name'      => 'required|string',
+            'latitude_gps'      => 'required',
+            'longitude_gps'     => 'required',
+            'photo'             => 'nullable|image|max:2048',
         ]);
 
-        // Update basic data
-        $sppg->fill($request->except(['photo', 'province_name', 'regency_name', 'district_name', 'village_name']));
-
-        // Update wilayah jika ada input baru
-        if ($request->province_name) $sppg->province = $request->province_name;
-        if ($request->regency_name)  $sppg->regency  = $request->regency_name;
-        if ($request->district_name) $sppg->district = $request->district_name;
-        if ($request->village_name)  $sppg->village  = $request->village_name;
-
-        // Handle Photo Update
-        if ($request->hasFile('photo')) {
-            if ($sppg->photo) {
-                Storage::disk('public')->delete($sppg->photo);
-            }
-            $folderHash = md5($sppg->id_sppg_unit . config('app.key'));
-            $path = $request->file('photo')->store("sppgunits/{$folderHash}/photos", 'public');
-            $sppg->photo = $path;
+        if ($validator->fails()) {
+            return response()->json(['errors' => $validator->errors()], 422);
         }
 
-        $sppg->save();
+        try {
+            // Mapping manual field wilayah ke kolom database
+            $sppg->name = $request->name;
+            $sppg->status = $request->status;
+            $sppg->province = $request->province_name;
+            $sppg->regency = $request->regency_name;
+            $sppg->district = $request->district_name;
+            $sppg->village = $request->village_name;
+            $sppg->address = $request->address;
+            $sppg->latitude_gps = $request->latitude_gps;
+            $sppg->longitude_gps = $request->longitude_gps;
+            $sppg->leader_id = $request->leader_id;
 
-        // Update Social Media
-        $sppg->socialMedia()->updateOrCreate(
-            ['socialable_id' => $sppg->id_sppg_unit, 'socialable_type' => SppgUnit::class],
-            [
-                'facebook_url'  => $request->facebook_url,
-                'instagram_url' => $request->instagram_url,
-                'tiktok_url'    => $request->tiktok_url,
-            ]
-        );
+            if ($request->hasFile('photo')) {
+                // Hapus foto lama jika ada
+                if ($sppg->photo) {
+                    Storage::disk('public')->delete($sppg->photo);
+                }
+                $folderHash = md5($sppg->id_sppg_unit . config('app.key'));
+                $sppg->photo = $request->file('photo')->store("sppgunits/{$folderHash}/photos", 'public');
+            }
 
-        return redirect()->route('admin.sppg.index')->with('success', 'Data SPPG diperbarui.');
+            $sppg->save();
+
+            return response()->json([
+                'success' => true,
+                'message' => 'Data berhasil diperbarui',
+                'redirect' => route('admin.sppg.index')
+            ]);
+        } catch (\Exception $e) {
+            return response()->json(['errors' => ['system' => [$e->getMessage()]]], 500);
+        }
     }
 
     public function destroy($id)
