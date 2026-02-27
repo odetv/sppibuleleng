@@ -120,8 +120,8 @@
                                 </svg>
                             </span>
                             <input type="text"
-                                id="search-pending"
-                                data-table="pending"
+                                id="sppg-search"
+                                data-table="sppg"
                                 class="live-search-input text-xs border-slate-200 rounded-lg pl-9 pr-3 py-2.5 w-full focus:ring-2 focus:ring-indigo-500 outline-none transition-all bg-white shadow-sm"
                                 placeholder="Cari ID, kode, atau nama..." value="{{ request('search') }}"
                                 autocomplete="off">
@@ -206,8 +206,18 @@
                             </tr>
                             @empty
                             <tr>
-                                <td colspan="4" class="px-6 py-12 text-center text-slate-400 italic font-medium">
-                                    Belum ada data unit SPPG terdaftar.
+                                <td colspan="4" class="px-6 py-12 text-center">
+                                    <div class="flex flex-col items-center justify-center">
+                                        <div class="p-3 bg-slate-50 rounded-full mb-3">
+                                            <svg class="w-8 h-8 text-slate-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
+                    </svg>
+                                        </div>
+                                        <p class="text-[11px] font-bold uppercase tracking-[0.2em] text-slate-400">
+                                            Belum ada data SPPG terdaftar
+                                        </p>
+                                        <p class="text-[10px] text-slate-400 mt-1 italic">Coba gunakan kata kunci yang berbeda</p>
+                                    </div>
                                 </td>
                             </tr>
                             @endforelse
