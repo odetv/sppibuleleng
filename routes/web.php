@@ -114,6 +114,10 @@ Route::middleware(['auth', 'role:administrator', 'profile.completed'])->prefix('
         Route::get('/{id}/edit', [App\Http\Controllers\Admin\SppgUnitController::class, 'edit'])->name('edit');
         Route::patch('/{id}/update', [App\Http\Controllers\Admin\SppgUnitController::class, 'update'])->name('update');
         Route::delete('/{id}', [App\Http\Controllers\Admin\SppgUnitController::class, 'destroy'])->name('destroy');
+        Route::post('/export', [App\Http\Controllers\Admin\SppgUnitController::class, 'exportExcel'])->name('export');
+        Route::get('/template', [App\Http\Controllers\Admin\SppgUnitController::class, 'downloadTemplate'])->name('template');
+        Route::get('/check-availability', [App\Http\Controllers\Admin\SppgUnitController::class, 'checkAvailability'])->name('check-availability');
+        Route::post('/import', [App\Http\Controllers\Admin\SppgUnitController::class, 'importSppg'])->name('import');
 
         // Route lainnya tetap dummy atau sesuaikan nanti
         Route::get('/pm', function () {

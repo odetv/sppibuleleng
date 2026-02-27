@@ -186,4 +186,146 @@ class SppgUnitController extends Controller
 
         return redirect()->route('admin.sppg.index')->with('success', 'Unit berhasil dihapus.');
     }
+    public function exportExcel(Request $request)
+    {
+        // Validasi: Harus pilih kolom
+        $request->validate([
+            'columns' => 'required|array|min:1'
+        ], [
+            'columns.required' => 'Pilih minimal satu kolom data yang ingin diekspor!'
+        ]);
+
+        $selectedColumns = $request->input('columns');
+        $fileName = 'DATA_SPPG_' . now()->format('d_M_Y_H_i') . '.xlsx';
+
+        // Eksekusi menggunakan class export
+        return \Maatwebsite\Excel\Facades\Excel::download(
+            new \App\Exports\SppgExport($selectedColumns),
+            $fileName
+        );
+    }
+
+    public function downloadTemplate()
+    {
+        return \Maatwebsite\Excel\Facades\Excel::download(new \App\Exports\SppgTemplateExport, 'Template Import SPPG.xlsx');
+    }
+
+    public function checkAvailability(Request $request)
+    {
+        $id_sppg = $request->query('id_sppg');
+        $code = $request->query('code');
+
+        return response()->json([
+            'id_duplicate' => $id_sppg ? \App\Models\SppgUnit::where('id_sppg_unit', $id_sppg)->exists() : false,
+            'code_duplicate' => $code ? \App\Models\SppgUnit::where('code_sppg_unit', $code)->exists() : false,
+        ]);
+    }
+
+    public function importSppg(Request $request)
+    {
+        $data = json_decode($request->json_data, true);
+        $mode = $request->import_mode;
+
+        if (!$data) return back()->with('error', 'Data tidak valid.');
+
+        $successCount = 0;
+        $errorDetails = [];
+        
+        $processedIds = [];
+        $processedCodes = [];
+
+        try {
+            if ($mode === 'replace') {
+                \Illuminate\Support\Facades\DB::statement('SET FOREIGN_KEY_CHECKS=0;');
+                // SPPG softdeletes are optional or manual, assuming hard delete here for replacement
+                \Illuminate\Support\Facades\DB::table('sppg_units')->delete();
+                \Illuminate\Support\Facades\DB::statement('SET FOREIGN_KEY_CHECKS=1;');
+            }
+
+            foreach ($data as $row) {
+                $id_sppg = trim($row['ID SPPG'] ?? '');
+                $name = trim($row['NAMA SPPG'] ?? '');
+                $code_sppg = trim($row['KODE SPPG'] ?? '');
+
+                if (empty($id_sppg) || empty($name)) {
+                    $errorDetails[] = "Baris ID $id_sppg terlewati: ID SPPG dan NAMA SPPG wajib diisi.";
+                    continue;
+                }
+                
+                // Cek duplikat dalam file excel itu sendiri
+                if (in_array($id_sppg, $processedIds)) {
+                    $errorDetails[] = "Baris ID $id_sppg terlewati: Terdapat duplikasi ID SPPG dalam file Excel.";
+                    continue;
+                }
+                if (!empty($code_sppg) && in_array($code_sppg, $processedCodes)) {
+                    $errorDetails[] = "Baris ID $id_sppg terlewati: Terdapat duplikasi KODE SPPG '$code_sppg' dalam file Excel.";
+                    continue;
+                }
+
+                $processedIds[] = $id_sppg;
+                if (!empty($code_sppg)) $processedCodes[] = $code_sppg;
+
+                // Cek duplikat di database jika mode Tambah Data
+                if ($mode === 'append') {
+                    $existsId = \App\Models\SppgUnit::where('id_sppg_unit', $id_sppg)->exists();
+                    if ($existsId) {
+                        $errorDetails[] = "Baris ID $id_sppg terlewati: ID SPPG sudah terdaftar di sistem.";
+                        continue;
+                    }
+
+                    if (!empty($code_sppg)) {
+                        $existsCode = \App\Models\SppgUnit::where('code_sppg_unit', $code_sppg)->exists();
+                        if ($existsCode) {
+                            $errorDetails[] = "Baris ID $id_sppg terlewati: KODE SPPG '$code_sppg' sudah terdaftar di sistem.";
+                            continue;
+                        }
+                    }
+                }
+
+                try {
+                    \Illuminate\Support\Facades\DB::transaction(function () use ($row, $id_sppg, $name, $code_sppg, &$successCount) {
+                        
+                        // Parse status, default to Belum Operasional if match fails
+                        $statusRaw = strtolower(trim($row['STATUS (Operasional/Belum Operasional/Tutup Sementara/Tutup Permanen)'] ?? ''));
+                        $status = match($statusRaw) {
+                            'operasional' => 'Operasional',
+                            'belum operasional' => 'Belum Operasional',
+                            'tutup sementara' => 'Tutup Sementara',
+                            'tutup permanen' => 'Tutup Permanen',
+                            default => 'Belum Operasional'
+                        };
+
+                        $sppgData = [
+                            'id_sppg_unit' => $id_sppg,
+                            'code_sppg_unit' => !empty($code_sppg) ? $code_sppg : null,
+                            'name' => $name,
+                            'status' => $status,
+                            'operational_date' => !empty(trim($row['TANGGAL OPERASIONAL (YYYY-MM-DD)'] ?? '')) ? date('Y-m-d', strtotime(trim($row['TANGGAL OPERASIONAL (YYYY-MM-DD)']))) : null,
+                            'province' => trim($row['PROVINSI'] ?? ''),
+                            'regency' => trim($row['KABUPATEN'] ?? ''),
+                            'district' => trim($row['KECAMATAN'] ?? ''),
+                            'village' => trim($row['DESA/KELURAHAN'] ?? ''),
+                            'address' => trim($row['ALAMAT LENGKAP'] ?? null),
+                            'latitude_gps' => trim($row['LATITUDE GPS'] ?? ''),
+                            'longitude_gps' => trim($row['LONGITUDE GPS'] ?? ''),
+                        ];
+
+                        \App\Models\SppgUnit::create($sppgData);
+
+                        $successCount++;
+                    });
+                } catch (\Exception $e) {
+                    $errorDetails[] = "Baris ID $id_sppg: " . $e->getMessage();
+                }
+            }
+
+            $response = redirect()->route('admin.sppg.index');
+            return empty($errorDetails)
+                ? $response->with('success', "Berhasil mengimpor $successCount Unit SPPG.")
+                : $response->with('success', "Berhasil mengimpor $successCount Unit SPPG.")->withErrors($errorDetails);
+        } catch (\Exception $e) {
+            \Illuminate\Support\Facades\DB::statement('SET FOREIGN_KEY_CHECKS=1;');
+            return back()->with('error', 'Gagal sistem: ' . $e->getMessage());
+        }
+    }
 }
