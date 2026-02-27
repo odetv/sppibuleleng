@@ -16,7 +16,7 @@
             </div>
 
             {{-- Form dengan autocomplete off dan id unik agar tidak bentrok --}}
-            <form action="{{ route('admin.users.store') }}" method="POST" autocomplete="off" id="formAddUser">
+            <form action="{{ route('admin.manage-user.store') }}" method="POST" autocomplete="off" id="formAddUser">
                 @csrf
                 <div class="p-8 space-y-5">
                     {{-- Email --}}

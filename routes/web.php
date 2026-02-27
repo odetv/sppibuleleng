@@ -84,7 +84,7 @@ Route::middleware(['auth', 'role:administrator', 'profile.completed'])->prefix('
         ->name('maintenance.toggle');
         
     // Manajemen Pengguna
-    Route::prefix('manage-user')->name('users.')->group(function () {
+    Route::prefix('manage-user')->name('manage-user.')->group(function () {
         Route::get('/', [UserController::class, 'index'])->name('index');
         Route::post('/{id}/approve', [UserController::class, 'approve'])->name('approve');
         Route::post('/approve-all', [UserController::class, 'approveAll'])->name('approve-all');
@@ -109,7 +109,7 @@ Route::middleware(['auth', 'role:administrator', 'profile.completed'])->prefix('
     Route::patch('/positions/{id}', [PositionController::class, 'update'])->name('positions.update');
 
     // Manajemen SPPG (Level Admin)
-    Route::prefix('manage-sppg')->name('sppg.')->group(function () {
+    Route::prefix('manage-sppg')->name('manage-sppg.')->group(function () {
         // Route CRUD Utama
         Route::get('/', [SppgUnitController::class, 'index'])->name('index');
         Route::get('/create', [SppgUnitController::class, 'create'])->name('create');

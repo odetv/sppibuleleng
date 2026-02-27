@@ -36,7 +36,7 @@
 
             {{-- 2. STATS SECTION --}}
             {{-- 2. KARTU STATISTIK --}}
-            @include('admin.users.partials.statistics-cards')
+            @include('admin.manage-user.partials.statistics-cards')
             {{-- CONTAINER TABEL AJAX (Memuat ke-3 tabel) --}}
             <div id="user-table-container" class="space-y-6">
 
@@ -131,7 +131,7 @@
                                     @endif
                                 </td>
                                 <td class="px-6 py-4">
-                                    <form action="{{ route('admin.users.approve', $user->id_user) }}" method="POST" class="flex justify-end items-center gap-2">
+                                    <form action="{{ route('admin.manage-user.approve', $user->id_user) }}" method="POST" class="flex justify-end items-center gap-2">
                                         @csrf
 
                                         {{-- 1. PILIH PENUGASAN --}}
@@ -541,7 +541,7 @@
                                     </span>
                                 </td>
                                 <td class="px-6 py-4 text-center flex justify-center items-center gap-2">
-                                    <form action="{{ route('admin.users.restore', $tu->id_user) }}" method="POST">
+                                    <form action="{{ route('admin.manage-user.restore', $tu->id_user) }}" method="POST">
                                         @csrf
                                         <button type="submit" class="p-2 text-indigo-600 hover:bg-indigo-50 cursor-pointer rounded-lg" title="Pulihkan">
                                             <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
@@ -611,14 +611,14 @@
     </div>
 
     {{-- MODALS --}}
-    @include('admin.users.partials.modal-export')
-    @include('admin.users.partials.modal-import')
-    @include('admin.users.partials.modal-confirm-replace')
-    @include('admin.users.partials.modal-add-user')
-    @include('admin.users.partials.modal-edit')
-    @include('admin.users.partials.modal-delete')
-    @include('admin.users.partials.modal-approve-all')
-    @include('admin.users.partials.modal-cropper')
+    @include('admin.manage-user.partials.modal-export')
+    @include('admin.manage-user.partials.modal-import')
+    @include('admin.manage-user.partials.modal-confirm-replace')
+    @include('admin.manage-user.partials.modal-add-user')
+    @include('admin.manage-user.partials.modal-edit')
+    @include('admin.manage-user.partials.modal-delete')
+    @include('admin.manage-user.partials.modal-approve-all')
+    @include('admin.manage-user.partials.modal-cropper')
     <script src="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.13/cropper.min.js"></script>
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 

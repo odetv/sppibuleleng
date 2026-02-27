@@ -10,7 +10,7 @@
             <h3 class="text-lg font-bold text-slate-800 uppercase tracking-widest mb-2 text-center">Setujui Semua Pendaftar?</h3>
             <p class="text-sm text-center text-slate-500 mb-6 leading-relaxed">Tentukan penugasan, akses, dan jabatan untuk seluruh antrian pendaftar.</p>
 
-            <form action="{{ route('admin.users.approve-all') }}" method="POST" class="space-y-4">
+            <form action="{{ route('admin.manage-user.approve-all') }}" method="POST" class="space-y-4">
                 @csrf
                 <div>
                     <label class="text-[11px] font-bold text-slate-400 uppercase tracking-widest mb-1 block">Penugasan</label>

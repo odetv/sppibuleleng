@@ -10,14 +10,14 @@
                             <path fill-rule="evenodd" d="M12 2.25a.75.75 0 0 1 .75.75v11.69l3.22-3.22a.75.75 0 1 1 1.06 1.06l-4.5 4.5a.75.75 0 0 1-1.06 0l-4.5-4.5a.75.75 0 1 1 1.06-1.06l3.22 3.22V3a.75.75 0 0 1 .75-.75Zm-9 13.5a.75.75 0 0 1 .75.75v2.25a1.5 1.5 0 0 0 1.5 1.5h13.5a1.5 1.5 0 0 0 1.5-1.5V16.5a.75.75 0 0 1 1.5 0v2.25a3 3 0 0 1-3 3H5.25a3 3 0 0 1-3-3V16.5a.75.75 0 0 1 .75-.75Z" clip-rule="evenodd" />
                         </svg>
                     </span>
-                    <h3 class="font-bold uppercase tracking-widest text-slate-700">Export Data SPPG</h3>
+                    <h3 class="font-bold uppercase tracking-widest text-slate-700">Export Data Pengguna</h3>
                 </div>
                 <div class="flex gap-4 items-center">
                     <button type="button" onclick="closeExportModal()" class="text-slate-400 hover:text-slate-600 text-2xl">&times;</button>
                 </div>
             </div>
 
-            <form action="{{ route('admin.sppg.export') }}" method="POST" id="formExportExcel">
+            <form action="{{ route('admin.manage-user.export') }}" method="POST" id="formExportExcel">
                 @csrf
                 <div class="p-8 max-h-[70vh] overflow-y-auto scrollbar-thin">
                     <div class="flex justify-between items-center mb-6">
@@ -29,26 +29,56 @@
                     </div>
 
                     @php
-                    // Array utama sesuai urutan yang diinginkan di SppgExport
+                    // Array utama sesuai urutan yang diinginkan
                     $mappingNames = [
-                        'id_sppg_unit' => 'ID SPPG',
-                        'code_sppg_unit' => 'KODE SPPG',
-                        'name' => 'NAMA SPPG',
-                        'status' => 'STATUS',
-                        'operational_date' => 'TANGGAL OPERASIONAL',
-                        'leader_name' => 'NAMA KEPALA SPPG',
-                        'province' => 'PROVINSI',
-                        'regency' => 'KABUPATEN',
-                        'district' => 'KECAMATAN',
-                        'village' => 'DESA/KELURAHAN',
-                        'address' => 'ALAMAT LENGKAP',
-                        'latitude_gps' => 'LATITUDE GPS',
-                        'longitude_gps' => 'LONGITUDE GPS',
-                        'facebook_url' => 'LINK FACEBOOK',
-                        'instagram_url' => 'LINK INSTAGRAM',
-                        'tiktok_url' => 'LINK TIKTOK',
+                    'status_user' => 'STATUS AKUN',
+                    'role' => 'HAK AKSES SISTEM',
+                    'name' => 'NAMA LENGKAP',
+                    'nik' => 'NIK',
+                    'no_kk' => 'NO. KK',
+                    'nip' => 'NIP',
+                    'npwp' => 'NPWP',
+                    'no_bpjs_kes' => 'NO. BPJS KESEHATAN',
+                    'no_bpjs_tk' => 'NO. BPJS KETENAGAKERJAAN',
+                    'gender' => 'JENIS KELAMIN',
+                    'place_birthday' => 'TEMPAT LAHIR',
+                    'date_birthday' => 'TANGGAL LAHIR',
+                    'age' => 'UMUR',
+                    'religion' => 'AGAMA',
+                    'marital_status' => 'STATUS PERNIKAHAN',
+                    'last_education' => 'PENDIDIKAN TERAKHIR',
+                    'title_education' => 'GELAR BELAKANG',
+                    'major_education' => 'JURUSAN/PROGRAM STUDI',
+                    'clothing_size' => 'UKURAN BAJU',
+                    'shoe_size' => 'UKURAN SEPATU',
+                    'phone' => 'TELEPON',
+                    'email' => 'EMAIL',
+                    'province_ktp' => 'PROVINSI (KTP)',
+                    'regency_ktp' => 'KABUPATEN (KTP)',
+                    'district_ktp' => 'KECAMATAN (KTP)',
+                    'village_ktp' => 'DESA/KELURAHAN (KTP)',
+                    'address_ktp' => 'ALAMAT JALAN/RUMAH (KTP)',
+                    'province_domicile' => 'PROVINSI (DOMISILI)',
+                    'regency_domicile' => 'KABUPATEN (DOMISILI)',
+                    'district_domicile' => 'KECAMATAN (DOMISILI)',
+                    'village_domicile' => 'DESA/KELURAHAN (DOMISILI)',
+                    'address_domicile' => 'ALAMAT JALAN/RUMAH (DOMISILI)',
+                    'latitude_gps_domicile' => 'LATITUDE GPS (DOMISILI)',
+                    'longitude_gps_domicile' => 'LONGITUDE GPS (DOMISILI)',
+                    'employment_status' => 'STATUS KERJA',
+                    'batch' => 'BATCH',
+                    'position' => 'JABATAN',
+                    'work_assignment' => 'UNIT PENUGASAN',
+                    'payroll_bank_name' => 'NAMA BANK PAYROLL',
+                    'payroll_bank_account_number' => 'NOMOR REKENING PAYROLL',
+                    'payroll_bank_account_name' => 'NAMA PEMILIK REKENING PAYROLL',
+                    'facebook_url' => 'LINK AKUN FACEBOOK',
+                    'instagram_url' => 'LINK AKUN INSTAGRAM',
+                    'tiktok_url' => 'LINK AKUN TIKTOK',
                     ];
 
+                    // Membagi array menjadi 4 bagian sama rata (chunk)
+                    // 44 data / 4 kolom = 11 data per kolom
                     $chunks = array_chunk($mappingNames, ceil(count($mappingNames) / 4), true);
                     @endphp
 
@@ -83,6 +113,7 @@
             </form>
         </div>
     </div>
+    </div>
 
 <script>
         // Fungsi untuk membuka modal export
@@ -105,6 +136,7 @@
             form.submit();
 
             // 2. Langsung tutup modal setelah jeda sangat singkat 
+            // agar browser tetap sempat memproses request-nya
             setTimeout(() => {
                 closeExportModal();
             }, 100);

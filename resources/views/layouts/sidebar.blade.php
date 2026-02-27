@@ -5,7 +5,7 @@
 <aside
     id="sidebar"
     x-data="{ 
-        selected: '{{ request()->routeIs('profile.*') ? 'profil' : (request()->routeIs('admin.users.*', 'admin.roles.*', 'admin.positions.*') ? 'admin_user' : (request()->routeIs('sppg.*') && !request()->routeIs('admin.sppg.*') ? 'sppg' : '')) }}' 
+        selected: '{{ request()->routeIs('profile.*') ? 'profil' : (request()->routeIs('admin.manage-user.*', 'admin.roles.*', 'admin.positions.*') ? 'admin_user' : (request()->routeIs('sppg.*') && !request()->routeIs('admin.manage-sppg.*') ? 'sppg' : '')) }}' 
     }"
     :class="[
         (sidebarExpanded || isHovered || mobileSidebar) ? 'w-72' : 'w-20',
@@ -58,7 +58,7 @@
                     <li>
                         <button @click="selected = (selected === 'admin_user' ? '' : 'admin_user')"
                             :class="(sidebarExpanded || isHovered || mobileSidebar) ? 'px-4' : 'justify-center'"
-                            class="w-full group relative flex items-center gap-3 rounded-lg py-2.5 text-[14px] font-medium transition-all duration-200 {{ request()->routeIs('admin.users.*', 'admin.roles.*', 'admin.positions.*') ? 'bg-indigo-50/50 text-indigo-600' : 'text-slate-600 hover:bg-indigo-50 hover:text-indigo-600' }}">
+                            class="w-full group relative flex items-center gap-3 rounded-lg py-2.5 text-[14px] font-medium transition-all duration-200 {{ request()->routeIs('admin.manage-user.*', 'admin.roles.*', 'admin.positions.*') ? 'bg-indigo-50/50 text-indigo-600' : 'text-slate-600 hover:bg-indigo-50 hover:text-indigo-600' }}">
                             <div class="shrink-0 flex items-center justify-center">
                                 <svg class="w-5.5 h-5.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z" />
@@ -70,7 +70,7 @@
                             </svg>
                         </button>
                         <ul x-show="selected === 'admin_user' && (sidebarExpanded || isHovered || mobileSidebar)" x-transition class="ml-9 mt-1 flex flex-col gap-1 border-l border-slate-100">
-                            <li><a href="{{ route('admin.users.index') }}" class="block py-2 px-3 text-[13px] transition-colors {{ request()->routeIs('admin.users.index') ? 'text-indigo-600 font-bold' : 'text-slate-500 hover:text-indigo-600' }}">Daftar Pengguna</a></li>
+                            <li><a href="{{ route('admin.manage-user.index') }}" class="block py-2 px-3 text-[13px] transition-colors {{ request()->routeIs('admin.manage-user.index') ? 'text-indigo-600 font-bold' : 'text-slate-500 hover:text-indigo-600' }}">Daftar Pengguna</a></li>
                             <li><a href="{{ route('admin.roles.index') }}" class="block py-2 px-3 text-[13px] transition-colors {{ request()->routeIs('admin.roles.index') ? 'text-indigo-600 font-bold' : 'text-slate-500 hover:text-indigo-600' }}">Daftar Hak Akses</a></li>
                             <li><a href="{{ route('admin.positions.index') }}" class="block py-2 px-3 text-[13px] transition-colors {{ request()->routeIs('admin.positions.index') ? 'text-indigo-600 font-bold' : 'text-slate-500 hover:text-indigo-600' }}">Daftar Jabatan</a></li>
                         </ul>
@@ -78,10 +78,10 @@
 
                     {{-- Manajemen SPPG (Single Link) --}}
                     <li>
-                        <a href="{{ route('admin.sppg.index') }}"
+                        <a href="{{ route('admin.manage-sppg.index') }}"
                             @click="selected = 'admin_sppg'"
                             :class="(sidebarExpanded || isHovered || mobileSidebar) ? 'px-4' : 'justify-center'"
-                            class="group relative flex items-center gap-3 rounded-lg py-2.5 text-[14px] font-medium transition-all duration-200 {{ request()->routeIs('admin.sppg.*') ? 'bg-indigo-50 text-indigo-600 font-bold shadow-sm' : 'text-slate-600 hover:bg-indigo-50 hover:text-indigo-600' }}">
+                            class="group relative flex items-center gap-3 rounded-lg py-2.5 text-[14px] font-medium transition-all duration-200 {{ request()->routeIs('admin.manage-sppg.*') ? 'bg-indigo-50 text-indigo-600 font-bold shadow-sm' : 'text-slate-600 hover:bg-indigo-50 hover:text-indigo-600' }}">
                             <div class="shrink-0 flex items-center justify-center">
                                 <svg class="w-5.5 h-5.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
@@ -124,7 +124,7 @@
                     <li>
                         <button @click="selected = (selected === 'sppg' ? '' : 'sppg')"
                             :class="(sidebarExpanded || isHovered || mobileSidebar) ? 'px-4' : 'justify-center'"
-                            class="w-full group relative flex items-center gap-3 rounded-lg py-2.5 text-[14px] font-medium transition-all duration-200 {{ request()->routeIs('sppg.*') && !request()->routeIs('sppg.yayasan') && !request()->routeIs('admin.sppg.*') ? 'bg-indigo-50/50 text-indigo-600' : 'text-slate-600 hover:bg-indigo-50 hover:text-indigo-600' }}">
+                            class="w-full group relative flex items-center gap-3 rounded-lg py-2.5 text-[14px] font-medium transition-all duration-200 {{ request()->routeIs('sppg.*') && !request()->routeIs('sppg.yayasan') && !request()->routeIs('admin.manage-sppg.*') ? 'bg-indigo-50/50 text-indigo-600' : 'text-slate-600 hover:bg-indigo-50 hover:text-indigo-600' }}">
                             <div class="shrink-0 flex items-center justify-center">
                                 <svg class="w-5.5 h-5.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />

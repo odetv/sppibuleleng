@@ -45,7 +45,7 @@
             const form = document.getElementById('deleteForm');
             const title = document.getElementById('delete_modal_title');
             const info = document.getElementById('delete_modal_info');
-            form.action = `{{ route('admin.users.force-delete-all') }}`;
+            form.action = `{{ route('admin.manage-user.force-delete-all') }}`;
             title.innerText = "Kosongkan Sampah?";
             info.innerText = "Semua data di tempat sampah akan dihapus permanen.";
             modal.classList.remove('hidden');

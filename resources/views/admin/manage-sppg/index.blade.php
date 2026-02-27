@@ -82,7 +82,7 @@
             </div>
 
             {{-- 2. KARTU STATISTIK --}}
-            @include('admin.sppg.partials.statistics-cards')
+            @include('admin.manage-sppg.partials.statistics-cards')
 
             {{-- 3. TABLE SECTION --}}
             <div class="bg-white rounded-xl border border-slate-200 overflow-hidden shadow-sm">
@@ -258,10 +258,10 @@
         </div>
 
         {{-- MODALS --}}
-        @include('admin.sppg.partials.modal-create')
-        @include('admin.sppg.partials.modal-edit')
-        @include('admin.sppg.partials.modal-cropper')
-        @include('admin.sppg.partials.modal-delete')
+        @include('admin.manage-sppg.partials.modal-create')
+        @include('admin.manage-sppg.partials.modal-edit')
+        @include('admin.manage-sppg.partials.modal-cropper')
+        @include('admin.manage-sppg.partials.modal-delete')
     </div>
 
     {{-- SCRIPTS UTAMA --}}
@@ -410,6 +410,6 @@
             }
         });
     </script>
-    @include('admin.sppg.partials.modal-import')
-    @include('admin.sppg.partials.modal-export')
+    @include('admin.manage-sppg.partials.modal-import')
+    @include('admin.manage-sppg.partials.modal-export')
 </x-app-layout>

@@ -36,7 +36,7 @@ class SppgUnitController extends Controller
         // Ambil data person untuk dropdown leader
         $leaders = Person::orderBy('name', 'asc')->get();
 
-        return view('admin.sppg.index', compact('units', 'leaders'));
+        return view('admin.manage-sppg.index', compact('units', 'leaders'));
     }
 
     /**
@@ -96,10 +96,10 @@ class SppgUnitController extends Controller
             ]);
 
             if ($request->ajax()) {
-                return response()->json(['success' => true, 'redirect' => route('admin.sppg.index')]);
+                return response()->json(['success' => true, 'redirect' => route('admin.manage-sppg.index')]);
             }
 
-            return redirect()->route('admin.sppg.index')->with('success', 'Unit Berhasil Ditambah');
+            return redirect()->route('admin.manage-sppg.index')->with('success', 'Unit Berhasil Ditambah');
         } catch (\Exception $e) {
             return response()->json(['errors' => ['system' => [$e->getMessage()]]], 500);
         }
@@ -165,7 +165,7 @@ class SppgUnitController extends Controller
             return response()->json([
                 'success' => true,
                 'message' => 'Data berhasil diperbarui',
-                'redirect' => route('admin.sppg.index')
+                'redirect' => route('admin.manage-sppg.index')
             ]);
         } catch (\Exception $e) {
             return response()->json(['errors' => ['system' => [$e->getMessage()]]], 500);
@@ -184,7 +184,7 @@ class SppgUnitController extends Controller
         $sppg->socialMedia()->delete();
         $sppg->delete();
 
-        return redirect()->route('admin.sppg.index')->with('success', 'Unit berhasil dihapus.');
+        return redirect()->route('admin.manage-sppg.index')->with('success', 'Unit berhasil dihapus.');
     }
     public function exportExcel(Request $request)
     {
@@ -319,7 +319,7 @@ class SppgUnitController extends Controller
                 }
             }
 
-            $response = redirect()->route('admin.sppg.index');
+            $response = redirect()->route('admin.manage-sppg.index');
             return empty($errorDetails)
                 ? $response->with('success', "Berhasil mengimpor $successCount Unit SPPG.")
                 : $response->with('success', "Berhasil mengimpor $successCount Unit SPPG.")->withErrors($errorDetails);

@@ -82,10 +82,10 @@ class UserController extends Controller
         $workAssignments = WorkAssignment::with(['sppgUnit', 'decree'])->get();
 
         if ($request->ajax()) {
-            return view('admin.users.index', compact('pendingUsers', 'allUsersDisplay', 'allUsers', 'trashedUsers', 'stats', 'roles', 'positions', 'workAssignments'))->render();
+            return view('admin.manage-user.index', compact('pendingUsers', 'allUsersDisplay', 'allUsers', 'trashedUsers', 'stats', 'roles', 'positions', 'workAssignments'))->render();
         }
 
-        return view('admin.users.index', compact('pendingUsers', 'allUsersDisplay', 'allUsers', 'trashedUsers', 'stats', 'roles', 'positions', 'workAssignments'));
+        return view('admin.manage-user.index', compact('pendingUsers', 'allUsersDisplay', 'allUsers', 'trashedUsers', 'stats', 'roles', 'positions', 'workAssignments'));
     }
 
     public function checkAvailability(Request $request)
@@ -222,7 +222,7 @@ class UserController extends Controller
                 }
             }
 
-            $response = redirect()->route('admin.users.index');
+            $response = redirect()->route('admin.manage-user.index');
             return empty($errorDetails)
                 ? $response->with('success', "Berhasil mengimpor $successCount pengguna.")
                 : $response->with('success', "Berhasil mengimpor $successCount pengguna.")->withErrors($errorDetails);

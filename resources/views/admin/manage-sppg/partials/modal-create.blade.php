@@ -46,7 +46,7 @@
             <button type="button" @click="showCreateModal = false" class="text-slate-400 hover:text-slate-600 text-2xl cursor-pointer">&times;</button>
         </div>
 
-        <form action="{{ route('admin.sppg.store') }}" method="POST" enctype="multipart/form-data" id="createUnitForm">
+        <form action="{{ route('admin.manage-sppg.store') }}" method="POST" enctype="multipart/form-data" id="createUnitForm">
             @csrf
 
             {{-- Hidden Inputs Wilayah --}}
@@ -314,7 +314,7 @@
             const result = await response.json();
 
             if (response.ok) {
-                window.location.href = result.redirect || "{{ route('admin.sppg.index') }}";
+                window.location.href = result.redirect || "{{ route('admin.manage-sppg.index') }}";
             } else {
                 btnSubmit.disabled = false;
                 btnSubmit.innerHTML = "Simpan Unit SPPG Baru";
