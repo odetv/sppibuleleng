@@ -761,25 +761,58 @@
             const initialPlaceholder = document.getElementById('initial-placeholder');
             let cropper;
 
+            let editOriginalImageData = null;
+            let lastEditCropData = null;
+
             photoInput.addEventListener('change', function(e) {
                 if (e.target.files.length > 0) {
                     const reader = new FileReader();
                     reader.onload = (event) => {
-                        imageToCrop.src = event.target.result;
-                        cropperModal.classList.remove('hidden');
-                        if (cropper) cropper.destroy();
-                        cropper = new Cropper(imageToCrop, {
-                            aspectRatio: 2 / 3,
-                            viewMode: 1,
-                            dragMode: 'move',
-                            autoCropArea: 1
-                        });
+                        editOriginalImageData = event.target.result;
+                        lastEditCropData = null; // Reset saat file baru
+                        openEditCropperModal(editOriginalImageData);
                     };
                     reader.readAsDataURL(e.target.files[0]);
                 }
             });
 
+            // Buka cropper saat gambar yang BARU DIPILIH (base64) diklik
+            if (previewImg) {
+                previewImg.addEventListener('click', () => {
+                     // Deteksi apakah sudah ada gambar source aslinya dari input file lokal
+                     if (editOriginalImageData) {
+                         openEditCropperModal(editOriginalImageData);
+                     }
+                });
+            }
+
+            function openEditCropperModal(src) {
+                imageToCrop.src = src;
+                cropperModal.classList.remove('hidden');
+                if (cropper) cropper.destroy();
+                
+                setTimeout(() => {
+                    cropper = new Cropper(imageToCrop, {
+                        aspectRatio: 2 / 3,
+                        viewMode: 1,
+                        dragMode: 'move',
+                        autoCropArea: 1,
+                        responsive: true,
+                        restore: false,
+                        ready() {
+                            if (lastEditCropData) {
+                                this.cropper.setData(lastEditCropData);
+                            } else {
+                                this.cropper.crop();
+                            }
+                        }
+                    });
+                }, 200);
+            }
+
             document.getElementById('apply-crop').addEventListener('click', () => {
+                if (!cropper) return;
+                lastEditCropData = cropper.getData(); // Simpan Data crop
                 const canvas = cropper.getCroppedCanvas({
                     width: 400,
                     height: 600
@@ -800,7 +833,6 @@
 
             document.getElementById('cancel-crop').addEventListener('click', () => {
                 cropperModal.classList.add('hidden');
-                photoInput.value = "";
             });
         });
     </script>
