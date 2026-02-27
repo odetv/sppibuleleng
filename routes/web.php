@@ -4,6 +4,7 @@ use App\Http\Controllers\Admin\PositionController;
 use App\Http\Controllers\Admin\RoleController;
 use App\Http\Controllers\Admin\SettingController;
 use App\Http\Controllers\Admin\UserController;
+use App\Http\Controllers\Admin\SppgUnitController;
 use App\Http\Controllers\PersonController;
 use App\Http\Controllers\ProfileController;
 use Illuminate\Support\Facades\Http;
@@ -83,19 +84,21 @@ Route::middleware(['auth', 'role:administrator', 'profile.completed'])->prefix('
         ->name('maintenance.toggle');
         
     // Manajemen Pengguna
-    Route::get('/users', [UserController::class, 'index'])->name('users.index');
-    Route::post('/users/{id}/approve', [UserController::class, 'approve'])->name('users.approve');
-    Route::post('/users/approve-all', [UserController::class, 'approveAll'])->name('users.approve-all');
-    Route::patch('/users/{id}/update', [UserController::class, 'update'])->name('users.update');
-    Route::delete('/users/{id}', [UserController::class, 'destroy'])->name('users.destroy');
-    Route::delete('/users/{id}/force', [UserController::class, 'forceDelete'])->name('users.force-delete');
-    Route::delete('/users/trash/clear', [UserController::class, 'forceDeleteAll'])->name('users.force-delete-all');
-    Route::post('/users/{id}/restore', [UserController::class, 'restore'])->name('users.restore');
-    Route::post('/users/store', [UserController::class, 'store'])->name('users.store');
-    Route::get('/users/check-availability', [UserController::class, 'checkAvailability']);
-    Route::post('/users/export', [UserController::class, 'exportExcel'])->name('users.export');
-    Route::get('/users/template', [UserController::class, 'downloadTemplate'])->name('users.template');
-    Route::post('/users/import', [UserController::class, 'importUsers'])->name('users.import');
+    Route::prefix('manage-user')->name('users.')->group(function () {
+        Route::get('/', [UserController::class, 'index'])->name('index');
+        Route::post('/{id}/approve', [UserController::class, 'approve'])->name('approve');
+        Route::post('/approve-all', [UserController::class, 'approveAll'])->name('approve-all');
+        Route::patch('/{id}/update', [UserController::class, 'update'])->name('update');
+        Route::delete('/{id}', [UserController::class, 'destroy'])->name('destroy');
+        Route::delete('/{id}/force', [UserController::class, 'forceDelete'])->name('force-delete');
+        Route::delete('/trash/clear', [UserController::class, 'forceDeleteAll'])->name('force-delete-all');
+        Route::post('/{id}/restore', [UserController::class, 'restore'])->name('restore');
+        Route::post('/store', [UserController::class, 'store'])->name('store');
+        Route::get('/check-availability', [UserController::class, 'checkAvailability']);
+        Route::post('/export', [UserController::class, 'exportExcel'])->name('export');
+        Route::get('/template', [UserController::class, 'exportTemplate'])->name('template');
+        Route::post('/import', [UserController::class, 'importUsers'])->name('import');
+    });
 
     // Manajemen Role
     Route::get('/roles', [RoleController::class, 'index'])->name('roles.index');
@@ -108,16 +111,16 @@ Route::middleware(['auth', 'role:administrator', 'profile.completed'])->prefix('
     // Manajemen SPPG (Level Admin)
     Route::prefix('manage-sppg')->name('sppg.')->group(function () {
         // Route CRUD Utama
-        Route::get('/list', [App\Http\Controllers\Admin\SppgUnitController::class, 'index'])->name('index');
-        Route::get('/create', [App\Http\Controllers\Admin\SppgUnitController::class, 'create'])->name('create');
-        Route::post('/store', [App\Http\Controllers\Admin\SppgUnitController::class, 'store'])->name('store');
-        Route::get('/{id}/edit', [App\Http\Controllers\Admin\SppgUnitController::class, 'edit'])->name('edit');
-        Route::patch('/{id}/update', [App\Http\Controllers\Admin\SppgUnitController::class, 'update'])->name('update');
-        Route::delete('/{id}', [App\Http\Controllers\Admin\SppgUnitController::class, 'destroy'])->name('destroy');
-        Route::post('/export', [App\Http\Controllers\Admin\SppgUnitController::class, 'exportExcel'])->name('export');
-        Route::get('/template', [App\Http\Controllers\Admin\SppgUnitController::class, 'downloadTemplate'])->name('template');
-        Route::get('/check-availability', [App\Http\Controllers\Admin\SppgUnitController::class, 'checkAvailability'])->name('check-availability');
-        Route::post('/import', [App\Http\Controllers\Admin\SppgUnitController::class, 'importSppg'])->name('import');
+        Route::get('/', [SppgUnitController::class, 'index'])->name('index');
+        Route::get('/create', [SppgUnitController::class, 'create'])->name('create');
+        Route::post('/store', [SppgUnitController::class, 'store'])->name('store');
+        Route::get('/{id}/edit', [SppgUnitController::class, 'edit'])->name('edit');
+        Route::patch('/{id}/update', [SppgUnitController::class, 'update'])->name('update');
+        Route::delete('/{id}', [SppgUnitController::class, 'destroy'])->name('destroy');
+        Route::post('/export', [SppgUnitController::class, 'exportExcel'])->name('export');
+        Route::get('/template', [SppgUnitController::class, 'exportTemplate'])->name('template');
+        Route::get('/check-availability', [SppgUnitController::class, 'checkAvailability'])->name('check-availability');
+        Route::post('/import', [SppgUnitController::class, 'importSppg'])->name('import');
 
         // Route lainnya tetap dummy atau sesuaikan nanti
         Route::get('/pm', function () {

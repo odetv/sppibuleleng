@@ -161,7 +161,7 @@ class UserController extends Controller
         );
     }
 
-    public function downloadTemplate()
+    public function exportTemplate()
     {
         return Excel::download(new UserTemplateExport, 'Template Import Akun Pengguna.xlsx');
     }

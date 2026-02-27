@@ -154,7 +154,7 @@
             if (value.length < 3) return;
 
             typingTimer = setTimeout(() => {
-                fetch(`/admin/users/check-availability?type=${type}&value=${value}`)
+                fetch(`/admin/manage-user/check-availability?type=${type}&value=${value}`)
                     .then(res => res.json())
                     .then(data => {
                         if (data.exists) {

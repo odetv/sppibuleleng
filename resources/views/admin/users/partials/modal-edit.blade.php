@@ -559,7 +559,7 @@
             };
 
             const methodField = document.getElementById('method_field');
-            form.action = isApprove ? `/admin/users/${user.id_user}/approve` : `/admin/users/${user.id_user}/update`;
+            form.action = isApprove ? `/admin/manage-user/${user.id_user}/approve` : `/admin/manage-user/${user.id_user}/update`;
             if (methodField) methodField.innerHTML = isApprove ? '' : '<input type="hidden" name="_method" value="PATCH">';
 
             // 1. Identitas Utama

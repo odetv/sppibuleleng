@@ -1,8 +1,7 @@
-    {{-- MODAL UPLOAD SPPG --}}
-    <div id="uploadModal" class="fixed inset-0 z-[100] hidden flex items-center justify-center p-4">
-        <div class="absolute inset-0 bg-slate-900/60 backdrop-blur-sm" onclick="closeUploadModal()"></div>
+    {{-- MODAL IMPORT SPPG --}}
+    <div id="importModal" class="fixed inset-0 z-[100] hidden flex items-center justify-center p-4">
+        <div class="absolute inset-0 bg-slate-900/60 backdrop-blur-sm" onclick="closeImportModal()"></div>
         <div class="relative bg-white rounded-xl shadow-xl border border-slate-200 w-full max-w-4xl overflow-hidden font-sans">
-
             <div class="p-6 border-b border-slate-100 bg-slate-50 flex justify-between items-center">
                 <div class="flex items-center gap-3">
                     <span class="p-1.5 bg-amber-50 text-amber-600 rounded-lg shadow-sm border border-amber-100">
@@ -12,12 +11,12 @@
                     </span>
                     <h3 class="text-[14px] font-bold uppercase tracking-widest text-slate-700">Import Massal SPPG</h3>
                 </div>
-                <button type="button" onclick="closeUploadModal()" class="text-slate-400 hover:text-slate-600 text-2xl transition-colors">&times;</button>
+                <button type="button" onclick="closeImportModal()" class="text-slate-400 hover:text-slate-600 text-2xl transition-colors">&times;</button>
             </div>
 
             <div class="p-8">
-                {{-- Tahap 1: Pilih File & Download Template --}}
-                <div id="upload-step-1" class="space-y-6">
+                {{-- Tahap 1: Pilih File & Export Template --}}
+                <div id="import-step-1" class="space-y-6">
                     <div id="format-error-msg" class="hidden p-4 bg-rose-50 text-rose-600 border border-rose-200 rounded-xl"></div>
 
                     <div class="flex items-center justify-between p-4 bg-indigo-50 border border-indigo-100 rounded-xl">
@@ -35,7 +34,7 @@
                 </div>
 
                 {{-- Tahap 2: Preview Tabel & Opsi Import --}}
-                <div id="upload-step-2" class="hidden space-y-6">
+                <div id="import-step-2" class="hidden space-y-6">
                     <div class="overflow-x-auto border border-slate-100 rounded-lg max-h-[300px]">
                         <table class="w-full text-[12px] text-left border-collapse">
                             <thead class="bg-slate-50 sticky top-0 shadow-sm">
@@ -56,7 +55,7 @@
                     <div id="summary-text" class="p-3 bg-slate-50 rounded-lg border border-slate-100"></div>
 
                     {{-- FORM UTAMA: Membungkus Opsi Database & Data JSON --}}
-                    <form action="{{ route('admin.sppg.import') }}" method="POST" id="final-upload-form">
+                    <form action="{{ route('admin.sppg.import') }}" method="POST" id="final-import-form">
                         @csrf
                         <div class="space-y-3 mb-6">
                             <p class="text-[11px] font-bold text-gray-400 uppercase tracking-widest">Opsi Database (Wajib Pilih):</p>
@@ -78,7 +77,7 @@
                         <input type="hidden" name="json_data" id="json_data">
 
                         <div class="flex gap-3">
-                            <button type="button" onclick="resetUpload()" class="flex-1 py-4 text-[11px] font-bold uppercase text-slate-500 bg-white border border-slate-200 rounded-xl hover:bg-slate-50 transition-all">Ganti File</button>
+                            <button type="button" onclick="resetImport()" class="flex-1 py-4 text-[11px] font-bold uppercase text-slate-500 bg-white border border-slate-200 rounded-xl hover:bg-slate-50 transition-all">Ganti File</button>
                             <button type="submit" id="btn-save-import" class="flex-1 py-4 text-[11px] font-bold uppercase text-white bg-indigo-600 rounded-xl shadow-lg hover:bg-indigo-700 transition-all active:scale-[0.98]">Simpan Ke Database</button>
                         </div>
                     </form>
@@ -88,30 +87,30 @@
     </div>
 
 <script>
-        // Fungsi untuk membuka modal Upload
-        window.openUploadModal = function() {
-            const modal = document.getElementById('uploadModal');
+        // Fungsi untuk membuka modal Import
+        window.openImportModal = function() {
+            const modal = document.getElementById('importModal');
             if (modal) {
                 // Reset ke langkah pertama setiap kali dibuka
-                resetUpload();
+                resetImport();
                 modal.classList.remove('hidden');
             } else {
-                console.error("Elemen dengan ID 'uploadModal' tidak ditemukan!");
+                console.error("Elemen dengan ID 'importModal' tidak ditemukan!");
             }
         };
 
-        // Fungsi untuk menutup modal Upload
-        window.closeUploadModal = function() {
-            const modal = document.getElementById('uploadModal');
+        // Fungsi untuk menutup modal Import
+        window.closeImportModal = function() {
+            const modal = document.getElementById('importModal');
             if (modal) {
                 modal.classList.add('hidden');
             }
         };
 
         // Fungsi Reset (Penting agar tampilan kembali ke awal pilih file)
-        window.resetUpload = function() {
-            const step1 = document.getElementById('upload-step-1');
-            const step2 = document.getElementById('upload-step-2');
+        window.resetImport = function() {
+            const step1 = document.getElementById('import-step-1');
+            const step2 = document.getElementById('import-step-2');
             const fileInput = document.getElementById('excel_file');
 
             if (step1 && step2) {
@@ -214,8 +213,8 @@
         async function renderPreview(data) {
             const renderSppgId = ++currentRenderSppgId;
             const tbody = document.getElementById('preview-body');
-            const step1 = document.getElementById('upload-step-1');
-            const step2 = document.getElementById('upload-step-2');
+            const step1 = document.getElementById('import-step-1');
+            const step2 = document.getElementById('import-step-2');
             const btnSave = document.getElementById('btn-save-import');
             const formatErrorContainer = document.getElementById('format-error-msg');
             let hasError = false;
@@ -261,7 +260,6 @@
 
                 const row = data[index];
                 const tr = document.createElement('tr');
-                tr.className = 'border-b hover:bg-slate-50 transition-colors';
 
                 const id = row['ID SPPG'] ? row['ID SPPG'].substring(0, 15) + (row['ID SPPG'].length > 15 ? '...' : '') : '<span class="text-rose-500 italic">Kosong</span>';
                 const name = row['NAMA SPPG'] ? row['NAMA SPPG'].substring(0, 25) + (row['NAMA SPPG'].length > 25 ? '...' : '') : '<span class="text-rose-500 italic">Kosong</span>';
@@ -302,10 +300,11 @@
                 if (isRowError) {
                     globalHasError = true;
                     countError++;
-                    tr.classList.add('bg-rose-50/50');
                 } else {
                     countValid++;
                 }
+
+                tr.className = `${isRowError ? 'bg-rose-50/50' : 'hover:bg-slate-50'} transition-all text-[12px]`;
 
                 const parseStatus = (s) => {
                     const st = s.toLowerCase();
@@ -317,11 +316,11 @@
                 }
 
                 tr.innerHTML = `
-                    <td class="p-3 font-medium text-slate-700">${id}</td>
-                    <td class="p-3 text-slate-600">${name}</td>
-                    <td class="p-3">${parseStatus(status)}</td>
-                    <td class="p-3 text-slate-600 font-mono text-[11px]">${tgl}</td>
-                    <td class="p-3 text-slate-600">
+                    <td class="p-3 border-b border-slate-100 text-slate-600 font-medium">${id}</td>
+                    <td class="p-3 border-b border-slate-100 text-slate-600 font-medium">${name}</td>
+                    <td class="p-3 border-b border-slate-100">${parseStatus(status)}</td>
+                    <td class="p-3 border-b border-slate-100 text-slate-600">${tgl}</td>
+                    <td class="p-3 border-b border-slate-100 text-slate-600">
                         ${isRowError 
                             ? `<div class="flex flex-col gap-0.5">${errors.map(msg => `<div class="flex items-center gap-1.5 text-rose-600 font-bold uppercase text-[9px]"><span>•</span> ${msg}</div>`).join('')}</div>` 
                             : '<div class="flex items-center gap-1.5 text-emerald-600 font-bold uppercase text-[10px]">✓ Valid</div>'

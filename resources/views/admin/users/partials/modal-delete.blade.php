@@ -29,11 +29,11 @@
             const btn = document.getElementById('delete_btn_text');
 
             if (isForce) {
-                form.action = `/admin/users/${userId}/force`;
+                form.action = `/admin/manage-user/${userId}/force`;
                 title.innerText = "Hapus Permanen?";
                 info.innerText = `Data akun ${email} akan dihapus selamanya.`;
             } else {
-                form.action = `/admin/users/${userId}`;
+                form.action = `/admin/manage-user/${userId}`;
                 title.innerText = "Hapus Pengguna?";
                 info.innerText = `Akun ${email} akan dipindahkan ke tempat sampah.`;
             }

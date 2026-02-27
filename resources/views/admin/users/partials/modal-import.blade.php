@@ -1,6 +1,6 @@
-    {{-- MODAL UPLOAD PENGGUNA --}}
-    <div id="uploadModal" class="fixed inset-0 z-[100] hidden flex items-center justify-center p-4">
-        <div class="absolute inset-0 bg-slate-900/60 backdrop-blur-sm" onclick="closeUploadModal()"></div>
+    {{-- MODAL IMPORT PENGGUNA --}}
+    <div id="importModal" class="fixed inset-0 z-[100] hidden flex items-center justify-center p-4">
+        <div class="absolute inset-0 bg-slate-900/60 backdrop-blur-sm" onclick="closeImportModal()"></div>
         <div class="relative bg-white rounded-xl shadow-xl border border-slate-200 w-full max-w-4xl overflow-hidden font-sans">
 
             <div class="p-6 border-b border-slate-100 bg-slate-50 flex justify-between items-center">
@@ -12,12 +12,12 @@
                     </span>
                     <h3 class="text-[14px] font-bold uppercase tracking-widest text-slate-700">Import Massal Akun Pengguna</h3>
                 </div>
-                <button type="button" onclick="closeUploadModal()" class="text-slate-400 hover:text-slate-600 text-2xl transition-colors">&times;</button>
+                <button type="button" onclick="closeImportModal()" class="text-slate-400 hover:text-slate-600 text-2xl transition-colors">&times;</button>
             </div>
 
             <div class="p-8">
-                {{-- Tahap 1: Pilih File & Download Template --}}
-                <div id="upload-step-1" class="space-y-6">
+                {{-- Tahap 1: Pilih File & Export Template --}}
+                <div id="import-step-1" class="space-y-6">
                     <div id="format-error-msg" class="hidden p-4 bg-rose-50 text-rose-600 border border-rose-200 rounded-xl"></div>
 
                     <div class="flex items-center justify-between p-4 bg-indigo-50 border border-indigo-100 rounded-xl">
@@ -35,15 +35,15 @@
                 </div>
 
                 {{-- Tahap 2: Preview Tabel & Opsi Import --}}
-                <div id="upload-step-2" class="hidden space-y-6">
+                <div id="import-step-2" class="hidden space-y-6">
                     <div class="overflow-x-auto border border-slate-100 rounded-lg max-h-[300px]">
                         <table class="w-full text-[12px] text-left border-collapse">
                             <thead class="bg-slate-50 sticky top-0 shadow-sm">
                                 <tr>
                                     <th class="p-3 border-b font-bold text-slate-500 uppercase">Email</th>
                                     <th class="p-3 border-b font-bold text-slate-500 uppercase">Telepon</th>
-                                    <th class="p-3 border-b font-bold text-slate-500 uppercase text-center">Hak Akses Sistem</th>
-                                    <th class="p-3 border-b font-bold text-slate-500 uppercase">Status</th>
+                                    <th class="p-3 border-b font-bold text-slate-500 uppercase">Hak Akses Sistem</th>
+                                    <th class="p-3 border-b font-bold text-slate-500 uppercase">Catatan Sistem</th>
                                 </tr>
                             </thead>
                             <tbody id="preview-body">
@@ -55,19 +55,19 @@
                     <div id="summary-text" class="p-3 bg-slate-50 rounded-lg border border-slate-100"></div>
 
                     {{-- FORM UTAMA: Membungkus Opsi Database & Data JSON --}}
-                    <form action="{{ route('admin.users.import') }}" method="POST" id="final-upload-form">
+                    <form action="{{ route('admin.users.import') }}" method="POST" id="final-import-form">
                         @csrf
                         <div class="space-y-3 mb-6">
                             <p class="text-[11px] font-bold text-gray-400 uppercase tracking-widest">Opsi Database (Wajib Pilih):</p>
                             <div class="grid grid-cols-2 gap-4">
                                 <label class="p-4 border rounded-xl cursor-pointer hover:bg-slate-50 flex flex-col gap-1 transition-all border-slate-200 has-[:checked]:border-indigo-600 has-[:checked]:bg-indigo-50/30">
-                                    <input type="radio" name="import_mode" value="append" checked class="text-indigo-600 focus:ring-indigo-500">
+                                    <input type="radio" name="import_mode" value="append" checked onchange="revalidatePreview()" class="text-indigo-600 focus:ring-indigo-500">
                                     <span class="text-xs font-bold uppercase text-slate-700">Tambah Data</span>
                                     <span class="text-[9px] text-slate-500 italic">Hanya menambah pengguna baru dari Excel.</span>
                                 </label>
 
                                 <label class="p-4 border rounded-xl cursor-pointer hover:bg-rose-50 flex flex-col gap-1 transition-all border-slate-200 has-[:checked]:border-rose-600 has-[:checked]:bg-rose-50/50">
-                                    <input type="radio" name="import_mode" value="replace" class="text-rose-600 focus:ring-rose-500">
+                                    <input type="radio" name="import_mode" value="replace" onchange="revalidatePreview()" class="text-rose-600 focus:ring-rose-500">
                                     <span class="text-xs font-bold uppercase text-rose-700">Buat Ulang</span>
                                     <span class="text-[9px] text-rose-400 italic font-medium">Hapus & Ganti semua data user selain Anda.</span>
                                 </label>
@@ -77,7 +77,7 @@
                         <input type="hidden" name="json_data" id="json_data">
 
                         <div class="flex gap-3">
-                            <button type="button" onclick="resetUpload()" class="flex-1 py-4 text-[11px] font-bold uppercase text-slate-500 bg-white border border-slate-200 rounded-xl hover:bg-slate-50 transition-all">Ganti File</button>
+                            <button type="button" onclick="resetImport()" class="flex-1 py-4 text-[11px] font-bold uppercase text-slate-500 bg-white border border-slate-200 rounded-xl hover:bg-slate-50 transition-all">Ganti File</button>
                             <button type="submit" id="btn-save-import" class="flex-1 py-4 text-[11px] font-bold uppercase text-white bg-indigo-600 rounded-xl shadow-lg hover:bg-indigo-700 transition-all active:scale-[0.98]">Simpan Ke Database</button>
                         </div>
                     </form>
@@ -87,30 +87,30 @@
     </div>
 
 <script>
-        // Fungsi untuk membuka modal Upload
-        window.openUploadModal = function() {
-            const modal = document.getElementById('uploadModal');
+        // Fungsi untuk membuka modal Import
+        window.openImportModal = function() {
+            const modal = document.getElementById('importModal');
             if (modal) {
                 // Reset ke langkah pertama setiap kali dibuka
-                resetUpload();
+                resetImport();
                 modal.classList.remove('hidden');
             } else {
-                console.error("Elemen dengan ID 'uploadModal' tidak ditemukan!");
+                console.error("Elemen dengan ID 'importModal' tidak ditemukan!");
             }
         };
 
-        // Fungsi untuk menutup modal Upload
-        window.closeUploadModal = function() {
-            const modal = document.getElementById('uploadModal');
+        // Fungsi untuk menutup modal Import
+        window.closeImportModal = function() {
+            const modal = document.getElementById('importModal');
             if (modal) {
                 modal.classList.add('hidden');
             }
         };
 
         // Fungsi Reset (Penting agar tampilan kembali ke awal pilih file)
-        window.resetUpload = function() {
-            const step1 = document.getElementById('upload-step-1');
-            const step2 = document.getElementById('upload-step-2');
+        window.resetImport = function() {
+            const step1 = document.getElementById('import-step-1');
+            const step2 = document.getElementById('import-step-2');
             const fileInput = document.getElementById('excel_file');
 
             if (step1 && step2) {
@@ -118,6 +118,21 @@
                 step2.classList.add('hidden');
             }
             if (fileInput) fileInput.value = '';
+        };
+
+        // Fungsi Revalidate (dipanggil ketika opsi database berubah)
+        window.revalidatePreview = function() {
+            const jsonDataInput = document.getElementById('json_data');
+            if (jsonDataInput && jsonDataInput.value) {
+                try {
+                    const data = JSON.parse(jsonDataInput.value);
+                    if (data && data.length > 0) {
+                        renderPreview(data);
+                    }
+                } catch (e) {
+                    console.error('Failed to parse json_data for revalidation', e);
+                }
+            }
         };
 
 
@@ -198,8 +213,8 @@
         async function renderPreview(data) {
             const renderUserId = ++currentRenderUserId;
             const tbody = document.getElementById('preview-body');
-            const step1 = document.getElementById('upload-step-1');
-            const step2 = document.getElementById('upload-step-2');
+            const step1 = document.getElementById('import-step-1');
+            const step2 = document.getElementById('import-step-2');
             const btnSave = document.getElementById('btn-save-import');
             const summaryText = document.getElementById('summary-text');
 
@@ -227,8 +242,18 @@
                 if (missing.length > 0) {
                     // Tampilkan pesan error jika kolom tidak cocok
                     if (formatErrorContainer) {
-                        formatErrorContainer.innerHTML = `<p class="font-bold text-[11px]">Kolom tidak cocok: ${missing.join(', ')}</p>`;
+                        formatErrorContainer.innerHTML = `
+                            <div class="flex items-start gap-3">
+                                <svg class="w-5 h-5 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77-1.333.192 3 1.732 3z"/></svg>
+                                <div>
+                                    <p class="font-bold uppercase tracking-tight text-[11px]">Format Kolom Tidak Sesuai!</p>
+                                    <p class="text-[10px] opacity-90 mt-1">Kolom berikut tidak ditemukan di file Anda: <br> <span class="font-bold">${missing.join(', ')}</span></p>
+                                    <p class="text-[10px] opacity-90 mt-2 italic">Pastikan Anda menggunakan Template yang diunduh dari tombol "Unduh Template".</p>
+                                </div>
+                            </div>
+                        `;
                         formatErrorContainer.classList.remove('hidden');
+                        formatErrorContainer.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
                     }
                     return;
                 }
@@ -275,7 +300,7 @@
                 // Validasi Eksternal (Hanya jika mode "Tambah Data")
                 if (errors.length === 0 && importMode === 'append') {
                     try {
-                        const check = await fetch(`/admin/users/check-availability?email=${email}&phone=${phone}`).then(r => r.json());
+                        const check = await fetch(`/admin/manage-user/check-availability?email=${email}&phone=${phone}`).then(r => r.json());
                         if (renderUserId !== currentRenderUserId) return; // Batal jika ada render baru
 
                         if (check.email_duplicate) errors.push('Email sudah ada di sistem');
@@ -297,11 +322,11 @@
             <tr class="${isRowError ? 'bg-rose-50/50' : 'hover:bg-slate-50'} transition-all text-[12px]">
                 <td class="p-3 border-b border-slate-100 text-slate-600 font-medium">${email || '-'}</td>
                 <td class="p-3 border-b border-slate-100 text-slate-600 font-medium">${phone || '-'}</td>
-                <td class="p-3 border-b border-slate-100 text-center font-bold text-slate-500 uppercase">${rawRole || '-'}</td>
-                <td class="p-3 border-b border-slate-100">
+                <td class="p-3 border-b border-slate-100 text-slate-500 uppercase">${rawRole || '-'}</td>
+                <td class="p-3 border-b border-slate-100 text-slate-600">
                     ${isRowError 
                         ? `<div class="flex flex-col gap-0.5">${errors.map(msg => `<div class="flex items-center gap-1.5 text-rose-600 font-bold uppercase text-[9px]"><span>•</span> ${msg}</div>`).join('')}</div>` 
-                        : '<div class="flex items-center gap-1.5 text-emerald-600 font-bold uppercase text-[10px]">✓ Siap Import</div>'
+                        : '<div class="flex items-center gap-1.5 text-emerald-600 font-bold uppercase text-[10px]">✓ Valid</div>'
                     }
                 </td>
             </tr>
@@ -311,34 +336,34 @@
             tbody.innerHTML = html;
             document.getElementById('json_data').value = JSON.stringify(data);
 
-            summaryText.innerHTML = `
-        <div class="flex gap-3 items-center font-bold text-[10px] uppercase tracking-wider">
-            <span class="bg-slate-100 text-slate-600 px-3 py-1.5 rounded-lg border border-slate-200">Total: ${data.length}</span>
-            <span class="bg-emerald-100 text-emerald-700 px-3 py-1.5 rounded-lg border border-emerald-200">Valid: ${countValid}</span>
-            <span class="bg-rose-100 text-rose-700 px-3 py-1.5 rounded-lg border border-rose-200">Bermasalah: ${countError}</span>
-            <span class="ml-auto text-indigo-600">Mode: ${importMode === 'replace' ? 'Buat Ulang' : 'Tambah Data'}</span>
-        </div>
-    `;
-
-            btnSave.disabled = (globalHasError || data.length === 0);
-            btnSave.classList.toggle('opacity-50', btnSave.disabled);
-            btnSave.classList.toggle('cursor-not-allowed', btnSave.disabled);
+            if (globalHasError || data.length === 0) {
+                btnSave.disabled = true;
+                btnSave.className = "flex-1 py-4 text-[11px] font-bold uppercase text-slate-400 bg-slate-100 rounded-xl cursor-not-allowed border border-slate-200";
+                summaryText.innerHTML = `
+                    <div class="flex items-center gap-2 text-rose-600">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/></svg>
+                        <span class="text-[11px] font-bold uppercase">Gagal Membaca Detail</span>
+                    </div>
+                    <p class="text-[11px] text-rose-500 mt-1">Terdapat ${countError} baris data yang error atau tidak valid. Mohon perbaiki.</p>
+                `;
+            } else {
+                btnSave.disabled = false;
+                btnSave.className = "flex-1 py-4 text-[11px] font-bold uppercase text-white bg-indigo-600 rounded-xl shadow-lg hover:bg-indigo-700 transition-all active:scale-[0.98]";
+                summaryText.innerHTML = `
+                    <div class="flex items-center gap-2 text-indigo-700">
+                         <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+                         <span class="text-[11px] font-bold uppercase">Siap Diimpor (${countValid} Baris Data Valid)</span>
+                    </div>
+                    <p class="text-[11px] text-slate-500 mt-1">Langkah Terakhir: Pilih "Opsi Database" di bawah ini, lalu klik tombol "Simpan Ke Database".</p>
+                `;
+            }
         }
 
-        // Tambahkan ini di bagian DOMContentLoaded atau bawah script Anda
-        document.querySelectorAll('input[name="import_mode"]').forEach(radio => {
-            radio.addEventListener('change', function() {
-                // Jika sudah ada file yang dipilih, jalankan ulang pratinjau
-                const fileInput = document.getElementById('excel_file');
-                if (fileInput.files.length > 0) {
-                    previewExcel();
-                }
-            });
-        });
+
 
         // Fungsi saat tombol "Simpan Ke Database" di klik
         document.addEventListener('DOMContentLoaded', function() {
-            const finalForm = document.getElementById('final-upload-form');
+            const finalForm = document.getElementById('final-import-form');
 
             if (finalForm) {
                 finalForm.addEventListener('submit', function(e) {
@@ -366,7 +391,7 @@
 
         // Fungsi eksekusi final dari dalam modal konfirmasi
         window.finalSubmitImport = function() {
-            const form = document.getElementById('final-upload-form');
+            const form = document.getElementById('final-import-form');
             if (form) {
                 // Berikan feedback visual pada tombol
                 const btn = document.getElementById('btn-save-import');

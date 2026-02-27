@@ -205,7 +205,7 @@ class SppgUnitController extends Controller
         );
     }
 
-    public function downloadTemplate()
+    public function exportTemplate()
     {
         return \Maatwebsite\Excel\Facades\Excel::download(new \App\Exports\SppgTemplateExport, 'Template Import SPPG.xlsx');
     }
