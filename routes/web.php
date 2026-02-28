@@ -5,6 +5,7 @@ use App\Http\Controllers\Admin\RoleController;
 use App\Http\Controllers\Admin\SettingController;
 use App\Http\Controllers\Admin\UserController;
 use App\Http\Controllers\Admin\SppgUnitController;
+use App\Http\Controllers\Admin\AssignmentDecreeController;
 use App\Http\Controllers\PersonController;
 use App\Http\Controllers\ProfileController;
 use Illuminate\Support\Facades\Http;
@@ -71,6 +72,14 @@ Route::middleware('auth')->group(function () {
                 return "Halaman: Supplier MBG";
             })->name('supplier');
         });
+
+        // Manajemen SK (Assignment Decrees)
+        Route::prefix('manage-assignmentdecree')->name('manage-assignmentdecree.')->group(function () {
+            Route::get('/', [AssignmentDecreeController::class, 'index'])->name('index');
+            Route::post('/store', [AssignmentDecreeController::class, 'store'])->name('store');
+            Route::patch('/{id}/update', [AssignmentDecreeController::class, 'update'])->name('update');
+            Route::delete('/{id}', [AssignmentDecreeController::class, 'destroy'])->name('destroy');
+        });
     });
 });
 
@@ -129,6 +138,18 @@ Route::middleware(['auth', 'role:administrator', 'profile.completed'])->prefix('
         Route::get('/supplier', function () {
             return "Halaman: Daftar Supplier";
         })->name('supplier');
+    });
+
+    // Manajemen SK (Assignment Decrees)
+    Route::prefix('manage-assignment-decree')->name('manage-assignment-decree.')->group(function () {
+        Route::get('/', [App\Http\Controllers\Admin\AssignmentDecreeController::class, 'index'])->name('index');
+        Route::post('/store', [App\Http\Controllers\Admin\AssignmentDecreeController::class, 'store'])->name('store');
+        Route::patch('/{id}/update', [App\Http\Controllers\Admin\AssignmentDecreeController::class, 'update'])->name('update');
+        Route::delete('/{id}', [App\Http\Controllers\Admin\AssignmentDecreeController::class, 'destroy'])->name('destroy');
+        Route::post('/export', [App\Http\Controllers\Admin\AssignmentDecreeController::class, 'exportExcel'])->name('export');
+        Route::get('/template', [App\Http\Controllers\Admin\AssignmentDecreeController::class, 'exportTemplate'])->name('template');
+        Route::post('/import', [App\Http\Controllers\Admin\AssignmentDecreeController::class, 'importDecree'])->name('import');
+        Route::get('/check-availability', [App\Http\Controllers\Admin\AssignmentDecreeController::class, 'checkAvailability'])->name('check-availability');
     });
 });
 

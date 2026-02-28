@@ -102,7 +102,7 @@
                                 </td>
                                 <td class="px-6 py-4 text-center">
                                     <span class="font-medium text-slate-500 text-xs block capitalize">{{ $user->person->position->name_position ?? '-' }}</span>
-                                    <span class="text-xs text-slate-500 font-medium capitalize">{{ $user->person->workAssignment->sppgUnit->name ?? '-' }}</span>
+                                    <span class="text-xs text-slate-500 font-medium capitalize">{{ $user->person?->workAssignment?->sppgUnit?->name ?? '-' }}</span>
                                 </td>
                                 <td class="px-6 py-4 text-center">
                                     <span class="text-xs block text-slate-500 font-medium whitespace-nowrap">
@@ -150,7 +150,7 @@
                                             @foreach($workAssignments as $wa)
                                             <option value="{{ $wa->id_work_assignment }}"
                                                 {{ $user->person?->id_work_assignment == $wa->id_work_assignment ? 'selected' : '' }}>
-                                                {{ $wa->sppgUnit->name }} - {{ $wa->decree->no_sk }}
+                                                {{ $wa->sppgUnit?->name ?? 'SPPG Tidak Ditemukan' }} - {{ $wa->decree?->no_sk ?? 'SK Tidak Ditemukan' }}
                                             </option>
                                             @endforeach
                                         </select>
@@ -349,7 +349,7 @@
                                 </td>
                                 <td class="px-6 py-4 text-center">
                                     <span class="font-medium text-slate-500 text-xs block capitalize">{{ $person->position->name_position ?? '-' }}</span>
-                                    <span class="text-xs text-slate-500 font-medium capitalize">{{ $person->workAssignment->sppgUnit->name ?? '-' }}</span>
+                                    <span class="text-xs text-slate-500 font-medium capitalize">{{ $person?->workAssignment?->sppgUnit?->name ?? '-' }}</span>
                                 </td>
                                 <td class="px-6 py-4 text-center">
                                     <span class="text-xs font-medium text-slate-500 block">{{ $u->person && $u->person->batch ? 'Batch ' . $u->person->batch : '-' }}</span>
@@ -526,7 +526,7 @@
                                 </td>
                                 <td class="px-6 py-4 text-center">
                                     <span class="text-slate-500 text-xs block capitalize font-medium">{{ $personTrashed->position->name_position ?? '-' }}</span>
-                                    <span class="text-xs text-slate-500 capitalize font-medium">{{ $personTrashed->workAssignment->sppgUnit->name ?? '-' }}</span>
+                                    <span class="text-xs text-slate-500 capitalize font-medium">{{ $personTrashed?->workAssignment?->sppgUnit?->name ?? '-' }}</span>
                                 </td>
                                 <td class="px-6 py-4 text-center">
                                     <span class="text-xs font-medium text-slate-500 block">{{ $tu->personTrashed && $tu->personTrashed->batch ? 'Batch ' . $tu->personTrashed->batch : '-' }}</span>

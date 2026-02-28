@@ -16,6 +16,7 @@ class AssignmentDecreeSeeder extends Seeder
                 'date_sk' => '2026-01-05',
                 'no_ba_verval' => 'BA/V/2026/01',
                 'date_ba_verval' => '2026-01-04',
+                'file_sk' => null,
                 'created_at' => now(),
             ],
             [
@@ -24,6 +25,7 @@ class AssignmentDecreeSeeder extends Seeder
                 'date_sk' => '2026-01-12',
                 'no_ba_verval' => 'BA/V/2026/02',
                 'date_ba_verval' => '2026-01-11',
+                'file_sk' => null,
                 'created_at' => now(),
             ],
         ]);

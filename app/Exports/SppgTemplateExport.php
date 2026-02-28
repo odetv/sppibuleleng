@@ -22,7 +22,7 @@ class SppgTemplateExport implements FromArray, WithHeadings, WithStyles, ShouldA
             'KABUPATEN',
             'KECAMATAN',
             'DESA/KELURAHAN',
-            'ALAMAT LENGKAP',
+            'ALAMAT JALAN',
             'LATITUDE GPS',
             'LONGITUDE GPS',
         ];

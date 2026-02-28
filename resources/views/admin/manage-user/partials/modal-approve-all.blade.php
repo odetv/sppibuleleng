@@ -18,7 +18,7 @@
                         <option value="" disabled selected>Pilih Penugasan</option>
                         <option value="none">Belum Penugasan</option>
                         @foreach($workAssignments as $wa)
-                        <option value="{{$wa->id_work_assignment}}">{{$wa->sppgUnit->name}} (SK: {{$wa->decree->no_sk}})</option>
+                        <option value="{{$wa->id_work_assignment}}">{{$wa->sppgUnit?->name ?? 'SPPG Tidak Ditemukan'}} (SK: {{$wa->decree?->no_sk ?? 'SK Tidak Ditemukan'}})</option>
                         @endforeach
                     </select>
                 </div>

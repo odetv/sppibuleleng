@@ -10,16 +10,16 @@
                             <path fill-rule="evenodd" d="M12 2.25a.75.75 0 0 1 .75.75v11.69l3.22-3.22a.75.75 0 1 1 1.06 1.06l-4.5 4.5a.75.75 0 0 1-1.06 0l-4.5-4.5a.75.75 0 1 1 1.06-1.06l3.22 3.22V3a.75.75 0 0 1 .75-.75Zm-9 13.5a.75.75 0 0 1 .75.75v2.25a1.5 1.5 0 0 0 1.5 1.5h13.5a1.5 1.5 0 0 0 1.5-1.5V16.5a.75.75 0 0 1 1.5 0v2.25a3 3 0 0 1-3 3H5.25a3 3 0 0 1-3-3V16.5a.75.75 0 0 1 .75-.75Z" clip-rule="evenodd" />
                         </svg>
                     </span>
-                    <h3 class="font-bold uppercase tracking-widest text-slate-700">Export Data SPPG</h3>
+                    <h3 class="font-bold uppercase tracking-widest text-slate-700">Export Data SK</h3>
                 </div>
                 <div class="flex gap-4 items-center">
                     <button type="button" onclick="closeExportModal()" class="text-slate-400 hover:text-slate-600 text-2xl">&times;</button>
                 </div>
             </div>
 
-            <form action="{{ route('admin.manage-sppg.export') }}" method="POST" id="formExportExcel">
+            <form action="{{ route('admin.manage-assignment-decree.export') }}" method="POST" id="formExportExcel">
                 @csrf
-                <div class="p-8 max-h-[70vh] overflow-y-auto scrollbar-thin">
+                <div class="p-8 max-h-[70vh] overflow-y-auto custom-scrollbar">
                     <div class="flex justify-between items-center mb-6">
                         <p class="text-[12px] font-bold text-slate-500 uppercase tracking-widest">Pilih Kolom Data Untuk File Excel</p>
                         <div class="flex gap-4">
@@ -29,24 +29,14 @@
                     </div>
 
                     @php
-                    // Array utama sesuai urutan yang diinginkan di SppgExport
                     $mappingNames = [
-                        'id_sppg_unit' => 'ID SPPG',
-                        'code_sppg_unit' => 'KODE SPPG',
-                        'name' => 'NAMA SPPG',
-                        'status' => 'STATUS',
-                        'operational_date' => 'TANGGAL OPERASIONAL',
-                        'leader_name' => 'NAMA KEPALA SPPG',
-                        'province' => 'PROVINSI',
-                        'regency' => 'KABUPATEN',
-                        'district' => 'KECAMATAN',
-                        'village' => 'DESA/KELURAHAN',
-                        'address' => 'ALAMAT JALAN',
-                        'latitude_gps' => 'LATITUDE GPS',
-                        'longitude_gps' => 'LONGITUDE GPS',
-                        'facebook_url' => 'LINK FACEBOOK',
-                        'instagram_url' => 'LINK INSTAGRAM',
-                        'tiktok_url' => 'LINK TIKTOK',
+                        'no_sk' => 'NOMOR SK',
+                        'date_sk' => 'TANGGAL SK',
+                        'no_ba_verval' => 'NOMOR BA VERVAL',
+                        'date_ba_verval' => 'TANGGAL BA VERVAL',
+                        'sppg_unit_ids' => 'ID SPPG TERKAIT',
+                        'sppg_unit_names' => 'NAMA SPPG',
+                        'file_sk_link' => 'LINK FILE SK',
                     ];
 
                     $chunks = array_chunk($mappingNames, ceil(count($mappingNames) / 4), true);

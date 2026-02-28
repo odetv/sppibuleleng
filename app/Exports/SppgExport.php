@@ -67,7 +67,7 @@ class SppgExport extends DefaultValueBinder implements
             'regency' => 'KABUPATEN',
             'district' => 'KECAMATAN',
             'village' => 'DESA/KELURAHAN',
-            'address' => 'ALAMAT LENGKAP',
+            'address' => 'ALAMAT JALAN',
             'latitude_gps' => 'LATITUDE GPS',
             'longitude_gps' => 'LONGITUDE GPS',
             'facebook_url' => 'LINK FACEBOOK',

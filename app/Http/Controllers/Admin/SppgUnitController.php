@@ -84,6 +84,7 @@ class SppgUnitController extends Controller
                 'code_sppg_unit' => $data['code_sppg_unit'],
                 'name' => $data['name'],
                 'status' => $data['status'],
+                'operational_date' => $data['operational_date'] ?? null,
                 'province' => $data['province_name'],
                 'regency' => $data['regency_name'],
                 'district' => $data['district_name'],
@@ -117,6 +118,7 @@ class SppgUnitController extends Controller
             'code_sppg_unit'    => 'nullable|string|unique:sppg_units,code_sppg_unit,' . $id . ',id_sppg_unit',
             'name'              => 'required|string|max:255',
             'status'            => 'required|in:Operasional,Belum Operasional,Tutup Sementara,Tutup Permanen',
+            'operational_date'  => 'nullable|date',
             'province_name'     => 'required|string',
             'regency_name'      => 'required|string',
             'district_name'     => 'required|string',
@@ -150,6 +152,7 @@ class SppgUnitController extends Controller
                 'code_sppg_unit' => $request->code_sppg_unit,
                 'name' => $request->name,
                 'status' => $request->status,
+                'operational_date' => $request->operational_date,
                 'province' => $request->province_name,
                 'regency' => $request->regency_name,
                 'district' => $request->district_name,
@@ -237,7 +240,20 @@ class SppgUnitController extends Controller
         try {
             if ($mode === 'replace') {
                 \Illuminate\Support\Facades\DB::statement('SET FOREIGN_KEY_CHECKS=0;');
-                // SPPG softdeletes are optional or manual, assuming hard delete here for replacement
+                // Hapus foto jika ada
+                $allSppg = \App\Models\SppgUnit::all();
+                foreach($allSppg as $sppg) {
+                     if ($sppg->photo) {
+                        $folderHash = md5($sppg->id_sppg_unit . config('app.key'));
+                        \Illuminate\Support\Facades\Storage::disk('public')->deleteDirectory("sppgunits/{$folderHash}");
+                    }
+                }
+                
+                // Kosongkan penugasan di sisi pengguna
+                \Illuminate\Support\Facades\DB::table('persons')->update(['id_work_assignment' => null]);
+                // Hapus seluruh Work Assignments karena SPPG akan hangus
+                \Illuminate\Support\Facades\DB::table('work_assignments')->delete();
+                // Eksekusi hapus bersih SPPG
                 \Illuminate\Support\Facades\DB::table('sppg_units')->delete();
                 \Illuminate\Support\Facades\DB::statement('SET FOREIGN_KEY_CHECKS=1;');
             }
@@ -283,7 +299,7 @@ class SppgUnitController extends Controller
                 }
 
                 try {
-                    \Illuminate\Support\Facades\DB::transaction(function () use ($row, $id_sppg, $name, $code_sppg, &$successCount) {
+                    \Illuminate\Support\Facades\DB::transaction(function () use ($row, $id_sppg, $name, $code_sppg, &$successCount, $mode) {
                         
                         // Parse status, default to Belum Operasional if match fails
                         $statusRaw = strtolower(trim($row['STATUS (Operasional/Belum Operasional/Tutup Sementara/Tutup Permanen)'] ?? ''));
@@ -296,7 +312,6 @@ class SppgUnitController extends Controller
                         };
 
                         $sppgData = [
-                            'id_sppg_unit' => $id_sppg,
                             'code_sppg_unit' => !empty($code_sppg) ? $code_sppg : null,
                             'name' => $name,
                             'status' => $status,
@@ -305,11 +320,12 @@ class SppgUnitController extends Controller
                             'regency' => trim($row['KABUPATEN'] ?? ''),
                             'district' => trim($row['KECAMATAN'] ?? ''),
                             'village' => trim($row['DESA/KELURAHAN'] ?? ''),
-                            'address' => trim($row['ALAMAT LENGKAP'] ?? null),
+                            'address' => trim($row['ALAMAT JALAN'] ?? null),
                             'latitude_gps' => trim($row['LATITUDE GPS'] ?? ''),
                             'longitude_gps' => trim($row['LONGITUDE GPS'] ?? ''),
                         ];
 
+                        $sppgData['id_sppg_unit'] = $id_sppg;
                         \App\Models\SppgUnit::create($sppgData);
 
                         $successCount++;
@@ -319,12 +335,30 @@ class SppgUnitController extends Controller
                 }
             }
 
+            $message = "Berhasil mengimpor $successCount Unit SPPG.";
+            
+            if ($request->ajax()) {
+                return response()->json([
+                    'success' => empty($errorDetails) && $successCount > 0,
+                    'message' => $message,
+                    'errorDetails' => $errorDetails
+                ]);
+            }
+
             $response = redirect()->route('admin.manage-sppg.index');
             return empty($errorDetails)
-                ? $response->with('success', "Berhasil mengimpor $successCount Unit SPPG.")
-                : $response->with('success', "Berhasil mengimpor $successCount Unit SPPG.")->withErrors($errorDetails);
+                ? $response->with('success', $message)
+                : $response->with('success', $message)->withErrors($errorDetails);
         } catch (\Exception $e) {
             \Illuminate\Support\Facades\DB::statement('SET FOREIGN_KEY_CHECKS=1;');
+            
+            if ($request->ajax()) {
+                 return response()->json([
+                     'success' => false,
+                     'message' => 'Gagal sistem: ' . $e->getMessage()
+                 ]);
+            }
+            
             return back()->with('error', 'Gagal sistem: ' . $e->getMessage());
         }
     }

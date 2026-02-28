@@ -12,6 +12,7 @@ class AssignmentDecree extends Model
 
     protected $fillable = [
         'no_sk',
+        'file_sk',
         'date_sk',
         'no_ba_verval',
         'date_ba_verval'

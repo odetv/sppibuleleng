@@ -15,8 +15,9 @@ return new class extends Migration
             $table->id('id_assignment_decree');
             $table->string('no_sk')->unique();
             $table->date('date_sk');
-            $table->string('no_ba_verval')->nullable();
-            $table->date('date_ba_verval')->nullable();
+            $table->string('no_ba_verval');
+            $table->date('date_ba_verval');
+            $table->string('file_sk')->nullable(); // Add file_sk column (nullable for import)
             $table->timestamps();
         });
     }

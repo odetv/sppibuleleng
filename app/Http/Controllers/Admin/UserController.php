@@ -110,34 +110,61 @@ class UserController extends Controller
     public function store(Request $request)
     {
         // 1. Validasi: Menggunakan rfc,dns untuk memastikan domain email nyata
-        $request->validate([
-            'email' => 'required|email:rfc,dns|unique:users,email',
-            'phone' => 'required|unique:users,phone',
-            'id_ref_role' => 'required'
-        ]);
+        try {
+            $request->validate([
+                'email' => 'required|email:rfc,dns|unique:users,email',
+                'phone' => 'required|unique:users,phone',
+                'id_ref_role' => 'required'
+            ]);
+        } catch (\Illuminate\Validation\ValidationException $e) {
+            if ($request->ajax() || $request->wantsJson()) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Validasi gagal, pastikan email memiliki domain aktif.',
+                    'errors' => $e->errors()
+                ], 422);
+            }
+            throw $e;
+        }
 
         try {
-            return DB::transaction(function () use ($request) {
-                // 2. Buat User sementara (belum commit ke DB permanen)
-                $user = User::create([
-                    'email' => $request->email,
-                    'phone' => $request->phone,
-                    'password' => Hash::make(Str::random(32)),
-                    'id_ref_role' => $request->id_ref_role,
-                    'status_user' => 'active',
-                    'email_verified_at' => null, 
+            DB::beginTransaction();
+            
+            // 2. Buat User sementara (belum commit ke DB permanen)
+            $user = User::create([
+                'email' => $request->email,
+                'phone' => $request->phone,
+                'password' => Hash::make(Str::random(32)),
+                'id_ref_role' => $request->id_ref_role,
+                'status_user' => 'active',
+                'email_verified_at' => null, 
+            ]);
+
+            // 3. Kirim Link Aktivasi
+            // Jika server email menolak (alamat fiktif), ini akan melempar Exception
+            $token = \Illuminate\Support\Facades\Password::createToken($user);
+            $user->sendPasswordResetNotification($token);
+
+            DB::commit();
+
+            // Jika sampai sini, berarti email berhasil diterima server SMTP
+            if ($request->ajax() || $request->wantsJson()) {
+                return response()->json([
+                    'success' => true,
+                    'message' => 'Akun berhasil dibuat. Link aktivasi telah dikirim ke email pengguna.'
                 ]);
-
-                // 3. Kirim Link Aktivasi
-                // Jika server email menolak (alamat fiktif), ini akan melempar Exception
-                $token = Password::createToken($user);
-                $user->sendPasswordResetNotification($token);
-
-                // Jika sampai sini, berarti email berhasil diterima server SMTP
-                return back()->with('success', 'Akun berhasil dibuat. Link aktivasi telah dikirim ke email pengguna.');
-            });
-        } catch (Exception $e) {
-            // Jika Exception dilempar (karena email fiktif), DB::transaction otomatis rollback
+            }
+            return back()->with('success', 'Akun berhasil dibuat. Link aktivasi telah dikirim ke email pengguna.');
+            
+        } catch (\Exception $e) {
+            DB::rollBack();
+            // Jika Exception dilempar (karena email fiktif)
+            if ($request->ajax() || $request->wantsJson()) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Gagal membuat akun: Alamat email tidak dapat dijangkau atau fiktif.'
+                ], 400);
+            }
             return back()->with('error', 'Gagal membuat akun: Alamat email tidak dapat dijangkau atau fiktif.');
         }
     }
@@ -222,13 +249,31 @@ class UserController extends Controller
                 }
             }
 
+            if ($request->ajax() || $request->wantsJson()) {
+                return response()->json([
+                    'success' => true,
+                    'message' => empty($errorDetails) 
+                        ? "Berhasil mengimpor $successCount pengguna." 
+                        : "Berhasil mengimpor $successCount pengguna dengan beberapa error.",
+                    'errorDetails' => $errorDetails
+                ]);
+            }
+
             $response = redirect()->route('admin.manage-user.index');
             return empty($errorDetails)
                 ? $response->with('success', "Berhasil mengimpor $successCount pengguna.")
                 : $response->with('success', "Berhasil mengimpor $successCount pengguna.")->withErrors($errorDetails);
-        } catch (Exception $e) {
+                
+        } catch (\Exception $e) {
             DB::statement('SET FOREIGN_KEY_CHECKS=1;');
-            return back()->with('error', 'Gagal sistem: ' . $e->getMessage());
+            
+            if ($request->ajax() || $request->wantsJson()) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Gagal memproses file import: ' . $e->getMessage()
+                ], 500);
+            }
+            return back()->with('error', 'Gagal memproses file import: ' . $e->getMessage());
         }
     }
 

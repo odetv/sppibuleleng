@@ -64,7 +64,7 @@
                                 <label class="text-[11px] font-bold text-gray-500 uppercase tracking-wider">Unit Penugasan</label>
                                 <select name="id_work_assignment" id="f_wa" class="w-full mt-2 px-3 py-2.5 bg-gray-50 border-none rounded-lg text-sm">
                                     <option value="">Belum Penugasan</option>
-                                    @foreach($workAssignments as $wa) <option value="{{ $wa->id_work_assignment }}">{{ $wa->sppgUnit->name }} - {{ $wa->decree->no_sk }}</option> @endforeach
+                                    @foreach($workAssignments as $wa) <option value="{{ $wa->id_work_assignment }}">{{ $wa->sppgUnit?->name ?? 'SPPG Tidak Ditemukan' }} - {{ $wa->decree?->no_sk ?? 'SK Tidak Ditemukan' }}</option> @endforeach
                                 </select>
                             </div>
                             <div><label class="text-[11px] font-bold text-gray-500 uppercase tracking-wider">Batch</label><select required name="batch" id="f_batch" class="w-full mt-2 px-3 py-2.5 bg-gray-50 border-none rounded-lg text-sm">@foreach(['1', '2', '3', 'Non-SPPI'] as $b) <option value="{{ $b }}">{{ $b }}</option> @endforeach</select></div>

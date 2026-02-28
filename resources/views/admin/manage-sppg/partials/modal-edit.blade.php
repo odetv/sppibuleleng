@@ -111,6 +111,10 @@
                             </select>
                         </div>
                         <div>
+                            <label class="text-[11px] font-bold text-gray-500 uppercase tracking-wider">Tanggal Operasional</label>
+                            <input type="date" name="operational_date" id="e_op_date" x-model="selectedUnit.operational_date" class="w-full mt-2 px-4 py-2.5 bg-gray-50 border-none rounded-lg text-sm text-slate-600 focus:ring-2 focus:ring-indigo-500">
+                        </div>
+                        <div>
                             <label class="text-[11px] font-bold text-gray-500 uppercase tracking-wider">Kepala SPPG</label>
                             <select name="leader_id" id="e_leader" x-model="selectedUnit.leader_id" class="w-full mt-2 px-3 py-2.5 bg-gray-50 border-none rounded-lg text-sm focus:ring-2 focus:ring-indigo-500">
                                 <option value="NULL">Belum Ditugaskan</option>
@@ -451,6 +455,7 @@
                         let fieldId = 'e_' + key;
                         if (key === 'id_sppg_unit') fieldId = 'e_id';
                         if (key === 'code_sppg_unit') fieldId = 'e_code';
+                        if (key === 'operational_date') fieldId = 'e_op_date';
                         if (key === 'photo') fieldId = 'edit_photo';
 
                         result.errors[key].forEach(msg => {

@@ -18,7 +18,7 @@
             {{-- Form dengan autocomplete off dan id unik agar tidak bentrok --}}
             <form action="{{ route('admin.manage-user.store') }}" method="POST" autocomplete="off" id="formAddUser">
                 @csrf
-                <div class="p-8 space-y-5">
+                <div class="p-8 space-y-5" id="add_user_form_body">
                     {{-- Email --}}
                     <div>
                         <label class="text-[11px] font-bold text-gray-500 uppercase tracking-wider">Email</label>
@@ -89,8 +89,18 @@
                     </div> -->
                 </div>
 
+                {{-- PROGRESS BAR UI --}}
+                <div id="add_user_progress" class="hidden p-8 flex flex-col justify-center items-center space-y-4 min-h-[300px]">
+                    <div class="w-16 h-16 rounded-full border-4 border-slate-100 border-t-indigo-600 animate-spin mb-4"></div>
+                    <h4 id="progress_text" class="text-sm font-bold text-slate-700 uppercase tracking-widest text-center">Inisialisasi...</h4>
+                    <div class="w-full max-w-xs bg-slate-100 rounded-full h-2.5 overflow-hidden">
+                      <div id="progress_bar_fill" class="bg-indigo-600 h-2.5 rounded-full transition-all duration-300 ease-out" style="width: 0%"></div>
+                    </div>
+                    <p class="text-[10px] text-slate-400 font-medium text-center italic mt-4 max-w-xs">Mohon jangan tutup jendela ini. Sistem sedang mendaftarkan akun dan mengirimkan pesan berisi tautan verifikasi keamanan ke email pengguna.</p>
+                </div>
+
                 <div class="p-6 border-t border-slate-100 bg-slate-50/50 flex gap-3">
-                    <button type="button" onclick="closeAddUserModal()" class="flex-1 py-3 text-[11px] font-bold uppercase tracking-wider text-slate-500 bg-white border border-slate-200 rounded-xl hover:bg-slate-50 transition-all">Batal</button>
+                    <button type="button" id="btn_cancel_add" onclick="closeAddUserModal()" class="flex-1 py-3 text-[11px] font-bold uppercase tracking-wider text-slate-500 bg-white border border-slate-200 rounded-xl hover:bg-slate-50 transition-all">Batal</button>
                     <button type="submit" id="btn_submit_add" disabled class="flex-1 py-3 text-[11px] font-bold uppercase tracking-wider text-white bg-indigo-600 rounded-xl shadow-lg hover:bg-indigo-700 transition-all active:scale-[0.98]">Buat Akun</button>
                 </div>
             </form>
@@ -117,7 +127,13 @@
 
             document.getElementById('error_email').classList.add('hidden');
             document.getElementById('error_phone').classList.add('hidden');
-            // document.getElementById('copy_area').classList.add('hidden');
+            
+            // Kembalikan UI Progress Bar ke Form
+            document.getElementById('add_user_form_body').classList.remove('hidden');
+            document.getElementById('add_user_progress').classList.add('hidden');
+            document.getElementById('btn_cancel_add').classList.remove('hidden');
+            document.getElementById('progress_bar_fill').style.width = '0%';
+            document.getElementById('progress_text').innerText = 'Inisialisasi...';
 
             validateSubmitButton(); // Kunci tombol saat awal buka
             modal.classList.remove('hidden');
@@ -142,6 +158,11 @@
         }
 
         let typingTimer;
+        const inputPatterns = {
+            email: /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/,
+            phone: /^[0-9]{10,15}$/
+        };
+
         window.checkUniqueness = function(type, value) {
             clearTimeout(typingTimer);
             const errorEl = document.getElementById('error_' + type);
@@ -151,13 +172,31 @@
             validationStatus[type] = false;
             validateSubmitButton();
 
+            if (value.length === 0) {
+                errorEl.classList.add('hidden');
+                inputEl.classList.remove('border-rose-500', 'ring-rose-500');
+                return;
+            }
+
+            // Validasi Format Frontend
+            if (!inputPatterns[type].test(value)) {
+                errorEl.innerText = `Format ${type === 'email' ? 'Email' : 'Nomor HP'} tidak valid!`;
+                errorEl.classList.remove('hidden');
+                inputEl.classList.add('border-rose-500', 'ring-rose-500');
+                return;
+            }
+
             if (value.length < 3) return;
 
             typingTimer = setTimeout(() => {
-                fetch(`/admin/manage-user/check-availability?type=${type}&value=${value}`)
+                // Backend merespons cek berdasarkan spesifik query param 'email' atau 'phone'
+                fetch(`/admin/manage-user/check-availability?${type}=${value}`)
                     .then(res => res.json())
                     .then(data => {
-                        if (data.exists) {
+                        // Tentukan variabel mana yang jadi penanda error sesuai tipe
+                        const isDuplicate = type === 'email' ? data.email_duplicate : data.phone_duplicate;
+                        
+                        if (isDuplicate) {
                             errorEl.innerText = `${type === 'email' ? 'Email' : 'Nomor HP'} ini sudah terdaftar!`;
                             errorEl.classList.remove('hidden');
                             inputEl.classList.add('border-rose-500', 'ring-rose-500');
@@ -179,7 +218,103 @@
                 alert('Mohon pastikan email dan nomor HP unik dan tersedia!');
                 return false;
             }
+
+            // GANTI KE PENGIRIMAN AJAX
+            e.preventDefault();
+            
+            // Sembunyikan form fields dan tombol batal, lalu nonaktifkan tombol submit
+            document.getElementById('add_user_form_body').classList.add('hidden');
+            document.getElementById('btn_cancel_add').classList.add('hidden');
+            
+            const btnSubmit = document.getElementById('btn_submit_add');
+            btnSubmit.disabled = true;
+            btnSubmit.innerText = "Memproses...";
+            btnSubmit.classList.add('opacity-50', 'cursor-not-allowed', 'grayscale');
+
+            const progressContainer = document.getElementById('add_user_progress');
+            progressContainer.classList.remove('hidden');
+
+            // Reset dan sembunyikan alert backend bila ada
+            let backendAlert = document.getElementById('backend_error_alert');
+            if (backendAlert) backendAlert.classList.add('hidden');
+
+            // Simulasi Update Animasi Bar Progress Visually selama proses server berjalan
+            let progress = 0;
+            const bar = document.getElementById('progress_bar_fill');
+            const statusText = document.getElementById('progress_text');
+
+            const interval = setInterval(() => {
+                if (progress >= 90) {
+                    clearInterval(interval);
+                    statusText.innerText = "Mengirim Pesan Verifikasi...";
+                } else {
+                    progress += 10;
+                    bar.style.width = progress + '%';
+                    
+                    if (progress === 30) {
+                        statusText.innerText = "Menyiapkan Entri Data...";
+                    } else if (progress === 60) {
+                        statusText.innerText = "Menghubungkan ke SMTP Gateway...";
+                    }
+                }
+            }, 500);
+            
+            // Lakukan FETCH AJAX
+            const form = e.target;
+            const formData = new FormData(form);
+            
+            fetch(form.action, {
+                method: 'POST',
+                headers: {
+                    'X-Requested-With': 'XMLHttpRequest',
+                    'Accept': 'application/json'
+                },
+                body: formData
+            })
+            .then(response => response.json().then(data => ({ status: response.status, body: data })))
+            .then(res => {
+                clearInterval(interval);
+                bar.style.width = '100%';
+                
+                if (res.status === 200 && res.body.success) {
+                    statusText.innerText = "Berhasil!";
+                    // Reload halaman atau redirect untuk menampilkan flash message Sukses
+                    window.location.reload();
+                } else {
+                    // Tampilkan Error di Modal
+                    showBackendError(res.body.message || "Terjadi kesalahan internal.");
+                }
+            })
+            .catch(error => {
+                clearInterval(interval);
+                showBackendError("Koneksi terputus atau server tidak merespons.");
+            });
         });
+
+        // Tampilkan Error dari Backend & Kembalikan Kondisi Awal
+        function showBackendError(message) {
+            // Tampilkan kembali form input
+            document.getElementById('add_user_form_body').classList.remove('hidden');
+            document.getElementById('btn_cancel_add').classList.remove('hidden');
+            document.getElementById('add_user_progress').classList.add('hidden');
+            
+            const btnSubmit = document.getElementById('btn_submit_add');
+            btnSubmit.disabled = false;
+            btnSubmit.innerText = "Buat Akun";
+            btnSubmit.classList.remove('opacity-50', 'cursor-not-allowed', 'grayscale');
+
+            // Buat alert bila belum ada
+            let alertBox = document.getElementById('backend_error_alert');
+            if (!alertBox) {
+                alertBox = document.createElement('div');
+                alertBox.id = 'backend_error_alert';
+                alertBox.className = 'p-4 mx-8 mb-4 mt-4 bg-rose-50 border border-rose-200 text-rose-600 rounded-lg text-xs font-bold uppercase tracking-widest text-center';
+                const formBody = document.getElementById('add_user_form_body');
+                formBody.parentNode.insertBefore(alertBox, formBody);
+            }
+            alertBox.innerText = message;
+            alertBox.classList.remove('hidden');
+        }
 
         // --- Fungsi Password Tetap Sama ---
         // window.generateStrongPassword = function() {
