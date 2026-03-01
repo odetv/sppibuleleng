@@ -1,6 +1,6 @@
 <x-app-layout title="Pengaturan Sistem">
-    <div class="p-4 sm:p-8">
-        <div class="w-full mx-auto sm:px-6 lg:px-8 space-y-10">
+    <div class="py-8 w-full px-4 sm:px-6 lg:px-8 relative">
+        <div class="max-w-full mx-auto space-y-6">
 
             {{-- Header Halaman --}}
             <div class="flex flex-col gap-2">
