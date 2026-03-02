@@ -39,6 +39,8 @@ class SppgExport extends DefaultValueBinder implements
     {
         return SppgUnit::query()->with([
             'leader',
+            'nutritionist',
+            'accountant',
             'socialMedia'
         ]);
     }
@@ -62,7 +64,9 @@ class SppgExport extends DefaultValueBinder implements
             'name' => 'NAMA SPPG',
             'status' => 'STATUS',
             'operational_date' => 'TANGGAL OPERASIONAL',
-            'leader_name' => 'NAMA KEPALA SPPG',
+            'leader_name'    => 'NAMA KEPALA SPPG',
+            'nutritionist_name' => 'AHLI GIZI',
+            'accountant_name'   => 'AKUNTAN',
             'province' => 'PROVINSI',
             'regency' => 'KABUPATEN',
             'district' => 'KECAMATAN',
@@ -91,8 +95,10 @@ class SppgExport extends DefaultValueBinder implements
                 'code_sppg_unit' => $sppgUnit->code_sppg_unit ?? '-',
                 'name' => $sppgUnit->name ?? '-',
                 'status' => $sppgUnit->status ?? '-',
-                'operational_date' => $sppgUnit->operational_date ?? '-',
+                'operational_date' => $sppgUnit->operational_date ? \Carbon\Carbon::parse($sppgUnit->operational_date)->format('d-m-Y') : '-',
                 'leader_name' => collect([$leader?->title_education_front, $leader?->name, $leader?->title_education])->filter()->join(' '), 
+                'nutritionist_name' => $sppgUnit->nutritionist?->name ?? '-',
+                'accountant_name' => $sppgUnit->accountant?->name ?? '-',
                 'province' => $sppgUnit->province ?? '-',
                 'regency' => $sppgUnit->regency ?? '-',
                 'district' => $sppgUnit->district ?? '-',

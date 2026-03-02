@@ -17,7 +17,7 @@ class SppgUnitController extends Controller
         $search = $request->query('search');
 
         // Ambil data unit dengan eager loading relasi
-        $query = SppgUnit::with(['leader', 'socialMedia'])->latest();
+        $query = SppgUnit::with(['leader', 'nutritionist', 'accountant', 'socialMedia'])->latest();
 
         if ($search) {
             $query->where(function ($q) use ($search) {
@@ -34,9 +34,11 @@ class SppgUnitController extends Controller
         $units = $query->paginate($perPage)->withQueryString();
 
         // Ambil data person untuk dropdown leader
-        $leaders = Person::orderBy('name', 'asc')->get();
+        $leaders = Person::whereHas('position', fn($q) => $q->where('slug_position', 'kasppg'))->orderBy('name')->get();
+        $nutritionists = Person::whereHas('position', fn($q) => $q->where('slug_position', 'ag'))->orderBy('name')->get();
+        $accountants = Person::whereHas('position', fn($q) => $q->where('slug_position', 'ak'))->orderBy('name')->get();
 
-        return view('admin.manage-sppg.index', compact('units', 'leaders'));
+        return view('admin.manage-sppg.index', compact('units', 'leaders', 'nutritionists', 'accountants'));
     }
 
     /**
@@ -93,6 +95,8 @@ class SppgUnitController extends Controller
                 'latitude_gps' => $data['latitude_gps'],
                 'longitude_gps' => $data['longitude_gps'],
                 'leader_id' => $data['leader_id'] === 'NULL' ? null : $data['leader_id'],
+                'nutritionist_id' => (empty($data['nutritionist_id']) || $data['nutritionist_id'] === 'NULL') ? null : $data['nutritionist_id'],
+                'accountant_id' => (empty($data['accountant_id']) || $data['accountant_id'] === 'NULL') ? null : $data['accountant_id'],
                 'photo' => $data['photo'] ?? null,
             ]);
 
@@ -161,6 +165,8 @@ class SppgUnitController extends Controller
                 'latitude_gps' => $request->latitude_gps,
                 'longitude_gps' => $request->longitude_gps,
                 'leader_id' => $request->leader_id === 'NULL' ? null : $request->leader_id,
+                'nutritionist_id' => (empty($request->nutritionist_id) || $request->nutritionist_id === 'NULL') ? null : $request->nutritionist_id,
+                'accountant_id' => (empty($request->accountant_id) || $request->accountant_id === 'NULL') ? null : $request->accountant_id,
                 'photo' => $photoPath,
                 'updated_at' => now(),
             ]);
@@ -315,7 +321,7 @@ class SppgUnitController extends Controller
                             'code_sppg_unit' => !empty($code_sppg) ? $code_sppg : null,
                             'name' => $name,
                             'status' => $status,
-                            'operational_date' => !empty(trim($row['TANGGAL OPERASIONAL (YYYY-MM-DD)'] ?? '')) ? date('Y-m-d', strtotime(trim($row['TANGGAL OPERASIONAL (YYYY-MM-DD)']))) : null,
+                            'operational_date' => !empty(trim($row['TANGGAL OPERASIONAL (DD-MM-YYYY)'] ?? '')) ? \Carbon\Carbon::createFromFormat('d-m-Y', trim($row['TANGGAL OPERASIONAL (DD-MM-YYYY)']))->format('Y-m-d') : null,
                             'province' => trim($row['PROVINSI'] ?? ''),
                             'regency' => trim($row['KABUPATEN'] ?? ''),
                             'district' => trim($row['KECAMATAN'] ?? ''),

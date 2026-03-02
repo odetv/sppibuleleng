@@ -96,9 +96,9 @@ class AssignmentDecreeExport extends DefaultValueBinder implements
             if ($col === 'id_assignment_decree') continue;
             
             if ($col === 'no_sk') $row[] = $decree->no_sk ?? '-';
-            elseif ($col === 'date_sk') $row[] = $decree->date_sk ?? '-';
+            elseif ($col === 'date_sk') $row[] = $decree->date_sk ? \Carbon\Carbon::parse($decree->date_sk)->format('d-m-Y') : '-';
             elseif ($col === 'no_ba_verval') $row[] = $decree->no_ba_verval ?? '-';
-            elseif ($col === 'date_ba_verval') $row[] = $decree->date_ba_verval ?? '-';
+            elseif ($col === 'date_ba_verval') $row[] = $decree->date_ba_verval ? \Carbon\Carbon::parse($decree->date_ba_verval)->format('d-m-Y') : '-';
             elseif ($col === 'sppg_unit_ids') $row[] = $sppgIds ?: '-';
             elseif ($col === 'sppg_unit_names') $row[] = $sppgNames ?: '-';
             elseif ($col === 'file_sk_link') $row[] = $fileUrl;

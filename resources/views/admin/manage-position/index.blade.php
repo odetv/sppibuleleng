@@ -1,18 +1,19 @@
-<x-app-layout title="Daftar Hak Akses">
+<x-app-layout title="Daftar Jabatan">
     <div class="text-slate-800 text-[14px] py-8 w-full px-4 sm:px-6 lg:px-8 relative">
         <div class="max-w-full mx-auto space-y-6">
 
-            {{-- 2. SINGLE STATS CARD (Full Width) --}}
-            <div class="w-full">
-                <div class="bg-white p-6 rounded-xl border border-slate-200 flex items-center shadow-sm w-full transition-all hover:border-indigo-300">
-                    <div class="p-3 bg-slate-50 rounded-lg mr-4 text-indigo-600 border border-slate-100 shadow-sm">
-                        <svg class="w-8 h-8" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"></path>
-                        </svg>
-                    </div>
+            {{-- 1. HEADER SECTION --}}
+            <div class="bg-white rounded-xl border border-slate-200 overflow-hidden shadow-sm w-full">
+                <div class="p-6 md:p-8 flex flex-col md:flex-row justify-between gap-4">
                     <div>
-                        <p class="text-xl font-bold uppercase text-slate-400">Kelola Hak Akses</p>
-                        <h4 class="text-2xl font-black text-slate-800">{{ $roles->count() }} <span class="text-sm font-normal text-slate-400 ml-1">Hak Akses Tersedia</span></h4>
+                        <h2 class="text-xl font-bold text-slate-800 uppercase leading-tight">Kelola Jabatan</h2>
+                        <p class="text-sm text-slate-400 font-medium mt-1">Manajemen jabatan pengguna terdaftar di sistem</p>
+                    </div>
+                    <div class="flex items-center">
+                        <span class="inline-flex items-center px-4 py-2 text-[10px] font-bold rounded bg-white text-slate-600 uppercase border border-slate-200 tracking-widest shadow-sm">
+                            <span class="w-2 h-2 rounded-full bg-indigo-500 mr-2 animate-pulse"></span>
+                            {{ $positions->count() }} Jabatan Tersedia
+                        </span>
                     </div>
                 </div>
             </div>
@@ -20,34 +21,34 @@
             {{-- 3. DATABASE TABLE --}}
             <div class="bg-white rounded-xl border border-slate-200 overflow-hidden shadow-sm">
                 <div class="p-6 border-b border-slate-100 bg-slate-50/50 flex justify-between items-center text-slate-700">
-                    <h3 class="font-bold uppercase tracking-wider">Daftar Hak Akses Sistem</h3>
+                    <h3 class="font-bold uppercase tracking-wider">Daftar Jabatan Pengguna</h3>
                 </div>
                 <div class="overflow-x-auto scrollbar-thin">
                     <table class="w-full text-left border-collapse text-sm">
                         <thead>
                             <tr class="bg-slate-50 text-[11px] font-bold uppercase tracking-wider text-slate-400 border-b border-slate-100">
-                                <th class="px-8 py-4">Slug Hak Akses</th>
-                                <th class="px-8 py-4 text-center">Nama Hak Akses</th>
+                                <th class="px-8 py-4">Slug Jabatan</th>
+                                <th class="px-8 py-4 text-center">Nama Jabatan</th>
                                 <th class="px-8 py-4 text-right">Aksi</th>
                             </tr>
                         </thead>
                         <tbody class="divide-y divide-slate-50">
-                            @foreach($roles as $role)
+                            @foreach($positions as $pos)
                             <tr class="hover:bg-slate-50/80 transition-colors group">
                                 <td class="px-8 py-4">
                                     <div class="flex items-center gap-3">
                                         <div class="w-2.5 h-2.5 rounded-full bg-indigo-500 shadow-sm"></div>
-                                        <span class="font-bold text-slate-700 font-sans tracking-tight">{{ $role->slug_role }}</span>
+                                        <span class="font-bold text-slate-700 font-sans tracking-tight">{{ $pos->slug_position }}</span>
                                     </div>
                                 </td>
                                 <td class="px-8 py-4 text-center">
                                     <span class="text-slate-600 font-medium">
-                                        {{ $role->name_role }}
+                                        {{ $pos->name_position }}
                                     </span>
                                 </td>
                                 <td class="px-8 py-4 text-right">
                                     <button
-                                        onclick="openEditModal('{{ $role->id_ref_role }}', '{{ $role->name_role }}', '{{ $role->slug_role }}')"
+                                        onclick="openEditPositionModal('{{ $pos->id_ref_position }}', '{{ $pos->name_position }}', '{{ $pos->slug_position }}')"
                                         class="p-2 text-slate-400 hover:text-indigo-600 transition-colors cursor-pointer"
                                         title="Edit">
                                         <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
@@ -64,5 +65,5 @@
         </div>
     </div>
 
-    @include('admin.roles.partials.modal-edit')
+    @include('admin.manage-position.partials.modal-edit')
 </x-app-layout>

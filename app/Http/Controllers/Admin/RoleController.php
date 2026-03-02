@@ -11,7 +11,7 @@ class RoleController extends Controller
     public function index()
     {
         $roles = RefRole::all();
-        return view('admin.roles.index', compact('roles'));
+        return view('admin.manage-role.index', compact('roles'));
     }
 
     public function update(Request $request, $id)

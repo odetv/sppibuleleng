@@ -302,7 +302,7 @@
                 'KODE SPPG',
                 'NAMA SPPG',
                 'STATUS (Operasional/Belum Operasional/Tutup Sementara/Tutup Permanen)',
-                'TANGGAL OPERASIONAL (YYYY-MM-DD)',
+                'TANGGAL OPERASIONAL (DD-MM-YYYY)',
                 'PROVINSI',
                 'KABUPATEN',
                 'KECAMATAN',
@@ -353,7 +353,7 @@
                 const id = row['ID SPPG'] ? row['ID SPPG'].substring(0, 15) + (row['ID SPPG'].length > 15 ? '...' : '') : '<span class="text-rose-500 italic">Kosong</span>';
                 const name = row['NAMA SPPG'] ? row['NAMA SPPG'].substring(0, 25) + (row['NAMA SPPG'].length > 25 ? '...' : '') : '<span class="text-rose-500 italic">Kosong</span>';
                 const status = row['STATUS (Operasional/Belum Operasional/Tutup Sementara/Tutup Permanen)'] || '-';
-                const tgl = row['TANGGAL OPERASIONAL (YYYY-MM-DD)'] || '-';
+                const tgl = row['TANGGAL OPERASIONAL (DD-MM-YYYY)'] || '-';
                 const rawId = (row['ID SPPG'] || '').toString().trim();
                 const rawCode = (row['KODE SPPG'] || '').toString().trim();
 

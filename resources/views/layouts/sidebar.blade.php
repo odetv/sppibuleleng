@@ -5,7 +5,7 @@
 <aside
     id="sidebar"
     x-data="{ 
-        selected: '{{ request()->routeIs('profile.*') ? 'profil' : (request()->routeIs('admin.manage-user.*', 'admin.roles.*', 'admin.positions.*') ? 'admin_user' : (request()->routeIs('sppg.*') && !request()->routeIs('admin.manage-sppg.*') ? 'sppg' : '')) }}' 
+        selected: '{{ request()->routeIs('profile.*') ? 'profil' : (request()->routeIs('admin.manage-user.*', 'admin.manage-role.*', 'admin.manage-position.*') ? 'admin_user' : (request()->routeIs('sppg.*') && !request()->routeIs('admin.manage-sppg.*') ? 'sppg' : '')) }}' 
     }"
     :class="[
         (sidebarExpanded || isHovered || mobileSidebar) ? 'w-72' : 'w-20',
@@ -54,26 +54,49 @@
                     <hr x-show="!(sidebarExpanded || isHovered || mobileSidebar)" class="w-5 border-slate-200">
                 </div>
                 <ul class="mb-6 flex flex-col gap-1.5">
-                    {{-- Manajemen Pengguna (Dropdown) --}}
+                    {{-- Manajemen Pengguna --}}
                     <li>
-                        <button @click="selected = (selected === 'admin_user' ? '' : 'admin_user')"
+                        <a href="{{ route('admin.manage-user.index') }}"
+                            @click="selected = 'admin_user'"
                             :class="(sidebarExpanded || isHovered || mobileSidebar) ? 'px-4' : 'justify-center'"
-                            class="w-full group relative flex items-center gap-3 rounded-lg py-2.5 text-[14px] font-medium transition-all duration-200 {{ request()->routeIs('admin.manage-user.*', 'admin.roles.*', 'admin.positions.*') ? 'bg-indigo-50/50 text-indigo-600' : 'text-slate-600 hover:bg-indigo-50 hover:text-indigo-600' }}">
+                            class="group relative flex items-center gap-3 rounded-lg py-2.5 text-[14px] font-medium transition-all duration-200 {{ request()->routeIs('admin.manage-user.*') ? 'bg-indigo-50 text-indigo-600 font-bold shadow-sm' : 'text-slate-600 hover:bg-indigo-50 hover:text-indigo-600' }}">
                             <div class="shrink-0 flex items-center justify-center">
                                 <svg class="w-5.5 h-5.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z" />
                                 </svg>
                             </div>
-                            <span x-show="sidebarExpanded || isHovered || mobileSidebar" class="flex-1 text-left whitespace-nowrap">Manajemen Pengguna</span>
-                            <svg x-show="sidebarExpanded || isHovered || mobileSidebar" class="w-4 h-4 transition-transform duration-200" :class="selected === 'admin_user' ? 'rotate-180' : ''" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
-                            </svg>
-                        </button>
-                        <ul x-show="selected === 'admin_user' && (sidebarExpanded || isHovered || mobileSidebar)" x-transition class="ml-9 mt-1 flex flex-col gap-1 border-l border-slate-100">
-                            <li><a href="{{ route('admin.manage-user.index') }}" class="block py-2 px-3 text-[13px] transition-colors {{ request()->routeIs('admin.manage-user.index') ? 'text-indigo-600 font-bold' : 'text-slate-500 hover:text-indigo-600' }}">Daftar Pengguna</a></li>
-                            <li><a href="{{ route('admin.roles.index') }}" class="block py-2 px-3 text-[13px] transition-colors {{ request()->routeIs('admin.roles.index') ? 'text-indigo-600 font-bold' : 'text-slate-500 hover:text-indigo-600' }}">Daftar Hak Akses</a></li>
-                            <li><a href="{{ route('admin.positions.index') }}" class="block py-2 px-3 text-[13px] transition-colors {{ request()->routeIs('admin.positions.index') ? 'text-indigo-600 font-bold' : 'text-slate-500 hover:text-indigo-600' }}">Daftar Jabatan</a></li>
-                        </ul>
+                            <span x-show="sidebarExpanded || isHovered || mobileSidebar" class="whitespace-nowrap">Manajemen Pengguna</span>
+                        </a>
+                    </li>
+                    
+                    {{-- Manajemen Hak Akses --}}
+                    <li>
+                        <a href="{{ route('admin.manage-role.index') }}"
+                            @click="selected = 'admin_roles'"
+                            :class="(sidebarExpanded || isHovered || mobileSidebar) ? 'px-4' : 'justify-center'"
+                            class="group relative flex items-center gap-3 rounded-lg py-2.5 text-[14px] font-medium transition-all duration-200 {{ request()->routeIs('admin.manage-role.*') ? 'bg-indigo-50 text-indigo-600 font-bold shadow-sm' : 'text-slate-600 hover:bg-indigo-50 hover:text-indigo-600' }}">
+                            <div class="shrink-0 flex items-center justify-center">
+                                <svg class="w-5.5 h-5.5" fill="none" class="text-slate-600 {{ request()->routeIs('admin.manage-role.*') ? 'text-indigo-600' : 'group-hover:text-indigo-600' }}" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 7a2 2 0 012 2m4 0a6 6 0 01-7.743 5.743L11 17H9v2H7v2H4a1 1 0 01-1-1v-2.586a1 1 0 01.293-.707l5.964-5.964A6 6 0 1121 9z" />
+                                </svg>
+                            </div>
+                            <span x-show="sidebarExpanded || isHovered || mobileSidebar" class="whitespace-nowrap">Manajemen Hak Akses</span>
+                        </a>
+                    </li>
+                    
+                    {{-- Manajemen Jabatan --}}
+                    <li>
+                        <a href="{{ route('admin.manage-position.index') }}"
+                            @click="selected = 'admin_positions'"
+                            :class="(sidebarExpanded || isHovered || mobileSidebar) ? 'px-4' : 'justify-center'"
+                            class="group relative flex items-center gap-3 rounded-lg py-2.5 text-[14px] font-medium transition-all duration-200 {{ request()->routeIs('admin.manage-position.*') ? 'bg-indigo-50 text-indigo-600 font-bold shadow-sm' : 'text-slate-600 hover:bg-indigo-50 hover:text-indigo-600' }}">
+                            <div class="shrink-0 flex items-center justify-center">
+                                <svg class="w-5.5 h-5.5" fill="none" class="text-slate-600 {{ request()->routeIs('admin.manage-position.*') ? 'text-indigo-600' : 'group-hover:text-indigo-600' }}" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 13.255A23.931 23.931 0 0112 15c-3.183 0-6.22-.62-9-1.745M16 6V4a2 2 0 00-2-2h-4a2 2 0 00-2 2v2m4 6h.01M5 20h14a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
+                                </svg>
+                            </div>
+                            <span x-show="sidebarExpanded || isHovered || mobileSidebar" class="whitespace-nowrap">Manajemen Jabatan</span>
+                        </a>
                     </li>
 
                     {{-- Manajemen SPPG (Single Link) --}}
@@ -151,6 +174,9 @@
                             </svg>
                         </button>
                         <ul x-show="selected === 'sppg' && (sidebarExpanded || isHovered || mobileSidebar)" x-transition class="ml-9 mt-1 flex flex-col gap-1 border-l border-slate-100">
+                            @if($isAdmin || $userPosition === 'kasppg')
+                            <li><a href="{{ route('sppg.overview') }}" class="block py-2 px-3 text-[13px] transition-colors {{ request()->routeIs('sppg.overview') ? 'text-indigo-600 font-bold' : 'text-slate-500 hover:text-indigo-600' }}">Overview</a></li>
+                            @endif
                             <li><a href="{{ route('sppg.pks') }}" class="block py-2 px-3 text-[13px] transition-colors {{ request()->routeIs('sppg.pks') ? 'text-indigo-600 font-bold' : 'text-slate-500 hover:text-indigo-600' }}">Kerjasama (PKS)</a></li>
                             <li><a href="{{ route('sppg.sertifikasi') }}" class="block py-2 px-3 text-[13px] transition-colors {{ request()->routeIs('sppg.sertifikasi') ? 'text-indigo-600 font-bold' : 'text-slate-500 hover:text-indigo-600' }}">Sertifikasi SPPG</a></li>
                             <li><a href="{{ route('sppg.petugas') }}" class="block py-2 px-3 text-[13px] transition-colors {{ request()->routeIs('sppg.petugas') ? 'text-indigo-600 font-bold' : 'text-slate-500 hover:text-indigo-600' }}">Petugas SPPG</a></li>

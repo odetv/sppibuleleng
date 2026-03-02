@@ -274,9 +274,9 @@
             const firstRow = data[0] || {};
             const requiredHeaders = [
                 'NOMOR SK',
-                'TANGGAL SK (YYYY-MM-DD)',
+                'TANGGAL SK (DD-MM-YYYY)',
                 'NOMOR BA VERVAL',
-                'TANGGAL BA VERVAL (YYYY-MM-DD)',
+                'TANGGAL BA VERVAL (DD-MM-YYYY)',
                 'ID SPPG TERKAIT (Pisahkan dengan Koma Jika >1)',
             ];
             
@@ -400,7 +400,7 @@
                 const tr = document.createElement('tr');
 
                 const no_sk = row['NOMOR SK'] ? row['NOMOR SK'].toString().substring(0, 25) + (row['NOMOR SK'].length > 25 ? '...' : '') : '<span class="text-rose-500 italic">Kosong</span>';
-                const date_sk = row['TANGGAL SK (YYYY-MM-DD)'] || '-';
+                const date_sk = row['TANGGAL SK (DD-MM-YYYY)'] || '-';
                 const no_ba_verval = row['NOMOR BA VERVAL'] ? row['NOMOR BA VERVAL'].toString().substring(0, 25) + (row['NOMOR BA VERVAL'].length > 25 ? '...' : '') : '<span class="text-rose-500 italic">Kosong</span>';
                 const id_sppg = row['ID SPPG TERKAIT (Pisahkan dengan Koma Jika >1)'] || '-';
                 

@@ -8,6 +8,7 @@ use App\Http\Controllers\Admin\SppgUnitController;
 use App\Http\Controllers\Admin\AssignmentDecreeController;
 use App\Http\Controllers\PersonController;
 use App\Http\Controllers\ProfileController;
+use App\Http\Controllers\Sppg\OverviewController;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Route;
 
@@ -53,6 +54,9 @@ Route::middleware('auth')->group(function () {
 
         // --- MENU SPPG (Hanya KaSPPG, Ahli Gizi, Akuntansi) ---
         Route::middleware(['auth', 'position:kasppg,ag,ak'])->prefix('sppg')->name('sppg.')->group(function () {
+            // Overview hanya untuk Administrator (bypass) dan KaSPPG
+            Route::middleware('position:kasppg')->get('/overview', [OverviewController::class, 'index'])->name('overview');
+
             Route::get('/yayasan', function () {
                 return "Halaman: Yayasan";
             })->name('yayasan');
@@ -110,12 +114,12 @@ Route::middleware(['auth', 'role:administrator', 'profile.completed'])->prefix('
     });
 
     // Manajemen Role
-    Route::get('/roles', [RoleController::class, 'index'])->name('roles.index');
-    Route::patch('/roles/{id}', [RoleController::class, 'update'])->name('roles.update');
+    Route::get('/manage-role', [RoleController::class, 'index'])->name('manage-role.index');
+    Route::patch('/manage-role/{id}', [RoleController::class, 'update'])->name('manage-role.update');
 
     // Manajemen Jabatan
-    Route::get('/positions', [PositionController::class, 'index'])->name('positions.index');
-    Route::patch('/positions/{id}', [PositionController::class, 'update'])->name('positions.update');
+    Route::get('/manage-position', [PositionController::class, 'index'])->name('manage-position.index');
+    Route::patch('/manage-position/{id}', [PositionController::class, 'update'])->name('manage-position.update');
 
     // Manajemen SPPG (Level Admin)
     Route::prefix('manage-sppg')->name('manage-sppg.')->group(function () {

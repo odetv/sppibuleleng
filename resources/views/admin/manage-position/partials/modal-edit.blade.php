@@ -42,7 +42,7 @@
             const input = document.getElementById('input_name_position');
             const slugDisplay = document.getElementById('pos_slug_display');
 
-            form.action = `/admin/positions/${id}`;
+            form.action = `/admin/manage-position/${id}`;
             input.value = name;
             slugDisplay.innerText = "Slug: " + slug;
 

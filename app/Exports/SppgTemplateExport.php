@@ -6,9 +6,11 @@ use Maatwebsite\Excel\Concerns\FromArray;
 use Maatwebsite\Excel\Concerns\WithHeadings;
 use Maatwebsite\Excel\Concerns\WithStyles;
 use Maatwebsite\Excel\Concerns\ShouldAutoSize;
+use Maatwebsite\Excel\Concerns\WithEvents;
+use Maatwebsite\Excel\Events\AfterSheet;
 use PhpOffice\PhpSpreadsheet\Worksheet\Worksheet;
 
-class SppgTemplateExport implements FromArray, WithHeadings, WithStyles, ShouldAutoSize
+class SppgTemplateExport implements FromArray, WithHeadings, WithStyles, ShouldAutoSize, WithEvents
 {
     public function headings(): array
     {
@@ -17,7 +19,7 @@ class SppgTemplateExport implements FromArray, WithHeadings, WithStyles, ShouldA
             'KODE SPPG',
             'NAMA SPPG',
             'STATUS (Operasional/Belum Operasional/Tutup Sementara/Tutup Permanen)',
-            'TANGGAL OPERASIONAL (YYYY-MM-DD)',
+            'TANGGAL OPERASIONAL (DD-MM-YYYY)',
             'PROVINSI',
             'KABUPATEN',
             'KECAMATAN',
@@ -36,7 +38,7 @@ class SppgTemplateExport implements FromArray, WithHeadings, WithStyles, ShouldA
                 'KODE-XYZ',
                 'SPPG Buleleng Utara',
                 'Operasional',
-                '2024-01-01',
+                '01-01-2024',
                 'Bali',
                 'Buleleng',
                 'Banjar',
@@ -52,6 +54,16 @@ class SppgTemplateExport implements FromArray, WithHeadings, WithStyles, ShouldA
     {
         return [
             1 => ['font' => ['bold' => true]],
+        ];
+    }
+
+    public function registerEvents(): array
+    {
+        return [
+            AfterSheet::class => function (AfterSheet $event) {
+                $lastColumn = $event->sheet->getHighestColumn();
+                $event->sheet->getAutoFilter()->setRange('A1:' . $lastColumn . '1');
+            },
         ];
     }
 }

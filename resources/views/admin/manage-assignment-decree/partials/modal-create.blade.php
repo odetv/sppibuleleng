@@ -67,18 +67,6 @@
                         @enderror
                     </div>
                     <div>
-                        <label class="text-[11px] font-bold text-gray-500 uppercase tracking-wider block">File SK (PDF) <span class="text-rose-500">*</span></label>
-                        <input type="file" name="file_sk" accept=".pdf" @change="file_sk = $event.target.files[0]" class="w-full mt-2 px-4 py-[7px] bg-gray-50 rounded-lg text-sm text-slate-600 focus:ring-2 focus:ring-indigo-500 file:mr-4 file:py-1 file:px-3 file:rounded-md file:border-0 file:text-[11px] file:font-semibold file:bg-indigo-50 file:text-indigo-700 hover:file:bg-indigo-100" :class="(isSubmitted && !file_sk) ? 'border-rose-500 ring-rose-500 border ring-1' : 'border-none @error('file_sk') border-rose-500 ring-rose-500 border ring-1 @enderror'">
-                        <template x-if="isSubmitted && !file_sk">
-                            <p class="text-[11px] text-rose-500 mt-1.5 font-bold italic">* Wajib diisi</p>
-                        </template>
-                        @error('file_sk')
-                            <p class="text-xs text-rose-500 mt-1">{{ $message }}</p>
-                        @enderror
-                    </div>
-                </div>
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
-                    <div>
                         <label class="text-[11px] font-bold text-gray-500 uppercase tracking-wider block">Tanggal SK <span class="text-rose-500">*</span></label>
                         <input type="date" name="date_sk" x-model="date_sk" class="w-full mt-2 px-4 py-2.5 bg-gray-50 rounded-lg text-sm text-slate-600 focus:ring-2 focus:ring-indigo-500" :class="(isSubmitted && !date_sk) ? 'border-rose-500 ring-rose-500 border ring-1' : 'border-none @error('date_sk') border-rose-500 ring-rose-500 border ring-1 @enderror'">
                         <template x-if="isSubmitted && !date_sk">
@@ -88,6 +76,9 @@
                             <p class="text-xs text-rose-500 mt-1">{{ $message }}</p>
                         @enderror
                     </div>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
                     <div>
                         <label class="text-[11px] font-bold text-gray-500 uppercase tracking-wider block">Nomor BA Verval <span class="text-rose-500">*</span></label>
                         <input type="text" name="no_ba_verval" x-model="no_ba_verval" class="w-full mt-2 px-4 py-2.5 bg-gray-50 rounded-lg text-sm focus:ring-2 focus:ring-indigo-500" :class="(isSubmitted && !no_ba_verval) ? 'border-rose-500 ring-rose-500 border ring-1' : 'border-none @error('no_ba_verval') border-rose-500 ring-rose-500 border ring-1 @enderror'" placeholder="Masukkan Nomor BA Verval">
@@ -98,9 +89,6 @@
                             <p class="text-xs text-rose-500 mt-1">{{ $message }}</p>
                         @enderror
                     </div>
-                </div>
-
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
                     <div>
                         <label class="text-[11px] font-bold text-gray-500 uppercase tracking-wider block">Tanggal BA Verval <span class="text-rose-500">*</span></label>
                         <input type="date" name="date_ba_verval" x-model="date_ba_verval" class="w-full mt-2 px-4 py-2.5 bg-gray-50 rounded-lg text-sm text-slate-600 focus:ring-2 focus:ring-indigo-500" :class="(isSubmitted && !date_ba_verval) ? 'border-rose-500 ring-rose-500 border ring-1' : 'border-none @error('date_ba_verval') border-rose-500 ring-rose-500 border ring-1 @enderror'">
@@ -111,6 +99,17 @@
                             <p class="text-xs text-rose-500 mt-1">{{ $message }}</p>
                         @enderror
                     </div>
+                </div>
+
+                <div class="mb-6">
+                    <label class="text-[11px] font-bold text-gray-500 uppercase tracking-wider block">File SK (PDF) <span class="text-rose-500">*</span></label>
+                    <input type="file" name="file_sk" accept=".pdf" @change="file_sk = $event.target.files[0]" class="w-full mt-2 px-4 py-[7px] bg-gray-50 rounded-lg text-sm text-slate-600 focus:ring-2 focus:ring-indigo-500 file:mr-4 file:py-1 file:px-3 file:rounded-md file:border-0 file:text-[11px] file:font-semibold file:bg-indigo-50 file:text-indigo-700 hover:file:bg-indigo-100" :class="(isSubmitted && !file_sk) ? 'border-rose-500 ring-rose-500 border ring-1' : 'border-none @error('file_sk') border-rose-500 ring-rose-500 border ring-1 @enderror'">
+                    <template x-if="isSubmitted && !file_sk">
+                        <p class="text-[11px] text-rose-500 mt-1.5 font-bold italic">* Wajib diisi</p>
+                    </template>
+                    @error('file_sk')
+                        <p class="text-xs text-rose-500 mt-1">{{ $message }}</p>
+                    @enderror
                 </div>
 
                 <div class="mb-4">

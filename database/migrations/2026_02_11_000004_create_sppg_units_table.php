@@ -31,11 +31,9 @@ return new class extends Migration
             $table->decimal('latitude_gps', 10, 8)->nullable();
             $table->decimal('longitude_gps', 11, 8)->nullable();
 
-            // Relasi ke tabel users
-            $table->foreignId('leader_id')
-                ->nullable()
-                ->constrained('users', 'id_user')
-                ->onDelete('set null');
+            // Relasi ke tabel persons (Kepala SPPG)
+            $table->unsignedBigInteger('leader_id')->nullable();
+            $table->foreign('leader_id')->references('id_person')->on('persons')->nullOnDelete();
 
             $table->timestamps();
         });

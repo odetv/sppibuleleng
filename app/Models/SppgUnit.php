@@ -22,19 +22,31 @@ class SppgUnit extends Model
         'status',
         'operational_date',
         'photo',
-        'province',   // Pastikan ini ada
-        'regency',    // Pastikan ini ada
-        'district',   // Pastikan ini ada
-        'village',    // Pastikan ini ada
+        'province',
+        'regency',
+        'district',
+        'village',
         'address',
-        'latitude_gps',  // Pastikan ini ada
-        'longitude_gps', // Pastikan ini ada
-        'leader_id'
+        'latitude_gps',
+        'longitude_gps',
+        'leader_id',
+        'nutritionist_id',
+        'accountant_id',
     ];
 
     public function leader(): BelongsTo
     {
         return $this->belongsTo(Person::class, 'leader_id', 'id_person');
+    }
+
+    public function nutritionist(): BelongsTo
+    {
+        return $this->belongsTo(Person::class, 'nutritionist_id', 'id_person');
+    }
+
+    public function accountant(): BelongsTo
+    {
+        return $this->belongsTo(Person::class, 'accountant_id', 'id_person');
     }
 
     public function socialMedia(): MorphOne

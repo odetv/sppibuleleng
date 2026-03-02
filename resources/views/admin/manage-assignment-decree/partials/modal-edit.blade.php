@@ -66,26 +66,6 @@
                         @enderror
                     </div>
                     <div>
-                        <label class="text-[11px] font-bold text-gray-500 uppercase tracking-wider block">Ganti File SK (PDF)</label>
-                        <input type="file" name="file_sk" accept=".pdf" @change="file_sk_edit = $event.target.files[0]" class="w-full mt-2 px-4 py-[7px] bg-gray-50 rounded-lg text-sm text-slate-600 focus:ring-2 focus:ring-indigo-500 file:mr-4 file:py-1 file:px-3 file:rounded-md file:border-0 file:text-[11px] file:font-semibold file:bg-indigo-50 file:text-indigo-700 hover:file:bg-indigo-100" :class="'border-none @error('file_sk') border-rose-500 ring-rose-500 border ring-1 @enderror'">
-                        <p class="text-[10px] text-slate-400 mt-1">* Kosongkan jika tidak ingin mengubah file saat ini.</p>
-                        <template x-if="selectedDecree.file_sk_url">
-                            <div class="mt-2 text-xs">
-                                <span class="text-slate-500">File saat ini: </span>
-                                <a :href="selectedDecree.file_sk_url" target="_blank" class="text-indigo-600 hover:text-indigo-800 font-medium underline flex items-center inline-flex gap-1">
-                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" /></svg>
-                                    Lihat PDF
-                                </a>
-                            </div>
-                        </template>
-                        @error('file_sk')
-                            <p class="text-xs text-rose-500 mt-1">{{ $message }}</p>
-                        @enderror
-                    </div>
-                </div>
-
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
-                    <div>
                         <label class="text-[11px] font-bold text-gray-500 uppercase tracking-wider block">Tanggal SK <span class="text-rose-500">*</span></label>
                         <input type="date" name="date_sk" x-model="selectedDecree.date_sk" required class="w-full mt-2 px-4 py-2.5 bg-gray-50 rounded-lg text-sm text-slate-600 focus:ring-2 focus:ring-indigo-500" :class="(isSubmitted && !selectedDecree.date_sk) ? 'border-rose-500 ring-rose-500 border ring-1' : 'border-none @error('date_sk') border-rose-500 ring-rose-500 border ring-1 @enderror'">
                         <template x-if="isSubmitted && !selectedDecree.date_sk">
@@ -95,6 +75,9 @@
                             <p class="text-xs text-rose-500 mt-1">{{ $message }}</p>
                         @enderror
                     </div>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
                     <div>
                         <label class="text-[11px] font-bold text-gray-500 uppercase tracking-wider block">Nomor BA Verval <span class="text-rose-500">*</span></label>
                         <input type="text" name="no_ba_verval" x-model="selectedDecree.no_ba_verval" required class="w-full mt-2 px-4 py-2.5 bg-gray-50 rounded-lg text-sm focus:ring-2 focus:ring-indigo-500" :class="(isSubmitted && !selectedDecree.no_ba_verval) ? 'border-rose-500 ring-rose-500 border ring-1' : 'border-none @error('no_ba_verval') border-rose-500 ring-rose-500 border ring-1 @enderror'" placeholder="Masukkan Nomor BA Verval">
@@ -105,9 +88,6 @@
                             <p class="text-xs text-rose-500 mt-1">{{ $message }}</p>
                         @enderror
                     </div>
-                </div>
-
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
                     <div>
                         <label class="text-[11px] font-bold text-gray-500 uppercase tracking-wider block">Tanggal BA Verval <span class="text-rose-500">*</span></label>
                         <input type="date" name="date_ba_verval" x-model="selectedDecree.date_ba_verval" required class="w-full mt-2 px-4 py-2.5 bg-gray-50 rounded-lg text-sm text-slate-600 focus:ring-2 focus:ring-indigo-500" :class="(isSubmitted && !selectedDecree.date_ba_verval) ? 'border-rose-500 ring-rose-500 border ring-1' : 'border-none @error('date_ba_verval') border-rose-500 ring-rose-500 border ring-1 @enderror'">
@@ -118,6 +98,24 @@
                             <p class="text-xs text-rose-500 mt-1">{{ $message }}</p>
                         @enderror
                     </div>
+                </div>
+
+                <div class="mb-6">
+                    <label class="text-[11px] font-bold text-gray-500 uppercase tracking-wider block">Ganti File SK (PDF)</label>
+                    <input type="file" name="file_sk" accept=".pdf" @change="file_sk_edit = $event.target.files[0]" class="w-full mt-2 px-4 py-[7px] bg-gray-50 rounded-lg text-sm text-slate-600 focus:ring-2 focus:ring-indigo-500 file:mr-4 file:py-1 file:px-3 file:rounded-md file:border-0 file:text-[11px] file:font-semibold file:bg-indigo-50 file:text-indigo-700 hover:file:bg-indigo-100" :class="'border-none @error('file_sk') border-rose-500 ring-rose-500 border ring-1 @enderror'">
+                    <p class="text-[10px] text-slate-400 mt-1">* Kosongkan jika tidak ingin mengubah file saat ini.</p>
+                    <template x-if="selectedDecree.file_sk_url">
+                        <div class="mt-2 text-xs">
+                            <span class="text-slate-500">File saat ini: </span>
+                            <a :href="selectedDecree.file_sk_url" target="_blank" class="text-indigo-600 hover:text-indigo-800 font-medium underline flex items-center inline-flex gap-1">
+                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" /></svg>
+                                Lihat PDF
+                            </a>
+                        </div>
+                    </template>
+                    @error('file_sk')
+                        <p class="text-xs text-rose-500 mt-1">{{ $message }}</p>
+                    @enderror
                 </div>
 
                 <div class="mb-4" x-data="{ 

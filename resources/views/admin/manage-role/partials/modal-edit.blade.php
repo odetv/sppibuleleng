@@ -42,7 +42,7 @@
             const input = document.getElementById('input_name_role');
             const slugDisplay = document.getElementById('modal_slug_display');
 
-            form.action = `/admin/roles/${id}`;
+            form.action = `/admin/manage-role/${id}`;
             input.value = name;
             slugDisplay.innerText = "Slug: " + slug;
 

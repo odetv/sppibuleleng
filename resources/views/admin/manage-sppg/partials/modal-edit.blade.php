@@ -123,6 +123,26 @@
                                 @endforeach
                             </select>
                         </div>
+                        <div>
+                            <label class="text-[11px] font-bold text-gray-500 uppercase tracking-wider">Ahli Gizi</label>
+                            <select name="nutritionist_id" id="e_nutritionist" x-model="selectedUnit.nutritionist_id" class="w-full mt-2 px-3 py-2.5 bg-gray-50 border-none rounded-lg text-sm focus:ring-2 focus:ring-indigo-500">
+                                <option value="" disabled>-- Pilih Ahli Gizi --</option>
+                                <option value="NULL">Belum Ditugaskan</option>
+                                @foreach($nutritionists as $person)
+                                <option value="{{ $person->id_person }}">{{ $person->name }}</option>
+                                @endforeach
+                            </select>
+                        </div>
+                        <div>
+                            <label class="text-[11px] font-bold text-gray-500 uppercase tracking-wider">Akuntan</label>
+                            <select name="accountant_id" id="e_accountant" x-model="selectedUnit.accountant_id" class="w-full mt-2 px-3 py-2.5 bg-gray-50 border-none rounded-lg text-sm focus:ring-2 focus:ring-indigo-500">
+                                <option value="" disabled>-- Pilih Akuntan --</option>
+                                <option value="NULL">Belum Ditugaskan</option>
+                                @foreach($accountants as $person)
+                                <option value="{{ $person->id_person }}">{{ $person->name }}</option>
+                                @endforeach
+                            </select>
+                        </div>
                     </div>
                 </div>
 

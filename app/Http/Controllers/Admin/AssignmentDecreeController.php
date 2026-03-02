@@ -336,9 +336,9 @@ class AssignmentDecreeController extends Controller
             foreach ($data as $row) {
                 // Parse Data
                 $no_sk = trim($row['NOMOR SK'] ?? '');
-                $date_sk = trim($row['TANGGAL SK (YYYY-MM-DD)'] ?? '');
+                $date_sk = trim($row['TANGGAL SK (DD-MM-YYYY)'] ?? '');
                 $no_ba_verval = trim($row['NOMOR BA VERVAL'] ?? '');
-                $date_ba_verval = trim($row['TANGGAL BA VERVAL (YYYY-MM-DD)'] ?? '');
+                $date_ba_verval = trim($row['TANGGAL BA VERVAL (DD-MM-YYYY)'] ?? '');
                 
                 // Parse Assigned SPPGs (Comma separated)
                 $sppgRaw = trim($row['ID SPPG TERKAIT (Pisahkan dengan Koma Jika >1)'] ?? '');
@@ -398,9 +398,9 @@ class AssignmentDecreeController extends Controller
                         $decree = AssignmentDecree::create([
                             'no_sk'          => $no_sk,
                             'file_sk'        => null, // Import masal tidak membawa lampiran
-                            'date_sk'        => !empty($date_sk) ? date('Y-m-d', strtotime($date_sk)) : null,
+                            'date_sk'        => !empty($date_sk) ? \Carbon\Carbon::createFromFormat('d-m-Y', $date_sk)->format('Y-m-d') : null,
                             'no_ba_verval'   => $no_ba_verval,
-                            'date_ba_verval' => !empty($date_ba_verval) ? date('Y-m-d', strtotime($date_ba_verval)) : null,
+                            'date_ba_verval' => !empty($date_ba_verval) ? \Carbon\Carbon::createFromFormat('d-m-Y', $date_ba_verval)->format('Y-m-d') : null,
                         ]);
 
                         // Kaitkan SPPG

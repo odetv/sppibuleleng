@@ -11,7 +11,7 @@ class PositionController extends Controller
     public function index()
     {
         $positions = RefPosition::all();
-        return view('admin.positions.index', compact('positions'));
+        return view('admin.manage-position.index', compact('positions'));
     }
 
     public function update(Request $request, $id)
