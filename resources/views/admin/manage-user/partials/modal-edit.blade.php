@@ -59,28 +59,43 @@
                     {{-- SECTION: KEDINASAN --}}
                     <div class="pt-10 border-t border-gray-100">
                         <h3 class="text-sm font-bold uppercase tracking-widest text-indigo-600 mb-6">Penugasan & Status Kerja</h3>
-                        <div class="grid grid-cols-2 md:grid-cols-5 gap-4">
-                            <div class="col-span-2">
-                                <label class="text-[11px] font-bold text-gray-500 uppercase tracking-wider">Unit Penugasan</label>
-                                <select name="id_work_assignment" id="f_wa" class="w-full mt-2 px-3 py-2.5 bg-gray-50 border-none rounded-lg text-sm">
-                                    <option value="">Belum Penugasan</option>
-                                    @foreach($workAssignments as $wa) <option value="{{ $wa->id_work_assignment }}">{{ $wa->sppgUnit?->name ?? 'SPPG Tidak Ditemukan' }} - {{ $wa->decree?->no_sk ?? 'SK Tidak Ditemukan' }}</option> @endforeach
-                                </select>
-                            </div>
-                            <div><label class="text-[11px] font-bold text-gray-500 uppercase tracking-wider">Batch</label><select required name="batch" id="f_batch" class="w-full mt-2 px-3 py-2.5 bg-gray-50 border-none rounded-lg text-sm">@foreach(['1', '2', '3', 'Non-SPPI'] as $b) <option value="{{ $b }}">{{ $b }}</option> @endforeach</select></div>
-                            <div><label class="text-[11px] font-bold text-gray-500 uppercase tracking-wider">Hak Akses Sistem</label><select required name="id_ref_role" id="f_role" class="w-full mt-2 px-3 py-2.5 bg-gray-50 border-none rounded-lg text-sm">@foreach($roles as $r)<option value="{{$r->id_ref_role}}">{{$r->name_role}}</option>@endforeach</select></div>
-                            <div>
+                        <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+                            {{-- JABATAN: pilih dulu agar bisa filter unit --}}
+                            <div class="col-span-2 md:col-span-5">
                                 <label class="text-[11px] font-bold text-gray-500 uppercase tracking-wider">Jabatan</label>
                                 <select name="id_ref_position" id="f_pos" class="w-full mt-2 px-3 py-2.5 bg-gray-50 border-none rounded-lg text-sm focus:ring-2 focus:ring-indigo-500 transition-all">
                                     <option value="">Belum Menjabat</option>
                                     @foreach($positions as $p)
                                     <option value="{{ $p->id_ref_position }}"
+                                        data-slug="{{ $p->slug_position }}"
                                         {{ (old('id_ref_position', $person->id_ref_position ?? '') == $p->id_ref_position) ? 'selected' : '' }}>
                                         {{ $p->name_position }}
                                     </option>
                                     @endforeach
                                 </select>
                             </div>
+
+                            {{-- UNIT PENUGASAN: difilter & di-disable berdasarkan jabatan --}}
+                            <div class="col-span-2">
+                                <label class="text-[11px] font-bold text-gray-500 uppercase tracking-wider">Unit Penugasan</label>
+                                <select name="id_work_assignment" id="f_wa" class="w-full mt-2 px-3 py-2.5 bg-gray-50 border-none rounded-lg text-sm">
+                                    <option value="none">Belum Penugasan</option>
+                                    @foreach($workAssignments as $wa)
+                                        <option value="{{ $wa->id_work_assignment }}"
+                                            data-unit="{{ $wa->id_sppg_unit }}"
+                                            data-leader="{{ $wa->sppgUnit->leader_id ?? '' }}"
+                                            data-nutritionist="{{ $wa->sppgUnit->nutritionist_id ?? '' }}"
+                                            data-accountant="{{ $wa->sppgUnit->accountant_id ?? '' }}">
+                                            {{ $wa->sppgUnit?->name ?? 'SPPG Tidak Ditemukan' }} - {{ $wa->decree?->no_sk ?? 'SK Tidak Ditemukan' }}
+                                        </option>
+                                    @endforeach
+                                </select>
+                                <p id="f-wa-occupied-note" class="hidden text-[10px] text-amber-600 font-medium mt-1">
+                                    <i class="fas fa-info-circle mr-1"></i> Opsi yang sudah ditetapkan tidak dapat dipilih.
+                                </p>
+                            </div>
+                            <div><label class="text-[11px] font-bold text-gray-500 uppercase tracking-wider">Batch</label><select required name="batch" id="f_batch" class="w-full mt-2 px-3 py-2.5 bg-gray-50 border-none rounded-lg text-sm">@foreach(['1', '2', '3', 'Non-SPPI'] as $b) <option value="{{ $b }}">{{ $b }}</option> @endforeach</select></div>
+                            <div><label class="text-[11px] font-bold text-gray-500 uppercase tracking-wider">Hak Akses Sistem</label><select required name="id_ref_role" id="f_role" class="w-full mt-2 px-3 py-2.5 bg-gray-50 border-none rounded-lg text-sm">@foreach($roles as $r)<option value="{{$r->id_ref_role}}">{{$r->name_role}}</option>@endforeach</select></div>
                         </div>
                     </div>
 
@@ -555,7 +570,7 @@
             // Helper function to safely set values without crashing on missing IDs
             const setVal = (id, val) => {
                 const el = document.getElementById(id);
-                if (el) el.value = val || '';
+                if (el) el.value = (val !== null && val !== undefined) ? val : '';
             };
 
             const methodField = document.getElementById('method_field');
@@ -572,11 +587,16 @@
             setVal('f_bpjs_tk', person?.no_bpjs_tk);
 
             // 2. Kerja & Penempatan
-            setVal('f_wa', person?.id_work_assignment);
+            // id_work_assignment null → 'none' agar dropdown Belum Penugasan terpilih
+            const waEl2 = document.getElementById('f_wa');
+            if (waEl2) waEl2.value = person?.id_work_assignment ?? 'none';
             setVal('f_batch', person?.batch);
             setVal('f_emp', person?.employment_status);
             setVal('f_role', user.id_ref_role);
-            setVal('f_pos', person?.id_ref_position);
+            setVal('f_pos', person?.id_ref_position ?? '');
+
+            // Simpan id_person untuk validasi occupancy warning
+            window.currentEditingPersonId = person?.id_person;
 
             // 3. Alamat KTP
             setVal('f_ktp_prov', person?.province_ktp);
@@ -632,6 +652,9 @@
 
             document.getElementById('masterModal').classList.remove('hidden');
 
+            // --- FILTER OPSI UNIT BERDASARKAN JABATAN ---
+            updateEditWaOptions();
+
             // Setup Map
             setTimeout(() => {
                 const lat = parseFloat(person?.latitude_gps_domicile);
@@ -654,9 +677,58 @@
                 }
             }
         };
+
         window.closeMasterEditModal = function() {
             document.getElementById('masterModal').classList.add('hidden');
         }
+
+        // JS LOGIC UNTUK VALIDASI PENUGASAN
+        const editPositionsMeta = @json($positions->pluck('slug_position', 'id_ref_position') ?? []);
+        const currentPersonId = () => window.currentEditingPersonId;
+
+        // ── FILTER & DISABLE OPSI UNIT PENUGASAN BERDASARKAN JABATAN (modal-edit) ──
+        function updateEditWaOptions() {
+            const posEl  = document.getElementById('f_pos');
+            const waEl   = document.getElementById('f_wa');
+            const note   = document.getElementById('f-wa-occupied-note');
+
+            const posSlug    = editPositionsMeta[posEl?.value];
+            const unitRoles  = ['kasppg', 'ag', 'ak'];
+            const slugToAttr = { kasppg: 'leader', ag: 'nutritionist', ak: 'accountant' };
+            const isUnitRole = posSlug && unitRoles.includes(posSlug);
+            const attrKey    = isUnitRole ? slugToAttr[posSlug] : null;
+
+            const waOptions = waEl?.querySelectorAll('option[data-unit]') ?? [];
+            let anyDisabled = false;
+
+            waOptions.forEach(opt => {
+                if (!isUnitRole) {
+                    opt.hidden   = true;
+                    opt.disabled = true;
+                    opt.style.color = '#9ca3af';
+                } else {
+                    opt.hidden = false;
+                    const occupantId = opt.getAttribute('data-' + attrKey);
+                    if (occupantId && occupantId !== '' && String(occupantId) !== String(currentPersonId())) {
+                        opt.disabled = true;
+                        opt.style.color = '#9ca3af';
+                        opt.title    = 'Sudah ditetapkan';
+                        anyDisabled  = true;
+                        if (waEl.value === opt.value) waEl.value = 'none';
+                    } else {
+                        opt.disabled = false;
+                        opt.style.color = '';
+                        opt.title    = '';
+                    }
+                }
+            });
+
+            if (!isUnitRole && waEl) waEl.value = waEl.querySelector('option[value="none"]') ? 'none' : '';
+            if (note) note.classList.toggle('hidden', !anyDisabled || !isUnitRole);
+        }
+
+        document.getElementById('f_pos')?.addEventListener('change', updateEditWaOptions);
+
         document.getElementById('f_date').addEventListener('change', function() {
             const birthDate = new Date(this.value);
             if (isNaN(birthDate)) return;

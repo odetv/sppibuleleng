@@ -148,32 +148,44 @@
                             <h3 class="font-bold text-darkblue uppercase text-xs tracking-widest">Penempatan & Status Kerja</h3>
                         </div>
                         <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+
+                            {{-- JABATAN (pilih dulu sebelum unit, agar bisa filter) --}}
+                            <div class="sm:col-span-2">
+                                <label class="text-[11px] font-bold text-gray-500 uppercase">Jabatan Sekarang</label>
+                                <select name="id_ref_position" id="id_ref_position" required class="w-full mt-2 px-3 py-2.5 bg-gray-50 border-none rounded-lg text-sm focus:ring-2 focus:ring-blue-500 persist validate-field">
+                                    <option value="" disabled selected>Pilih Jabatan</option>
+                                    <option value="none" {{ old('id_ref_position', $user->person?->id_ref_position) == null ? 'selected' : '' }}>Belum Menjabat</option>
+                                    @foreach($positions as $pos)
+                                    <option value="{{ $pos->id_ref_position }}"
+                                        data-slug="{{ $pos->slug_position }}"
+                                        {{ old('id_ref_position', $user->person?->id_ref_position) == $pos->id_ref_position ? 'selected' : '' }}>
+                                        {{ $pos->name_position }}
+                                    </option>
+                                    @endforeach
+                                </select>
+                            </div>
+
+                            {{-- UNIT PENUGASAN — Opsi dinonaktifkan jika sudah terisi (tergantung jabatan dipilih) --}}
                             <div class="sm:col-span-2">
                                 <label class="text-[11px] font-bold text-gray-500 uppercase">Unit Penugasan (Sesuai SK)</label>
                                 <select name="id_work_assignment" id="id_work_assignment" required class="w-full mt-2 px-3 py-2.5 bg-gray-50 border-none rounded-lg text-sm focus:ring-2 focus:ring-blue-500 persist validate-field">
                                     <option value="" disabled selected>Pilih Unit Penugasan</option>
                                     <option value="none" {{ old('id_work_assignment', $user->person?->id_work_assignment) == null ? 'selected' : '' }}>Belum Penugasan</option>
                                     @foreach($workAssignments as $wa)
-                                    <option value="{{ $wa->id_work_assignment }}" {{ old('id_work_assignment', $user->person?->id_work_assignment) == $wa->id_work_assignment ? 'selected' : '' }}>
-                                        {{ $wa->sppgUnit->name }} - {{ $wa->decree->no_sk }}
+                                    <option value="{{ $wa->id_work_assignment }}"
+                                        data-unit="{{ $wa->id_sppg_unit }}"
+                                        data-leader="{{ $wa->sppgUnit->leader_id ?? '' }}"
+                                        data-nutritionist="{{ $wa->sppgUnit->nutritionist_id ?? '' }}"
+                                        data-accountant="{{ $wa->sppgUnit->accountant_id ?? '' }}"
+                                        {{ old('id_work_assignment', $user->person?->id_work_assignment) == $wa->id_work_assignment ? 'selected' : '' }}>
+                                        {{ $wa->sppgUnit->name ?? '-' }} - {{ $wa->decree->no_sk ?? '-' }}
                                     </option>
                                     @endforeach
                                 </select>
-                            </div>
-
-                            {{-- TAMBAHAN: PILIH JABATAN --}}
-                            <div class="sm:col-span-2">
-                                <label class="text-[11px] font-bold text-gray-500 uppercase">Jabatan Sekarang</label>
-                                <select name="id_ref_position" id="id_ref_position" required class="w-full mt-2 px-3 py-2.5 bg-gray-50 border-none rounded-lg text-sm focus:ring-2 focus:ring-blue-500 persist validate-field">
-                                    <option value="" disabled selected>Pilih Jabatan</option>
-                                    {{-- Menggunakan value "none" agar sinkron dengan logic Controller kita sebelumnya --}}
-                                    <option value="none" {{ old('id_ref_position', $user->person?->id_ref_position) == null ? 'selected' : '' }}>Belum Menjabat</option>
-                                    @foreach($positions as $pos)
-                                    <option value="{{ $pos->id_ref_position }}" {{ old('id_ref_position', $user->person?->id_ref_position) == $pos->id_ref_position ? 'selected' : '' }}>
-                                        {{ $pos->name_position }}
-                                    </option>
-                                    @endforeach
-                                </select>
+                                <p id="wa-occupied-note" class="hidden text-[10px] text-amber-600 font-medium mt-1">
+                                    <i class="fas fa-info-circle mr-1"></i>
+                                    Opsi yang sudah ditugaskan ke orang lain tidak dapat dipilih.
+                                </p>
                             </div>
 
                             <div>
@@ -614,6 +626,59 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.13/cropper.min.js"></script>
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
     <script>
+        // ── LOGIKA FILTER & DISABLE OPSI UNIT PENUGASAN BERDASARKAN JABATAN ──
+        const positionsMeta = @json($positions->pluck('slug_position', 'id_ref_position') ?? []);
+
+        function updateWaOptions() {
+            const posEl = document.getElementById('id_ref_position');
+            const waEl  = document.getElementById('id_work_assignment');
+            const note  = document.getElementById('wa-occupied-note');
+
+            const selectedPosId = posEl?.value;
+            const posSlug = selectedPosId ? positionsMeta[selectedPosId] : null;
+
+            // Jabatan yang berhak memilih unit SPPG
+            const unitRoles = ['kasppg', 'ag', 'ak'];
+            const slugToAttr = { kasppg: 'leader', ag: 'nutritionist', ak: 'accountant' };
+            const isUnitRole = posSlug && unitRoles.includes(posSlug);
+            const attrKey    = isUnitRole ? slugToAttr[posSlug] : null;
+
+            const waOptions = waEl.querySelectorAll('option[data-unit]');
+            let anyDisabled = false;
+
+            waOptions.forEach(opt => {
+                if (!isUnitRole) {
+                    opt.hidden   = true;
+                    opt.disabled = true;
+                    opt.style.color = '#9ca3af';
+                } else {
+                    opt.hidden = false;
+                    const occupantId = opt.getAttribute('data-' + attrKey);
+                    if (occupantId && occupantId !== '') {
+                        opt.disabled = true;
+                        opt.style.color = '#9ca3af';
+                        opt.title    = 'Sudah ditetapkan';
+                        anyDisabled  = true;
+                        if (waEl.value === opt.value) waEl.value = 'none';
+                    } else {
+                        opt.disabled = false;
+                        opt.style.color = '';
+                        opt.title    = '';
+                    }
+                }
+            });
+
+            // Jika jabatan bukan unit-role, paksa ke "Belum Penugasan"
+            if (!isUnitRole) {
+                waEl.value = 'none';
+            }
+
+            if (note) note.classList.toggle('hidden', !anyDisabled || !isUnitRole);
+        }
+
+        document.getElementById('id_ref_position')?.addEventListener('change', updateWaOptions);
+        document.addEventListener('DOMContentLoaded', updateWaOptions);
+
         document.addEventListener('DOMContentLoaded', function() {
             // --- 1. GLOBAL VARIABLES & ELEMENTS ---
             const form = document.getElementById('profileForm');
@@ -926,6 +991,9 @@
                         if (field.value.trim() !== "") clearError(field);
                     });
                 });
+
+                // Penting: setelah persist restore nilai jabatan, update filter opsi unit SPPG
+                updateWaOptions();
             }
 
             // --- 6. INITIALIZATION & RESTORE ---

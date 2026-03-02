@@ -27,6 +27,8 @@ class SppgUnitSeeder extends Seeder
                 'latitude_gps' => -8.1864444,
                 'longitude_gps' => 114.9765556,
                 'leader_id' => null,
+                'nutritionist_id' => null,
+                'accountant_id' => null,
                 'photo' => null,
                 'social' => ['facebook_url' => null, 'instagram_url' => null, 'tiktok_url' => null]
             ],

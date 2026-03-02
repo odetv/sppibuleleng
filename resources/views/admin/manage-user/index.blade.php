@@ -134,28 +134,44 @@
                                     <form action="{{ route('admin.manage-user.approve', $user->id_user) }}" method="POST" class="flex justify-end items-center gap-2">
                                         @csrf
 
-                                        {{-- 1. PILIH PENUGASAN --}}
-                                        <select name="id_work_assignment" required class="text-xs text-slate-500 font-medium whitespace-nowrap border-slate-200 rounded-md py-2 cursor-pointer outline-none focus:ring-1 focus:ring-emerald-500 max-w-48">
-                                            {{-- 1. Label Instruksi: Tetap ada, tidak bisa dipilih, dan TIDAK terpilih otomatis saat data null --}}
-                                            <option value="" disabled>
-                                                Pilih Penugasan
+                                        {{-- 1. PILIH JABATAN (dulu, agar bisa filter unit) --}}
+                                        <select name="id_ref_position"
+                                            id="pos-{{ $user->id_user }}"
+                                            required
+                                            class="inline-pos-select text-xs text-slate-500 font-medium whitespace-nowrap border-slate-200 rounded-md py-2 cursor-pointer outline-none focus:ring-1 focus:ring-emerald-500"
+                                            data-row="{{ $user->id_user }}">
+                                            <option value="" disabled>Pilih Jabatan</option>
+                                            <option value="none" {{ is_null($user->person?->id_ref_position) ? 'selected' : '' }}>Belum Menjabat</option>
+                                            @foreach($positions as $p)
+                                            <option value="{{ $p->id_ref_position }}"
+                                                data-slug="{{ $p->slug_position }}"
+                                                {{ $user->person?->id_ref_position == $p->id_ref_position ? 'selected' : '' }}>
+                                                {{ $p->name_position }}
                                             </option>
+                                            @endforeach
+                                        </select>
 
-                                            {{-- 2. Opsi Belum Penugasan: Akan otomatis terpilih (selected) jika data di DB bernilai null --}}
-                                            <option value="none" {{ is_null($user->person?->id_work_assignment) ? 'selected' : '' }}>
-                                                Belum Penugasan
-                                            </option>
-
-                                            {{-- 3. Daftar Penugasan dari Database --}}
+                                        {{-- 2. PILIH UNIT PENUGASAN (difilter berdasarkan jabatan) --}}
+                                        <select name="id_work_assignment"
+                                            id="wa-{{ $user->id_user }}"
+                                            required
+                                            class="inline-wa-select text-xs text-slate-500 font-medium whitespace-nowrap border-slate-200 rounded-md py-2 cursor-pointer outline-none focus:ring-1 focus:ring-emerald-500 max-w-48"
+                                            data-row="{{ $user->id_user }}"
+                                            data-person-id="{{ $user->id_person ?? '' }}">
+                                            <option value="" disabled>Pilih Penugasan</option>
+                                            <option value="none" {{ is_null($user->person?->id_work_assignment) ? 'selected' : '' }}>Belum Penugasan</option>
                                             @foreach($workAssignments as $wa)
                                             <option value="{{ $wa->id_work_assignment }}"
+                                                data-leader="{{ $wa->sppgUnit->leader_id ?? '' }}"
+                                                data-nutritionist="{{ $wa->sppgUnit->nutritionist_id ?? '' }}"
+                                                data-accountant="{{ $wa->sppgUnit->accountant_id ?? '' }}"
                                                 {{ $user->person?->id_work_assignment == $wa->id_work_assignment ? 'selected' : '' }}>
                                                 {{ $wa->sppgUnit?->name ?? 'SPPG Tidak Ditemukan' }} - {{ $wa->decree?->no_sk ?? 'SK Tidak Ditemukan' }}
                                             </option>
                                             @endforeach
                                         </select>
 
-                                        {{-- 2. PILIH HAK AKSES --}}
+                                        {{-- 3. PILIH HAK AKSES --}}
                                         <select name="id_ref_role" required class="text-xs text-slate-500 font-medium whitespace-nowrap border-slate-200 rounded-md py-2 cursor-pointer outline-none focus:ring-1 focus:ring-emerald-500">
                                             @if(!$user->id_ref_role)
                                             <option value="" disabled selected>Pilih Hak Akses</option>
@@ -164,27 +180,6 @@
                                             <option value="{{$r->id_ref_role}}"
                                                 {{ ($user->id_ref_role == $r->id_ref_role) ? 'selected' : ($r->name_role == 'Guest' && !$user->id_ref_role ? 'selected' : '') }}>
                                                 {{$r->name_role}}
-                                            </option>
-                                            @endforeach
-                                        </select>
-
-                                        {{-- 3. PILIH JABATAN --}}
-                                        <select name="id_ref_position" required class="text-xs text-slate-500 font-medium whitespace-nowrap border-slate-200 rounded-md py-2 cursor-pointer outline-none focus:ring-1 focus:ring-emerald-500">
-                                            {{-- 1. Label Instruksi: Tetap ada sebagai panduan, namun tidak bisa dikirim (disabled) --}}
-                                            <option value="" disabled>
-                                                Pilih Jabatan
-                                            </option>
-
-                                            {{-- 2. Opsi Belum Menjabat: Otomatis terpilih (selected) jika id_ref_position bernilai null di database --}}
-                                            <option value="none" {{ is_null($user->person?->id_ref_position) ? 'selected' : '' }}>
-                                                Belum Menjabat
-                                            </option>
-
-                                            {{-- 3. Daftar Jabatan dari Database --}}
-                                            @foreach($positions as $p)
-                                            <option value="{{ $p->id_ref_position }}"
-                                                {{ $user->person?->id_ref_position == $p->id_ref_position ? 'selected' : '' }}>
-                                                {{ $p->name_position }}
                                             </option>
                                             @endforeach
                                         </select>
@@ -739,6 +734,49 @@
                     refreshTable(url.toString());
                 }
             }
+        });
+        // ── FILTER UNIT PENUGASAN BERDASARKAN JABATAN (per baris tabel verifikasi) ──
+        const inlinePosMetaRaw = @json($positions->pluck('slug_position', 'id_ref_position') ?? []);
+        const inlineUnitRoles  = ['kasppg', 'ag', 'ak'];
+        const inlineSlugToAttr = { kasppg: 'leader', ag: 'nutritionist', ak: 'accountant' };
+
+        function updateInlineWaOptions(rowId) {
+            const posEl = document.getElementById('pos-' + rowId);
+            const waEl  = document.getElementById('wa-' + rowId);
+            if (!posEl || !waEl) return;
+
+            const selectedOpt = posEl.options[posEl.selectedIndex];
+            const posSlug     = selectedOpt?.getAttribute('data-slug') ?? null;
+            const isUnitRole  = posSlug && inlineUnitRoles.includes(posSlug);
+            const attrKey     = isUnitRole ? inlineSlugToAttr[posSlug] : null;
+
+            const selfPersonId = waEl.dataset.personId ?? '';
+
+            waEl.querySelectorAll('option[data-leader]').forEach(opt => {
+                if (!isUnitRole) {
+                    opt.hidden   = true;
+                    opt.disabled = true;
+                    opt.style.color = '#9ca3af';
+                } else {
+                    opt.hidden = false;
+                    const occupantId = opt.getAttribute('data-' + attrKey);
+                    // Disable hanya jika slot terisi DAN bukan milik user ini sendiri
+                    const isOwnSlot  = selfPersonId && String(occupantId) === String(selfPersonId);
+                    opt.disabled     = !!(occupantId && occupantId !== '' && !isOwnSlot);
+                    opt.style.color  = opt.disabled ? '#9ca3af' : '';
+                    opt.title        = opt.disabled ? 'Sudah ditetapkan' : '';
+                    if (opt.disabled && waEl.value === opt.value) waEl.value = 'none';
+                }
+            });
+
+            if (!isUnitRole) waEl.value = 'none';
+        }
+
+        // Inisialisasi semua baris saat load
+        document.querySelectorAll('.inline-pos-select').forEach(posEl => {
+            const rowId = posEl.getAttribute('data-row');
+            updateInlineWaOptions(rowId);
+            posEl.addEventListener('change', () => updateInlineWaOptions(rowId));
         });
 
     </script>

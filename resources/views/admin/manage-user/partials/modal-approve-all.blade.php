@@ -12,41 +12,54 @@
 
             <form action="{{ route('admin.manage-user.approve-all') }}" method="POST" class="space-y-4">
                 @csrf
+
+                {{-- JABATAN (pilih dulu) --}}
                 <div>
-                    <label class="text-[11px] font-bold text-slate-400 uppercase tracking-widest mb-1 block">Penugasan</label>
-                    <select name="id_work_assignment" required class="w-full border-slate-200 rounded-xl text-sm py-3 px-4 focus:ring-emerald-500 outline-none font-sans shadow-sm">
-                        <option value="" disabled selected>Pilih Penugasan</option>
-                        <option value="none">Belum Penugasan</option>
-                        @foreach($workAssignments as $wa)
-                        <option value="{{$wa->id_work_assignment}}">{{$wa->sppgUnit?->name ?? 'SPPG Tidak Ditemukan'}} (SK: {{$wa->decree?->no_sk ?? 'SK Tidak Ditemukan'}})</option>
+                    <label class="text-[11px] font-bold text-slate-400 uppercase tracking-widest mb-1 block">Jabatan</label>
+                    <select id="aa_pos" name="id_ref_position" required class="w-full border-slate-200 rounded-xl text-sm py-3 px-4 focus:ring-emerald-500 outline-none font-sans shadow-sm">
+                        <option value="" disabled selected>Pilih Jabatan</option>
+                        <option value="none">Belum Menjabat</option>
+                        @foreach($positions as $p)
+                        <option value="{{$p->id_ref_position}}" data-slug="{{$p->slug_position}}">{{$p->name_position}}</option>
                         @endforeach
                     </select>
                 </div>
-                <div class="grid grid-cols-2 gap-4">
-                    <div>
-                        <label class="text-[11px] font-bold text-slate-400 uppercase tracking-widest mb-1 block">Hak Akses</label>
-                        <select name="id_ref_role" required class="w-full border-slate-200 rounded-xl text-sm py-3 px-4 focus:ring-emerald-500 outline-none font-sans shadow-sm">
-                            <option value="" disabled selected>Pilih Hak Akses</option>
-                            @foreach($roles as $r)
-                            <option value="{{$r->id_ref_role}}">{{$r->name_role}}</option>
-                            @endforeach
-                        </select>
-                    </div>
-                    <div>
-                        <label class="text-[11px] font-bold text-slate-400 uppercase tracking-widest mb-1 block">Jabatan</label>
-                        <select name="id_ref_position" required class="w-full border-slate-200 rounded-xl text-sm py-3 px-4 focus:ring-emerald-500 outline-none font-sans shadow-sm">
-                            <option value="" disabled selected>Pilih Jabatan</option>
-                            <option value="none">Belum Menjabat</option>
-                            @foreach($positions as $p)
-                            <option value="{{$p->id_ref_position}}">{{$p->name_position}}</option>
-                            @endforeach
-                        </select>
-                    </div>
+
+                {{-- PENUGASAN (filter berdasarkan jabatan) --}}
+                <div>
+                    <label class="text-[11px] font-bold text-slate-400 uppercase tracking-widest mb-1 block">Unit Penugasan</label>
+                    <select id="aa_wa" name="id_work_assignment" required class="w-full border-slate-200 rounded-xl text-sm py-3 px-4 focus:ring-emerald-500 outline-none font-sans shadow-sm">
+                        <option value="" disabled selected>Pilih Unit Penugasan</option>
+                        <option value="none">Belum Penugasan</option>
+                        @foreach($workAssignments as $wa)
+                        <option value="{{$wa->id_work_assignment}}"
+                            data-unit="{{$wa->id_sppg_unit}}"
+                            data-leader="{{$wa->sppgUnit->leader_id ?? ''}}"
+                            data-nutritionist="{{$wa->sppgUnit->nutritionist_id ?? ''}}"
+                            data-accountant="{{$wa->sppgUnit->accountant_id ?? ''}}">
+                            {{$wa->sppgUnit?->name ?? 'SPPG Tidak Ditemukan'}} (SK: {{$wa->decree?->no_sk ?? '-'}})
+                        </option>
+                        @endforeach
+                    </select>
+                    <p id="aa-occupied-note" class="hidden text-[10px] text-amber-600 font-medium mt-1">
+                        <i class="fas fa-info-circle mr-1"></i> Opsi yang sudah ditetapkan tidak dapat dipilih.
+                    </p>
+                </div>
+
+                {{-- HAK AKSES --}}
+                <div>
+                    <label class="text-[11px] font-bold text-slate-400 uppercase tracking-widest mb-1 block">Hak Akses</label>
+                    <select name="id_ref_role" required class="w-full border-slate-200 rounded-xl text-sm py-3 px-4 focus:ring-emerald-500 outline-none font-sans shadow-sm">
+                        <option value="" disabled selected>Pilih Hak Akses</option>
+                        @foreach($roles as $r)
+                        <option value="{{$r->id_ref_role}}">{{$r->name_role}}</option>
+                        @endforeach
+                    </select>
                 </div>
 
                 <div class="flex gap-3 pt-4">
                     <button type="button" onclick="closeApproveAllModal()" class="flex-1 py-3 text-[11px] font-bold uppercase tracking-wider text-slate-500 bg-slate-50 rounded-xl hover:bg-slate-100 transition-colors font-sans">Batal</button>
-                    <button type="submit" class="flex-1 py-3 text-[11px] font-bold uppercase tracking-wider text-white bg-emerald-600 rounded-xl shadow-lg hover:bg-emerald-700 transition-colors font-sans font-bold">Setujui Semua</button>
+                    <button type="submit" class="flex-1 py-3 text-[11px] font-bold uppercase tracking-wider text-white bg-emerald-600 rounded-xl shadow-lg hover:bg-emerald-700 transition-colors font-sans">Setujui Semua</button>
                 </div>
             </form>
         </div>
@@ -54,11 +67,57 @@
     </div>
 
 <script>
-        window.openApproveAllModal = function() {
-            document.getElementById('approveAllModal').classList.remove('hidden');
-        }
+    window.openApproveAllModal = function() {
+        document.getElementById('approveAllModal').classList.remove('hidden');
+        updateApproveAllWaOptions(); // Jalankan filter saat modal dibuka
+    }
 
-        window.closeApproveAllModal = function() {
-            document.getElementById('approveAllModal').classList.add('hidden');
-        }
+    window.closeApproveAllModal = function() {
+        document.getElementById('approveAllModal').classList.add('hidden');
+    }
+
+    // ── FILTER OPSI UNIT PENUGASAN BERDASARKAN JABATAN (Approve All Modal) ──
+    const aaPositionsMeta = @json($positions->pluck('slug_position', 'id_ref_position') ?? []);
+
+    function updateApproveAllWaOptions() {
+        const posEl = document.getElementById('aa_pos');
+        const waEl  = document.getElementById('aa_wa');
+        const note  = document.getElementById('aa-occupied-note');
+
+        const posSlug    = aaPositionsMeta[posEl?.value];
+        const unitRoles  = ['kasppg', 'ag', 'ak'];
+        const slugToAttr = { kasppg: 'leader', ag: 'nutritionist', ak: 'accountant' };
+        const isUnitRole = posSlug && unitRoles.includes(posSlug);
+        const attrKey    = isUnitRole ? slugToAttr[posSlug] : null;
+
+        const waOptions = waEl.querySelectorAll('option[data-unit]');
+        let anyDisabled = false;
+
+        waOptions.forEach(opt => {
+            if (!isUnitRole) {
+                opt.hidden   = true;
+                opt.disabled = true;
+                opt.style.color = '#9ca3af';
+            } else {
+                opt.hidden = false;
+                const occupantId = opt.getAttribute('data-' + attrKey);
+                if (occupantId && occupantId !== '') {
+                    opt.disabled = true;
+                    opt.style.color = '#9ca3af';
+                    opt.title    = 'Sudah ditetapkan';
+                    anyDisabled  = true;
+                    if (waEl.value === opt.value) waEl.value = 'none';
+                } else {
+                    opt.disabled = false;
+                    opt.style.color = '';
+                    opt.title    = '';
+                }
+            }
+        });
+
+        if (!isUnitRole) waEl.value = 'none';
+        if (note) note.classList.toggle('hidden', !anyDisabled || !isUnitRole);
+    }
+
+    document.getElementById('aa_pos')?.addEventListener('change', updateApproveAllWaOptions);
 </script>

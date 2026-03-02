@@ -17,8 +17,20 @@ class OverviewController extends Controller
         $decree = null;
 
         if ($person) {
-            // Check if person is a leader
-            $sppg = SppgUnit::with(['leader', 'nutritionist', 'accountant', 'socialMedia'])->where('leader_id', $person->id_person)->first();
+            // Priority 1: Check if person is a leader via leader_id (Direct link)
+            $sppg = SppgUnit::with(['leader', 'nutritionist', 'accountant', 'socialMedia'])
+                ->where('leader_id', $person->id_person)
+                ->first();
+
+            // Priority 2: If not leader, check based on their work assignment
+            if (!$sppg && $person->id_work_assignment) {
+                $assignment = $person->workAssignment;
+                if ($assignment) {
+                    $sppg = SppgUnit::with(['leader', 'nutritionist', 'accountant', 'socialMedia'])
+                        ->where('id_sppg_unit', $assignment->id_sppg_unit)
+                        ->first();
+                }
+            }
 
             // Fetch decree from work assignment
             if ($person->id_work_assignment) {

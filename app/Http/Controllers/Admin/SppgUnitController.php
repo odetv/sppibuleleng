@@ -38,7 +38,14 @@ class SppgUnitController extends Controller
         $nutritionists = Person::whereHas('position', fn($q) => $q->where('slug_position', 'ag'))->orderBy('name')->get();
         $accountants = Person::whereHas('position', fn($q) => $q->where('slug_position', 'ak'))->orderBy('name')->get();
 
-        return view('admin.manage-sppg.index', compact('units', 'leaders', 'nutritionists', 'accountants'));
+        // Siapkan data personil yang sedang menjabat di unit manapun
+        $occupiedPeople = [
+            'kasppg' => SppgUnit::whereNotNull('leader_id')->pluck('leader_id')->toArray(),
+            'ag' => SppgUnit::whereNotNull('nutritionist_id')->pluck('nutritionist_id')->toArray(),
+            'ak' => SppgUnit::whereNotNull('accountant_id')->pluck('accountant_id')->toArray(),
+        ];
+
+        return view('admin.manage-sppg.index', compact('units', 'leaders', 'nutritionists', 'accountants', 'occupiedPeople'));
     }
 
     /**
@@ -81,7 +88,7 @@ class SppgUnitController extends Controller
                 $data['photo'] = $request->file('photo')->store("sppgunits/{$folderHash}/photos", 'public');
             }
 
-            \App\Models\SppgUnit::create([
+            $unit = \App\Models\SppgUnit::create([
                 'id_sppg_unit' => $data['id_sppg_unit'],
                 'code_sppg_unit' => $data['code_sppg_unit'],
                 'name' => $data['name'],
@@ -99,6 +106,8 @@ class SppgUnitController extends Controller
                 'accountant_id' => (empty($data['accountant_id']) || $data['accountant_id'] === 'NULL') ? null : $data['accountant_id'],
                 'photo' => $data['photo'] ?? null,
             ]);
+
+            $unit->syncPersonnel();
 
             if ($request->ajax()) {
                 return response()->json(['success' => true, 'redirect' => route('admin.manage-sppg.index')]);
@@ -133,7 +142,10 @@ class SppgUnitController extends Controller
         ]);
 
         if ($validator->fails()) {
-            return response()->json(['errors' => $validator->errors()], 422);
+            if ($request->ajax() || $request->wantsJson()) {
+                return response()->json(['errors' => $validator->errors()], 422);
+            }
+            return back()->withErrors($validator)->withInput();
         }
 
         try {
@@ -170,6 +182,9 @@ class SppgUnitController extends Controller
                 'photo' => $photoPath,
                 'updated_at' => now(),
             ]);
+
+            $sppg->refresh();
+            $sppg->syncPersonnel();
 
             return response()->json([
                 'success' => true,

@@ -7,6 +7,7 @@ use App\Http\Controllers\Controller;
 use App\Models\Person;
 use App\Models\RefPosition;
 use App\Models\RefRole;
+use App\Models\SppgUnit;
 use App\Models\User;
 use App\Models\WorkAssignment;
 use Exception;
@@ -81,11 +82,22 @@ class UserController extends Controller
         $positions = RefPosition::all();
         $workAssignments = WorkAssignment::with(['sppgUnit', 'decree'])->get();
 
+        // Ambil data personil yang sudah terisi di SPPG Unit untuk validasi UI
+        $occupiedPositions = SppgUnit::select('id_sppg_unit', 'leader_id', 'nutritionist_id', 'accountant_id')
+            ->get()
+            ->mapWithKeys(function($unit) {
+                return [$unit->id_sppg_unit => [
+                    'kasppg' => $unit->leader_id,
+                    'ag' => $unit->nutritionist_id,
+                    'ak' => $unit->accountant_id,
+                ]];
+            })->toArray();
+
         if ($request->ajax()) {
-            return view('admin.manage-user.index', compact('pendingUsers', 'allUsersDisplay', 'allUsers', 'trashedUsers', 'stats', 'roles', 'positions', 'workAssignments'))->render();
+            return view('admin.manage-user.index', compact('pendingUsers', 'allUsersDisplay', 'allUsers', 'trashedUsers', 'stats', 'roles', 'positions', 'workAssignments', 'occupiedPositions'))->render();
         }
 
-        return view('admin.manage-user.index', compact('pendingUsers', 'allUsersDisplay', 'allUsers', 'trashedUsers', 'stats', 'roles', 'positions', 'workAssignments'));
+        return view('admin.manage-user.index', compact('pendingUsers', 'allUsersDisplay', 'allUsers', 'trashedUsers', 'stats', 'roles', 'positions', 'workAssignments', 'occupiedPositions'));
     }
 
     public function checkAvailability(Request $request)
@@ -279,6 +291,14 @@ class UserController extends Controller
 
     public function update(Request $request, $id)
     {
+        // KONVERSI 'none' KE null SEBELUM VALIDASI (agar rule 'exists' tidak gagal)
+        if ($request->id_work_assignment === 'none') {
+            $request->merge(['id_work_assignment' => null]);
+        }
+        if ($request->id_ref_position === 'none' || $request->id_ref_position === '') {
+            $request->merge(['id_ref_position' => null]);
+        }
+
         $request->validate([
             'name' => 'required|string|max:255',
             'email' => 'required|email|unique:users,email,' . $id . ',id_user',
@@ -312,6 +332,9 @@ class UserController extends Controller
                 // Ambil data person kecuali yang milik table users dan link sosmed
                 $data = $request->except(['photo', '_token', '_method', 'email', 'phone', 'id_ref_role', 'facebook_url', 'instagram_url', 'tiktok_url']);
 
+                // KONVERSI sudah dilakukan sebelum validasi via request->merge()
+                // Tidak perlu konversi lagi di sini
+
                 if ($request->filled('date_birthday')) {
                     $data['age'] = \Carbon\Carbon::parse($request->date_birthday)->age;
                 }
@@ -332,6 +355,12 @@ class UserController extends Controller
 
                 // Update data person (termasuk id_work_assignment & id_ref_position)
                 $person->update($data);
+
+                // --- TRIGGER SINKRONISASI SATU PINTU ---
+                // PENTING: refresh() diperlukan agar Eloquent me-reload relasi dari DB
+                // (workAssignment, position) setelah update, bukan pakai cache lama
+                $person->refresh();
+                $person->syncWithUnit();
 
                 // SIMPAN / UPDATE SOSIAL MEDIA
                 $person->socialMedia()->updateOrCreate(
@@ -526,6 +555,10 @@ class UserController extends Controller
                     'id_ref_position' => $request->id_ref_position === 'none' ? null : $request->id_ref_position,
                     'id_work_assignment' => $request->id_work_assignment === 'none' ? null : $request->id_work_assignment
                 ]);
+
+                // --- TRIGGER SINKRONISASI SATU PINTU ---
+                $user->person->refresh(); // Reload relasi agar tidak pakai cache lama
+                $user->person->syncWithUnit();
 
                 // 3. Update atau buat data Sosial Media
                 $user->person->socialMedia()->updateOrCreate(

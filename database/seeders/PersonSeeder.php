@@ -4,16 +4,21 @@ namespace Database\Seeders;
 
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\DB;
+use App\Models\Person;
+use App\Models\SppgUnit;
+use App\Models\WorkAssignment;
+use App\Models\RefPosition;
+use App\Models\User;
 
 class PersonSeeder extends Seeder
 {
     public function run(): void
     {
         // 1. DATA PERSON: ADMINISTRATOR UTAMA
-        DB::table('persons')->insert([
+        $p1 = Person::create([
             'id_person'          => 1,
-            'id_ref_position'    => 1,
-            'id_work_assignment' => 1,
+            'id_ref_position'    => null,
+            'id_work_assignment' => null,
             'nik'                => '1234567890123456',
             'no_kk'              => '1234567890123450',
             'name'               => 'Gede Bagler Pradita',
@@ -50,17 +55,14 @@ class PersonSeeder extends Seeder
             'address_domicile'   => 'Jl. Utama Niti Mandala No. 1',
             'latitude_gps_domicile'  => -8.11200000,
             'longitude_gps_domicile' => 115.09100000,
-            'created_at'         => now(),
-            'updated_at'         => now(),
         ]);
-        // LINK KE USER 1
-        DB::table('users')->where('id_user', 1)->update(['id_person' => 1]);
+        User::where('id_user', 1)->update(['id_person' => $p1->id_person]);
 
         // 2. DATA PERSON: USER 1 (AKTIF)
-        DB::table('persons')->insert([
+        $p2 = Person::create([
             'id_person'          => 2,
-            'id_ref_position'    => 1,
-            'id_work_assignment' => 2,
+            'id_ref_position'    => null,
+            'id_work_assignment' => null,
             'nik'                => '3201012345670001',
             'no_kk'              => '3201012345670002',
             'name'               => 'Budi Santoso',
@@ -97,16 +99,13 @@ class PersonSeeder extends Seeder
             'address_domicile'   => 'Jl. Mawar Merah No. 45',
             'latitude_gps_domicile'  => -8.12500000,
             'longitude_gps_domicile' => 115.11000000,
-            'created_at'         => now(),
-            'updated_at'         => now(),
         ]);
-        // LINK KE USER 2
-        DB::table('users')->where('id_user', 2)->update(['id_person' => 2]);
+        User::where('id_user', 2)->update(['id_person' => $p2->id_person]);
 
         // 3. DATA PERSON: USER 3 (INACTIVE / SOFT DELETE)
-        DB::table('persons')->insert([
+        $p3 = Person::create([
             'id_person'          => 3,
-            'id_ref_position'    => 1,
+            'id_ref_position'    => null,
             'id_work_assignment' => null,
             'nik'                => '3201012345670009',
             'no_kk'              => '3201012345670010',
@@ -144,17 +143,14 @@ class PersonSeeder extends Seeder
             'address_domicile'   => 'Jl. Pahlawan No. 9',
             'latitude_gps_domicile'  => -8.11000000,
             'longitude_gps_domicile' => 115.01000000,
-            'created_at'         => now(),
-            'updated_at'         => now(),
             'deleted_at'         => now(),
         ]);
-        // LINK KE USER 4
-        DB::table('users')->where('id_user', 4)->update(['id_person' => 3]);
+        User::where('id_user', 4)->update(['id_person' => $p3->id_person]);
 
-        // 4. DATA PERSON: AHLI GIZI (role: ag, id_ref_position: 5)
-        DB::table('persons')->insert([
+        // 4. DATA PERSON: AHLI GIZI
+        $p4 = Person::create([
             'id_person'          => 4,
-            'id_ref_position'    => 5, // ag: Ahli Gizi
+            'id_ref_position'    => null,
             'id_work_assignment' => null,
             'nik'                => '5101234567890001',
             'no_kk'              => '5101234567890002',
@@ -178,8 +174,6 @@ class PersonSeeder extends Seeder
             'age'                => 27,
             'religion'           => 'Hindu',
             'marital_status'     => 'Belum Kawin',
-            'no_bpjs_kes'        => null,
-            'no_bpjs_tk'         => null,
             'village_ktp'        => 'Singaraja',
             'district_ktp'       => 'Buleleng',
             'regency_ktp'        => 'Buleleng',
@@ -192,14 +186,13 @@ class PersonSeeder extends Seeder
             'address_domicile'   => 'Jl. Diponegoro No. 22, Singaraja',
             'latitude_gps_domicile'  => -8.1066,
             'longitude_gps_domicile' => 115.0874,
-            'created_at'         => now(),
-            'updated_at'         => now(),
         ]);
+        User::where('id_user', 6)->update(['id_person' => $p4->id_person]);
 
-        // 5. DATA PERSON: AKUNTAN (role: ak, id_ref_position: 6)
-        DB::table('persons')->insert([
+        // 5. DATA PERSON: AKUNTAN
+        $p5 = Person::create([
             'id_person'          => 5,
-            'id_ref_position'    => 6, // ak: Akuntansi
+            'id_ref_position'    => null,
             'id_work_assignment' => null,
             'nik'                => '5101234567890003',
             'no_kk'              => '5101234567890004',
@@ -223,8 +216,6 @@ class PersonSeeder extends Seeder
             'age'                => 30,
             'religion'           => 'Hindu',
             'marital_status'     => 'Kawin',
-            'no_bpjs_kes'        => null,
-            'no_bpjs_tk'         => null,
             'village_ktp'        => 'Singaraja',
             'district_ktp'       => 'Buleleng',
             'regency_ktp'        => 'Buleleng',
@@ -237,8 +228,82 @@ class PersonSeeder extends Seeder
             'address_domicile'   => 'Jl. Veteran No. 5, Singaraja',
             'latitude_gps_domicile'  => -8.1110,
             'longitude_gps_domicile' => 115.0921,
-            'created_at'         => now(),
-            'updated_at'         => now(),
         ]);
+        User::where('id_user', 7)->update(['id_person' => $p5->id_person]);
+
+        // 6. DATA PERSON: KASPPG
+        $p6 = Person::create([
+            'id_person'          => 6,
+            'id_ref_position'    => null,
+            'id_work_assignment' => null,
+            'nik'                => '5101234567890005',
+            'no_kk'              => '5101234567890006',
+            'name'               => 'I Putu Eka KaSPPG',
+            'nip'                => '',
+            'npwp'               => '',
+            'photo'              => '',
+            'title_education'    => 'S.Sos.',
+            'last_education'     => 'S-1',
+            'major_education'    => 'Sosial',
+            'clothing_size'      => 'M',
+            'shoe_size'          => '41',
+            'batch'              => '1',
+            'employment_status'  => 'Non-ASN',
+            'payroll_bank_name'           => 'BPD Bali',
+            'payroll_bank_account_number' => '0011223399',
+            'payroll_bank_account_name'   => 'I Putu Eka KaSPPG',
+            'gender'             => 'L',
+            'place_birthday'     => 'Singaraja',
+            'date_birthday'      => '1992-04-10',
+            'age'                => 33,
+            'religion'           => 'Hindu',
+            'marital_status'     => 'Kawin',
+            'village_ktp'        => 'Singaraja',
+            'district_ktp'       => 'Buleleng',
+            'regency_ktp'        => 'Buleleng',
+            'province_ktp'       => 'Bali',
+            'address_ktp'        => 'Jl. Ngurah Rai No. 10, Singaraja',
+            'village_domicile'   => 'Singaraja',
+            'district_domicile'  => 'Buleleng',
+            'regency_domicile'   => 'Buleleng',
+            'province_domicile'  => 'Bali',
+            'address_domicile'   => 'Jl. Ngurah Rai No. 10, Singaraja',
+            'latitude_gps_domicile'  => -8.1120,
+            'longitude_gps_domicile' => 115.0930,
+        ]);
+        User::where('id_user', 5)->update(['id_person' => $p6->id_person]);
+
+        // =============================================================
+        // ASSIGN PERSONS TO SPPG UNITS — SATU PINTU via syncPersonnel()
+        // WorkAssignment sudah dibuat di WorkAssignmentSeeder:
+        //   WA ID 1 → Unit 2DWFSVHQ (Banjar Dencarik)
+        //   WA ID 2 → Unit 59QMIA7P (Sukasada Pancasari)
+        // =============================================================
+
+        // Unit 1: SPPG Buleleng Banjar Dencarik (2DWFSVHQ)
+        // Penugasan: Kasppg=p6 (Eka), AG=p4 (Sri), AK=p5 (Artha)
+        $unit1 = SppgUnit::where('id_sppg_unit', '2DWFSVHQ')->first();
+        if ($unit1) {
+            $unit1->update([
+                'leader_id'       => 6, // I Putu Eka KaSPPG
+                'nutritionist_id' => 4, // Ni Putu Sri Ahli Gizi
+                'accountant_id'   => 5, // I Wayan Artha Akuntan
+            ]);
+            $unit1->refresh();
+            $unit1->syncPersonnel();
+        }
+
+        // Unit 2: SPPG Buleleng Sukasada Pancasari (59QMIA7P)
+        // Admin (p1) tidak ditugaskan di sini — biarkan kosong
+        // (Admin adalah pengelola sistem, bukan kasppg unit)
+        $unit2 = SppgUnit::where('id_sppg_unit', '59QMIA7P')->first();
+        if ($unit2) {
+            $unit2->update([
+                'leader_id'       => null,
+                'nutritionist_id' => null,
+                'accountant_id'   => null,
+            ]);
+            // Tidak perlu syncPersonnel karena semua null
+        }
     }
 }

@@ -88,4 +88,52 @@ class Person extends Model
     {
         return $this->morphOne(SocialMedia::class, 'socialable');
     }
+
+    /**
+     * Sinkronisasi data person dengan unit SPPG setelah profil/penugasan diubah.
+     * Dipanggil dari UserController saat admin mengubah penugasan di manage-user.
+     */
+    public function syncWithUnit()
+    {
+        $idPerson = $this->id_person;
+        $posSlug  = $this->position?->slug_position;
+        $mapping  = ['kasppg' => 'leader_id', 'ag' => 'nutritionist_id', 'ak' => 'accountant_id'];
+
+        // 1. Bersihkan person ini dari SEMUA unit yang saat ini mencantumkannya
+        \App\Models\SppgUnit::where('leader_id', $idPerson)
+            ->orWhere('nutritionist_id', $idPerson)
+            ->orWhere('accountant_id', $idPerson)
+            ->each(function($u) use ($idPerson) {
+                $u->update([
+                    'leader_id'       => $u->leader_id       == $idPerson ? null : $u->leader_id,
+                    'nutritionist_id' => $u->nutritionist_id == $idPerson ? null : $u->nutritionist_id,
+                    'accountant_id'   => $u->accountant_id   == $idPerson ? null : $u->accountant_id,
+                ]);
+            });
+
+        // 2. Jika tidak ada penugasan atau jabatan yang relevan, selesai
+        if (!$this->id_work_assignment || !$posSlug || !isset($mapping[$posSlug])) {
+            return;
+        }
+
+        // 3. Dapatkan unit tujuan dari WorkAssignment
+        $wa   = $this->workAssignment;
+        $unit = $wa?->sppgUnit;
+
+        if (!$unit) return;
+
+        $column = $mapping[$posSlug];
+
+        // 4. Jika slot di unit tujuan sudah dipakai orang lain, kosongkan orang lain itu
+        $otherPersonId = $unit->{$column};
+        if ($otherPersonId && $otherPersonId != $idPerson) {
+            \App\Models\Person::where('id_person', $otherPersonId)->update([
+                'id_work_assignment' => null,
+                'id_ref_position'    => null,
+            ]);
+        }
+
+        // 5. Tetapkan diri sendiri di unit tersebut
+        $unit->update([$column => $idPerson]);
+    }
 }

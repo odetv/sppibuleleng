@@ -64,5 +64,47 @@ class UserSeeder extends Seeder
                 'deleted_at'  => now(),
             ]
         );
+
+        // 5. Akun KaSPPG
+        User::updateOrCreate(
+            ['email' => 'kasppg@gmail.com'],
+            [
+                'id_user'     => 5,
+                'phone'       => '081122334455',
+                'password'    => Hash::make('Kasppg@123'),
+                'id_ref_role' => 4, // Subscriber
+                'id_person'   => null,
+                'status_user' => 'active',
+                'email_verified_at' => now(),
+            ]
+        );
+
+        // 6. Akun Ahli Gizi
+        User::updateOrCreate(
+            ['email' => 'ag@gmail.com'],
+            [
+                'id_user'     => 6,
+                'phone'       => '081122334456',
+                'password'    => Hash::make('Gizi@123'),
+                'id_ref_role' => 4, // Subscriber
+                'id_person'   => null,
+                'status_user' => 'active',
+                'email_verified_at' => now(),
+            ]
+        );
+
+        // 7. Akun Akuntansi
+        User::updateOrCreate(
+            ['email' => 'ak@gmail.com'],
+            [
+                'id_user'     => 7,
+                'phone'       => '081122334457',
+                'password'    => Hash::make('Akun@123'),
+                'id_ref_role' => 4, // Subscriber
+                'id_person'   => null,
+                'status_user' => 'active',
+                'email_verified_at' => now(),
+            ]
+        );
     }
 }

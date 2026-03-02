@@ -24,6 +24,15 @@
             ring: 2px #fef2f2 !important;
             background-color: #fff1f2 !important;
         }
+
+        .text-error-custom {
+            color: #ef4444;
+            font-size: 10px;
+            font-weight: 700;
+            font-style: italic;
+            margin-top: 4px;
+            display: block;
+        }
     </style>
 
     <div class="absolute inset-0 bg-slate-900/60 backdrop-blur-sm" @click="showCreateModal = false"></div>
@@ -46,7 +55,11 @@
             <button type="button" @click="showCreateModal = false" class="text-slate-400 hover:text-slate-600 text-2xl cursor-pointer">&times;</button>
         </div>
 
-        <form action="{{ route('admin.manage-sppg.store') }}" method="POST" enctype="multipart/form-data" id="createUnitForm">
+        <form action="{{ route('admin.manage-sppg.store') }}" 
+            method="POST" 
+            enctype="multipart/form-data" 
+            id="createUnitForm"
+            @submit.prevent="window.submitCreateSppg($el)">
             @csrf
 
             {{-- Hidden Inputs Wilayah --}}
@@ -243,60 +256,26 @@
         }
     }
 
-    // 3. Logika Submit (AJAX + Real-time Validation)
-    document.getElementById('createUnitForm').onsubmit = async function(e) {
-        e.preventDefault();
+    // 3. Logika Submit (PINDAH KE WINDOW FUNCTION)
+    window.submitCreateSppg = async function(formElement) {
         clearAllErrors();
 
         const btnSubmit = document.getElementById('btnSubmitSppg');
-        const modalScroll = document.getElementById('modalScrollContainer');
         let hasLocalError = false;
 
-        // Validasi Sisi Client (Data Kosong)
-        const fields = [{
-                id: 'f_name',
-                msg: 'Nama SPPG wajib diisi'
-            },
-            {
-                id: 'f_id',
-                msg: 'ID SPPG wajib diisi'
-            },
-            {
-                id: 'f_code',
-                msg: 'Kode SPPG wajib diisi'
-            },
-            {
-                id: 'f_leader',
-                msg: 'Pilihan Kepala SPPG tidak valid' // Karena "NULL" atau angka ID sekarang valid
-            },
-            {
-                id: 'f_status',
-                msg: 'Pilih status operasional'
-            },
-            {
-                id: 'f_prov',
-                msg: 'Provinsi wajib dipilih'
-            },
-            {
-                id: 'f_reg',
-                msg: 'Kabupaten wajib dipilih'
-            },
-            {
-                id: 'f_dist',
-                msg: 'Kecamatan wajib dipilih'
-            },
-            {
-                id: 'f_vill',
-                msg: 'Desa/Kelurahan wajib dipilih'
-            },
-            {
-                id: 'f_address',
-                msg: 'Alamat wajib diisi'
-            },
-            {
-                id: 'f_lat',
-                msg: 'Titik GPS belum ditentukan (Klik pada peta)'
-            }
+        // Validasi Sisi Client
+        const fields = [
+            { id: 'f_name', msg: 'Nama SPPG wajib diisi' },
+            { id: 'f_id', msg: 'ID SPPG wajib diisi' },
+            { id: 'f_code', msg: 'Kode SPPG wajib diisi' },
+            { id: 'f_leader', msg: 'Pilihan Kepala SPPG tidak valid' },
+            { id: 'f_status', msg: 'Pilih status operasional' },
+            { id: 'f_prov', msg: 'Provinsi wajib dipilih' },
+            { id: 'f_reg', msg: 'Kabupaten wajib dipilih' },
+            { id: 'f_dist', msg: 'Kecamatan wajib dipilih' },
+            { id: 'f_vill', msg: 'Desa/Kelurahan wajib dipilih' },
+            { id: 'f_address', msg: 'Alamat wajib diisi' },
+            { id: 'f_lat', msg: 'Titik GPS belum ditentukan (Klik pada peta)' }
         ];
 
         fields.forEach(f => {
@@ -314,24 +293,23 @@
 
         if (hasLocalError) {
             const first = document.querySelector('.input-error');
-            if (first) first.scrollIntoView({
-                behavior: 'smooth',
-                block: 'center'
-            });
+            if (first) first.scrollIntoView({ behavior: 'smooth', block: 'center' });
             return;
         }
 
-        // Jalankan Validasi Sisi Server (AJAX - Mengecek Duplicate secara Real-time)
-        btnSubmit.disabled = true;
-        btnSubmit.innerHTML = "Sedang Memproses...";
+        if (btnSubmit) {
+            btnSubmit.disabled = true;
+            btnSubmit.innerHTML = "Sedang Memproses...";
+        }
 
         try {
-            const formData = new FormData(this);
-            const response = await fetch(this.action, {
+            const formData = new FormData(formElement);
+            const response = await fetch(formElement.action, {
                 method: 'POST',
                 body: formData,
                 headers: {
-                    'X-Requested-With': 'XMLHttpRequest'
+                    'X-Requested-With': 'XMLHttpRequest',
+                    'Accept': 'application/json'
                 }
             });
 
@@ -340,8 +318,10 @@
             if (response.ok) {
                 window.location.href = result.redirect || "{{ route('admin.manage-sppg.index') }}";
             } else {
-                btnSubmit.disabled = false;
-                btnSubmit.innerHTML = "Simpan Unit SPPG Baru";
+                if (btnSubmit) {
+                    btnSubmit.disabled = false;
+                    btnSubmit.innerHTML = "Simpan Unit SPPG Baru";
+                }
 
                 if (result.errors) {
                     Object.keys(result.errors).forEach(key => {
@@ -356,20 +336,52 @@
                         });
                     });
 
-                    // Scroll ke error server pertama
                     const firstServerErr = document.querySelector('.input-error');
-                    if (firstServerErr) firstServerErr.scrollIntoView({
-                        behavior: 'smooth',
-                        block: 'center'
-                    });
+                    if (firstServerErr) firstServerErr.scrollIntoView({ behavior: 'smooth', block: 'center' });
                 }
             }
         } catch (err) {
-            btnSubmit.disabled = false;
-            btnSubmit.innerHTML = "Simpan SPPG Baru";
-            console.error(err);
+            if (btnSubmit) {
+                btnSubmit.disabled = false;
+                btnSubmit.innerHTML = "Simpan SPPG Baru";
+            }
+            console.error('Submit Error:', err);
         }
     };
+    const occupiedPeople = @json($occupiedPeople ?? []);
+    
+    function checkSppgPersonnelOccupancy(id, slug) {
+        const el = document.getElementById(id);
+        if (!el) return;
+
+        const warnElId = id + '-occupancy-warn';
+        let warnEl = document.getElementById(warnElId);
+        if (!warnEl) {
+            warnEl = document.createElement('div');
+            warnEl.id = warnElId;
+            warnEl.className = 'text-[10px] font-bold text-amber-600 bg-amber-50 px-2 py-1 rounded border border-amber-100 mt-1 hidden';
+            el.after(warnEl);
+        }
+
+        const personId = el.value;
+        if (!personId || personId === 'NULL') {
+            warnEl.classList.add('hidden');
+            return;
+        }
+        
+        if (occupiedPeople[slug] && occupiedPeople[slug].includes(parseInt(personId))) {
+            warnEl.innerHTML = `<i class="fas fa-info-circle mr-1"></i> Terpilih di unit lain. Jika disimpan, ia akan <strong>DIPINDAHKAN</strong> ke unit ini.`;
+            warnEl.classList.remove('hidden');
+        } else {
+            warnEl.classList.add('hidden');
+        }
+    }
+
+    ['f_leader', 'f_nutritionist', 'f_accountant'].forEach(id => {
+        const slug = id === 'f_leader' ? 'kasppg' : (id === 'f_nutritionist' ? 'ag' : 'ak');
+        const el = document.getElementById(id);
+        if (el) el.addEventListener('change', () => checkSppgPersonnelOccupancy(id, slug));
+    });
 </script>
 
 <script>
@@ -464,6 +476,7 @@
     }
 
     function initCreateMapModal() {
+        if (typeof L === 'undefined') return;
         const container = document.getElementById('map-create');
         if (!container) return;
 

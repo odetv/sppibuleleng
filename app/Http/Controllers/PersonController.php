@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Person;
 use App\Models\RefPosition;
+use App\Models\SppgUnit;
 use App\Models\WorkAssignment;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
@@ -24,10 +25,21 @@ class PersonController extends Controller
 
         // Ambil variabel yang dibutuhkan oleh view complete.blade.php
         $user = Auth::user();
-        $workAssignments = WorkAssignment::with(['sppgUnit', 'decree'])->get();
-        $positions = RefPosition::all(); // Tambahkan pengambilan data jabatan
+        // Ambil data personil yang sudah terisi di SPPG Unit untuk validasi UI
+        $occupiedPositions = \App\Models\SppgUnit::select('id_sppg_unit', 'leader_id', 'nutritionist_id', 'accountant_id')
+            ->get()
+            ->mapWithKeys(function($unit) {
+                return [$unit->id_sppg_unit => [
+                    'kasppg' => $unit->leader_id,
+                    'ag' => $unit->nutritionist_id,
+                    'ak' => $unit->accountant_id,
+                ]];
+            })->toArray();
 
-        return view('profile.complete', compact('user', 'workAssignments', 'positions'));
+        $positions       = \App\Models\RefPosition::all();
+        $workAssignments = WorkAssignment::with('sppgUnit', 'decree')->get();
+
+        return view('profile.complete', compact('user', 'workAssignments', 'positions', 'occupiedPositions'));
     }
 
     /**
@@ -143,6 +155,9 @@ class PersonController extends Controller
             auth()->user()->update([
                 'id_person' => $person->id_person
             ]);
+
+            // 5. SINKRONISASI SATU PINTU
+            $person->syncWithUnit();
 
             return redirect()->route('dashboard')->with('success', 'Profil lengkap berhasil disimpan!');
         });

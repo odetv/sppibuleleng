@@ -35,6 +35,12 @@ return new class extends Migration
             $table->unsignedBigInteger('leader_id')->nullable();
             $table->foreign('leader_id')->references('id_person')->on('persons')->nullOnDelete();
 
+            $table->unsignedBigInteger('nutritionist_id')->nullable();
+            $table->foreign('nutritionist_id')->references('id_person')->on('persons')->nullOnDelete();
+
+            $table->unsignedBigInteger('accountant_id')->nullable();
+            $table->foreign('accountant_id')->references('id_person')->on('persons')->nullOnDelete();
+
             $table->timestamps();
         });
     }
