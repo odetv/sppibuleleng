@@ -1,17 +1,35 @@
+<style>
+    .input-disabled {
+        background-color: #f8fafc !important;
+        color: #94a3b8 !important;
+        cursor: not-allowed !important;
+        pointer-events: none;
+        border: 1px solid #e2e8f0 !important;
+    }
+</style>
+
 <div x-show="showEditModal" 
-    x-transition:enter="transition ease-out duration-300"
-    x-transition:enter-start="opacity-0 scale-95"
-    x-transition:enter-end="opacity-100 scale-100"
-    x-transition:leave="transition ease-in duration-200"
-    x-transition:leave-start="opacity-100 scale-100"
-    x-transition:leave-end="opacity-0 scale-95"
     class="fixed inset-0 z-[1000] flex items-center justify-center p-4 text-left" 
     @init-edit-beneficiary.window="setTimeout(() => initEditMap($event.detail), 300)"
     x-cloak>
     
-    <div class="absolute inset-0 bg-slate-900/60 backdrop-blur-sm" @click="showEditModal = false"></div>
+    <div x-show="showEditModal"
+        x-transition:enter="transition ease-out duration-300"
+        x-transition:enter-start="opacity-0"
+        x-transition:enter-end="opacity-100"
+        x-transition:leave="transition ease-in duration-200"
+        x-transition:leave-start="opacity-100"
+        x-transition:leave-end="opacity-0"
+        class="absolute inset-0 bg-slate-900/60 backdrop-blur-sm" @click="showEditModal = false"></div>
 
-    <div class="relative w-full max-w-6xl bg-white rounded-xl shadow-xl border border-slate-200 overflow-hidden transform transition-all font-sans text-sm">
+    <div x-show="showEditModal"
+        x-transition:enter="transition ease-out duration-300"
+        x-transition:enter-start="opacity-0 scale-95"
+        x-transition:enter-end="opacity-100 scale-100"
+        x-transition:leave="transition ease-in duration-200"
+        x-transition:leave-start="opacity-100 scale-100"
+        x-transition:leave-end="opacity-0 scale-95"
+        class="relative w-full max-w-6xl bg-white rounded-xl shadow-xl border border-slate-200 overflow-hidden font-sans text-sm">
         <div class="p-6 border-b border-slate-100 bg-slate-50 flex justify-between items-center text-slate-800">
             <div class="flex items-center gap-3">
                 <span class="p-1.5 bg-indigo-50 text-indigo-600 rounded-lg">
@@ -27,6 +45,12 @@
         <form :action="`/admin/manage-beneficiary/${selectedBeneficiary.id_beneficiary}/update`" method="POST" id="form-edit-beneficiary">
             @csrf
             @method('PATCH')
+
+            {{-- Hidden Inputs Wilayah --}}
+            <input type="hidden" name="province" id="be_prov_name" :value="selectedBeneficiary.province">
+            <input type="hidden" name="regency" id="be_reg_name" :value="selectedBeneficiary.regency">
+            <input type="hidden" name="district" id="be_dist_name" :value="selectedBeneficiary.district">
+            <input type="hidden" name="village" id="be_vill_name" :value="selectedBeneficiary.village">
             
             <div class="p-8 max-h-[75vh] overflow-y-auto space-y-10 custom-scrollbar">
                 {{-- SECTION 1: IDENTITAS --}}
@@ -41,7 +65,7 @@
                         <div class="md:col-span-1">
                             <label class="text-[11px] font-bold text-gray-500 uppercase tracking-wider">Tipe Kelompok</label>
                             <select name="group_type" x-model="selectedBeneficiary.group_type" class="w-full mt-2 px-3 py-2.5 bg-gray-50 border-none rounded-lg text-sm focus:ring-2 focus:ring-indigo-500 outline-none transition-all">
-                                <option value="">Pilih Tipe</option>
+                                <option value="" disabled selected>Pilih Tipe</option>
                                 <option value="Sekolah">Sekolah</option>
                                 <option value="Posyandu">Posyandu</option>
                                 <option value="Kelompok Lainnya">Kelompok Lainnya</option>
@@ -63,11 +87,19 @@
                     <div>
                         <label class="text-[11px] font-bold text-gray-500 uppercase tracking-wider">SPPG Unit</label>
                         <select name="id_sppg_unit" x-model="selectedBeneficiary.id_sppg_unit" class="w-full mt-2 px-3 py-2.5 bg-gray-50 border-none rounded-lg text-sm focus:ring-2 focus:ring-indigo-500 outline-none transition-all">
-                            <option value="">-- Hubungkan ke Unit --</option>
+                            <option value="" disabled selected>-- Hubungkan ke Unit --</option>
+                            <option value="">Belum Diberikan</option>
                             @foreach($sppgUnits as $unit)
                                 <option value="{{ $unit->id_sppg_unit }}">{{ $unit->name }} ({{ $unit->id_sppg_unit }})</option>
                             @endforeach
                         </select>
+                    </div>
+                    <div class="mt-4">
+                        <label class="flex items-center gap-3 cursor-pointer p-3 bg-gray-50 rounded-lg w-fit">
+                            <input type="hidden" name="is_active" :value="selectedBeneficiary.is_active ? 1 : 0">
+                            <input type="checkbox" :checked="selectedBeneficiary.is_active" @change="selectedBeneficiary.is_active = $event.target.checked" class="w-4 h-4 text-indigo-600 focus:ring-indigo-500 border-gray-300 rounded">
+                            <span class="text-[11px] font-bold text-gray-700 uppercase tracking-wider">Status Aktif (Tampilkan PM)</span>
+                        </label>
                     </div>
                 </div>
 
@@ -101,19 +133,27 @@
                     <div class="grid grid-cols-2 md:grid-cols-4 gap-6">
                         <div>
                             <label class="text-[11px] font-bold text-gray-500 uppercase tracking-wider">Provinsi</label>
-                            <input type="text" name="province" x-model="selectedBeneficiary.province" class="w-full mt-2 px-4 py-2.5 bg-gray-50 border-none rounded-lg text-sm focus:ring-2 focus:ring-indigo-500 outline-none transition-all">
+                            <select name="province_code" id="be_prov" class="w-full mt-2 px-3 py-2.5 bg-gray-50 border-none rounded-lg text-sm focus:ring-2 focus:ring-indigo-500 outline-none transition-all">
+                                <option value="">Pilih Provinsi</option>
+                            </select>
                         </div>
                         <div>
                             <label class="text-[11px] font-bold text-gray-500 uppercase tracking-wider">Kabupaten</label>
-                            <input type="text" name="regency" x-model="selectedBeneficiary.regency" class="w-full mt-2 px-4 py-2.5 bg-gray-50 border-none rounded-lg text-sm focus:ring-2 focus:ring-indigo-500 outline-none transition-all">
+                            <select name="regency_code" id="be_reg" disabled class="input-disabled w-full mt-2 px-4 py-2.5 border-none rounded-lg text-sm focus:ring-2 focus:ring-indigo-500 outline-none transition-all">
+                                <option value="">Pilih Kabupaten</option>
+                            </select>
                         </div>
                         <div>
                             <label class="text-[11px] font-bold text-gray-500 uppercase tracking-wider">Kecamatan</label>
-                            <input type="text" name="district" x-model="selectedBeneficiary.district" class="w-full mt-2 px-4 py-2.5 bg-gray-50 border-none rounded-lg text-sm focus:ring-2 focus:ring-indigo-500 outline-none transition-all">
+                            <select name="district_code" id="be_dist" disabled class="input-disabled w-full mt-2 px-4 py-2.5 border-none rounded-lg text-sm focus:ring-2 focus:ring-indigo-500 outline-none transition-all">
+                                <option value="">Pilih Kecamatan</option>
+                            </select>
                         </div>
                         <div>
                             <label class="text-[11px] font-bold text-gray-500 uppercase tracking-wider">Desa/Kelurahan</label>
-                            <input type="text" name="village" x-model="selectedBeneficiary.village" class="w-full mt-2 px-4 py-2.5 bg-gray-50 border-none rounded-lg text-sm focus:ring-2 focus:ring-indigo-500 outline-none transition-all">
+                            <select name="village_code" id="be_vill" disabled class="input-disabled w-full mt-2 px-4 py-2.5 border-none rounded-lg text-sm focus:ring-2 focus:ring-indigo-500 outline-none transition-all">
+                                <option value="">Pilih Desa/Kelurahan</option>
+                            </select>
                         </div>
                     </div>
 
@@ -148,34 +188,34 @@
                     <div class="grid grid-cols-2 md:grid-cols-4 gap-6">
                         <div>
                             <label class="text-[11px] font-bold text-gray-500 uppercase tracking-wider">Porsi Kecil (L)</label>
-                            <input type="number" name="small_portion_male" x-model="selectedBeneficiary.small_portion_male" class="w-full mt-2 px-4 py-2.5 bg-gray-50 border-none rounded-lg text-sm focus:ring-2 focus:ring-indigo-500 outline-none transition-all">
+                            <input type="number" name="small_portion_male" min="0" x-model="selectedBeneficiary.small_portion_male" class="w-full mt-2 px-4 py-2.5 bg-gray-50 border-none rounded-lg text-sm focus:ring-2 focus:ring-indigo-500 outline-none transition-all">
                         </div>
                         <div>
                             <label class="text-[11px] font-bold text-gray-500 uppercase tracking-wider">Porsi Kecil (P)</label>
-                            <input type="number" name="small_portion_female" x-model="selectedBeneficiary.small_portion_female" class="w-full mt-2 px-4 py-2.5 bg-gray-50 border-none rounded-lg text-sm focus:ring-2 focus:ring-indigo-500 outline-none transition-all">
+                            <input type="number" name="small_portion_female" min="0" x-model="selectedBeneficiary.small_portion_female" class="w-full mt-2 px-4 py-2.5 bg-gray-50 border-none rounded-lg text-sm focus:ring-2 focus:ring-indigo-500 outline-none transition-all">
                         </div>
                         <div>
                             <label class="text-[11px] font-bold text-gray-500 uppercase tracking-wider">Porsi Besar (L)</label>
-                            <input type="number" name="large_portion_male" x-model="selectedBeneficiary.large_portion_male" class="w-full mt-2 px-4 py-2.5 bg-gray-50 border-none rounded-lg text-sm focus:ring-2 focus:ring-indigo-500 outline-none transition-all">
+                            <input type="number" name="large_portion_male" min="0" x-model="selectedBeneficiary.large_portion_male" class="w-full mt-2 px-4 py-2.5 bg-gray-50 border-none rounded-lg text-sm focus:ring-2 focus:ring-indigo-500 outline-none transition-all">
                         </div>
                         <div>
                             <label class="text-[11px] font-bold text-gray-500 uppercase tracking-wider">Porsi Besar (P)</label>
-                            <input type="number" name="large_portion_female" x-model="selectedBeneficiary.large_portion_female" class="w-full mt-2 px-4 py-2.5 bg-gray-50 border-none rounded-lg text-sm focus:ring-2 focus:ring-indigo-500 outline-none transition-all">
+                            <input type="number" name="large_portion_female" min="0" x-model="selectedBeneficiary.large_portion_female" class="w-full mt-2 px-4 py-2.5 bg-gray-50 border-none rounded-lg text-sm focus:ring-2 focus:ring-indigo-500 outline-none transition-all">
                         </div>
                     </div>
 
                     <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mt-6">
                         <div>
                             <label class="text-[11px] font-bold text-gray-500 uppercase tracking-wider">Guru</label>
-                            <input type="number" name="teacher_portion" x-model="selectedBeneficiary.teacher_portion" class="w-full mt-2 px-4 py-2.5 bg-gray-50 border-none rounded-lg text-sm focus:ring-2 focus:ring-indigo-500 outline-none transition-all">
+                            <input type="number" name="teacher_portion" min="0" x-model="selectedBeneficiary.teacher_portion" class="w-full mt-2 px-4 py-2.5 bg-gray-50 border-none rounded-lg text-sm focus:ring-2 focus:ring-indigo-500 outline-none transition-all">
                         </div>
                         <div>
                             <label class="text-[11px] font-bold text-gray-500 uppercase tracking-wider">Staff</label>
-                            <input type="number" name="staff_portion" x-model="selectedBeneficiary.staff_portion" class="w-full mt-2 px-4 py-2.5 bg-gray-50 border-none rounded-lg text-sm focus:ring-2 focus:ring-indigo-500 outline-none transition-all">
+                            <input type="number" name="staff_portion" min="0" x-model="selectedBeneficiary.staff_portion" class="w-full mt-2 px-4 py-2.5 bg-gray-50 border-none rounded-lg text-sm focus:ring-2 focus:ring-indigo-500 outline-none transition-all">
                         </div>
                         <div>
                             <label class="text-[11px] font-bold text-gray-500 uppercase tracking-wider">Kader</label>
-                            <input type="number" name="cadre_portion" x-model="selectedBeneficiary.cadre_portion" class="w-full mt-2 px-4 py-2.5 bg-gray-50 border-none rounded-lg text-sm focus:ring-2 focus:ring-indigo-500 outline-none transition-all">
+                            <input type="number" name="cadre_portion" min="0" x-model="selectedBeneficiary.cadre_portion" class="w-full mt-2 px-4 py-2.5 bg-gray-50 border-none rounded-lg text-sm focus:ring-2 focus:ring-indigo-500 outline-none transition-all">
                         </div>
                     </div>
                 </div>
@@ -230,5 +270,99 @@
         }
 
         setTimeout(() => mapEdit.invalidateSize(), 150);
+
+        // Trigger Region Population
+        populateEditRegions(data);
+    }
+
+    async function populateEditRegions(unit) {
+        const apiBase = "/api-wilayah";
+        const sel = {
+            p: document.getElementById('be_prov'),
+            r: document.getElementById('be_reg'),
+            d: document.getElementById('be_dist'),
+            v: document.getElementById('be_vill')
+        };
+
+        function setSelectState(el, isDisabled) {
+            el.disabled = isDisabled;
+            if (isDisabled) {
+                el.classList.add('input-disabled');
+                el.classList.remove('bg-gray-50');
+            } else {
+                el.classList.remove('input-disabled');
+                el.classList.add('bg-gray-50');
+            }
+        }
+
+        async function populate(target, path, label, selectedName) {
+            target.innerHTML = '<option value="">Memuat...</option>';
+            try {
+                const resp = await fetch(`${apiBase}/${path}.json`);
+                const json = await resp.json();
+                let h = `<option value="">Pilih ${label}</option>`;
+                let foundCode = null;
+                json.data.forEach(i => {
+                    const name = i.name.replace(/^(KABUPATEN|KOTA|KAB\.)\s+/i, "").trim();
+                    let isSelected = false;
+                    if (selectedName && name.toUpperCase() === selectedName.toUpperCase()) {
+                        isSelected = true;
+                        foundCode = i.code;
+                    }
+                    const s = isSelected ? 'selected' : '';
+                    h += `<option value="${i.code}" data-name="${name}" ${s}>${name}</option>`;
+                });
+                target.innerHTML = h;
+                setSelectState(target, false);
+                return foundCode;
+            } catch (e) {
+                target.innerHTML = '<option value="">Gagal memuat</option>';
+                return null;
+            }
+        }
+
+        // Reset
+        setSelectState(sel.r, true);
+        setSelectState(sel.d, true);
+        setSelectState(sel.v, true);
+
+        // Chain fetch (Pre-populate existing data)
+        const pCode = await populate(sel.p, 'provinces', 'Provinsi', unit.province);
+        if (pCode) {
+            const rCode = await populate(sel.r, `regencies/${pCode}`, 'Kabupaten', unit.regency);
+            if (rCode) {
+                const dCode = await populate(sel.d, `districts/${rCode}`, 'Kecamatan', unit.district);
+                if (dCode) {
+                    await populate(sel.v, `villages/${dCode}`, 'Desa', unit.village);
+                }
+            }
+        }
+
+        // Event Handlers for changes
+        sel.p.onchange = async function() {
+            const name = this.options[this.selectedIndex].getAttribute('data-name') || '';
+            unit.province = name; // Update Alpine state
+            sel.r.innerHTML = sel.d.innerHTML = sel.v.innerHTML = '<option value="">Pilih...</option>';
+            [sel.r, sel.d, sel.v].forEach(s => setSelectState(s, true));
+            if (this.value) await populate(sel.r, `regencies/${this.value}`, 'Kabupaten');
+        };
+        sel.r.onchange = async function() {
+            const name = this.options[this.selectedIndex].getAttribute('data-name') || '';
+            unit.regency = name;
+            sel.d.innerHTML = sel.v.innerHTML = '<option value="">Pilih...</option>';
+            [sel.d, sel.v].forEach(s => setSelectState(s, true));
+            if (this.value) await populate(sel.d, `districts/${this.value}`, 'Kecamatan');
+        };
+        sel.d.onchange = async function() {
+            const name = this.options[this.selectedIndex].getAttribute('data-name') || '';
+            unit.district = name;
+            sel.v.innerHTML = '<option value="">Pilih...</option>';
+            setSelectState(sel.v, true);
+            if (this.value) await populate(sel.v, `villages/${this.value}`, 'Desa');
+        };
+        sel.v.onchange = function() {
+            const name = this.options[this.selectedIndex].getAttribute('data-name') || '';
+            unit.village = name;
+        };
     }
 </script>

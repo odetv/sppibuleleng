@@ -303,7 +303,98 @@
                                 autocomplete="off">
                         </div>
 
+                        <button type="button" onclick="resetFiltersUser()" class="flex items-center justify-center p-2.5 text-rose-500 bg-white border border-rose-100 rounded-lg hover:bg-rose-50 transition-all cursor-pointer shadow-sm" title="Reset Filter">
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+                            </svg>
+                        </button>
                     </div>
+                </div>
+
+                {{-- FILTER SECTION --}}
+                <div class="p-4 bg-slate-50 border-b border-slate-100 grid grid-cols-3 lg:grid-cols-9 gap-3">
+                    <div>
+                        <label class="text-[9px] font-bold text-slate-400 uppercase tracking-widest block mb-1 px-1">Status</label>
+                        <select id="filter-user-status" class="filter-input-user w-full text-[11px] border-slate-200 rounded-lg py-1.5 focus:ring-1 focus:ring-indigo-500 bg-white">
+                            <option value="">Semua Status</option>
+                            <option value="active" {{ request('status_user') === 'active' ? 'selected' : '' }}>Aktif</option>
+                            <option value="pending" {{ request('status_user') === 'pending' ? 'selected' : '' }}>Pending</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="text-[9px] font-bold text-slate-400 uppercase tracking-widest block mb-1 px-1">Batch</label>
+                        <select id="filter-user-batch" class="filter-input-user w-full text-[11px] border-slate-200 rounded-lg py-1.5 focus:ring-1 focus:ring-indigo-500 bg-white">
+                            <option value="">Semua Batch</option>
+                            <option value="1" {{ request('batch') == '1' ? 'selected' : '' }}>Batch 1</option>
+                            <option value="2" {{ request('batch') == '2' ? 'selected' : '' }}>Batch 2</option>
+                            <option value="3" {{ request('batch') == '3' ? 'selected' : '' }}>Batch 3</option>
+                            <option value="Non-SPPI" {{ request('batch') === 'Non-SPPI' ? 'selected' : '' }}>Non-SPPI</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="text-[9px] font-bold text-slate-400 uppercase tracking-widest block mb-1 px-1">Status Kerja</label>
+                        <select id="filter-user-emp-status" class="filter-input-user w-full text-[11px] border-slate-200 rounded-lg py-1.5 focus:ring-1 focus:ring-indigo-500 bg-white">
+                            <option value="">Semua Status Kerja</option>
+                            <option value="ASN" {{ request('employment_status') === 'ASN' ? 'selected' : '' }}>ASN</option>
+                            <option value="Non-ASN" {{ request('employment_status') === 'Non-ASN' ? 'selected' : '' }}>Non-ASN</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="text-[9px] font-bold text-slate-400 uppercase tracking-widest block mb-1 px-1">Jabatan</label>
+                        <select id="filter-user-position" class="filter-input-user w-full text-[11px] border-slate-200 rounded-lg py-1.5 focus:ring-1 focus:ring-indigo-500 bg-white">
+                            <option value="">Semua Jabatan</option>
+                            <option value="none" {{ request('id_ref_position') === 'none' ? 'selected' : '' }}>Belum Menjabat</option>
+                            @foreach($positions as $p)
+                                <option value="{{ $p->id_ref_position }}" {{ request('id_ref_position') == $p->id_ref_position ? 'selected' : '' }}>{{ $p->name_position }}</option>
+                            @endforeach
+                        </select>
+                    </div>
+                    <div>
+                        <label class="text-[9px] font-bold text-slate-400 uppercase tracking-widest block mb-1 px-1">Hak Akses</label>
+                        <select id="filter-user-role" class="filter-input-user w-full text-[11px] border-slate-200 rounded-lg py-1.5 focus:ring-1 focus:ring-indigo-500 bg-white">
+                            <option value="">Semua Hak Akses</option>
+                            @foreach($roles as $r)
+                                <option value="{{ $r->id_ref_role }}" {{ request('id_ref_role') == $r->id_ref_role ? 'selected' : '' }}>{{ $r->name_role }}</option>
+                            @endforeach
+                        </select>
+                    </div>
+                    <div>
+                        <label class="text-[9px] font-bold text-slate-400 uppercase tracking-widest block mb-1 px-1">Provinsi</label>
+                        <select id="filter-user-province" class="filter-input-user w-full text-[11px] border-slate-200 rounded-lg py-1.5 focus:ring-1 focus:ring-indigo-500 bg-white">
+                            <option value="">Semua Provinsi</option>
+                            @foreach($filterData['provinces'] as $p)
+                                <option value="{{ $p }}" {{ request('province') === $p ? 'selected' : '' }}>{{ $p }}</option>
+                            @endforeach
+                        </select>
+                    </div>
+                    <div>
+                        <label class="text-[9px] font-bold text-slate-400 uppercase tracking-widest block mb-1 px-1">Kabupaten/Kota</label>
+                        <select id="filter-user-regency" {{ empty($filterData['regencies']) ? 'disabled' : '' }} class="filter-input-user w-full text-[11px] border-slate-200 rounded-lg py-1.5 focus:ring-1 focus:ring-indigo-500 bg-white disabled:bg-slate-100 disabled:text-slate-400">
+                            <option value="">Semua Kabupaten/Kota</option>
+                            @foreach($filterData['regencies'] as $r)
+                                <option value="{{ $r }}" {{ request('regency') === $r ? 'selected' : '' }}>{{ $r }}</option>
+                            @endforeach
+                        </select>
+                    </div>
+                    <div>
+                        <label class="text-[9px] font-bold text-slate-400 uppercase tracking-widest block mb-1 px-1">Kecamatan</label>
+                        <select id="filter-user-district" {{ empty($filterData['districts']) ? 'disabled' : '' }} class="filter-input-user w-full text-[11px] border-slate-200 rounded-lg py-1.5 focus:ring-1 focus:ring-indigo-500 bg-white disabled:bg-slate-100 disabled:text-slate-400">
+                            <option value="">Semua Kecamatan</option>
+                            @foreach($filterData['districts'] as $d)
+                                <option value="{{ $d }}" {{ request('district') === $d ? 'selected' : '' }}>{{ $d }}</option>
+                            @endforeach
+                        </select>
+                    </div>
+                    <div>
+                        <label class="text-[9px] font-bold text-slate-400 uppercase tracking-widest block mb-1 px-1">Desa/Kelurahan</label>
+                        <select id="filter-user-village" {{ empty($filterData['villages']) ? 'disabled' : '' }} class="filter-input-user w-full text-[11px] border-slate-200 rounded-lg py-1.5 focus:ring-1 focus:ring-indigo-500 bg-white disabled:bg-slate-100 disabled:text-slate-400">
+                            <option value="">Semua Desa/Kelurahan</option>
+                            @foreach($filterData['villages'] as $v)
+                                <option value="{{ $v }}" {{ request('village') === $v ? 'selected' : '' }}>{{ $v }}</option>
+                            @endforeach
+                        </select>
+                    </div>
+                    <div class="hidden lg:block"></div>
                 </div>
                 <div class="overflow-x-auto scrollbar-thin">
                     <table class="w-full text-left border-collapse text-sm">
@@ -632,7 +723,31 @@
             const activePerPage = document.getElementById('user-' + tableType + '-per-page');
             if (activePerPage) currentUrl.searchParams.set('per_page_' + tableType, activePerPage.value);
 
-            // 3. Batalkan nomor halaman (refresh ke halaman 1) saat pencarian atau ganti ukuran baris. 
+            // 3. Ambil filter user (hanya untuk table 'all')
+            if (tableType === 'all') {
+                const filters = {
+                    'status_user': 'filter-user-status',
+                    'id_ref_role': 'filter-user-role',
+                    'id_ref_position': 'filter-user-position',
+                    'batch': 'filter-user-batch',
+                    'employment_status': 'filter-user-emp-status',
+                    'province': 'filter-user-province',
+                    'regency': 'filter-user-regency',
+                    'district': 'filter-user-district',
+                    'village': 'filter-user-village'
+                };
+
+                Object.keys(filters).forEach(key => {
+                    const el = document.getElementById(filters[key]);
+                    if (el && el.value !== '') {
+                        currentUrl.searchParams.set(key, el.value);
+                    } else {
+                        currentUrl.searchParams.delete(key);
+                    }
+                });
+            }
+
+            // 4. Batalkan nomor halaman (refresh ke halaman 1) saat pencarian atau ganti ukuran baris. 
             // Jika dipanggil oleh klik pagination link, inputEl itu dibiarkan nol (null).
             if (inputEl) currentUrl.searchParams.delete(tableType + '_page');
 
@@ -653,9 +768,27 @@
                 .then(html => {
                     let parser = new DOMParser();
                     let doc = parser.parseFromString(html, 'text/html');
-                    let newContent = doc.getElementById('user-table-container').innerHTML;
+                    
+                    // Update main container
+                    const newTableContainer = doc.getElementById('user-table-container');
+                    if(newTableContainer) container.innerHTML = newTableContainer.innerHTML;
 
-                    container.innerHTML = newContent;
+                    // Update Filter Dropdowns (Cascading logic for 'all' table)
+                    const filterArea = doc.querySelector('.filter-input-user')?.closest('.bg-slate-50');
+                    if (filterArea) {
+                        const addressFilters = ['filter-user-province', 'filter-user-regency', 'filter-user-district', 'filter-user-village'];
+                        addressFilters.forEach(id => {
+                            const oldEl = document.getElementById(id);
+                            const newEl = doc.getElementById(id);
+                            if(oldEl && newEl) {
+                                const currentVal = oldEl.value;
+                                oldEl.innerHTML = newEl.innerHTML;
+                                oldEl.disabled = newEl.disabled;
+                                oldEl.value = Array.from(oldEl.options).some(opt => opt.value === currentVal) ? currentVal : '';
+                            }
+                        });
+                    }
+
                     window.history.pushState({}, '', url);
 
                     if (focusId) {
@@ -671,6 +804,12 @@
                     }
                 })
                 .catch(error => console.error('Error:', error));
+        }
+
+        // 1.1 Reset Filter Handler
+        window.resetFiltersUser = function() {
+            const url = new URL(window.location.origin + window.location.pathname);
+            window.location.href = url.toString();
         }
 
         // 2. Event Listener untuk Mengetik (Enter Key)
@@ -700,11 +839,16 @@
             }
         });
 
-        // 4. Listener untuk Mengganti Dropdown Limit Baris
+        // 4. Listener untuk Mengganti Dropdown Limit Baris & Filter User
         document.addEventListener('change', function(e) {
             if (e.target.classList.contains('per-page-select-pending')) refreshTable(getCurrentUrlModifiersUser('pending', e.target));
             if (e.target.classList.contains('per-page-select-all')) refreshTable(getCurrentUrlModifiersUser('all', e.target));
             if (e.target.classList.contains('per-page-select-trash')) refreshTable(getCurrentUrlModifiersUser('trash', e.target));
+            
+            // Advanced Filters for 'all' table
+            if (e.target.classList.contains('filter-input-user')) {
+                refreshTable(getCurrentUrlModifiersUser('all', e.target), 'search-all');
+            }
         });
 
         // 5. Listener Memencet Nomor Navigasi Halaman Pagination

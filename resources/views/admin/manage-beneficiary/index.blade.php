@@ -24,7 +24,7 @@
             <div class="bg-white rounded-xl border border-slate-200 overflow-hidden shadow-sm">
                 <div class="p-6 md:p-8 flex flex-col md:flex-row justify-between gap-4">
                     <div>
-                        <h2 class="text-xl font-bold text-slate-800 uppercase leading-tight">Kelola Penerima Manfaat (PM)</h2>
+                        <h2 class="text-xl font-bold text-slate-800 uppercase leading-tight">Kelola Penerima Manfaat</h2>
                         <p class="text-sm text-slate-400 font-medium mt-1">Manajemen data penerima manfaat terdaftar</p>
                     </div>
                     <div class="flex items-center">
@@ -46,9 +46,9 @@
                     <div class="flex flex-wrap items-center gap-3">
                         <button @click="showCreateModal = true" class="flex items-center justify-center p-2.5 md:px-4 text-[11px] font-bold uppercase tracking-wider text-indigo-600 bg-white border border-indigo-200 rounded-lg hover:bg-indigo-600 hover:text-white transition-all cursor-pointer shadow-sm">
                             <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M12 4v16m8-8H4" />
-                            </svg>
-                            <span class="hidden md:inline ml-2 text-nowrap">Tambah PM</span>
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
+                                </svg>
+                            <span class="hidden md:inline ml-2 text-nowrap">Tambah</span>
                         </button>
 
                         <div class="relative flex-grow md:flex-initial md:w-64 text-slate-800">
@@ -60,9 +60,73 @@
                             <input type="text"
                                 id="beneficiary-search"
                                 class="live-search-input text-xs border-slate-200 rounded-lg pl-9 pr-3 py-2.5 w-full focus:ring-2 focus:ring-indigo-500 outline-none transition-all bg-white shadow-sm"
-                                placeholder="Cari ID, kode, atau nama..." value="{{ request('search') }}"
+                                placeholder="Cari kode atau nama..." value="{{ request('search') }}"
                                 autocomplete="off">
                         </div>
+
+                        <button type="button" onclick="resetFilters()" class="flex items-center justify-center p-2.5 text-rose-500 bg-white border border-rose-100 rounded-lg hover:bg-rose-50 transition-all cursor-pointer shadow-sm" title="Reset Filter">
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+                            </svg>
+                        </button>
+                    </div>
+                </div>
+
+                {{-- FILTER SECTION --}}
+                <div class="p-4 bg-slate-50 border-b border-slate-100 grid grid-cols-3 lg:grid-cols-6 gap-3">
+                    <div>
+                        <label class="text-[9px] font-bold text-slate-400 uppercase tracking-widest block mb-1 px-1">Status</label>
+                        <select id="filter-status" class="filter-input w-full text-[11px] border-slate-200 rounded-lg py-1.5 focus:ring-1 focus:ring-indigo-500 bg-white">
+                            <option value="">Semua Status</option>
+                            <option value="1" {{ request('status') === '1' ? 'selected' : '' }}>Aktif</option>
+                            <option value="0" {{ request('status') === '0' ? 'selected' : '' }}>Non-Aktif</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="text-[9px] font-bold text-slate-400 uppercase tracking-widest block mb-1 px-1">Unit SPPG</label>
+                        <select id="filter-sppg-unit" class="filter-input w-full text-[11px] border-slate-200 rounded-lg py-1.5 focus:ring-1 focus:ring-indigo-500 bg-white">
+                            <option value="">Semua Unit</option>
+                            <option value="unassigned" {{ request('sppg_unit') === 'unassigned' ? 'selected' : '' }}>Belum Diberikan</option>
+                            @foreach($sppgUnits as $unit)
+                                <option value="{{ $unit->id_sppg_unit }}" {{ request('sppg_unit') == $unit->id_sppg_unit ? 'selected' : '' }}>{{ $unit->name }}</option>
+                            @endforeach
+                        </select>
+                    </div>
+                    <div>
+                        <label class="text-[9px] font-bold text-slate-400 uppercase tracking-widest block mb-1 px-1">Provinsi</label>
+                        <select id="filter-province" class="filter-input w-full text-[11px] border-slate-200 rounded-lg py-1.5 focus:ring-1 focus:ring-indigo-500 bg-white">
+                            <option value="">Semua Provinsi</option>
+                            @foreach($filterData['provinces'] as $p)
+                                <option value="{{ $p }}" {{ request('province') === $p ? 'selected' : '' }}>{{ $p }}</option>
+                            @endforeach
+                        </select>
+                    </div>
+                    <div>
+                        <label class="text-[9px] font-bold text-slate-400 uppercase tracking-widest block mb-1 px-1">Kabupaten</label>
+                        <select id="filter-regency" {{ empty($filterData['regencies']) ? 'disabled' : '' }} class="filter-input w-full text-[11px] border-slate-200 rounded-lg py-1.5 focus:ring-1 focus:ring-indigo-500 bg-white disabled:bg-slate-100 disabled:text-slate-400">
+                            <option value="">Semua Kabupaten/Kota</option>
+                            @foreach($filterData['regencies'] as $r)
+                                <option value="{{ $r }}" {{ request('regency') === $r ? 'selected' : '' }}>{{ $r }}</option>
+                            @endforeach
+                        </select>
+                    </div>
+                    <div>
+                        <label class="text-[9px] font-bold text-slate-400 uppercase tracking-widest block mb-1 px-1">Kecamatan</label>
+                        <select id="filter-district" {{ empty($filterData['districts']) ? 'disabled' : '' }} class="filter-input w-full text-[11px] border-slate-200 rounded-lg py-1.5 focus:ring-1 focus:ring-indigo-500 bg-white disabled:bg-slate-100 disabled:text-slate-400">
+                            <option value="">Semua Kecamatan</option>
+                            @foreach($filterData['districts'] as $d)
+                                <option value="{{ $d }}" {{ request('district') === $d ? 'selected' : '' }}>{{ $d }}</option>
+                            @endforeach
+                        </select>
+                    </div>
+                    <div>
+                        <label class="text-[9px] font-bold text-slate-400 uppercase tracking-widest block mb-1 px-1">Desa/Kelurahan</label>
+                        <select id="filter-village" {{ empty($filterData['villages']) ? 'disabled' : '' }} class="filter-input w-full text-[11px] border-slate-200 rounded-lg py-1.5 focus:ring-1 focus:ring-indigo-500 bg-white disabled:bg-slate-100 disabled:text-slate-400">
+                            <option value="">Semua Desa/Kelurahan</option>
+                            @foreach($filterData['villages'] as $v)
+                                <option value="{{ $v }}" {{ request('village') === $v ? 'selected' : '' }}>{{ $v }}</option>
+                            @endforeach
+                        </select>
                     </div>
                 </div>
 
@@ -71,44 +135,85 @@
                         <table class="w-full text-left border-collapse text-sm">
                             <thead>
                                 <tr class="bg-slate-50 text-[11px] font-bold uppercase tracking-wider text-slate-400 border-b border-slate-100">
-                                    <th class="px-6 py-4">INFORMASI PM</th>
-                                    <th class="px-6 py-4 text-center">SPPG UNIT / PIC</th>
-                                    <th class="px-6 py-4 text-center">STATUS</th>
-                                    <th class="px-6 py-4 text-center">AKSI</th>
+                                    <th class="px-6 py-4 whitespace-nowrap">INFORMASI PM</th>
+                                    <th class="px-6 py-4 text-center whitespace-nowrap">SPPG UNIT</th>
+                                    <th class="px-6 py-4 text-center whitespace-nowrap">PROVINSI</th>
+                                    <th class="px-6 py-4 text-center whitespace-nowrap">KABUPATEN</th>
+                                    <th class="px-6 py-4 text-center whitespace-nowrap">KECAMATAN</th>
+                                    <th class="px-6 py-4 text-center whitespace-nowrap">DESA/KELURAHAN</th>
+                                    <th class="px-6 py-4 text-center whitespace-nowrap">DETIL PORSI</th>
+                                    <th class="px-6 py-4 text-center whitespace-nowrap">STATUS</th>
+                                    <th class="px-6 py-4 text-center whitespace-nowrap">AKSI</th>
                                 </tr>
                             </thead>
                             <tbody class="divide-y divide-slate-100">
-                                @forelse($beneficiaries as $pm)
+                                @forelse($beneficiaries as $beneficiary)
                                 <tr class="hover:bg-slate-50/50 transition-colors group">
                                     <td class="px-6 py-4">
                                         <div class="flex items-center gap-4">
                                             <div>
-                                                <div class="font-bold text-slate-700 capitalize">{{ $pm->name }}</div>
-                                                <div class="text-xs text-slate-500 font-medium whitespace-nowrap">
-                                                    ID: {{ $pm->id_beneficiary }} <span class="mx-1">-</span> Kode: <span>{{ $pm->code ?? '-' }}</span>
+                                                <div class="font-bold text-slate-700 capitalize text-sm">{{ $beneficiary->name }}</div>
+                                                <div class="text-slate-500 text-xs block capitalize font-medium">
+                                                    <span>Kode: {{ $beneficiary->code ?? '-' }}</span>
                                                 </div>
-                                                <div class="text-[10px] text-slate-400 italic">{{ $pm->group_type }} ({{ $pm->category }})</div>
+                                                <div class="text-slate-500 text-xs block capitalize font-medium">Kelompok: {{ $beneficiary->group_type }}</div>
+                                                <div class="text-slate-500 text-xs block capitalize font-medium">Kategori: {{ $beneficiary->category }}</div>
                                             </div>
                                         </div>
                                     </td>
                                     <td class="px-6 py-4 text-center">
-                                        <span class="text-slate-700 text-xs block font-bold capitalize">{{ $pm->sppgUnit->name ?? 'Belum Terhubung' }}</span>
-                                        <span class="text-xs text-slate-500 font-medium">{{ $pm->pic_name ?? '-' }} ({{ $pm->pic_phone ?? '-' }})</span>
+                                        <span class="text-slate-500 text-xs block capitalize font-medium">{{ $beneficiary->sppgUnit->name ?? 'Belum Diberikan' }}</span>
                                     </td>
                                     <td class="px-6 py-4 text-center">
-                                        <span class="text-xs font-medium px-1.5 py-0.5 rounded border capitalize {{ $pm->is_active ? 'bg-emerald-100 text-emerald-600 border-emerald-200' : 'bg-rose-100 text-rose-600 border-rose-200' }}">
-                                            {{ $pm->is_active ? 'Aktif' : 'Non-Aktif' }}
+                                        <span class="text-slate-500 text-xs block capitalize font-medium">{{ $beneficiary->province ?? '-' }}</span>
+                                    </td>
+                                    <td class="px-6 py-4 text-center">
+                                        <span class="text-slate-500 text-xs block capitalize font-medium">{{ $beneficiary->regency ?? '-' }}</span>
+                                    </td>
+                                    <td class="px-6 py-4 text-center">
+                                        <span class="text-slate-500 text-xs block capitalize font-medium">{{ $beneficiary->district ?? '-' }}</span>
+                                    </td>
+                                    <td class="px-6 py-4 text-center">
+                                        <span class="text-slate-500 text-xs block capitalize font-medium">{{ $beneficiary->village ?? '-' }}</span>
+                                    </td>
+                                    <td class="px-6 py-4">
+                                        <div class="flex flex-col gap-1.5 min-w-[150px]">
+                                            <div class="flex items-center justify-between text-[10px] bg-slate-50 px-2 py-0.5 rounded border border-slate-100">
+                                                <span class="font-bold text-slate-500 uppercase">Kecil (L/P)</span>
+                                                <span class="text-slate-700 font-bold bg-white px-1.5 rounded shadow-sm text-[11px]">{{ $beneficiary->small_portion_male }} / {{ $beneficiary->small_portion_female }}</span>
+                                            </div>
+                                            <div class="flex items-center justify-between text-[10px] bg-slate-50 px-2 py-0.5 rounded border border-slate-100">
+                                                <span class="font-bold text-slate-500 uppercase">Besar (L/P)</span>
+                                                <span class="text-slate-700 font-bold bg-white px-1.5 rounded shadow-sm text-[11px]">{{ $beneficiary->large_portion_male }} / {{ $beneficiary->large_portion_female }}</span>
+                                            </div>
+                                            <div class="flex items-center justify-between text-[10px] bg-slate-50 px-2 py-0.5 rounded border border-slate-100">
+                                                <span class="font-bold text-slate-500 uppercase whitespace-nowrap">Guru</span>
+                                                <span class="text-slate-700 font-bold bg-white px-1.5 rounded shadow-sm text-[11px] whitespace-nowrap">{{ $beneficiary->teacher_portion }}</span>
+                                            </div>
+                                            <div class="flex items-center justify-between text-[10px] bg-slate-50 px-2 py-0.5 rounded border border-slate-100">
+                                                <span class="font-bold text-slate-500 uppercase whitespace-nowrap">Tenaga Kependidikan</span>
+                                                <span class="text-slate-700 font-bold bg-white px-1.5 rounded shadow-sm text-[11px] whitespace-nowrap">{{ $beneficiary->staff_portion }}</span>
+                                            </div>
+                                            <div class="flex items-center justify-between text-[10px] bg-slate-50 px-2 py-0.5 rounded border border-slate-100">
+                                                <span class="font-bold text-slate-500 uppercase whitespace-nowrap">Kader</span>
+                                                <span class="text-slate-700 font-bold bg-white px-1.5 rounded shadow-sm text-[11px] whitespace-nowrap">{{ $beneficiary->cadre_portion }}</span>
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td class="px-6 py-4 text-center">
+                                        <span class="text-xs font-medium px-1.5 py-0.5 rounded border capitalize {{ $beneficiary->is_active ? 'bg-emerald-100 text-emerald-600 border-emerald-200' : 'bg-rose-100 text-rose-600 border-rose-200' }}">
+                                            {{ $beneficiary->is_active ? 'Aktif' : 'Non-Aktif' }}
                                         </span>
                                     </td>
                                     <td class="px-6 py-4 text-center">
                                         <div class="flex justify-center items-center gap-1">
-                                            <button @click="selectedBeneficiary = {{ json_encode($pm) }}; showEditModal = true; $dispatch('init-edit-beneficiary', selectedBeneficiary)"
+                                            <button @click="selectedBeneficiary = {{ json_encode($beneficiary) }}; showEditModal = true; $dispatch('init-edit-beneficiary', selectedBeneficiary)"
                                                 title="Edit" class="p-2 text-slate-400 hover:text-indigo-600 cursor-pointer transition-colors hover:bg-indigo-50 rounded-lg">
                                                 <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
                                                     <path d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path>
                                                 </svg>
                                             </button>
-                                            <button onclick="confirmDeleteBeneficiary('{{ $pm->id_beneficiary }}', '{{ addslashes($pm->name) }}')"
+                                            <button onclick="confirmDeleteBeneficiary('{{ $beneficiary->id_beneficiary }}', '{{ addslashes($beneficiary->name) }}')"
                                                 title="Hapus" class="p-2 text-rose-600 hover:bg-rose-50 cursor-pointer rounded-lg opacity-80 hover:opacity-100 transition-colors">
                                                 <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
                                                     <path d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path>
@@ -119,18 +224,50 @@
                                 </tr>
                                 @empty
                                 <tr>
-                                    <td colspan="4" class="px-6 py-12 text-center">
-                                        <p class="text-slate-400 italic">Belum ada data penerima manfaat.</p>
-                                    </td>
-                                </tr>
+                                <td colspan="9" class="px-6 py-12 text-center">
+                                    <div class="flex flex-col items-center justify-center">
+                                        <div class="p-3 bg-slate-50 rounded-full mb-3">
+                                            <svg class="w-8 h-8 text-slate-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
+                                </svg>
+                                        </div>
+                                        <p class="text-[11px] font-bold uppercase tracking-[0.2em] text-slate-400">
+                                            Belum ada data PM terdaftar
+                                        </p>
+                                        <p class="text-[10px] text-slate-400 mt-1 italic">Coba gunakan kata kunci yang berbeda</p>
+                                    </div>
+                                </td>
+                            </tr>
                                 @endforelse
                             </tbody>
                         </table>
                     </div>
 
-                    @if($beneficiaries->hasPages())
-                    <div class="px-6 py-4 bg-white border-t border-slate-100">
-                        {{ $beneficiaries->links() }}
+                    @if($beneficiaries->hasPages() || request('per_page') > 5)
+                    <div class="px-6 py-4 bg-white border-t border-slate-100 flex flex-col md:flex-row justify-between items-center gap-4 text-xs
+        [&_nav]:flex [&_nav]:justify-between [&_nav]:items-center [&_nav]:w-full md:[&_nav]:w-auto
+        [&_a]:bg-white [&_a]:text-slate-600 [&_a]:border-slate-200 [&_a]:rounded-lg [&_a]:hover:bg-slate-50
+        [&_span]:bg-white [&_span]:text-slate-600 [&_span]:border-slate-200 [&_span]:rounded-lg
+        [&_.bg-gray-800]:bg-emerald-600 [&_.bg-gray-800]:text-white [&_.bg-gray-800]:border-emerald-600
+        [&_.dark\:bg-gray-800]:bg-white [&_.dark\:text-gray-400]:text-slate-600">
+                        
+                        {{-- DROPDOWN PER PAGE --}}
+                        <div class="flex items-center gap-2">
+                            <span class="text-sm text-slate-600">Tampilkan</span>
+                            <select id="beneficiary-per-page" class="per-page-select border-slate-200 rounded-lg text-sm py-1.5 pl-3 pr-8 focus:ring-emerald-500 text-slate-600 font-medium cursor-pointer bg-slate-50 hover:bg-slate-100 transition-colors">
+                                <option value="5" {{ (request('per_page') == '5' || !request('per_page')) ? 'selected' : '' }}>5</option>
+                                <option value="15" {{ request('per_page') == '15' ? 'selected' : '' }}>15</option>
+                                <option value="50" {{ request('per_page') == '50' ? 'selected' : '' }}>50</option>
+                                <option value="100" {{ request('per_page') == '100' ? 'selected' : '' }}>100</option>
+                            </select>
+                            <span class="text-sm text-slate-600 hidden sm:inline">Baris</span>
+                        </div>
+
+                        {{-- LARAVEL PAGINATION --}}
+                        <div class="w-full md:w-auto overflow-x-auto pb-1 md:pb-0">
+                            {{ $beneficiaries->links() }}
+                        </div>
+
                     </div>
                     @endif
                 </div>
@@ -157,19 +294,149 @@
             document.getElementById('deleteModal').classList.add('hidden');
         }
 
-        // Live search and pagination logic (simplified for now)
+        // Live search and pagination logic (AJAX)
         let searchTimer;
+
+        function getCurrentUrlModifiers(inputEl = null) {
+            let currentUrl = new URL(window.location.href);
+            
+            // 1. Search keyword
+            const activeSearch = document.getElementById('beneficiary-search');
+            if(activeSearch) {
+                if(activeSearch.value) currentUrl.searchParams.set('search', activeSearch.value);
+                else currentUrl.searchParams.delete('search');
+            }
+            
+            // 2. Per-page
+            const activePerPage = document.getElementById('beneficiary-per-page');
+            if(activePerPage) currentUrl.searchParams.set('per_page', activePerPage.value);
+
+            // 3. Filters
+            const filters = {
+                'status': 'filter-status',
+                'sppg_unit': 'filter-sppg-unit',
+                'province': 'filter-province',
+                'regency': 'filter-regency',
+                'district': 'filter-district',
+                'village': 'filter-village'
+            };
+
+            Object.keys(filters).forEach(key => {
+                const el = document.getElementById(filters[key]);
+                if (el && el.value !== '') {
+                    currentUrl.searchParams.set(key, el.value);
+                } else {
+                    currentUrl.searchParams.delete(key);
+                }
+            });
+
+            // Back to page 1 if triggered by input/filter change
+            if(inputEl) currentUrl.searchParams.delete('page');
+
+            return currentUrl.toString();
+        }
+
+        function refreshTable(url, focusId = null) {
+            const container = document.getElementById('beneficiary-table-container');
+            if (!container) return;
+
+            fetch(url, {
+                headers: {
+                    "X-Requested-With": "XMLHttpRequest"
+                }
+            })
+            .then(response => response.text())
+            .then(html => {
+                let parser = new DOMParser();
+                let doc = parser.parseFromString(html, 'text/html');
+                
+                // Update Table Content
+                const newTable = doc.getElementById('beneficiary-table-container');
+                if(newTable) container.innerHTML = newTable.innerHTML;
+
+                // Update Filter Dropdowns (Cascading Logic)
+                const filterArea = doc.querySelector('.p-4.bg-slate-50.border-b');
+                if(filterArea) {
+                    const currentFilters = ['filter-province', 'filter-regency', 'filter-district', 'filter-village'];
+                    currentFilters.forEach(id => {
+                        const oldEl = document.getElementById(id);
+                        const newEl = doc.getElementById(id);
+                        if(oldEl && newEl) {
+                            const currentVal = oldEl.value;
+                            oldEl.innerHTML = newEl.innerHTML;
+                            oldEl.disabled = newEl.disabled;
+                            // Attempt to restore value, or reset if no longer present
+                            oldEl.value = Array.from(oldEl.options).some(opt => opt.value === currentVal) ? currentVal : '';
+                        }
+                    });
+                }
+
+                // Sync URL
+                window.history.pushState({}, '', url);
+
+                // Restore focus
+                if (focusId) {
+                    requestAnimationFrame(() => {
+                        const activeInput = document.getElementById(focusId);
+                        if (activeInput) {
+                            activeInput.focus();
+                            const val = activeInput.value;
+                            activeInput.value = '';
+                            activeInput.value = val;
+                        }
+                    });
+                }
+            })
+            .catch(error => console.error('Error:', error));
+        }
+
+        // 1. Search Input logic
         const searchInput = document.getElementById('beneficiary-search');
         if (searchInput) {
             searchInput.addEventListener('input', function() {
                 clearTimeout(searchTimer);
                 searchTimer = setTimeout(() => {
-                    const url = new URL(window.location.href);
-                    url.searchParams.set('search', this.value);
-                    url.searchParams.delete('page');
-                    window.location.href = url.toString();
+                    refreshTable(getCurrentUrlModifiers(this), this.id);
                 }, 600);
             });
+
+            searchInput.addEventListener('keydown', function(e) {
+                if (e.key === 'Enter') {
+                    e.preventDefault();
+                    clearTimeout(searchTimer);
+                    refreshTable(getCurrentUrlModifiers(this), this.id);
+                }
+            });
         }
+
+        // 2. Filter logic
+        document.addEventListener('change', function(e) {
+            if (e.target.classList.contains('filter-input') || e.target.id === 'beneficiary-per-page') {
+                refreshTable(getCurrentUrlModifiers(e.target), 'beneficiary-search');
+            }
+        });
+
+        // 3. Reset Filter
+        window.resetFilters = function() {
+            const url = new URL(window.location.origin + window.location.pathname);
+            window.location.href = url.toString();
+        }
+
+        // 4. Pagination Links AJAX
+        document.addEventListener('click', function(e) {
+            let anchor = e.target.closest('#beneficiary-table-container nav a');
+            if (anchor && anchor.getAttribute('href')) {
+                let url = new URL(anchor.getAttribute('href'));
+                
+                // Ensure per_page and filters are preserved
+                const modUrl = new URL(getCurrentUrlModifiers());
+                modUrl.searchParams.set('page', url.searchParams.get('page'));
+
+                if (!url.toString().startsWith('javascript')) {
+                    e.preventDefault();
+                    refreshTable(modUrl.toString(), 'beneficiary-search');
+                }
+            }
+        });
     </script>
 </x-app-layout>

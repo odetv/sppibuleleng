@@ -19,9 +19,15 @@ class SppgUnitController extends Controller
     public function index(Request $request)
     {
         $search = $request->query('search');
+        $status = $request->query('status');
+        $decreeId = $request->query('id_assignment_decree');
+        $province = $request->query('province');
+        $regency = $request->query('regency');
+        $district = $request->query('district');
+        $village = $request->query('village');
 
-        // Ambil data unit dengan eager loading relasi (termasuk workAssignments untuk info SK)
-        $query = SppgUnit::with(['leader', 'nutritionist', 'accountant', 'socialMedia', 'workAssignments.decree', 'beneficiaries'])->latest();
+        // Ambil data unit dengan eager loading relasi
+        $query = SppgUnit::with(['leader', 'nutritionist', 'accountant', 'socialMedia', 'workAssignments.decree', 'beneficiaries']);
 
         if ($search) {
             $query->where(function ($q) use ($search) {
@@ -34,31 +40,53 @@ class SppgUnitController extends Controller
             });
         }
 
-        $perPage = $request->query('per_page', 5);
-        $units = $query->paginate($perPage)->withQueryString();
+        // Filters
+        if ($status) $query->where('status', $status);
+        if ($decreeId) {
+            if ($decreeId === 'none') {
+                $query->whereDoesntHave('workAssignments');
+            } else {
+                $query->whereHas('workAssignments', function ($qw) use ($decreeId) {
+                    $qw->where('id_assignment_decree', $decreeId);
+                });
+            }
+        }
+        if ($province) $query->where('province', $province);
+        if ($regency) $query->where('regency', $regency);
+        if ($district) $query->where('district', $district);
+        if ($village) $query->where('village', $village);
 
-        // Ambil data person untuk dropdown leader
+        $perPage = $request->query('per_page', 5);
+        $units = $query->latest()->paginate($perPage)->withQueryString();
+
+        // Data for Filters & Modals
         $leaders = Person::whereHas('position', fn($q) => $q->where('slug_position', 'kasppg'))->orderBy('name')->get();
         $nutritionists = Person::whereHas('position', fn($q) => $q->where('slug_position', 'ag'))->orderBy('name')->get();
         $accountants = Person::whereHas('position', fn($q) => $q->where('slug_position', 'ak'))->orderBy('name')->get();
 
-        // Siapkan data personil yang sedang menjabat di unit manapun
         $occupiedPeople = [
             'kasppg' => SppgUnit::whereNotNull('leader_id')->pluck('leader_id')->toArray(),
             'ag'     => SppgUnit::whereNotNull('nutritionist_id')->pluck('nutritionist_id')->toArray(),
             'ak'     => SppgUnit::whereNotNull('accountant_id')->pluck('accountant_id')->toArray(),
         ];
 
-        // Daftar semua SK untuk dropdown di modal SPPG
         $decrees = AssignmentDecree::orderBy('date_sk', 'desc')->get();
-
-        // Peta: id_sppg_unit => id_assignment_decree (untuk tahu SPPG mana sudah ada WA)
         $assignedDecreeMap = WorkAssignment::pluck('id_assignment_decree', 'id_sppg_unit')->toArray();
-
-        // Ambil semua PM untuk pilihan link ke SPPG
         $allBeneficiaries = Beneficiary::orderBy('name')->get();
 
-        return view('admin.manage-sppg.index', compact('units', 'leaders', 'nutritionists', 'accountants', 'occupiedPeople', 'decrees', 'assignedDecreeMap', 'allBeneficiaries'));
+        // Unique address data for filters
+        $filterData = [
+            'provinces' => SppgUnit::whereNotNull('province')->distinct()->pluck('province')->sort(),
+            'regencies' => $province ? SppgUnit::where('province', $province)->whereNotNull('regency')->distinct()->pluck('regency')->sort() : [],
+            'districts' => $regency ? SppgUnit::where('regency', $regency)->whereNotNull('district')->distinct()->pluck('district')->sort() : [],
+            'villages' => $district ? SppgUnit::where('district', $district)->whereNotNull('village')->distinct()->pluck('village')->sort() : [],
+        ];
+
+        if ($request->ajax()) {
+            return view('admin.manage-sppg.index', compact('units', 'leaders', 'nutritionists', 'accountants', 'occupiedPeople', 'decrees', 'assignedDecreeMap', 'allBeneficiaries', 'filterData'))->fragment('sppg-table-container');
+        }
+
+        return view('admin.manage-sppg.index', compact('units', 'leaders', 'nutritionists', 'accountants', 'occupiedPeople', 'decrees', 'assignedDecreeMap', 'allBeneficiaries', 'filterData'));
     }
 
     /**

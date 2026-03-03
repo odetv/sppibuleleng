@@ -55,15 +55,25 @@
             margin-top: 4px;
             display: block;
         }
+
+        .input-disabled {
+            background-color: #f8fafc !important;
+            color: #94a3b8 !important;
+            cursor: not-allowed !important;
+            pointer-events: none;
+            border: 1px solid #e2e8f0 !important;
+        }
     </style>
 
     <div class="py-8 w-full px-4 sm:px-6 lg:px-8 relative"
         x-data="{ 
             showCreateModal: false, 
             showEditModal: false,
-            showCreatePmModal: false, 
-            selectedUnit: { social_media: {}, beneficiaries: [] },
-            allPmList: {{ json_encode($allBeneficiaries) }}
+            showCreateBeneficiaryModal: false,
+            showUnlinkModal: false,
+            beneficiaryToUnlink: null,
+            selectedUnit: { beneficiaries: [] },
+            allBeneficiaryList: {{ json_encode($allBeneficiaries) }}
          }">
 
         <div class="max-w-full mx-auto space-y-6">
@@ -129,6 +139,74 @@
                                 placeholder="Cari ID, kode, atau nama..." value="{{ request('search') }}"
                                 autocomplete="off">
                         </div>
+
+                        <button type="button" onclick="resetFilters()" class="flex items-center justify-center p-2.5 text-rose-500 bg-white border border-rose-100 rounded-lg hover:bg-rose-50 transition-all cursor-pointer shadow-sm" title="Reset Filter">
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+                            </svg>
+                        </button>
+                    </div>
+                </div>
+
+                {{-- FILTER SECTION --}}
+                <div class="p-4 bg-slate-50 border-b border-slate-100 grid grid-cols-3 lg:grid-cols-6 gap-3">
+                    <div class="w-full">
+                        <label class="text-[9px] font-bold text-slate-400 uppercase tracking-widest block mb-1 px-1">Status</label>
+                        <select id="filter-status" class="filter-input w-full text-[11px] border-slate-200 rounded-lg py-1.5 focus:ring-1 focus:ring-indigo-500 bg-white">
+                            <option value="">Semua Status</option>
+                            <option value="Operasional" {{ request('status') === 'Operasional' ? 'selected' : '' }}>Operasional</option>
+                            <option value="Belum Operasional" {{ request('status') === 'Belum Operasional' ? 'selected' : '' }}>Belum Operasional</option>
+                            <option value="Tutup Sementara" {{ request('status') === 'Tutup Sementara' ? 'selected' : '' }}>Tutup Sementara</option>
+                            <option value="Tutup Permanen" {{ request('status') === 'Tutup Permanen' ? 'selected' : '' }}>Tutup Permanen</option>
+                        </select>
+                    </div>
+                    <div class="w-full">
+                        <label class="text-[9px] font-bold text-slate-400 uppercase tracking-widest block mb-1 px-1">SK</label>
+                        <select id="filter-decree" class="filter-input w-full text-[11px] border-slate-200 rounded-lg py-1.5 focus:ring-1 focus:ring-emerald-500 bg-white">
+                            <option value="">Semua SK</option>
+                            <option value="none" {{ request('id_assignment_decree') === 'none' ? 'selected' : '' }}>Belum Ada SK</option>
+                            @foreach($decrees as $d)
+                                <option value="{{ $d->id_assignment_decree }}" {{ request('id_assignment_decree') == $d->id_assignment_decree ? 'selected' : '' }}>
+                                    {{ $d->no_sk }}
+                                </option>
+                            @endforeach
+                        </select>
+                    </div>
+                    <div class="w-full">
+                        <label class="text-[9px] font-bold text-slate-400 uppercase tracking-widest block mb-1 px-1">Provinsi</label>
+                        <select id="filter-province" class="filter-input w-full text-[11px] border-slate-200 rounded-lg py-1.5 focus:ring-1 focus:ring-indigo-500 bg-white">
+                            <option value="">Semua Provinsi</option>
+                            @foreach($filterData['provinces'] as $p)
+                                <option value="{{ $p }}" {{ request('province') === $p ? 'selected' : '' }}>{{ $p }}</option>
+                            @endforeach
+                        </select>
+                    </div>
+                    <div class="w-full">
+                        <label class="text-[9px] font-bold text-slate-400 uppercase tracking-widest block mb-1 px-1">Kabupaten</label>
+                        <select id="filter-regency" {{ empty($filterData['regencies']) ? 'disabled' : '' }} class="filter-input w-full text-[11px] border-slate-200 rounded-lg py-1.5 focus:ring-1 focus:ring-indigo-500 bg-white disabled:bg-slate-100 disabled:text-slate-400">
+                            <option value="">Semua Kabupaten/Kota</option>
+                            @foreach($filterData['regencies'] as $r)
+                                <option value="{{ $r }}" {{ request('regency') === $r ? 'selected' : '' }}>{{ $r }}</option>
+                            @endforeach
+                        </select>
+                    </div>
+                    <div class="w-full">
+                        <label class="text-[9px] font-bold text-slate-400 uppercase tracking-widest block mb-1 px-1">Kecamatan</label>
+                        <select id="filter-district" {{ empty($filterData['districts']) ? 'disabled' : '' }} class="filter-input w-full text-[11px] border-slate-200 rounded-lg py-1.5 focus:ring-1 focus:ring-indigo-500 bg-white disabled:bg-slate-100 disabled:text-slate-400">
+                            <option value="">Semua Kecamatan</option>
+                            @foreach($filterData['districts'] as $d)
+                                <option value="{{ $d }}" {{ request('district') === $d ? 'selected' : '' }}>{{ $d }}</option>
+                            @endforeach
+                        </select>
+                    </div>
+                    <div class="w-full">
+                        <label class="text-[9px] font-bold text-slate-400 uppercase tracking-widest block mb-1 px-1">Desa/Kelurahan</label>
+                        <select id="filter-village" {{ empty($filterData['villages']) ? 'disabled' : '' }} class="filter-input w-full text-[11px] border-slate-200 rounded-lg py-1.5 focus:ring-1 focus:ring-indigo-500 bg-white disabled:bg-slate-100 disabled:text-slate-400">
+                            <option value="">Semua Desa/Kelurahan</option>
+                            @foreach($filterData['villages'] as $v)
+                                <option value="{{ $v }}" {{ request('village') === $v ? 'selected' : '' }}>{{ $v }}</option>
+                            @endforeach
+                        </select>
                     </div>
                 </div>
 
@@ -139,6 +217,8 @@
                             <tr class="bg-slate-50 text-[11px] font-bold uppercase tracking-wider text-slate-400 border-b border-slate-100">
                                 <th class="px-6 py-4">INFORMASI UNIT</th>
                                 <th class="px-6 py-4 text-center">KEPALA SPPG / TANGGAL OPS</th>
+                                <th class="px-6 py-4 text-center">SK</th>
+                                <th class="px-6 py-4">ALAMAT</th>
                                 <th class="px-6 py-4 text-center">STATUS</th>
                                 <th class="px-6 py-4 text-center">AKSI</th>
                             </tr>
@@ -169,11 +249,53 @@
 
                                 {{-- KEPALA SPPG & TGL OPS --}}
                                 <td class="px-6 py-4 text-center">
-                                    <span class="text-slate-500 text-xs block capitalize font-medium">{{ $unit->leader->name ?? 'Belum Ditugaskan' }}</span>
+                                    <span class="text-slate-700 text-xs block capitalize font-bold">{{ $unit->leader->name ?? 'Belum Ditugaskan' }}</span>
                                     <span class="text-xs text-slate-500 capitalize font-medium">{{ $unit->operational_date ? \Carbon\Carbon::parse($unit->operational_date)->translatedFormat('d F Y') : '-' }}</span>
                                 </td>
 
-                                {{-- STATUS & TGL OPS --}}
+                                {{-- SK INFO --}}
+                                <td class="px-6 py-4 text-center">
+                                    @php
+                                        $latestWA = $unit->workAssignments()->latest()->first();
+                                        $decree = $latestWA?->decree;
+                                    @endphp
+                                    @if($decree)
+                                        <div class="flex flex-col items-center">
+                                            <div class="flex items-center gap-1 justify-center">
+                                                <span class="text-slate-500 text-xs block capitalize font-medium">{{ $decree->no_sk }} ({{ \Carbon\Carbon::parse($decree->date_sk)->translatedFormat('d/m/Y') }})</span>
+                                            </div>
+                                            @if($decree->no_ba_verval)
+                                                <div class="flex items-center gap-1 justify-center mt-1 text-slate-500 text-xs block capitalize font-medium">
+                                                    <span>{{ $decree->no_ba_verval }}</span>
+                                                    @if($decree->date_ba_verval)
+                                                        <span>({{ \Carbon\Carbon::parse($decree->date_ba_verval)->translatedFormat('d/m/Y') }})</span>
+                                                    @endif
+                                                </div>
+                                            @endif
+                                        </div>
+                                    @else
+                                        <span class="text-slate-300 text-xs block capitalize font-medium">Belum Ada SK</span>
+                                    @endif
+                                </td>
+
+                                {{-- ALAMAT --}}
+                                <td class="px-6 py-4">
+                                    <div class="max-w-[200px]">
+                                        <span class="text-slate-500 text-xs block capitalize font-medium">
+                                            {{ $unit->address ?? '-' }}
+                                        </span>
+                                        <div class="flex flex-wrap gap-x-1 items-center text-slate-500 text-xs block capitalize font-medium">
+                                            <span>{{ $unit->village }},</span>
+                                            <span>{{ $unit->district }}</span>
+                                        </div>
+                                        <div class="flex flex-wrap gap-x-1 items-center text-slate-500 text-xs block capitalize font-medium">
+                                            <span>{{ $unit->regency }},</span>
+                                            <span>{{ $unit->province }}</span>
+                                        </div>
+                                    </div>
+                                </td>
+
+                                {{-- STATUS --}}
                                 <td class="px-6 py-4 text-center">
                                     @php
                                         $statusStyles = match($unit->status) {
@@ -209,7 +331,7 @@
                             </tr>
                             @empty
                             <tr>
-                                <td colspan="4" class="px-6 py-12 text-center">
+                                <td colspan="6" class="px-6 py-12 text-center">
                                     <div class="flex flex-col items-center justify-center">
                                         <div class="p-3 bg-slate-50 rounded-full mb-3">
                                             <svg class="w-8 h-8 text-slate-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -262,9 +384,10 @@
         {{-- MODALS --}}
         @include('admin.manage-sppg.partials.modal-create')
         @include('admin.manage-sppg.partials.modal-edit')
-        @include('admin.manage-sppg.partials.modal-create-pm')
+        @include('admin.manage-sppg.partials.modal-create-beneficiary')
         @include('admin.manage-sppg.partials.modal-cropper')
         @include('admin.manage-sppg.partials.modal-delete')
+        @include('admin.manage-sppg.partials.modal-delete-beneficiary')
     </div>
 
     {{-- SCRIPTS UTAMA --}}
@@ -317,15 +440,37 @@
         function getCurrentUrlModifiers(inputEl = null) {
             let currentUrl = new URL(window.location.href);
             
-            // 1. Ambil keyword search terbaru
+            // 1. Search keyword
             const activeSearch = document.getElementById('sppg-search');
-            if(activeSearch) currentUrl.searchParams.set('search', activeSearch.value);
+            if(activeSearch) {
+                if(activeSearch.value) currentUrl.searchParams.set('search', activeSearch.value);
+                else currentUrl.searchParams.delete('search');
+            }
             
-            // 2. Ambil nilai per-page terbaru
+            // 2. Per-page
             const activePerPage = document.getElementById('sppg-per-page');
             if(activePerPage) currentUrl.searchParams.set('per_page', activePerPage.value);
 
-            // Jauhkan parameter page (kembali ke hlmn 1) jika pemicunya BUKAN memencet link pagination
+            // 3. Filters
+            const filters = {
+                'status': 'filter-status',
+                'id_assignment_decree': 'filter-decree',
+                'province': 'filter-province',
+                'regency': 'filter-regency',
+                'district': 'filter-district',
+                'village': 'filter-village'
+            };
+
+            Object.keys(filters).forEach(key => {
+                const el = document.getElementById(filters[key]);
+                if (el && el.value !== '') {
+                    currentUrl.searchParams.set(key, el.value);
+                } else {
+                    currentUrl.searchParams.delete(key);
+                }
+            });
+
+            // Back to page 1 if triggered by input/filter change
             if(inputEl) currentUrl.searchParams.delete('page');
 
             return currentUrl.toString();
@@ -336,36 +481,59 @@
             if (!container) return;
 
             fetch(url, {
-                    headers: {
-                        "X-Requested-With": "XMLHttpRequest"
-                    }
-                })
-                .then(response => response.text())
-                .then(html => {
-                    let parser = new DOMParser();
-                    let doc = parser.parseFromString(html, 'text/html');
-                    let newContent = doc.getElementById('sppg-table-container').innerHTML;
+                headers: {
+                    "X-Requested-With": "XMLHttpRequest"
+                }
+            })
+            .then(response => response.text())
+            .then(html => {
+                let parser = new DOMParser();
+                let doc = parser.parseFromString(html, 'text/html');
+                
+                // Update Table Content
+                const newTable = doc.getElementById('sppg-table-container');
+                if(newTable) container.innerHTML = newTable.innerHTML;
 
-                    // Update konten
-                    container.innerHTML = newContent;
+                // Update Filter Dropdowns (Cascading Logic)
+                const filterArea = doc.querySelector('.p-4.bg-slate-50.border-b');
+                if(filterArea) {
+                    const currentFilters = ['filter-province', 'filter-regency', 'filter-district', 'filter-village'];
+                    currentFilters.forEach(id => {
+                        const oldEl = document.getElementById(id);
+                        const newEl = doc.getElementById(id);
+                        if(oldEl && newEl) {
+                            const currentVal = oldEl.value;
+                            oldEl.innerHTML = newEl.innerHTML;
+                            oldEl.disabled = newEl.disabled;
+                            // Attempt to restore value, or reset if no longer present
+                            oldEl.value = Array.from(oldEl.options).some(opt => opt.value === currentVal) ? currentVal : '';
+                        }
+                    });
+                }
 
-                    // Sinkronisasi URL tanpa reload
-                    window.history.pushState({}, '', url);
+                // Sync URL
+                window.history.pushState({}, '', url);
 
-                    // Kembalikan fokus kursor
-                    if (focusId) {
-                        requestAnimationFrame(() => {
-                            const activeInput = document.getElementById(focusId);
-                            if (activeInput) {
-                                activeInput.focus();
-                                const val = activeInput.value;
-                                activeInput.value = '';
-                                activeInput.value = val;
-                            }
-                        });
-                    }
-                })
-                .catch(error => console.error('Error:', error));
+                // Restore focus
+                if (focusId) {
+                    requestAnimationFrame(() => {
+                        const activeInput = document.getElementById(focusId);
+                        if (activeInput) {
+                            activeInput.focus();
+                            const val = activeInput.value;
+                            activeInput.value = '';
+                            activeInput.value = val;
+                        }
+                    });
+                }
+            })
+            .catch(error => console.error('Error:', error));
+        }
+
+        // 1. Reset Filters
+        window.resetFilters = function() {
+            const url = new URL(window.location.origin + window.location.pathname);
+            window.location.href = url.toString();
         }
 
         // 2. Event Listener untuk Mengetik (Enter Key)
@@ -379,7 +547,7 @@
             }
         });
 
-        // 3. Event Listener untuk Timer Otomatis (Debounce saat mengetik lambat)
+        // 3. Event Listener untuk Timer Otomatis
         document.addEventListener('input', function(e) {
             if (e.target.classList.contains('live-search-input')) {
                 clearTimeout(searchTimer);
@@ -389,26 +557,26 @@
             }
         });
 
-        // 4. Listener untuk Dropdown Per Page
+        // 4. Listener untuk Filter Inputs & Dropdown Per Page
         document.addEventListener('change', function(e) {
-            if (e.target.classList.contains('per-page-select')) {
-                refreshTable(getCurrentUrlModifiers(e.target));
+            if (e.target.classList.contains('filter-input') || e.target.classList.contains('per-page-select')) {
+                refreshTable(getCurrentUrlModifiers(e.target), 'sppg-search');
             }
         });
 
-        // 5. Listener Pagination AJAX Tanpa Refresh
+        // 5. Listener Pagination AJAX
         document.addEventListener('click', function(e) {
             let anchor = e.target.closest('#sppg-table-container nav a');
             if (anchor && anchor.getAttribute('href')) {
                 let url = new URL(anchor.getAttribute('href'));
                 
-                // Pastikan nilai per_page terbawa saat memencet next page
-                const activePerPage = document.getElementById('sppg-per-page');
-                if(activePerPage) url.searchParams.set('per_page', activePerPage.value);
+                // Ensure per_page and filters are preserved
+                const modUrl = new URL(getCurrentUrlModifiers());
+                modUrl.searchParams.set('page', url.searchParams.get('page'));
 
-                if (url.toString().includes('page=') && !url.toString().startsWith('javascript')) {
+                if (!url.toString().startsWith('javascript')) {
                     e.preventDefault();
-                    refreshTable(url.toString());
+                    refreshTable(modUrl.toString(), 'sppg-search');
                 }
             }
         });

@@ -97,9 +97,36 @@
                             <input type="text"
                                 id="sk-search"
                                 class="live-search-input text-xs border-slate-200 rounded-lg pl-9 pr-3 py-2.5 w-full focus:ring-2 focus:ring-indigo-500 outline-none transition-all bg-white shadow-sm"
-                                placeholder="Cari Nomor SK..." value="{{ request('search') }}"
+                                placeholder="Cari Nomor SK atau BA..." value="{{ request('search') }}"
                                 autocomplete="off">
                         </div>
+
+                        <button type="button" onclick="resetFilters()" class="flex items-center justify-center p-2.5 text-rose-500 bg-white border border-rose-100 rounded-lg hover:bg-rose-50 transition-all cursor-pointer shadow-sm" title="Reset Filter">
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+                            </svg>
+                        </button>
+                    </div>
+                </div>
+
+                {{-- FILTER SECTION --}}
+                <div class="p-4 bg-slate-50 border-b border-slate-100 grid grid-cols-2 lg:grid-cols-4 gap-3">
+                    <div class="w-full">
+                        <label class="text-[9px] font-bold text-slate-400 uppercase tracking-widest block mb-1 px-1">Tanggal SK</label>
+                        <input type="date"
+                            id="sk-date-sk"
+                            class="live-search-input w-full text-[11px] border-slate-200 rounded-lg py-1.5 focus:ring-1 focus:ring-indigo-500 bg-white"
+                            value="{{ request('date_sk') }}">
+                    </div>
+
+                    <div class="w-full">
+                        <label class="text-[9px] font-bold text-slate-400 uppercase tracking-widest block mb-1 px-1">Tanggal BA Verval</label>
+                        <input type="date"
+                            id="sk-date-ba"
+                            class="live-search-input w-full text-[11px] border-slate-200 rounded-lg py-1.5 focus:ring-1 focus:ring-indigo-500 bg-white"
+                            value="{{ request('date_ba') }}">
+                    </div>
+                </div>
                     </div>
                 </div>
 
@@ -297,7 +324,14 @@
             const activeSearch = document.getElementById('sk-search');
             if(activeSearch) currentUrl.searchParams.set('search', activeSearch.value);
             
-            // 2. Ambil nilai per-page terbaru
+            // 2. Ambil nilai filter tanggal
+            const activeDateSk = document.getElementById('sk-date-sk');
+            if(activeDateSk) currentUrl.searchParams.set('date_sk', activeDateSk.value);
+
+            const activeDateBa = document.getElementById('sk-date-ba');
+            if(activeDateBa) currentUrl.searchParams.set('date_ba', activeDateBa.value);
+
+            // 3. Ambil nilai per-page terbaru
             const activePerPage = document.getElementById('sk-per-page');
             if(activePerPage) currentUrl.searchParams.set('per_page', activePerPage.value);
 
@@ -346,7 +380,13 @@
                 .catch(error => console.error('Error:', error));
         }
 
-        // 1. Event Listener untuk Mengetik (Enter Key)
+        // 1. Reset Filters
+        window.resetFilters = function() {
+            const url = new URL(window.location.origin + window.location.pathname);
+            window.location.href = url.toString();
+        }
+
+        // 2. Event Listener untuk Mengetik (Enter Key)
         document.addEventListener('keydown', function(e) {
             if (e.target.classList.contains('live-search-input')) {
                 if (e.key === 'Enter') {

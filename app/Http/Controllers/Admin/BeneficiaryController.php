@@ -14,24 +14,62 @@ class BeneficiaryController extends Controller
     public function index(Request $request)
     {
         $search = $request->query('search');
-        $query = Beneficiary::with('sppgUnit')->latest();
+        $status = $request->query('status');
+        $sppgUnitId = $request->query('sppg_unit');
+        $province = $request->query('province');
+        $regency = $request->query('regency');
+        $district = $request->query('district');
+        $village = $request->query('village');
 
+        $query = Beneficiary::with('sppgUnit');
+
+        // Search logic
         if ($search) {
             $query->where(function ($q) use ($search) {
                 $q->where('name', 'like', "%{$search}%")
                   ->orWhere('id_beneficiary', 'like', "%{$search}%")
                   ->orWhere('code', 'like', "%{$search}%")
-                  ->orWhere('pic_name', 'like', "%{$search}%")
-                  ->orWhere('id_sppg_unit', $search);
+                  ->orWhere('pic_name', 'like', "%{$search}%");
             });
         }
 
+        // Status Filter
+        if ($status !== null && $status !== '') {
+            $query->where('is_active', $status === '1');
+        }
+
+        // SPPG Unit Filter
+        if ($sppgUnitId === 'unassigned') {
+            $query->whereNull('id_sppg_unit');
+        } elseif ($sppgUnitId) {
+            $query->where('id_sppg_unit', $sppgUnitId);
+        }
+
+        // Address Hierarchy Filters
+        if ($province) $query->where('province', $province);
+        if ($regency) $query->where('regency', $regency);
+        if ($district) $query->where('district', $district);
+        if ($village) $query->where('village', $village);
+
         $perPage = $request->query('per_page', 5);
-        $beneficiaries = $query->paginate($perPage)->withQueryString();
+        $beneficiaries = $query->latest()->paginate($perPage)->withQueryString();
 
+        // Data for Filter Dropdowns
         $sppgUnits = SppgUnit::orderBy('name')->get();
+        
+        // Fetch unique address values to populate filter dropdowns dynamically based on existing data
+        $filterData = [
+            'provinces' => Beneficiary::whereNotNull('province')->distinct()->pluck('province')->sort(),
+            'regencies' => $province ? Beneficiary::where('province', $province)->whereNotNull('regency')->distinct()->pluck('regency')->sort() : [],
+            'districts' => $regency ? Beneficiary::where('regency', $regency)->whereNotNull('district')->distinct()->pluck('district')->sort() : [],
+            'villages' => $district ? Beneficiary::where('district', $district)->whereNotNull('village')->distinct()->pluck('village')->sort() : [],
+        ];
 
-        return view('admin.manage-beneficiary.index', compact('beneficiaries', 'sppgUnits'));
+        if ($request->ajax()) {
+            return view('admin.manage-beneficiary.index', compact('beneficiaries', 'sppgUnits', 'filterData'))->fragment('beneficiary-table-container');
+        }
+
+        return view('admin.manage-beneficiary.index', compact('beneficiaries', 'sppgUnits', 'filterData'));
     }
 
     public function store(Request $request)
@@ -41,6 +79,14 @@ class BeneficiaryController extends Controller
             'group_type' => 'nullable|in:Sekolah,Posyandu,Kelompok Lainnya',
             'name' => 'required|string|max:255',
             'code' => 'nullable|string|unique:beneficiaries,code',
+            'is_active' => 'nullable|boolean',
+            'small_portion_male' => 'nullable|integer|min:0',
+            'small_portion_female' => 'nullable|integer|min:0',
+            'large_portion_male' => 'nullable|integer|min:0',
+            'large_portion_female' => 'nullable|integer|min:0',
+            'teacher_portion' => 'nullable|integer|min:0',
+            'staff_portion' => 'nullable|integer|min:0',
+            'cadre_portion' => 'nullable|integer|min:0',
         ]);
 
         if ($validator->fails()) {
@@ -52,11 +98,24 @@ class BeneficiaryController extends Controller
 
         try {
             DB::beginTransaction();
-            Beneficiary::create($request->all());
+            $data = $request->all();
+            $data['is_active'] = $request->boolean('is_active');
+            
+            // Set defaults for portions
+            $portions = ['small_portion_male', 'small_portion_female', 'large_portion_male', 'large_portion_female', 'teacher_portion', 'staff_portion', 'cadre_portion'];
+            foreach ($portions as $p) {
+                $data[$p] = $request->input($p) ?? 0;
+            }
+
+            $beneficiary = Beneficiary::create($data);
             DB::commit();
 
             if ($request->ajax()) {
-                return response()->json(['success' => true, 'redirect' => route('admin.manage-beneficiary.index')]);
+                return response()->json([
+                    'success' => true, 
+                    'beneficiary' => $beneficiary,
+                    'redirect' => route('admin.manage-beneficiary.index')
+                ]);
             }
             return redirect()->route('admin.manage-beneficiary.index')->with('success', 'Penerima Manfaat Berhasil Ditambah');
         } catch (\Exception $e) {
@@ -77,6 +136,14 @@ class BeneficiaryController extends Controller
             'group_type' => 'nullable|in:Sekolah,Posyandu,Kelompok Lainnya',
             'name' => 'required|string|max:255',
             'code' => 'nullable|string|unique:beneficiaries,code,' . $id . ',id_beneficiary',
+            'is_active' => 'nullable|boolean',
+            'small_portion_male' => 'nullable|integer|min:0',
+            'small_portion_female' => 'nullable|integer|min:0',
+            'large_portion_male' => 'nullable|integer|min:0',
+            'large_portion_female' => 'nullable|integer|min:0',
+            'teacher_portion' => 'nullable|integer|min:0',
+            'staff_portion' => 'nullable|integer|min:0',
+            'cadre_portion' => 'nullable|integer|min:0',
         ]);
 
         if ($validator->fails()) {
@@ -88,7 +155,16 @@ class BeneficiaryController extends Controller
 
         try {
             DB::beginTransaction();
-            $beneficiary->update($request->all());
+            $data = $request->all();
+            $data['is_active'] = $request->boolean('is_active');
+
+            // Set defaults for portions
+            $portions = ['small_portion_male', 'small_portion_female', 'large_portion_male', 'large_portion_female', 'teacher_portion', 'staff_portion', 'cadre_portion'];
+            foreach ($portions as $p) {
+                $data[$p] = $request->input($p) ?? 0;
+            }
+
+            $beneficiary->update($data);
             DB::commit();
 
             if ($request->ajax()) {

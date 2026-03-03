@@ -19,12 +19,24 @@ class AssignmentDecreeController extends Controller
     {
         $search = $request->input('search');
         $perPage = $request->input('per_page', 5);
+        $date_sk = $request->input('date_sk');
+        $date_ba = $request->input('date_ba');
 
         $query = AssignmentDecree::query()->with('workAssignments.sppgUnit');
 
         if ($search) {
-            $query->where('no_sk', 'like', "%{$search}%")
+            $query->where(function($q) use ($search) {
+                $q->where('no_sk', 'like', "%{$search}%")
                   ->orWhere('no_ba_verval', 'like', "%{$search}%");
+            });
+        }
+
+        if ($date_sk) {
+            $query->whereDate('date_sk', $date_sk);
+        }
+
+        if ($date_ba) {
+            $query->whereDate('date_ba_verval', $date_ba);
         }
 
         $decrees = $query->orderBy('created_at', 'desc')->paginate($perPage)->withQueryString();

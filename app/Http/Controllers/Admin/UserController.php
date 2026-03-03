@@ -26,11 +26,7 @@ class UserController extends Controller
     {
         $allUsersDisplay = User::with(['person.position', 'person.workAssignment.sppgUnit', 'person.workAssignment.decree', 'person.socialMedia', 'role'])->latest()->get();
 
-        // Ambil keyword masing-masing
-        $searchPending = $request->query('search_pending');
-        $searchAll = $request->query('search_all');
-        $searchTrash = $request->query('search_trash');
-
+        // Pagination & Search settings
         $perPagePending = $request->query('per_page_pending', 5);
         $perPageAll = $request->query('per_page_all', 5);
         $perPageTrash = $request->query('per_page_trash', 5);
@@ -38,7 +34,8 @@ class UserController extends Controller
         // 1. Antrian Verifikasi (Pending)
         $pendingQuery = User::query()->with(['person.position', 'person.workAssignment.sppgUnit', 'role'])
             ->where('status_user', 'pending');
-        if ($searchPending) {
+            
+        if ($searchPending = $request->query('search_pending')) {
             $pendingQuery->where(function ($q) use ($searchPending) {
                 $q->where('email', 'like', "%{$searchPending}%")
                     ->orWhere('phone', 'like', "%{$searchPending}%")
@@ -47,21 +44,71 @@ class UserController extends Controller
         }
         $pendingUsers = $pendingQuery->latest()->paginate($perPagePending, ['*'], 'pending_page')->withQueryString();
 
-        // 2. Daftar Seluruh Pengguna (Active)
+        // 2. Daftar Seluruh Pengguna (Active/Filters)
         $allQuery = User::query()->with(['person.position', 'person.workAssignment.sppgUnit', 'role'])
-            ->where('status_user', 'active');
-        if ($searchAll) {
+            ->select('users.*')
+            ->leftJoin('persons', 'users.id_person', '=', 'persons.id_person')
+            ->where('status_user', '!=', 'inactive') // Usually status is active/pending
+            ->whereNull('users.deleted_at');
+
+        // Basic Search
+        if ($searchAll = $request->query('search_all')) {
             $allQuery->where(function ($q) use ($searchAll) {
-                $q->where('email', 'like', "%{$searchAll}%")
-                    ->orWhere('phone', 'like', "%{$searchAll}%")
-                    ->orWhereHas('person', fn($qp) => $qp->where('name', 'like', "%{$searchAll}%"));
+                $q->where('users.email', 'like', "%{$searchAll}%")
+                    ->orWhere('users.phone', 'like', "%{$searchAll}%")
+                    ->orWhere('persons.name', 'like', "%{$searchAll}%")
+                    ->orWhere('persons.nik', 'like', "%{$searchAll}%");
             });
         }
-        $allUsers = $allQuery->latest()->paginate($perPageAll, ['*'], 'all_page')->withQueryString();
+
+        // Advanced Filters
+        if ($status = $request->query('status_user')) {
+            $allQuery->where('users.status_user', $status);
+        }
+        if ($role = $request->query('id_ref_role')) {
+            $allQuery->where('users.id_ref_role', $role);
+        }
+        if ($position = $request->query('id_ref_position')) {
+            if ($position === 'none') {
+                $allQuery->whereNull('persons.id_ref_position');
+            } else {
+                $allQuery->where('persons.id_ref_position', $position);
+            }
+        }
+        if ($batch = $request->query('batch')) {
+            $allQuery->where('persons.batch', $batch);
+        }
+        if ($empStatus = $request->query('employment_status')) {
+            $allQuery->where('persons.employment_status', $empStatus);
+        }
+
+        // Domicile Address Filters
+        if ($prov = $request->query('province')) {
+            $allQuery->where('persons.province_domicile', $prov);
+        }
+        if ($reg = $request->query('regency')) {
+            $allQuery->where('persons.regency_domicile', $reg);
+        }
+        if ($dist = $request->query('district')) {
+            $allQuery->where('persons.district_domicile', $dist);
+        }
+        if ($vill = $request->query('village')) {
+            $allQuery->where('persons.village_domicile', $vill);
+        }
+
+        $allUsers = $allQuery->latest('users.created_at')->paginate($perPageAll, ['*'], 'all_page')->withQueryString();
+
+        // Filter Data for Dropdowns (Cascading)
+        $filterData = [
+            'provinces' => Person::whereNotNull('province_domicile')->distinct()->pluck('province_domicile')->sort(),
+            'regencies' => $request->province ? Person::where('province_domicile', $request->province)->whereNotNull('regency_domicile')->distinct()->pluck('regency_domicile')->sort() : [],
+            'districts' => $request->regency ? Person::where('regency_domicile', $request->regency)->whereNotNull('district_domicile')->distinct()->pluck('district_domicile')->sort() : [],
+            'villages' => $request->district ? Person::where('district_domicile', $request->district)->whereNotNull('village_domicile')->distinct()->pluck('village_domicile')->sort() : [],
+        ];
 
         // 3. Tempat Sampah (Trashed)
         $trashQuery = User::onlyTrashed()->with(['person' => fn($q) => $q->withTrashed(), 'role']);
-        if ($searchTrash) {
+        if ($searchTrash = $request->query('search_trash')) {
             $trashQuery->where(function ($q) use ($searchTrash) {
                 $q->where('email', 'like', "%{$searchTrash}%")
                     ->orWhere('phone', 'like', "%{$searchTrash}%")
@@ -94,10 +141,10 @@ class UserController extends Controller
             })->toArray();
 
         if ($request->ajax()) {
-            return view('admin.manage-user.index', compact('pendingUsers', 'allUsersDisplay', 'allUsers', 'trashedUsers', 'stats', 'roles', 'positions', 'workAssignments', 'occupiedPositions'))->render();
+            return view('admin.manage-user.index', compact('pendingUsers', 'allUsersDisplay', 'allUsers', 'trashedUsers', 'stats', 'roles', 'positions', 'workAssignments', 'occupiedPositions', 'filterData'))->render();
         }
 
-        return view('admin.manage-user.index', compact('pendingUsers', 'allUsersDisplay', 'allUsers', 'trashedUsers', 'stats', 'roles', 'positions', 'workAssignments', 'occupiedPositions'));
+        return view('admin.manage-user.index', compact('pendingUsers', 'allUsersDisplay', 'allUsers', 'trashedUsers', 'stats', 'roles', 'positions', 'workAssignments', 'occupiedPositions', 'filterData'));
     }
 
     public function checkAvailability(Request $request)
