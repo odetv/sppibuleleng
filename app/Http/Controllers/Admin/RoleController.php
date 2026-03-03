@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Models\RefRole;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 
 class RoleController extends Controller
 {
@@ -20,11 +21,19 @@ class RoleController extends Controller
             'name_role' => 'required|string|max:255',
         ]);
 
-        $role = RefRole::findOrFail($id);
-        $role->update([
-            'name_role' => $request->name_role
-        ]);
+        try {
+            DB::beginTransaction();
 
-        return back()->with('success', 'Nama Role berhasil diperbarui.');
+            $role = RefRole::findOrFail($id);
+            $role->update([
+                'name_role' => $request->name_role
+            ]);
+
+            DB::commit();
+            return back()->with('success', 'Nama Role berhasil diperbarui.');
+        } catch (\Exception $e) {
+            DB::rollBack();
+            return back()->with('error', 'Gagal memperbarui Role: ' . $e->getMessage());
+        }
     }
 }

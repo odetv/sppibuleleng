@@ -56,28 +56,41 @@
                         </div>
 
 
-                        {{-- Social Media pindah ke Kiri --}}
-                        @if($sppg->socialMedia && ($sppg->socialMedia->instagram || $sppg->socialMedia->facebook || $sppg->socialMedia->website))
-                        <div class="w-full mt-auto pt-4 border-t border-slate-100">
-                            <div class="flex flex-wrap justify-center gap-2">
-                                @if($sppg->socialMedia->instagram)
-                                <a href="https://instagram.com/{{ $sppg->socialMedia->instagram }}" target="_blank" class="p-2 text-slate-400 hover:text-pink-600 bg-slate-50 rounded-lg transition-colors" title="Instagram">
-                                    <svg class="w-4 h-4" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2c2.717 0 3.056.01 4.122.06 1.065.05 1.79.217 2.428.465.66.254 1.216.598 1.772 1.153a4.908 4.908 0 0 1 1.153 1.772c.247.637.415 1.363.465 2.428.047 1.066.06 1.405.06 4.122 0 2.717-.01 3.056-.06 4.122-.05 1.065-.218 1.79-.465 2.428a4.883 4.883 0 0 1-1.153 1.772 4.915 4.915 0 0 1-1.772 1.153c-.637.247-1.363.415-2.428.465-1.066.047-1.405.06-4.122.06-2.717 0-3.056-.01-4.122-.06-1.065-.05-1.79-.218-2.428-.465a4.89 4.89 0 0 1-1.772-1.153 4.904 4.904 0 0 1-1.153-1.772c-.248-.637-.415-1.363-.465-2.428C2.013 15.056 2 14.717 2 12c0-2.717.01-3.056.06-4.122.05-1.066.217-1.79.465-2.428a4.88 4.88 0 0 1 1.153-1.772A4.897 4.897 0 0 1 5.45 2.525c.638-.248 1.362-.415 2.428-.465C8.944 2.013 9.283 2 12 2zm0 5a5 5 0 1 0 0 10 5 5 0 0 0 0-10zm6.5-.25a1.25 1.25 0 0 0-2.5 0 1.25 1.25 0 0 0 2.5 0zM12 9a3 3 0 1 1 0 6 3 3 0 0 1 0-6z"/></svg>
+                        {{-- Social Media Action Row (Moved Below ID/Code) --}}
+                            <div class="flex flex-row justify-center gap-3 mt-4 pt-4 border-t border-slate-50">
+                                {{-- Facebook --}}
+                                @if($sppg->socialMedia && $sppg->socialMedia->facebook_url)
+                                <a href="{{ $sppg->socialMedia->facebook_url }}" target="_blank" class="w-10 h-10 flex items-center justify-center bg-blue-50 text-blue-600 rounded-xl border border-blue-100 shadow-sm hover:bg-blue-600 hover:text-white transition-all transform hover:scale-110" title="Facebook">
+                                    <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24"><path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/></svg>
                                 </a>
+                                @else
+                                <div class="w-10 h-10 flex items-center justify-center bg-slate-50 text-slate-300 rounded-xl border border-slate-100 cursor-not-allowed opacity-50" title="Facebook Belum Tersedia">
+                                    <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24"><path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/></svg>
+                                </div>
                                 @endif
-                                @if($sppg->socialMedia->facebook)
-                                <a href="{{ $sppg->socialMedia->facebook }}" target="_blank" class="p-2 text-slate-400 hover:text-blue-600 bg-slate-50 rounded-lg transition-colors" title="Facebook">
-                                    <svg class="w-4 h-4" viewBox="0 0 24 24" fill="currentColor"><path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/></svg>
+
+                                {{-- Instagram --}}
+                                @if($sppg->socialMedia && $sppg->socialMedia->instagram_url)
+                                <a href="{{ $sppg->socialMedia->instagram_url }}" target="_blank" class="w-10 h-10 flex items-center justify-center bg-pink-50 text-pink-600 rounded-xl border border-pink-100 shadow-sm hover:bg-pink-600 hover:text-white transition-all transform hover:scale-110" title="Instagram">
+                                    <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z"/></svg>
                                 </a>
+                                @else
+                                <div class="w-10 h-10 flex items-center justify-center bg-slate-50 text-slate-300 rounded-xl border border-slate-100 cursor-not-allowed opacity-50" title="Instagram Belum Tersedia">
+                                    <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z"/></svg>
+                                </div>
                                 @endif
-                                @if($sppg->socialMedia->website)
-                                <a href="{{ $sppg->socialMedia->website }}" target="_blank" class="p-2 text-slate-400 hover:text-emerald-600 bg-slate-50 rounded-lg transition-colors" title="Website">
-                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 12a9 9 0 01-9 9m9-9a9 9 0 00-9-9m9 9H3m9 9a9 9 0 01-9-9m9 9c1.657 0 3-4.03 3-9s-1.343-9-3-9m0 18c-1.657 0-3-4.03-3-9s1.343-9 3-9m-9 9a9 9 0 019-9"></path></svg>
+
+                                {{-- TikTok --}}
+                                @if($sppg->socialMedia && $sppg->socialMedia->tiktok_url)
+                                <a href="{{ $sppg->socialMedia->tiktok_url }}" target="_blank" class="w-10 h-10 flex items-center justify-center bg-slate-900 text-white rounded-xl border border-slate-800 shadow-md hover:bg-black transition-all transform hover:scale-110" title="TikTok">
+                                    <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24"><path d="M19.59 6.69a4.83 4.83 0 0 1-3.77-4.25V2h-3.45v13.67a2.89 2.89 0 0 1-2.88 2.5 2.89 2.89 0 0 1-2.89-2.89 2.89 2.89 0 0 1 2.89-2.89c.28 0 .54.04.79.1V9.01a6.33 6.33 0 00-.79-.05 6.34 6.34 0 00-6.34 6.34 6.34 6.34 0 006.34 6.34 6.34 6.34 0 006.33-6.34V8.69a8.17 8.17 0 004.78 1.52V6.75a4.85 4.85 0 01-1.01-.06z"/></svg>
                                 </a>
+                                @else
+                                <div class="w-10 h-10 flex items-center justify-center bg-slate-50 text-slate-300 rounded-xl border border-slate-100 cursor-not-allowed opacity-50" title="TikTok Belum Tersedia">
+                                    <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24"><path d="M19.59 6.69a4.83 4.83 0 0 1-3.77-4.25V2h-3.45v13.67a2.89 2.89 0 0 1-2.88 2.5 2.89 2.89 0 0 1-2.89-2.89 2.89 2.89 0 0 1 2.89-2.89c.28 0 .54.04.79.1V9.01a6.33 6.33 0 00-.79-.05 6.34 6.34 0 00-6.34 6.34 6.34 6.34 0 006.34 6.34 6.34 6.34 0 006.33-6.34V8.69a8.17 8.17 0 004.78 1.52V6.75a4.85 4.85 0 01-1.01-.06z"/></svg>
+                                </div>
                                 @endif
                             </div>
-                        </div>
-                        @endif
                     </div>
 
                     {{-- DETAIL KEPENGURUSAN --}}
@@ -209,16 +222,16 @@
             
             @else
             {{-- EMPTY STATE --}}
-            <div class="bg-white rounded-xl border border-slate-200 overflow-hidden shadow-sm p-12 flex flex-col items-center justify-center text-center">
-                <div class="bg-rose-50 w-24 h-24 flex items-center justify-center rounded-full mb-6">
-                    <svg class="w-12 h-12 text-rose-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+            <div class="bg-white rounded-2xl border-2 border-dashed border-amber-200 p-12 shadow-sm text-center mt-6">
+                <div class="w-20 h-20 bg-amber-50 text-amber-500 rounded-full flex items-center justify-center mx-auto mb-6">
+                    <svg class="w-10 h-10" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
                     </svg>
                 </div>
-                <h3 class="text-xl font-bold text-slate-800">SPPG Belum Ditugaskan</h3>
-                <p class="text-slate-500 max-w-lg mt-2 font-medium">
-                    Saat ini Anda belum terhubung atau bertugas pada unit Satuan Pelayanan Pemenuhan Gizi manapun.
-                    Silakan hubungi administrator atau petugas kepegawaian untuk informasi penugasan Anda.
+                <h3 class="text-xl font-bold text-slate-800 uppercase tracking-widest mb-3">SPPG Belum Ditugaskan</h3>
+                <p class="text-slate-500 max-w-xl mx-auto leading-relaxed text-sm font-medium">
+                    Hai, {{ auth()->user()->person->name ?? 'Pengguna' }}.<br>
+                    Saat ini Anda belum terhubung atau bertugas pada unit Satuan Pelayanan Pemenuhan Gizi (SPPG) manapun. Silakan hubungi administrator atau petugas kepegawaian untuk informasi penugasan Anda.
                 </p>
             </div>
             @endif

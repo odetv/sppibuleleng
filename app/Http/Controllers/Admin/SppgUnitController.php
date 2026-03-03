@@ -3,11 +3,14 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
+use App\Models\AssignmentDecree;
 use App\Models\SppgUnit;
-use App\Models\Person; // Pastikan menggunakan model Person sesuai index Anda
+use App\Models\Person;
 use App\Models\SocialMedia;
+use App\Models\WorkAssignment;
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
 
 class SppgUnitController extends Controller
@@ -16,8 +19,8 @@ class SppgUnitController extends Controller
     {
         $search = $request->query('search');
 
-        // Ambil data unit dengan eager loading relasi
-        $query = SppgUnit::with(['leader', 'nutritionist', 'accountant', 'socialMedia'])->latest();
+        // Ambil data unit dengan eager loading relasi (termasuk workAssignments untuk info SK)
+        $query = SppgUnit::with(['leader', 'nutritionist', 'accountant', 'socialMedia', 'workAssignments.decree'])->latest();
 
         if ($search) {
             $query->where(function ($q) use ($search) {
@@ -41,11 +44,17 @@ class SppgUnitController extends Controller
         // Siapkan data personil yang sedang menjabat di unit manapun
         $occupiedPeople = [
             'kasppg' => SppgUnit::whereNotNull('leader_id')->pluck('leader_id')->toArray(),
-            'ag' => SppgUnit::whereNotNull('nutritionist_id')->pluck('nutritionist_id')->toArray(),
-            'ak' => SppgUnit::whereNotNull('accountant_id')->pluck('accountant_id')->toArray(),
+            'ag'     => SppgUnit::whereNotNull('nutritionist_id')->pluck('nutritionist_id')->toArray(),
+            'ak'     => SppgUnit::whereNotNull('accountant_id')->pluck('accountant_id')->toArray(),
         ];
 
-        return view('admin.manage-sppg.index', compact('units', 'leaders', 'nutritionists', 'accountants', 'occupiedPeople'));
+        // Daftar semua SK untuk dropdown di modal SPPG
+        $decrees = AssignmentDecree::orderBy('date_sk', 'desc')->get();
+
+        // Peta: id_sppg_unit => id_assignment_decree (untuk tahu SPPG mana sudah ada WA)
+        $assignedDecreeMap = WorkAssignment::pluck('id_assignment_decree', 'id_sppg_unit')->toArray();
+
+        return view('admin.manage-sppg.index', compact('units', 'leaders', 'nutritionists', 'accountants', 'occupiedPeople', 'decrees', 'assignedDecreeMap'));
     }
 
     /**
@@ -55,19 +64,26 @@ class SppgUnitController extends Controller
     {
         // 1. Gunakan Validator Manual agar bisa kontrol response AJAX
         $validator = \Validator::make($request->all(), [
-            'id_sppg_unit'      => 'required|string|unique:sppg_units,id_sppg_unit',
-            'code_sppg_unit'    => 'nullable|string|unique:sppg_units,code_sppg_unit',
-            'name'              => 'required|string|max:255',
-            'status'            => 'required|in:Operasional,Belum Operasional,Tutup Sementara,Tutup Permanen',
-            'operational_date'  => 'nullable|date',
-            'province_name'     => 'required|string',
-            'regency_name'      => 'required|string',
-            'district_name'     => 'required|string',
-            'village_name'      => 'required|string',
-            'latitude_gps'      => 'required',
-            'longitude_gps'     => 'required',
-            'leader_id'         => 'required|string', // String valid karena kita kirim kata "NULL" bukan kosong
-            'photo'             => 'required|image|max:2048',
+            'id_sppg_unit'          => 'required|string|unique:sppg_units,id_sppg_unit',
+            'code_sppg_unit'        => 'nullable|string|unique:sppg_units,code_sppg_unit',
+            'name'                  => 'required|string|max:255',
+            'status'                => 'required|in:Operasional,Belum Operasional,Tutup Sementara,Tutup Permanen',
+            'operational_date'      => 'nullable|date',
+            'province_name'         => 'required|string',
+            'regency_name'          => 'required|string',
+            'district_name'         => 'required|string',
+            'village_name'          => 'required|string',
+            'latitude_gps'          => 'required',
+            'longitude_gps'         => 'required',
+            'leader_id'             => 'required|string',
+            'photo'                 => 'required|image|max:2048',
+            'id_assignment_decree'  => 'required|exists:assignment_decrees,id_assignment_decree',
+            'facebook_url'          => 'nullable|url',
+            'instagram_url'         => 'nullable|url',
+            'tiktok_url'            => 'nullable|url',
+        ], [
+            'id_assignment_decree.required' => 'Surat Keputusan (SK) wajib dipilih.',
+            'id_assignment_decree.exists'   => 'SK yang dipilih tidak valid.',
         ]);
 
         // 2. Jika Validasi Gagal (Termasuk Duplicate ID/Code)
@@ -79,35 +95,53 @@ class SppgUnitController extends Controller
         }
 
         try {
-            // ... Logika Simpan Data Anda ...
+            DB::beginTransaction();
+
             $data = $request->all();
-            // (Pastikan mapping nama wilayah dan upload foto sudah benar disini)
 
             $folderHash = md5($request->id_sppg_unit . config('app.key'));
             if ($request->hasFile('photo')) {
                 $data['photo'] = $request->file('photo')->store("sppgunits/{$folderHash}/photos", 'public');
             }
 
-            $unit = \App\Models\SppgUnit::create([
-                'id_sppg_unit' => $data['id_sppg_unit'],
-                'code_sppg_unit' => $data['code_sppg_unit'],
-                'name' => $data['name'],
-                'status' => $data['status'],
-                'operational_date' => $data['operational_date'] ?? null,
-                'province' => $data['province_name'],
-                'regency' => $data['regency_name'],
-                'district' => $data['district_name'],
-                'village' => $data['village_name'],
-                'address' => $data['address'],
-                'latitude_gps' => $data['latitude_gps'],
-                'longitude_gps' => $data['longitude_gps'],
-                'leader_id' => $data['leader_id'] === 'NULL' ? null : $data['leader_id'],
+            $unit = SppgUnit::create([
+                'id_sppg_unit'    => $data['id_sppg_unit'],
+                'code_sppg_unit'  => $data['code_sppg_unit'],
+                'name'            => $data['name'],
+                'status'          => $data['status'],
+                'operational_date'=> $data['operational_date'] ?? null,
+                'province'        => $data['province_name'],
+                'regency'         => $data['regency_name'],
+                'district'        => $data['district_name'],
+                'village'         => $data['village_name'],
+                'address'         => $data['address'],
+                'latitude_gps'    => $data['latitude_gps'],
+                'longitude_gps'   => $data['longitude_gps'],
+                'leader_id'       => $data['leader_id'] === 'NULL' ? null : $data['leader_id'],
                 'nutritionist_id' => (empty($data['nutritionist_id']) || $data['nutritionist_id'] === 'NULL') ? null : $data['nutritionist_id'],
-                'accountant_id' => (empty($data['accountant_id']) || $data['accountant_id'] === 'NULL') ? null : $data['accountant_id'],
-                'photo' => $data['photo'] ?? null,
+                'accountant_id'   => (empty($data['accountant_id']) || $data['accountant_id'] === 'NULL') ? null : $data['accountant_id'],
+                'photo'           => $data['photo'] ?? null,
             ]);
 
             $unit->syncPersonnel();
+
+            // Buat WorkAssignment: hubungkan SPPG ini ke SK yang dipilih
+            WorkAssignment::create([
+                'id_assignment_decree' => $request->id_assignment_decree,
+                'id_sppg_unit'         => $unit->id_sppg_unit,
+            ]);
+
+            // Simpan Sosial Media
+            $unit->socialMedia()->updateOrCreate(
+                ['socialable_id' => $unit->id_sppg_unit, 'socialable_type' => SppgUnit::class],
+                [
+                    'facebook_url'  => $request->facebook_url  ?: null,
+                    'instagram_url' => $request->instagram_url ?: null,
+                    'tiktok_url'    => $request->tiktok_url    ?: null,
+                ]
+            );
+
+            DB::commit();
 
             if ($request->ajax()) {
                 return response()->json(['success' => true, 'redirect' => route('admin.manage-sppg.index')]);
@@ -115,7 +149,11 @@ class SppgUnitController extends Controller
 
             return redirect()->route('admin.manage-sppg.index')->with('success', 'Unit Berhasil Ditambah');
         } catch (\Exception $e) {
-            return response()->json(['errors' => ['system' => [$e->getMessage()]]], 500);
+            DB::rollBack();
+            if ($request->ajax() || $request->wantsJson()) {
+                return response()->json(['errors' => ['system' => [$e->getMessage()]]], 500);
+            }
+            return back()->with('error', 'Gagal menambahkan unit: ' . $e->getMessage());
         }
     }
     /**
@@ -127,18 +165,25 @@ class SppgUnitController extends Controller
         $sppg = SppgUnit::where('id_sppg_unit', $id)->firstOrFail();
 
         $validator = \Validator::make($request->all(), [
-            'id_sppg_unit'      => 'required|string|unique:sppg_units,id_sppg_unit,' . $id . ',id_sppg_unit',
-            'code_sppg_unit'    => 'nullable|string|unique:sppg_units,code_sppg_unit,' . $id . ',id_sppg_unit',
-            'name'              => 'required|string|max:255',
-            'status'            => 'required|in:Operasional,Belum Operasional,Tutup Sementara,Tutup Permanen',
-            'operational_date'  => 'nullable|date',
-            'province_name'     => 'required|string',
-            'regency_name'      => 'required|string',
-            'district_name'     => 'required|string',
-            'village_name'      => 'required|string',
-            'latitude_gps'      => 'required',
-            'longitude_gps'     => 'required',
-            'photo'             => 'nullable|image|max:2048',
+            'id_sppg_unit'          => 'required|string|unique:sppg_units,id_sppg_unit,' . $id . ',id_sppg_unit',
+            'code_sppg_unit'        => 'nullable|string|unique:sppg_units,code_sppg_unit,' . $id . ',id_sppg_unit',
+            'name'                  => 'required|string|max:255',
+            'status'                => 'required|in:Operasional,Belum Operasional,Tutup Sementara,Tutup Permanen',
+            'operational_date'      => 'nullable|date',
+            'province_name'         => 'required|string',
+            'regency_name'          => 'required|string',
+            'district_name'         => 'required|string',
+            'village_name'          => 'required|string',
+            'latitude_gps'          => 'required',
+            'longitude_gps'         => 'required',
+            'photo'                 => 'nullable|image|max:2048',
+            'id_assignment_decree'  => 'required|exists:assignment_decrees,id_assignment_decree',
+            'facebook_url'          => 'nullable|url',
+            'instagram_url'         => 'nullable|url',
+            'tiktok_url'            => 'nullable|url',
+        ], [
+            'id_assignment_decree.required' => 'Surat Keputusan (SK) wajib dipilih.',
+            'id_assignment_decree.exists'   => 'SK yang dipilih tidak valid.',
         ]);
 
         if ($validator->fails()) {
@@ -149,12 +194,13 @@ class SppgUnitController extends Controller
         }
 
         try {
+            DB::beginTransaction();
+
             $oldId = $sppg->id_sppg_unit;
 
-            // Foto handling jika ada 
+            // Foto handling jika ada
             $photoPath = $sppg->photo;
             if ($request->hasFile('photo')) {
-                // Hapus foto lama jika ada
                 if ($sppg->photo) {
                     Storage::disk('public')->delete($sppg->photo);
                 }
@@ -163,28 +209,48 @@ class SppgUnitController extends Controller
             }
 
             // Update manual mem-bypass batasan PK eloquent
-            \DB::table('sppg_units')->where('id_sppg_unit', $oldId)->update([
-                'id_sppg_unit' => $request->id_sppg_unit,
-                'code_sppg_unit' => $request->code_sppg_unit,
-                'name' => $request->name,
-                'status' => $request->status,
-                'operational_date' => $request->operational_date,
-                'province' => $request->province_name,
-                'regency' => $request->regency_name,
-                'district' => $request->district_name,
-                'village' => $request->village_name,
-                'address' => $request->address,
-                'latitude_gps' => $request->latitude_gps,
-                'longitude_gps' => $request->longitude_gps,
-                'leader_id' => $request->leader_id === 'NULL' ? null : $request->leader_id,
+            DB::table('sppg_units')->where('id_sppg_unit', $oldId)->update([
+                'id_sppg_unit'    => $request->id_sppg_unit,
+                'code_sppg_unit'  => $request->code_sppg_unit,
+                'name'            => $request->name,
+                'status'          => $request->status,
+                'operational_date'=> $request->operational_date,
+                'province'        => $request->province_name,
+                'regency'         => $request->regency_name,
+                'district'        => $request->district_name,
+                'village'         => $request->village_name,
+                'address'         => $request->address,
+                'latitude_gps'    => $request->latitude_gps,
+                'longitude_gps'   => $request->longitude_gps,
+                'leader_id'       => $request->leader_id === 'NULL' ? null : $request->leader_id,
                 'nutritionist_id' => (empty($request->nutritionist_id) || $request->nutritionist_id === 'NULL') ? null : $request->nutritionist_id,
-                'accountant_id' => (empty($request->accountant_id) || $request->accountant_id === 'NULL') ? null : $request->accountant_id,
-                'photo' => $photoPath,
-                'updated_at' => now(),
+                'accountant_id'   => (empty($request->accountant_id) || $request->accountant_id === 'NULL') ? null : $request->accountant_id,
+                'photo'           => $photoPath,
+                'updated_at'      => now(),
             ]);
 
             $sppg->refresh();
             $sppg->syncPersonnel();
+
+            // Update WorkAssignment: update SK ke yang baru dipilih
+            // Jika sudah ada WA untuk SPPG ini, update. Jika belum, buat baru.
+            WorkAssignment::updateOrCreate(
+                ['id_sppg_unit' => $request->id_sppg_unit],
+                ['id_assignment_decree' => $request->id_assignment_decree]
+            );
+
+            // Update Sosial Media: Cari menggunakan ID Lama, lalu update ke ID Baru
+            SocialMedia::updateOrCreate(
+                ['socialable_id' => $oldId, 'socialable_type' => SppgUnit::class],
+                [
+                    'socialable_id' => $request->id_sppg_unit,
+                    'facebook_url'  => $request->facebook_url  ?: null,
+                    'instagram_url' => $request->instagram_url ?: null,
+                    'tiktok_url'    => $request->tiktok_url    ?: null,
+                ]
+            );
+
+            DB::commit();
 
             return response()->json([
                 'success' => true,
@@ -192,23 +258,32 @@ class SppgUnitController extends Controller
                 'redirect' => route('admin.manage-sppg.index')
             ]);
         } catch (\Exception $e) {
+            DB::rollBack();
             return response()->json(['errors' => ['system' => [$e->getMessage()]]], 500);
         }
     }
 
     public function destroy($id)
     {
-        $sppg = SppgUnit::findOrFail($id);
+        try {
+            DB::beginTransaction();
 
-        if ($sppg->photo) {
-            $folderHash = md5($sppg->id_sppg_unit . config('app.key'));
-            Storage::disk('public')->deleteDirectory("sppgunits/{$folderHash}");
+            $sppg = SppgUnit::findOrFail($id);
+
+            if ($sppg->photo) {
+                $folderHash = md5($sppg->id_sppg_unit . config('app.key'));
+                Storage::disk('public')->deleteDirectory("sppgunits/{$folderHash}");
+            }
+
+            $sppg->socialMedia()->delete();
+            $sppg->delete();
+
+            DB::commit();
+            return redirect()->route('admin.manage-sppg.index')->with('success', 'Unit berhasil dihapus.');
+        } catch (\Exception $e) {
+            DB::rollBack();
+            return back()->with('error', 'Gagal menghapus unit: ' . $e->getMessage());
         }
-
-        $sppg->socialMedia()->delete();
-        $sppg->delete();
-
-        return redirect()->route('admin.manage-sppg.index')->with('success', 'Unit berhasil dihapus.');
     }
     public function exportExcel(Request $request)
     {

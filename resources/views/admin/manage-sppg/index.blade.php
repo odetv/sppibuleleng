@@ -190,7 +190,7 @@
                                 {{-- AKSI --}}
                                 <td class="px-6 py-4 text-center">
                                     <div class="flex justify-center items-center gap-1">
-                                        <button type="button" @click="selectedUnit = {{ json_encode($unit->load('socialMedia')) }}; selectedUnit.original_id = '{{ $unit->id_sppg_unit }}'; showEditModal = true; setTimeout(() => window.dispatchEvent(new CustomEvent('init-edit-sppg', { detail: selectedUnit })), 300)"
+                                        <button type="button" @click="selectedUnit = {{ json_encode($unit->load('socialMedia')) }}; selectedUnit.original_id = '{{ $unit->id_sppg_unit }}'; selectedUnit.work_assignment_decree_id = '{{ $assignedDecreeMap[$unit->id_sppg_unit] ?? '' }}'; showEditModal = true; setTimeout(() => window.dispatchEvent(new CustomEvent('init-edit-sppg', { detail: selectedUnit })), 300)"
                                             title="Edit" class="p-2 text-slate-400 hover:text-indigo-600 cursor-pointer transition-colors hover:bg-indigo-50 rounded-lg">
                                             <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
                                                 <path d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path>

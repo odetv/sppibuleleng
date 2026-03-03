@@ -447,7 +447,10 @@ class SppgUnitSeeder extends Seeder
             unset($unitData['social']);
 
             $unit = SppgUnit::create($unitData);
-            $unit->socialMedia()->create($socialData);
+            $unit->socialMedia()->updateOrCreate(
+                ['socialable_id' => $unit->id_sppg_unit, 'socialable_type' => SppgUnit::class],
+                $socialData
+            );
         }
     }
 }

@@ -127,6 +127,7 @@
                         <div>
                             <label class="text-[11px] font-bold text-gray-500 uppercase tracking-wider">Kepala SPPG</label>
                             <select name="leader_id" id="e_leader" class="w-full mt-2 px-3 py-2.5 bg-gray-50 border-none rounded-lg text-sm focus:ring-2 focus:ring-indigo-500">
+                                <option value="" disabled>Pilih Kepala SPPG</option>
                                 <option value="NULL">Belum Ditugaskan</option>
                                 @foreach($leaders as $leader)
                                 <option value="{{ $leader->id_person }}">{{ $leader->name }}</option>
@@ -136,7 +137,7 @@
                         <div>
                             <label class="text-[11px] font-bold text-gray-500 uppercase tracking-wider">Ahli Gizi</label>
                             <select name="nutritionist_id" id="e_nutritionist" class="w-full mt-2 px-3 py-2.5 bg-gray-50 border-none rounded-lg text-sm focus:ring-2 focus:ring-indigo-500">
-                                <option value="" disabled>-- Pilih Ahli Gizi --</option>
+                                <option value="" disabled>Pilih Ahli Gizi</option>
                                 <option value="NULL">Belum Ditugaskan</option>
                                 @foreach($nutritionists as $person)
                                 <option value="{{ $person->id_person }}">{{ $person->name }}</option>
@@ -146,12 +147,32 @@
                         <div>
                             <label class="text-[11px] font-bold text-gray-500 uppercase tracking-wider">Akuntan</label>
                             <select name="accountant_id" id="e_accountant" class="w-full mt-2 px-3 py-2.5 bg-gray-50 border-none rounded-lg text-sm focus:ring-2 focus:ring-indigo-500">
-                                <option value="" disabled>-- Pilih Akuntan --</option>
+                                <option value="" disabled>Pilih Akuntan</option>
                                 <option value="NULL">Belum Ditugaskan</option>
                                 @foreach($accountants as $person)
                                 <option value="{{ $person->id_person }}">{{ $person->name }}</option>
                                 @endforeach
                             </select>
+                        </div>
+                    </div>
+                </div>
+
+                {{-- SECTION SK --}}
+                <div class="pt-10 border-t border-gray-100">
+                    <h3 class="text-sm font-bold uppercase tracking-widest text-indigo-600 mb-6">Surat Keputusan (SK)</h3>
+                    <div class="grid grid-cols-1 gap-6">
+                        <div>
+                            <label class="text-[11px] font-bold text-gray-500 uppercase tracking-wider">Nomor SK <span class="text-red-500">*</span></label>
+                            <select name="id_assignment_decree" id="e_decree" class="w-full mt-2 px-3 py-2.5 bg-gray-50 border-none rounded-lg text-sm focus:ring-2 focus:ring-indigo-500">
+                                <option value="" disabled>Pilih Nomor SK</option>
+                                @foreach($decrees as $decree)
+                                <option value="{{ $decree->id_assignment_decree }}">
+                                    {{ $decree->no_sk }} ({{ \Carbon\Carbon::parse($decree->date_sk)->format('d/m/Y') }})
+                                    &mdash; {{ $decree->no_ba_verval }} ({{ \Carbon\Carbon::parse($decree->date_ba_verval)->format('d/m/Y') }})
+                                </option>
+                                @endforeach
+                            </select>
+                            <p class="text-[10px] text-slate-400 mt-1">1 SK dapat mencakup banyak SPPG. Mengubah SK akan memperbarui penugasan SPPG ini.</p>
                         </div>
                     </div>
                 </div>
@@ -193,11 +214,45 @@
 
                 {{-- SECTION 3: PETA --}}
                 <div class="pt-10 border-t border-gray-100">
-                    <h3 class="text-sm font-bold uppercase tracking-widest text-indigo-600 mb-6">Informasi Lokasi GPS (Klik Untuk Ubah)</h3>
+                    <h3 class="text-sm font-bold uppercase tracking-widest text-indigo-600 mb-6">Informasi Lokasi GPS (Klik Peta Untuk Ubah)</h3>
                     <div id="map-edit" class="rounded-xl border-4 border-white shadow-lg ring-1 ring-slate-200"></div>
                     <div class="grid grid-cols-2 gap-4 mt-4">
                         <input type="text" name="latitude_gps" id="e_lat" readonly class="w-full px-4 py-2.5 bg-slate-100 border-none rounded-lg text-sm text-slate-500" placeholder="Latitude Otomatis">
                         <input type="text" name="longitude_gps" id="e_lng" readonly class="w-full px-4 py-2.5 bg-slate-100 border-none rounded-lg text-sm text-slate-500" placeholder="Longitude Otomatis">
+                    </div>
+                </div>
+
+                {{-- SECTION 4: SOSIAL MEDIA --}}
+                <div class="pt-10 border-t border-gray-100">
+                    <h3 class="text-sm font-bold uppercase tracking-widest text-indigo-600 mb-6">Sosial Media</h3>
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                        <div>
+                            <label class="text-[11px] font-bold text-gray-500 uppercase tracking-wider">Facebook</label>
+                            <div class="flex mt-2 rounded-lg overflow-hidden ring-1 ring-gray-200 focus-within:ring-2 focus-within:ring-indigo-400">
+                                <span class="px-3 py-2.5 bg-gray-100 text-blue-600 text-xs font-bold flex items-center shrink-0">
+                                    <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24"><path d="M18 2h-3a5 5 0 00-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 011-1h3z"/></svg>
+                                </span>
+                                <input type="url" name="facebook_url" id="e_facebook" class="flex-1 px-3 py-2.5 bg-gray-50 border-none text-sm focus:outline-none focus:ring-0" placeholder="https://facebook.com/...">
+                            </div>
+                        </div>
+                        <div>
+                            <label class="text-[11px] font-bold text-gray-500 uppercase tracking-wider">Instagram</label>
+                            <div class="flex mt-2 rounded-lg overflow-hidden ring-1 ring-gray-200 focus-within:ring-2 focus-within:ring-indigo-400">
+                                <span class="px-3 py-2.5 bg-gray-100 text-pink-500 text-xs font-bold flex items-center shrink-0">
+                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect x="2" y="2" width="20" height="20" rx="5" ry="5"/><path d="M16 11.37A4 4 0 1112.63 8 4 4 0 0116 11.37z"/><line x1="17.5" y1="6.5" x2="17.51" y2="6.5"/></svg>
+                                </span>
+                                <input type="url" name="instagram_url" id="e_instagram" class="flex-1 px-3 py-2.5 bg-gray-50 border-none text-sm focus:outline-none focus:ring-0" placeholder="https://instagram.com/...">
+                            </div>
+                        </div>
+                        <div>
+                            <label class="text-[11px] font-bold text-gray-500 uppercase tracking-wider">TikTok</label>
+                            <div class="flex mt-2 rounded-lg overflow-hidden ring-1 ring-gray-200 focus-within:ring-2 focus-within:ring-indigo-400">
+                                <span class="px-3 py-2.5 bg-gray-100 text-slate-800 text-xs font-bold flex items-center shrink-0">
+                                    <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24"><path d="M19.59 6.69a4.83 4.83 0 01-3.77-4.25V2h-3.45v13.67a2.89 2.89 0 01-2.88 2.5 2.89 2.89 0 01-2.89-2.89 2.89 2.89 0 012.89-2.89c.28 0 .54.04.79.1V9.01a6.33 6.33 0 00-.79-.05 6.34 6.34 0 00-6.34 6.34 6.34 6.34 0 006.34 6.34 6.34 6.34 0 006.33-6.34V8.69a8.17 8.17 0 004.78 1.52V6.75a4.85 4.85 0 01-1.01-.06z"/></svg>
+                                </span>
+                                <input type="url" name="tiktok_url" id="e_tiktok" class="flex-1 px-3 py-2.5 bg-gray-50 border-none text-sm focus:outline-none focus:ring-0" placeholder="https://tiktok.com/@...">
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -259,11 +314,29 @@
         const accountantEl = document.getElementById('e_accountant');
         if (accountantEl) accountantEl.value = unit.accountant_id || 'NULL';
 
+        // Set select SK (dari workAssignments[0] jika ada)
+        const decreeEl = document.getElementById('e_decree');
+        if (decreeEl) {
+            const currentDecreeId = unit.work_assignment_decree_id || '';
+            decreeEl.value = currentDecreeId;
+        }
+
         // Populate Hidden Wilayah Names
         document.getElementById('e_prov_name').value  = unit.province || '';
         document.getElementById('e_reg_name').value   = unit.regency || '';
         document.getElementById('e_dist_name').value  = unit.district || '';
         document.getElementById('e_vill_name').value  = unit.village || '';
+
+        // Populate Sosial Media
+        if (unit.social_media) {
+            document.getElementById('e_facebook').value  = unit.social_media.facebook_url || '';
+            document.getElementById('e_instagram').value = unit.social_media.instagram_url || '';
+            document.getElementById('e_tiktok').value    = unit.social_media.tiktok_url || '';
+        } else {
+            document.getElementById('e_facebook').value  = '';
+            document.getElementById('e_instagram').value = '';
+            document.getElementById('e_tiktok').value    = '';
+        }
 
         // Init Map & Wilayah
         initEditMapModal();
@@ -565,6 +638,7 @@
             { id: 'e_id',      msg: 'ID SPPG wajib diisi' },
             { id: 'e_code',    msg: 'Kode SPPG wajib diisi' },
             { id: 'e_status',  msg: 'Pilih status operasional' },
+            { id: 'e_decree',  msg: 'Surat Keputusan (SK) wajib dipilih' },
             { id: 'e_prov',    msg: 'Provinsi wajib dipilih' },
             { id: 'e_reg',     msg: 'Kabupaten wajib dipilih' },
             { id: 'e_dist',    msg: 'Kecamatan wajib dipilih' },
@@ -616,14 +690,15 @@
                 if (result.errors) {
                     Object.keys(result.errors).forEach(key => {
                         let fieldId = 'e_' + key;
-                        if (key === 'id_sppg_unit')     fieldId = 'e_id';
-                        if (key === 'code_sppg_unit')   fieldId = 'e_code';
-                        if (key === 'operational_date') fieldId = 'e_op_date';
-                        if (key === 'photo')            fieldId = 'edit_photo';
-                        if (key === 'province_name')    fieldId = 'e_prov';
-                        if (key === 'regency_name')     fieldId = 'e_reg';
-                        if (key === 'district_name')    fieldId = 'e_dist';
-                        if (key === 'village_name')     fieldId = 'e_vill';
+                        if (key === 'id_sppg_unit')          fieldId = 'e_id';
+                        if (key === 'code_sppg_unit')        fieldId = 'e_code';
+                        if (key === 'operational_date')      fieldId = 'e_op_date';
+                        if (key === 'photo')                 fieldId = 'edit_photo';
+                        if (key === 'province_name')         fieldId = 'e_prov';
+                        if (key === 'regency_name')          fieldId = 'e_reg';
+                        if (key === 'district_name')         fieldId = 'e_dist';
+                        if (key === 'village_name')          fieldId = 'e_vill';
+                        if (key === 'id_assignment_decree')  fieldId = 'e_decree';
 
                         result.errors[key].forEach(msg => {
                             showEditFieldError(fieldId, msg);

@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Models\RefPosition;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 
 class PositionController extends Controller
 {
@@ -20,11 +21,19 @@ class PositionController extends Controller
             'name_position' => 'required|string|max:255',
         ]);
 
-        $position = RefPosition::findOrFail($id);
-        $position->update([
-            'name_position' => $request->name_position
-        ]);
+        try {
+            DB::beginTransaction();
 
-        return back()->with('success', 'Nama Jabatan berhasil diperbarui.');
+            $position = RefPosition::findOrFail($id);
+            $position->update([
+                'name_position' => $request->name_position
+            ]);
+
+            DB::commit();
+            return back()->with('success', 'Nama Jabatan berhasil diperbarui.');
+        } catch (\Exception $e) {
+            DB::rollBack();
+            return back()->with('error', 'Gagal memperbarui Jabatan: ' . $e->getMessage());
+        }
     }
 }

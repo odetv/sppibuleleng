@@ -135,7 +135,7 @@
                         <div>
                             <label class="text-[11px] font-bold text-gray-500 uppercase tracking-wider">Ahli Gizi</label>
                             <select name="nutritionist_id" id="f_nutritionist" class="w-full mt-2 px-3 py-2.5 bg-gray-50 border-none rounded-lg text-sm focus:ring-2 focus:ring-indigo-500">
-                                <option value="" disabled selected>-- Pilih Ahli Gizi --</option>
+                                <option value="" disabled selected>Pilih Ahli Gizi</option>
                                 <option value="NULL">Belum Ditugaskan</option>
                                 @foreach($nutritionists as $person)
                                 <option value="{{ $person->id_person }}">{{ $person->name }}</option>
@@ -145,12 +145,32 @@
                         <div>
                             <label class="text-[11px] font-bold text-gray-500 uppercase tracking-wider">Akuntan</label>
                             <select name="accountant_id" id="f_accountant" class="w-full mt-2 px-3 py-2.5 bg-gray-50 border-none rounded-lg text-sm focus:ring-2 focus:ring-indigo-500">
-                                <option value="" disabled selected>-- Pilih Akuntan --</option>
+                                <option value="" disabled selected>Pilih Akuntan</option>
                                 <option value="NULL">Belum Ditugaskan</option>
                                 @foreach($accountants as $person)
                                 <option value="{{ $person->id_person }}">{{ $person->name }}</option>
                                 @endforeach
                             </select>
+                        </div>
+                    </div>
+                </div>
+
+                {{-- SECTION SK --}}
+                <div class="pt-10 border-t border-gray-100">
+                    <h3 class="text-sm font-bold uppercase tracking-widest text-indigo-600 mb-6">Surat Keputusan (SK)</h3>
+                    <div class="grid grid-cols-1 gap-6">
+                        <div>
+                            <label class="text-[11px] font-bold text-gray-500 uppercase tracking-wider">Nomor SK <span class="text-red-500">*</span></label>
+                            <select name="id_assignment_decree" id="f_decree" class="w-full mt-2 px-3 py-2.5 bg-gray-50 border-none rounded-lg text-sm focus:ring-2 focus:ring-indigo-500">
+                                <option value="" disabled selected>Pilih Nomor SK</option>
+                                @foreach($decrees as $decree)
+                                <option value="{{ $decree->id_assignment_decree }}">
+                                    {{ $decree->no_sk }} ({{ \Carbon\Carbon::parse($decree->date_sk)->format('d/m/Y') }})
+                                    &mdash; {{ $decree->no_ba_verval }} ({{ \Carbon\Carbon::parse($decree->date_ba_verval)->format('d/m/Y') }})
+                                </option>
+                                @endforeach
+                            </select>
+                            <p class="text-[10px] text-slate-400 mt-1">1 SK dapat mencakup banyak SPPG. SPPG ini akan terhubung ke SK yang dipilih.</p>
                         </div>
                     </div>
                 </div>
@@ -197,6 +217,39 @@
                     <div class="grid grid-cols-2 gap-4 mt-4">
                         <input type="text" name="latitude_gps" id="f_lat" readonly class="w-full px-4 py-2.5 bg-slate-100 border-none rounded-lg text-sm text-slate-500" placeholder="Latitude Otomatis">
                         <input type="text" name="longitude_gps" id="f_lng" readonly class="w-full px-4 py-2.5 bg-slate-100 border-none rounded-lg text-sm text-slate-500" placeholder="Longitude Otomatis">
+                    </div>
+                </div>
+                {{-- SECTION 4: SOSIAL MEDIA --}}
+                <div class="pt-10 border-t border-gray-100">
+                    <h3 class="text-sm font-bold uppercase tracking-widest text-indigo-600 mb-6">Sosial Media <span class="text-slate-400 font-normal normal-case tracking-normal text-xs">(Opsional)</span></h3>
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                        <div>
+                            <label class="text-[11px] font-bold text-gray-500 uppercase tracking-wider">Facebook</label>
+                            <div class="flex mt-2 rounded-lg overflow-hidden ring-1 ring-gray-200 focus-within:ring-2 focus-within:ring-indigo-400">
+                                <span class="px-3 py-2.5 bg-gray-100 text-blue-600 text-xs font-bold flex items-center shrink-0">
+                                    <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24"><path d="M18 2h-3a5 5 0 00-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 011-1h3z"/></svg>
+                                </span>
+                                <input type="url" name="facebook_url" id="f_facebook" class="flex-1 px-3 py-2.5 bg-gray-50 border-none text-sm focus:outline-none focus:ring-0" placeholder="https://facebook.com/...">
+                            </div>
+                        </div>
+                        <div>
+                            <label class="text-[11px] font-bold text-gray-500 uppercase tracking-wider">Instagram</label>
+                            <div class="flex mt-2 rounded-lg overflow-hidden ring-1 ring-gray-200 focus-within:ring-2 focus-within:ring-indigo-400">
+                                <span class="px-3 py-2.5 bg-gray-100 text-pink-500 text-xs font-bold flex items-center shrink-0">
+                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect x="2" y="2" width="20" height="20" rx="5" ry="5"/><path d="M16 11.37A4 4 0 1112.63 8 4 4 0 0116 11.37z"/><line x1="17.5" y1="6.5" x2="17.51" y2="6.5"/></svg>
+                                </span>
+                                <input type="url" name="instagram_url" id="f_instagram" class="flex-1 px-3 py-2.5 bg-gray-50 border-none text-sm focus:outline-none focus:ring-0" placeholder="https://instagram.com/...">
+                            </div>
+                        </div>
+                        <div>
+                            <label class="text-[11px] font-bold text-gray-500 uppercase tracking-wider">TikTok</label>
+                            <div class="flex mt-2 rounded-lg overflow-hidden ring-1 ring-gray-200 focus-within:ring-2 focus-within:ring-indigo-400">
+                                <span class="px-3 py-2.5 bg-gray-100 text-slate-800 text-xs font-bold flex items-center shrink-0">
+                                    <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24"><path d="M19.59 6.69a4.83 4.83 0 01-3.77-4.25V2h-3.45v13.67a2.89 2.89 0 01-2.88 2.5 2.89 2.89 0 01-2.89-2.89 2.89 2.89 0 012.89-2.89c.28 0 .54.04.79.1V9.01a6.33 6.33 0 00-.79-.05 6.34 6.34 0 00-6.34 6.34 6.34 6.34 0 006.34 6.34 6.34 6.34 0 006.33-6.34V8.69a8.17 8.17 0 004.78 1.52V6.75a4.85 4.85 0 01-1.01-.06z"/></svg>
+                                </span>
+                                <input type="url" name="tiktok_url" id="f_tiktok" class="flex-1 px-3 py-2.5 bg-gray-50 border-none text-sm focus:outline-none focus:ring-0" placeholder="https://tiktok.com/@...">
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -265,17 +318,18 @@
 
         // Validasi Sisi Client
         const fields = [
-            { id: 'f_name', msg: 'Nama SPPG wajib diisi' },
-            { id: 'f_id', msg: 'ID SPPG wajib diisi' },
-            { id: 'f_code', msg: 'Kode SPPG wajib diisi' },
-            { id: 'f_leader', msg: 'Pilihan Kepala SPPG tidak valid' },
-            { id: 'f_status', msg: 'Pilih status operasional' },
-            { id: 'f_prov', msg: 'Provinsi wajib dipilih' },
-            { id: 'f_reg', msg: 'Kabupaten wajib dipilih' },
-            { id: 'f_dist', msg: 'Kecamatan wajib dipilih' },
-            { id: 'f_vill', msg: 'Desa/Kelurahan wajib dipilih' },
+            { id: 'f_name',    msg: 'Nama SPPG wajib diisi' },
+            { id: 'f_id',      msg: 'ID SPPG wajib diisi' },
+            { id: 'f_code',    msg: 'Kode SPPG wajib diisi' },
+            { id: 'f_leader',  msg: 'Pilihan Kepala SPPG tidak valid' },
+            { id: 'f_status',  msg: 'Pilih status operasional' },
+            { id: 'f_decree',  msg: 'Surat Keputusan (SK) wajib dipilih' },
+            { id: 'f_prov',    msg: 'Provinsi wajib dipilih' },
+            { id: 'f_reg',     msg: 'Kabupaten wajib dipilih' },
+            { id: 'f_dist',    msg: 'Kecamatan wajib dipilih' },
+            { id: 'f_vill',    msg: 'Desa/Kelurahan wajib dipilih' },
             { id: 'f_address', msg: 'Alamat wajib diisi' },
-            { id: 'f_lat', msg: 'Titik GPS belum ditentukan (Klik pada peta)' }
+            { id: 'f_lat',     msg: 'Titik GPS belum ditentukan (Klik pada peta)' }
         ];
 
         fields.forEach(f => {
@@ -326,10 +380,11 @@
                 if (result.errors) {
                     Object.keys(result.errors).forEach(key => {
                         let fieldId = 'f_' + key;
-                        if (key === 'id_sppg_unit') fieldId = 'f_id';
-                        if (key === 'code_sppg_unit') fieldId = 'f_code';
-                        if (key === 'operational_date') fieldId = 'f_op_date';
-                        if (key === 'photo') fieldId = 'create_photo';
+                        if (key === 'id_sppg_unit')          fieldId = 'f_id';
+                        if (key === 'code_sppg_unit')        fieldId = 'f_code';
+                        if (key === 'operational_date')      fieldId = 'f_op_date';
+                        if (key === 'photo')                 fieldId = 'create_photo';
+                        if (key === 'id_assignment_decree')  fieldId = 'f_decree';
 
                         result.errors[key].forEach(msg => {
                             showFieldError(fieldId, msg);
