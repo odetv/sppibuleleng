@@ -44,12 +44,12 @@
 
         <div class="p-6 border-b border-slate-100 bg-slate-50 flex justify-between items-center text-slate-800">
             <div class="flex items-center gap-3">
-                <span class="p-1.5 bg-amber-50 text-amber-600 rounded-lg">
+                <span class="p-1.5 bg-indigo-50 text-indigo-600 rounded-lg">
                     <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M11 5H6a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2v-5M18.364 4.982a2.378 2.378 0 113.359 3.359L10.852 19.531l-4.243.606.606-4.243L18.364 4.982z" />
                     </svg>
                 </span>
-                <h3 class="text-[14px] font-bold uppercase tracking-widest">Edit SPPG: <span x-text="selectedUnit.name"></span></h3>
+                <h3 class="text-[14px] font-bold uppercase tracking-widest text-slate-800">Edit SPPG Unit</h3>
             </div>
             <button type="button" @click="showEditModal = false" class="text-slate-400 hover:text-slate-600 text-2xl cursor-pointer">&times;</button>
         </div>
@@ -85,7 +85,7 @@
                                     </svg>
                                 </div>
                             </div>
-                            <label for="edit_photo" class="absolute bottom-3 right-3 p-2.5 bg-amber-400 text-white rounded-xl shadow-xl cursor-pointer hover:bg-amber-500 transition-all hover:scale-110">
+                            <label for="edit_photo" class="absolute bottom-3 right-3 p-2.5 bg-indigo-500 text-white rounded-xl shadow-xl cursor-pointer hover:bg-indigo-600 transition-all hover:scale-110">
                                 <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z" />
                                     <path d="M15 13a3 3 0 11-6 0 3 3 0 016 0z" />
@@ -252,14 +252,280 @@
                                 </span>
                                 <input type="url" name="tiktok_url" id="e_tiktok" class="flex-1 px-3 py-2.5 bg-gray-50 border-none text-sm focus:outline-none focus:ring-0" placeholder="https://tiktok.com/@...">
                             </div>
+                    </div>
+                </div>
+
+                {{-- SECTION 5: DAFTAR PM --}}
+                <div class="pt-10 border-t border-gray-100" x-data="{ 
+                    stagedPms: [], 
+                    isLinking: false,
+                    searchTerm: '',
+                    get filteredAllPm() {
+                        if (!this.searchTerm) return [];
+                        const lower = this.searchTerm.toLowerCase();
+                        return allPmList.filter(b => 
+                            (b.name.toLowerCase().includes(lower) || (b.code && b.code.toLowerCase().includes(lower))) &&
+                            !this.stagedPms.find(s => s.id_beneficiary === b.id_beneficiary)
+                        ).slice(0, 5);
+                    },
+                    addStagedPm(pm) {
+                        this.stagedPms.push(pm);
+                        this.searchTerm = '';
+                    },
+                    removeStagedPm(pmId) {
+                        this.stagedPms = this.stagedPms.filter(p => p.id_beneficiary !== pmId);
+                    },
+                    async linkStagedPms() {
+                        if (this.stagedPms.length === 0) return;
+                        this.isLinking = true;
+                        const idsToLink = this.stagedPms.map(p => p.id_beneficiary);
+                        try {
+                            const resp = await fetch('{{ route("admin.manage-beneficiary.batch-link-to-sppg") }}', {
+                                method: 'POST',
+                                headers: {
+                                    'Content-Type': 'application/json',
+                                    'X-CSRF-TOKEN': '{{ csrf_token() }}',
+                                    'X-Requested-With': 'XMLHttpRequest',
+                                    'Accept': 'application/json'
+                                },
+                                body: JSON.stringify({ 
+                                    id_beneficiary_list: idsToLink, 
+                                    id_sppg_unit: selectedUnit.id_sppg_unit 
+                                })
+                            });
+                            const data = await resp.json();
+                            if (resp.ok) {
+                                selectedUnit.beneficiaries = data.unit_beneficiaries;
+                                
+                                // Update global allPmList to reflect these are now taken
+                                allPmList.forEach(p => {
+                                    if (idsToLink.includes(p.id_beneficiary)) {
+                                        p.id_sppg_unit = selectedUnit.id_sppg_unit;
+                                    }
+                                });
+
+                                this.stagedPms = [];
+                                this.searchTerm = '';
+                            } else {
+                                alert('Gagal menautkan: ' + (data.errors ? JSON.stringify(data.errors) : 'Unknown error'));
+                            }
+                        } catch (err) {
+                            console.error(err);
+                            alert('Gagal menyambung ke server');
+                        } finally {
+                            this.isLinking = false;
+                        }
+                    },
+                    async unlinkPm(pm_id, unit_id) {
+                        if (!confirm('Yakin ingin melepas tautan PM ini dari unit?')) return;
+                        try {
+                            const resp = await fetch('{{ route("admin.manage-beneficiary.link-to-sppg") }}', {
+                                method: 'POST',
+                                headers: {
+                                    'Content-Type': 'application/json',
+                                    'X-CSRF-TOKEN': '{{ csrf_token() }}',
+                                    'X-Requested-With': 'XMLHttpRequest',
+                                    'Accept': 'application/json'
+                                },
+                                body: JSON.stringify({ id_beneficiary: pm_id, id_sppg_unit: null })
+                            });
+                            if (resp.ok) {
+                                selectedUnit.beneficiaries = selectedUnit.beneficiaries.filter(b => b.id_beneficiary != pm_id);
+                                
+                                // Update global allPmList to reflect it is now available again
+                                const target = allPmList.find(p => p.id_beneficiary == pm_id);
+                                if (target) target.id_sppg_unit = null;
+                            }
+                        } catch (err) { console.error(err); }
+                    }
+                }"
+                @pm-created-integrated.window="
+                    selectedUnit.beneficiaries.push($event.detail.beneficiary); 
+                    allPmList.push($event.detail.beneficiary);
+                    showCreatePmModal = false
+                "
+                >
+                    <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-6 gap-4">
+                        <div class="flex items-center gap-3">
+                            <span class="p-1.5 bg-indigo-50 text-indigo-600 rounded-lg">
+                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
+                                </svg>
+                            </span>
+                            <h3 class="text-sm font-bold uppercase tracking-widest text-indigo-600">Penerima Manfaat (PM) Terhubung</h3>
+                        </div>
+                        
+                        <div class="flex items-center gap-3">
+                            <button type="button" @click="showCreatePmModal = true; setTimeout(() => initCreatePmMap(), 300)" class="px-4 py-2 bg-emerald-50 text-emerald-600 border border-emerald-100 rounded-lg text-xs font-bold uppercase tracking-wider hover:bg-emerald-100 transition-all flex items-center">
+                                <svg class="w-3.5 h-3.5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
+                                </svg>
+                                <span>Tambah PM Baru</span>
+                            </button>
+                            <a :href="`/admin/manage-beneficiary?search=${selectedUnit.id_sppg_unit}`" target="_blank" class="px-4 py-2 bg-indigo-50 text-indigo-600 rounded-lg text-xs font-bold uppercase tracking-wider hover:bg-indigo-100 transition-all flex items-center">
+                                <span>Kelola Semua PM</span>
+                                <svg class="w-3.5 h-3.5 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
+                                </svg>
+                            </a>
+                        </div>
+                    </div>
+
+                    {{-- Link Existing PM Tool --}}
+                    <div class="mb-6 p-4 bg-slate-50 rounded-xl border border-slate-200">
+                        <label class="text-[10px] font-bold text-slate-500 uppercase tracking-widest block mb-2">Tautkan PM yang Sudah Ada</label>
+                        <div class="flex gap-2 relative">
+                            <div class="relative flex-1">
+                                <input type="text" x-model="searchTerm" placeholder="Cari Nama atau Kode PM..." class="w-full px-4 py-2.5 bg-white border border-slate-200 rounded-lg text-sm focus:ring-2 focus:ring-indigo-500 outline-none">
+                                <div x-show="searchTerm && filteredAllPm.length > 0" class="absolute z-[100] left-0 right-0 mt-1 bg-white border border-slate-200 rounded-lg shadow-xl overflow-hidden max-h-60 overflow-y-auto">
+                                    <template x-for="item in filteredAllPm" :key="item.id_beneficiary">
+                                        <button type="button" 
+                                            @click="if(!item.id_sppg_unit) addStagedPm(item)" 
+                                            :disabled="item.id_sppg_unit !== null"
+                                            class="w-full text-left px-4 py-3 hover:bg-indigo-50 flex flex-row items-center justify-between border-b border-slate-50 last:border-0 group transition-all"
+                                            :class="item.id_sppg_unit ? 'opacity-60 cursor-not-allowed bg-slate-50' : 'cursor-pointer'">
+                                            <div class="flex flex-col gap-0.5">
+                                                <span class="font-bold text-slate-700" x-text="item.name"></span>
+                                                <span class="text-[10px] text-slate-400" x-text="item.group_type + (item.code ? ' • ' + item.code : '')"></span>
+                                            </div>
+                                            <div class="flex flex-col items-end gap-1">
+                                                <template x-if="item.id_sppg_unit === null">
+                                                    <span class="px-2 py-0.5 bg-emerald-50 text-emerald-600 text-[9px] font-bold uppercase rounded border border-emerald-100 group-hover:bg-emerald-600 group-hover:text-white transition-colors">Pilih</span>
+                                                </template>
+                                                <template x-if="item.id_sppg_unit !== null">
+                                                    <div class="flex flex-col items-end">
+                                                        <span class="px-2 py-0.5 bg-rose-50 text-rose-500 text-[9px] font-bold uppercase rounded border border-rose-100">Sudah Ditautkan</span>
+                                                        <span class="text-[8px] text-rose-400 mt-0.5 italic" x-text="item.id_sppg_unit === selectedUnit.id_sppg_unit ? 'Unit ini' : 'Unit lain (' + item.id_sppg_unit + ')'"></span>
+                                                    </div>
+                                                </template>
+                                            </div>
+                                        </button>
+                                    </template>
+                                </div>
+                                <div x-show="searchTerm && filteredAllPm.length === 0" class="absolute z-[100] left-0 right-0 mt-1 bg-white border border-slate-200 rounded-lg shadow-xl p-4 text-center">
+                                    <p class="text-[10px] font-bold text-slate-400 uppercase tracking-widest italic">Tidak ada PM ditemukan</p>
+                                </div>
+                            </div>
+                            <button type="button" 
+                                @click="linkStagedPms()"
+                                :disabled="stagedPms.length === 0 || isLinking"
+                                class="px-6 py-2.5 bg-indigo-600 text-white rounded-lg text-xs font-bold uppercase transition-all hover:bg-indigo-700 disabled:bg-slate-300">
+                                <span x-show="!isLinking">Tautkan <span x-show="stagedPms.length > 0" x-text="'(' + stagedPms.length + ')'"></span></span>
+                                <span x-show="isLinking">...</span>
+                            </button>
+                        </div>
+
+                        {{-- Staged PMs List --}}
+                        <template x-if="stagedPms.length > 0">
+                            <div class="mt-4 flex flex-wrap gap-2">
+                                <template x-for="pm in stagedPms" :key="pm.id_beneficiary">
+                                    <div class="px-3 py-1.5 bg-indigo-100 text-indigo-700 rounded-lg text-[10px] font-bold flex items-center gap-2 border border-indigo-200 shadow-sm animate-in fade-in zoom-in duration-200">
+                                        <span x-text="pm.name"></span>
+                                        <button type="button" @click="removeStagedPm(pm.id_beneficiary)" class="p-0.5 hover:bg-indigo-200 rounded-full transition-colors text-indigo-400 hover:text-indigo-600">
+                                            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                                            </svg>
+                                        </button>
+                                    </div>
+                                </template>
+                            </div>
+                        </template>
+                    </div>
+                    
+                    <div class="bg-white rounded-xl overflow-hidden border border-slate-200 shadow-sm">
+                        <div class="overflow-x-auto">
+                            <table class="w-full text-left text-xs">
+                                <thead>
+                                    <tr class="bg-indigo-600/5 text-[10px] font-bold text-indigo-600/60 uppercase tracking-widest border-b border-indigo-600/10">
+                                        <th class="px-5 py-4">Identitas PM</th>
+                                        <th class="px-5 py-4">Alamat & GPS</th>
+                                        <th class="px-5 py-4">Rincian Porsi</th>
+                                        <th class="px-5 py-4">PIC / Kontak</th>
+                                        <th class="px-5 py-4 text-center">Aksi</th>
+                                    </tr>
+                                </thead>
+                                <tbody class="divide-y divide-slate-100 bg-white">
+                                    <template x-if="selectedUnit.beneficiaries && selectedUnit.beneficiaries.length > 0">
+                                        <template x-for="pm in selectedUnit.beneficiaries" :key="pm.id_beneficiary">
+                                            <tr class="hover:bg-indigo-50/30 transition-colors">
+                                                <td class="px-5 py-4 align-top">
+                                                    <div class="font-bold text-slate-800 capitalize leading-tight" x-text="pm.name"></div>
+                                                    <div class="text-[10px] font-bold text-indigo-600 mt-1 uppercase" x-text="pm.group_type + (pm.category ? ' • ' + pm.category : '')"></div>
+                                                    <div class="text-[9px] text-slate-500 mt-1" x-text="'Kepemilikan: ' + (pm.ownership_type || '-')"></div>
+                                                    <div class="text-[9px] text-slate-400 mt-0.5" x-text="'ID: ' + pm.id_beneficiary + (pm.code ? ' • Kode: ' + pm.code : '')"></div>
+                                                    <div class="mt-2">
+                                                        <span class="px-2 py-0.5 rounded-full text-[9px] font-bold uppercase border"
+                                                              :class="pm.is_active ? 'bg-emerald-50 text-emerald-600 border-emerald-100' : 'bg-rose-50 text-rose-600 border-rose-100'"
+                                                              x-text="pm.is_active ? 'Aktif' : 'Non-Aktif'"></span>
+                                                    </div>
+                                                </td>
+                                                <td class="px-5 py-4 align-top max-w-[200px]">
+                                                    <div class="text-slate-600 line-clamp-2" x-text="pm.address || '-'"></div>
+                                                    <div class="text-[9px] text-slate-400 mt-1" x-text="(pm.village || '-') + ', ' + (pm.district || '-') + ' ' + (pm.postal_code || '')"></div>
+                                                    <div class="text-[9px] text-slate-400" x-text="(pm.regency || '-') + ', ' + (pm.province || '-')"></div>
+                                                    <div class="mt-2 flex items-center text-[9px] font-bold text-indigo-500">
+                                                        <svg class="w-3 h-3 mr-1" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5a2.5 2.5 0 010-5 2.5 2.5 0 010 5z"/></svg>
+                                                        <span x-text="(pm.latitude_gps && pm.longitude_gps) ? pm.latitude_gps.slice(0,8) + ', ' + pm.longitude_gps.slice(0,8) : 'Gps Tidak Ada'"></span>
+                                                    </div>
+                                                </td>
+                                                <td class="px-5 py-4 align-top text-slate-600">
+                                                    <div class="grid grid-cols-2 gap-x-4 gap-y-1 text-[10px]">
+                                                        <span>Kecil (L/P):</span>
+                                                        <span class="font-bold text-slate-700" x-text="(pm.small_portion_male || 0) + '/' + (pm.small_portion_female || 0)"></span>
+                                                        <span>Besar (L/P):</span>
+                                                        <span class="font-bold text-slate-700" x-text="(pm.large_portion_male || 0) + '/' + (pm.large_portion_female || 0)"></span>
+                                                        <span>Guru/Staff:</span>
+                                                        <span class="font-bold text-slate-700" x-text="(pm.teacher_portion || 0) + '/' + (pm.staff_portion || 0)"></span>
+                                                        <span>Kader:</span>
+                                                        <span class="font-bold text-slate-700" x-text="pm.cadre_portion || 0"></span>
+                                                    </div>
+                                                </td>
+                                                <td class="px-5 py-4 align-top">
+                                                    <div class="text-slate-700 font-bold" x-text="pm.pic_name || '-'"></div>
+                                                    <div class="text-[10px] text-indigo-600 font-medium mt-1 flex items-center">
+                                                        <svg class="w-3 h-3 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z"/></svg>
+                                                        <span x-text="pm.pic_phone || '-'"></span>
+                                                    </div>
+                                                    <div class="text-[9px] text-slate-400 mt-1 break-all" x-text="pm.pic_email || '-'"></div>
+                                                </td>
+                                                <td class="px-5 py-4 text-center align-top">
+                                                    <button type="button" 
+                                                        @click="unlinkPm(pm.id_beneficiary, selectedUnit.id_sppg_unit)"
+                                                        class="p-2 text-rose-500 hover:bg-rose-50 rounded-lg transition-all" title="Lepas Tautan">
+                                                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.875 18.825A10.05 10.05 0 0112 19c-4.478 0-8.268-2.943-9.543-7a9.97 9.97 0 011.563-3.029m5.858.908a3 3 0 114.243 4.243M9.878 9.878l4.242 4.242M9.88 9.88l-3.29-3.29m7.532 7.532l3.29 3.29M3 3l18 18" />
+                                                        </svg>
+                                                    </button>
+                                                </td>
+                                            </tr>
+                                        </template>
+                                    </template>
+                                    <template x-if="!selectedUnit.beneficiaries || selectedUnit.beneficiaries.length === 0">
+                                        <tr>
+                                            <td colspan="5" class="px-5 py-12 text-center">
+                                                <div class="flex flex-col items-center">
+                                                    <div class="p-3 bg-slate-50 rounded-full mb-3">
+                                                        <svg class="w-10 h-10 text-slate-200" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
+                                                        </svg>
+                                                    </div>
+                                                    <p class="text-[11px] font-bold uppercase tracking-widest text-slate-400 italic">Belum ada PM terhubung</p>
+                                                    <p class="text-[10px] text-slate-300 mt-1">Gunakan alat pencarian atau tambah PM baru untuk mengisi daftar ini</p>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                    </template>
+                                </tbody>
+                            </table>
                         </div>
                     </div>
                 </div>
+
             </div>
 
             <div class="p-6 border-t border-slate-100 bg-slate-50/50 flex gap-4">
                 <button type="button" @click="showEditModal = false" class="flex-1 py-4 text-[11px] font-bold uppercase text-slate-500 bg-white border border-slate-200 rounded-xl hover:bg-slate-100 transition-all">Batal</button>
-                <button type="submit" id="btnUpdateSppg" class="flex-1 py-4 text-[11px] font-bold uppercase text-white bg-amber-600 rounded-xl shadow-lg hover:bg-amber-700 transition-all active:scale-95">Simpan Perubahan</button>
+                <button type="submit" id="btnUpdateSppg" class="flex-1 py-4 text-[11px] font-bold uppercase text-white bg-slate-800 rounded-xl shadow-lg hover:bg-slate-900 transition-all active:scale-95">Simpan Perubahan</button>
             </div>
         </form>
     </div>
@@ -374,7 +640,7 @@
         if (!warnEl) {
             warnEl = document.createElement('div');
             warnEl.id = warnId;
-            warnEl.className = 'text-[10px] font-bold text-amber-600 bg-amber-50 px-2 py-1 rounded border border-amber-100 mt-1 hidden';
+            warnEl.className = 'text-[10px] font-bold text-indigo-600 bg-indigo-50 px-2 py-1 rounded border border-indigo-100 mt-1 hidden';
             el.after(warnEl);
         }
 
@@ -764,4 +1030,5 @@
         errorEl.innerText = '* ' + msg;
         errorEl.classList.remove('hidden');
     }
+
 </script>

@@ -60,6 +60,11 @@ class SppgUnit extends Model
         return $this->hasMany(WorkAssignment::class, 'id_sppg_unit', 'id_sppg_unit');
     }
 
+    public function beneficiaries(): HasMany
+    {
+        return $this->hasMany(Beneficiary::class, 'id_sppg_unit', 'id_sppg_unit');
+    }
+
     /**
      * Sinkronisasi personil unit dengan tabel persons.
      * Algoritma: Saat ini unit ini berisi leader/nutritionist/accountant tertentu.

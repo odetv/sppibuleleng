@@ -16,9 +16,10 @@ class DatabaseSeeder extends Seeder
             PositionSeeder::class,
             UserSeeder::class,             // 1. Akun Login dibuat (id_person: null)
             SppgUnitSeeder::class,         // 2. Unit SPPG dibuat (Leader merujuk ke id_user)
-            AssignmentDecreeSeeder::class, // 3. Data SK
-            WorkAssignmentSeeder::class,   // 4. Data Penugasan
-            PersonSeeder::class,           // 5. Data Diri diisi & Link ke users di-update
+            BeneficiarySeeder::class,      // 3. Data Penerima Manfaat
+            AssignmentDecreeSeeder::class, // 4. Data SK
+            WorkAssignmentSeeder::class,   // 5. Data Penugasan
+            PersonSeeder::class,           // 6. Data Diri diisi & Link ke users di-update
             SocialMediaSeeder::class,
             SettingSeeder::class,
         ]);

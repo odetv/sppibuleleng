@@ -414,7 +414,7 @@
         if (!warnEl) {
             warnEl = document.createElement('div');
             warnEl.id = warnElId;
-            warnEl.className = 'text-[10px] font-bold text-amber-600 bg-amber-50 px-2 py-1 rounded border border-amber-100 mt-1 hidden';
+            warnEl.className = 'text-[10px] font-bold text-indigo-600 bg-indigo-50 px-2 py-1 rounded border border-indigo-100 mt-1 hidden';
             el.after(warnEl);
         }
 

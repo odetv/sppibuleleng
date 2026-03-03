@@ -8,6 +8,7 @@ use App\Models\SppgUnit;
 use App\Models\Person;
 use App\Models\SocialMedia;
 use App\Models\WorkAssignment;
+use App\Models\Beneficiary;
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
 use Illuminate\Support\Facades\DB;
@@ -20,7 +21,7 @@ class SppgUnitController extends Controller
         $search = $request->query('search');
 
         // Ambil data unit dengan eager loading relasi (termasuk workAssignments untuk info SK)
-        $query = SppgUnit::with(['leader', 'nutritionist', 'accountant', 'socialMedia', 'workAssignments.decree'])->latest();
+        $query = SppgUnit::with(['leader', 'nutritionist', 'accountant', 'socialMedia', 'workAssignments.decree', 'beneficiaries'])->latest();
 
         if ($search) {
             $query->where(function ($q) use ($search) {
@@ -54,7 +55,10 @@ class SppgUnitController extends Controller
         // Peta: id_sppg_unit => id_assignment_decree (untuk tahu SPPG mana sudah ada WA)
         $assignedDecreeMap = WorkAssignment::pluck('id_assignment_decree', 'id_sppg_unit')->toArray();
 
-        return view('admin.manage-sppg.index', compact('units', 'leaders', 'nutritionists', 'accountants', 'occupiedPeople', 'decrees', 'assignedDecreeMap'));
+        // Ambil semua PM untuk pilihan link ke SPPG
+        $allBeneficiaries = Beneficiary::orderBy('name')->get();
+
+        return view('admin.manage-sppg.index', compact('units', 'leaders', 'nutritionists', 'accountants', 'occupiedPeople', 'decrees', 'assignedDecreeMap', 'allBeneficiaries'));
     }
 
     /**

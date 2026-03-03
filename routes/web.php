@@ -6,6 +6,7 @@ use App\Http\Controllers\Admin\SettingController;
 use App\Http\Controllers\Admin\UserController;
 use App\Http\Controllers\Admin\SppgUnitController;
 use App\Http\Controllers\Admin\AssignmentDecreeController;
+use App\Http\Controllers\Admin\BeneficiaryController;
 use App\Http\Controllers\PersonController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\Sppg\OverviewController;
@@ -142,6 +143,20 @@ Route::middleware(['auth', 'role:administrator', 'profile.completed'])->prefix('
         Route::get('/supplier', function () {
             return "Halaman: Daftar Supplier";
         })->name('supplier');
+    });
+
+    // Manajemen PM (Penerima Manfaat)
+    Route::prefix('manage-beneficiary')->name('manage-beneficiary.')->group(function () {
+        Route::get('/', [BeneficiaryController::class, 'index'])->name('index');
+        Route::post('/store', [BeneficiaryController::class, 'store'])->name('store');
+        Route::patch('/{id}/update', [BeneficiaryController::class, 'update'])->name('update');
+        Route::delete('/{id}', [BeneficiaryController::class, 'destroy'])->name('destroy');
+        Route::get('/check-availability', [BeneficiaryController::class, 'checkAvailability'])->name('check-availability');
+        Route::post('/link-to-sppg', [BeneficiaryController::class, 'linkToSppg'])->name('link-to-sppg');
+        Route::post('/batch-link-to-sppg', [BeneficiaryController::class, 'batchLinkToSppg'])->name('batch-link-to-sppg');
+        Route::post('/export', [BeneficiaryController::class, 'exportExcel'])->name('export');
+        Route::get('/template', [BeneficiaryController::class, 'exportTemplate'])->name('template');
+        Route::post('/import', [BeneficiaryController::class, 'importBeneficiary'])->name('import');
     });
 
     // Manajemen SK (Assignment Decrees)
