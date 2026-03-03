@@ -127,8 +127,6 @@
                             value="{{ request('date_ba') }}">
                     </div>
                 </div>
-                    </div>
-                </div>
 
                 <div id="sk-table-container">
                     <div class="overflow-x-auto scrollbar-thin">
