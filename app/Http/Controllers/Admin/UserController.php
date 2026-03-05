@@ -238,7 +238,7 @@ class UserController extends Controller
         ]);
 
         $selectedColumns = $request->input('columns');
-        $fileName = 'DATA_PENGGUNA_' . now()->format('d_M_Y_H_i') . '.xlsx';
+        $fileName = 'DATA PENGGUNA ' . now()->format('His-dmY') . '.xlsx';
 
         // Eksekusi menggunakan class export
         return Excel::download(
@@ -249,7 +249,7 @@ class UserController extends Controller
 
     public function exportTemplate()
     {
-        return Excel::download(new UserTemplateExport, 'Template Import Akun Pengguna.xlsx');
+        return Excel::download(new UserTemplateExport, 'TEMPLATE IMPORT PENGGUNA.xlsx');
     }
 
     public function importUsers(Request $request)
@@ -266,6 +266,8 @@ class UserController extends Controller
         $errorDetails = [];
 
         try {
+            DB::beginTransaction();
+
             if ($mode === 'replace') {
                 DB::statement('SET FOREIGN_KEY_CHECKS=0;');
                 DB::table('persons')->join('users', 'users.id_person', '=', 'persons.id_person')
@@ -278,39 +280,45 @@ class UserController extends Controller
                 $email = trim($row['EMAIL PENGGUNA']);
 
                 try {
-                    DB::transaction(function () use ($row, $roleMapping, $email, $roleKey, &$successCount) {
-                        // 1. Validasi DNS tetap dijalankan untuk kebersihan data
-                        $v = Validator::make(['email' => $email], ['email' => 'required|email:rfc,dns|unique:users,email']);
-                        if ($v->fails()) throw new Exception($v->errors()->first());
+                    // 1. Validasi DNS tetap dijalankan untuk kebersihan data
+                    $v = Validator::make(['email' => $email], ['email' => 'required|email:rfc,dns|unique:users,email']);
+                    if ($v->fails()) {
+                        $errorMsg = "Baris Email $email: " . $v->errors()->first();
+                        $errorDetails[] = $errorMsg;
+                        if ($mode === 'replace') throw new Exception($errorMsg);
+                        continue;
+                    }
 
-                        $roleName = strtolower(trim($row[$roleKey] ?? 'guest'));
-                        $roleId = $roleMapping[$roleName] ?? 5;
+                    $roleName = strtolower(trim($row[$roleKey] ?? 'guest'));
+                    $roleId = $roleMapping[$roleName] ?? 5;
 
-                        // 2. Buat user dengan password acak
-                        $user = User::create([
-                            'id_person'   => null,
-                            'email'       => $email,
-                            'phone'       => trim($row['NOMOR WHATSAPP']),
-                            'id_ref_role' => $roleId,
-                            'password'    => Hash::make(Str::random(32)), // Password random otomatis
-                            'status_user' => 'active',
-                            'email_verified_at' => null, // Wajib aktivasi email
-                        ]);
+                    // 2. Buat user dengan password acak
+                    $user = User::create([
+                        'id_person'   => null,
+                        'email'       => $email,
+                        'phone'       => trim($row['NOMOR WHATSAPP']),
+                        'id_ref_role' => $roleId,
+                        'password'    => Hash::make(Str::random(32)), // Password random otomatis
+                        'status_user' => 'active',
+                        'email_verified_at' => null, // Wajib aktivasi email
+                    ]);
 
-                        // 3. Kirim notifikasi aktivasi (Set Password)
-                        $token = Password::createToken($user);
-                        $user->sendPasswordResetNotification($token);
+                    // 3. Kirim notifikasi aktivasi (Set Password)
+                    $token = Password::createToken($user);
+                    $user->sendPasswordResetNotification($token);
 
-                        $successCount++;
-                    });
+                    $successCount++;
                 } catch (Exception $e) {
                     $errorDetails[] = "Baris Email $email: " . $e->getMessage();
+                    if ($mode === 'replace') throw $e;
                 }
             }
 
+            DB::commit();
+
             if ($request->ajax() || $request->wantsJson()) {
                 return response()->json([
-                    'success' => true,
+                    'success' => empty($errorDetails) && $successCount > 0,
                     'message' => empty($errorDetails) 
                         ? "Berhasil mengimpor $successCount pengguna." 
                         : "Berhasil mengimpor $successCount pengguna dengan beberapa error.",
@@ -324,6 +332,7 @@ class UserController extends Controller
                 : $response->with('success', "Berhasil mengimpor $successCount pengguna.")->withErrors($errorDetails);
                 
         } catch (\Exception $e) {
+            DB::rollBack();
             DB::statement('SET FOREIGN_KEY_CHECKS=1;');
             
             if ($request->ajax() || $request->wantsJson()) {

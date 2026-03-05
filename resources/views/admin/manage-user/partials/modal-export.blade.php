@@ -29,71 +29,122 @@
                     </div>
 
                     @php
-                    // Array utama sesuai urutan yang diinginkan
-                    $mappingNames = [
-                    'status_user' => 'STATUS AKUN',
-                    'role' => 'HAK AKSES SISTEM',
-                    'name' => 'NAMA LENGKAP',
-                    'nik' => 'NIK',
-                    'no_kk' => 'NO. KK',
-                    'nip' => 'NIP',
-                    'npwp' => 'NPWP',
-                    'no_bpjs_kes' => 'NO. BPJS KESEHATAN',
-                    'no_bpjs_tk' => 'NO. BPJS KETENAGAKERJAAN',
-                    'gender' => 'JENIS KELAMIN',
-                    'place_birthday' => 'TEMPAT LAHIR',
-                    'date_birthday' => 'TANGGAL LAHIR',
-                    'age' => 'UMUR',
-                    'religion' => 'AGAMA',
-                    'marital_status' => 'STATUS PERNIKAHAN',
-                    'last_education' => 'PENDIDIKAN TERAKHIR',
-                    'title_education' => 'GELAR BELAKANG',
-                    'major_education' => 'JURUSAN/PROGRAM STUDI',
-                    'clothing_size' => 'UKURAN BAJU',
-                    'shoe_size' => 'UKURAN SEPATU',
-                    'phone' => 'TELEPON',
-                    'email' => 'EMAIL',
-                    'province_ktp' => 'PROVINSI (KTP)',
-                    'regency_ktp' => 'KABUPATEN (KTP)',
-                    'district_ktp' => 'KECAMATAN (KTP)',
-                    'village_ktp' => 'DESA/KELURAHAN (KTP)',
-                    'address_ktp' => 'ALAMAT JALAN/RUMAH (KTP)',
-                    'province_domicile' => 'PROVINSI (DOMISILI)',
-                    'regency_domicile' => 'KABUPATEN (DOMISILI)',
-                    'district_domicile' => 'KECAMATAN (DOMISILI)',
-                    'village_domicile' => 'DESA/KELURAHAN (DOMISILI)',
-                    'address_domicile' => 'ALAMAT JALAN/RUMAH (DOMISILI)',
-                    'latitude_gps_domicile' => 'LATITUDE GPS (DOMISILI)',
-                    'longitude_gps_domicile' => 'LONGITUDE GPS (DOMISILI)',
-                    'employment_status' => 'STATUS KERJA',
-                    'batch' => 'BATCH',
-                    'position' => 'JABATAN',
-                    'work_assignment' => 'UNIT PENUGASAN',
-                    'payroll_bank_name' => 'NAMA BANK PAYROLL',
-                    'payroll_bank_account_number' => 'NOMOR REKENING PAYROLL',
-                    'payroll_bank_account_name' => 'NAMA PEMILIK REKENING PAYROLL',
-                    'facebook_url' => 'LINK AKUN FACEBOOK',
-                    'instagram_url' => 'LINK AKUN INSTAGRAM',
-                    'tiktok_url' => 'LINK AKUN TIKTOK',
+                    $categories = [
+                        'DATA AKUN (USER)' => [
+                            'status_user' => 'STATUS AKUN',
+                            'role' => 'HAK AKSES SISTEM',
+                        ],
+                        'DATA PROFIL (PERSON)' => [
+                            'nik' => 'NIK',
+                            'no_kk' => 'NO. KK',
+                            'name' => 'NAMA LENGKAP',
+                            'nip' => 'NIP',
+                            'npwp' => 'NPWP',
+                            'no_bpjs_kes' => 'NO. BPJS KESEHATAN',
+                            'no_bpjs_tk' => 'NO. BPJS KETENAGAKERJAAN',
+                            'gender' => 'JENIS KELAMIN',
+                            'place_birthday' => 'TEMPAT LAHIR',
+                            'date_birthday' => 'TANGGAL LAHIR',
+                            'age' => 'UMUR',
+                            'religion' => 'AGAMA',
+                            'marital_status' => 'STATUS PERNIKAHAN',
+                            'last_education' => 'PENDIDIKAN TERAKHIR',
+                            'title_education' => 'GELAR BELAKANG',
+                            'major_education' => 'JURUSAN/PROGRAM STUDI',
+                            'clothing_size' => 'UKURAN BAJU',
+                            'shoe_size' => 'UKURAN SEPATU',
+                            'email' => 'EMAIL',
+                            'phone' => 'TELEPON',
+                            'employment_status' => 'STATUS KERJA',
+                            'batch' => 'BATCH',
+                            'position' => 'JABATAN',
+                            'payroll_bank_name' => 'NAMA BANK PAYROLL',
+                            'payroll_bank_account_number' => 'NOMOR REKENING PAYROLL',
+                            'payroll_bank_account_name' => 'NAMA PEMILIK REKENING PAYROLL',
+                            'province_ktp' => 'PROVINSI (KTP)',
+                            'regency_ktp' => 'KABUPATEN (KTP)',
+                            'district_ktp' => 'KECAMATAN (KTP)',
+                            'village_ktp' => 'DESA/KELURAHAN (KTP)',
+                            'address_ktp' => 'ALAMAT JALAN/RUMAH (KTP)',
+                            'province_domicile' => 'PROVINSI (DOMISILI)',
+                            'regency_domicile' => 'KABUPATEN (DOMISILI)',
+                            'district_domicile' => 'KECAMATAN (DOMISILI)',
+                            'village_domicile' => 'DESA/KELURAHAN (DOMISILI)',
+                            'address_domicile' => 'ALAMAT JALAN/RUMAH (DOMISILI)',
+                            'latitude_gps_domicile' => 'LATITUDE GPS (DOMISILI)',
+                            'longitude_gps_domicile' => 'LONGITUDE GPS (DOMISILI)',
+                            'photo' => 'LINK FILE FOTO PROFIL',
+                            'facebook_url' => 'LINK AKUN FACEBOOK (PRIBADI)',
+                            'instagram_url' => 'LINK AKUN INSTAGRAM (PRIBADI)',
+                            'tiktok_url' => 'LINK AKUN TIKTOK (PRIBADI)',
+                        ],
+                        'DATA SPPG' => [
+                            'sppg_id' => 'ID SPPG',
+                            'sppg_code' => 'KODE SPPG',
+                            'sppg_name' => 'NAMA SPPG',
+                            'sppg_status' => 'STATUS SPPG',
+                            'sppg_operational_date' => 'TANGGAL OPERASIONAL SPPG',
+                            'sppg_province' => 'PROVINSI SPPG',
+                            'sppg_regency' => 'KABUPATEN SPPG',
+                            'sppg_district' => 'KECAMATAN SPPG',
+                            'sppg_village' => 'DESA/KELURAHAN SPPG',
+                            'sppg_address' => 'ALAMAT JALAN/RUMAH SPPG',
+                            'sppg_latitude' => 'LATITUDE GPS SPPG',
+                            'sppg_longitude' => 'LONGITUDE GPS SPPG',
+                            'sppg_leader' => 'NAMA KEPALA SPPG (KASPPG)',
+                            'sppg_nutritionist' => 'NAMA AHLI GIZI SPPG (AG)',
+                            'sppg_accountant' => 'NAMA AKUNTAN SPPG (AK)',
+                            'sppg_photo' => 'LINK FILE FOTO SPPG',
+                            'sppg_facebook_url' => 'LINK AKUN FACEBOOK (SPPG)',
+                            'sppg_instagram_url' => 'LINK AKUN INSTAGRAM (SPPG)',
+                            'sppg_tiktok_url' => 'LINK AKUN TIKTOK (SPPG)',
+                        ],
+                        'DATA SURAT KEPUTUSAN (SK KASPPG)' => [
+                            'sk_kasppg_number' => 'NOMOR SK KASPPG',
+                            'sk_kasppg_date' => 'TANGGAL SK KASPPG',
+                            'sk_kasppg_ba_verval_number' => 'NOMOR BA VERVAL KASPPG',
+                            'sk_kasppg_ba_verval_date' => 'TANGGAL BA VERVAL KASPPG',
+                            'sk_kasppg_file' => 'LINK FILE SK KASPPG',
+                        ],
+                        'DATA SURAT KEPUTUSAN (SK AHLI GIZI)' => [
+                            'sk_ag_number' => 'NOMOR SK AG',
+                            'sk_ag_date' => 'TANGGAL SK AG',
+                            'sk_ag_ba_verval_number' => 'NOMOR BA VERVAL AG',
+                            'sk_ag_ba_verval_date' => 'TANGGAL BA VERVAL AG',
+                            'sk_ag_file' => 'LINK FILE SK AG',
+                        ],
+                        'DATA SURAT KEPUTUSAN (SK AKUNTAN)' => [
+                            'sk_ak_number' => 'NOMOR SK AK',
+                            'sk_ak_date' => 'TANGGAL SK AK',
+                            'sk_ak_ba_verval_number' => 'NOMOR BA VERVAL AK',
+                            'sk_ak_ba_verval_date' => 'TANGGAL BA VERVAL AK',
+                            'sk_ak_file' => 'LINK FILE SK AK',
+                        ]
                     ];
-
-                    // Membagi array menjadi 4 bagian sama rata (chunk)
-                    // 44 data / 4 kolom = 11 data per kolom
-                    $chunks = array_chunk($mappingNames, ceil(count($mappingNames) / 4), true);
                     @endphp
 
-                    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-x-8 gap-y-4">
-                        @foreach($chunks as $chunk)
-                        <div class="flex flex-col gap-y-3">
-                            @foreach($chunk as $key => $label)
-                            <label class="flex items-center gap-3 cursor-pointer group">
-                                <input type="checkbox" name="columns[]" value="{{ $key }}" checked
-                                    class="export-checkbox rounded border-slate-300 text-indigo-600 focus:ring-indigo-500">
-                                <span class="text-[13px] text-slate-600 group-hover:text-indigo-600 leading-tight">
-                                    {{ $label }}
-                                </span>
-                            </label>
-                            @endforeach
+                    <div class="space-y-6">
+                        @foreach($categories as $categoryName => $fields)
+                        @php $catIndex = $loop->index; @endphp
+                        <div>
+                            <div class="flex justify-between items-center border-b border-slate-200 pb-2 mb-4">
+                                <h4 class="text-[12px] font-bold text-slate-700">{{ $categoryName }}</h4>
+                                <div class="flex gap-3">
+                                    <button type="button" onclick="toggleCategoryCheckboxes({{ $catIndex }}, true)" class="text-[10px] font-semibold text-indigo-600 hover:underline uppercase">Pilih Semua</button>
+                                    <button type="button" onclick="toggleCategoryCheckboxes({{ $catIndex }}, false)" class="text-[10px] font-semibold text-rose-600 hover:underline uppercase">Hapus Semua</button>
+                                </div>
+                            </div>
+                            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-x-8 gap-y-3">
+                                @foreach($fields as $key => $label)
+                                <label class="flex items-center gap-3 cursor-pointer group">
+                                    <input type="checkbox" name="columns[]" value="{{ $key }}" checked
+                                        class="export-checkbox category-checkbox-{{ $catIndex }} rounded border-slate-300 text-indigo-600 focus:ring-indigo-500">
+                                    <span class="text-[13px] text-slate-600 group-hover:text-indigo-600 leading-tight">
+                                        {{ $label }}
+                                    </span>
+                                </label>
+                                @endforeach
+                            </div>
                         </div>
                         @endforeach
                     </div>
@@ -155,6 +206,15 @@
                 checkbox.checked = status;
             });
             validateExportSelection(); // Jalankan validasi setelah toggle
+        }
+
+        // Fungsi Pilih/Hapus Semua Per Kategori
+        window.toggleCategoryCheckboxes = function(index, status) {
+            const checkboxes = document.querySelectorAll('.category-checkbox-' + index);
+            checkboxes.forEach((checkbox) => {
+                checkbox.checked = status;
+            });
+            validateExportSelection();
         }
 
         // Fungsi Validasi agar tidak bisa export jika kosong

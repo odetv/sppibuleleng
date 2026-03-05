@@ -362,7 +362,7 @@ class SppgUnitController extends Controller
         ]);
 
         $selectedColumns = $request->input('columns');
-        $fileName = 'DATA_SPPG_' . now()->format('d_M_Y_H_i') . '.xlsx';
+        $fileName = 'DATA SPPG ' . now()->format('His-dmY') . '.xlsx';
 
         // Eksekusi menggunakan class export
         return \Maatwebsite\Excel\Facades\Excel::download(
@@ -373,7 +373,7 @@ class SppgUnitController extends Controller
 
     public function exportTemplate()
     {
-        return \Maatwebsite\Excel\Facades\Excel::download(new \App\Exports\SppgTemplateExport, 'Template Import SPPG.xlsx');
+        return \Maatwebsite\Excel\Facades\Excel::download(new \App\Exports\SppgTemplateExport, 'TEMPLATE IMPORT SPPG.xlsx');
     }
 
     public function checkAvailability(Request $request)
@@ -401,6 +401,8 @@ class SppgUnitController extends Controller
         $processedCodes = [];
 
         try {
+            DB::beginTransaction();
+
             if ($mode === 'replace') {
                 \Illuminate\Support\Facades\DB::statement('SET FOREIGN_KEY_CHECKS=0;');
                 // Hapus foto jika ada
@@ -427,24 +429,30 @@ class SppgUnitController extends Controller
                 $code_sppg = trim($row['KODE SPPG'] ?? '');
 
                 if (empty($id_sppg) || empty($name)) {
-                    $errorDetails[] = "Baris ID $id_sppg terlewati: ID SPPG dan NAMA SPPG wajib diisi.";
+                    $errorMsg = "Baris ID $id_sppg terlewati: ID SPPG dan NAMA SPPG wajib diisi.";
+                    $errorDetails[] = $errorMsg;
+                    if ($mode === 'replace') throw new \Exception($errorMsg);
                     continue;
                 }
                 
                 // Cek duplikat dalam file excel itu sendiri
                 if (in_array($id_sppg, $processedIds)) {
-                    $errorDetails[] = "Baris ID $id_sppg terlewati: Terdapat duplikasi ID SPPG dalam file Excel.";
+                    $errorMsg = "Baris ID $id_sppg terlewati: Terdapat duplikasi ID SPPG dalam file Excel.";
+                    $errorDetails[] = $errorMsg;
+                    if ($mode === 'replace') throw new \Exception($errorMsg);
                     continue;
                 }
                 if (!empty($code_sppg) && in_array($code_sppg, $processedCodes)) {
-                    $errorDetails[] = "Baris ID $id_sppg terlewati: Terdapat duplikasi KODE SPPG '$code_sppg' dalam file Excel.";
+                    $errorMsg = "Baris ID $id_sppg terlewati: Terdapat duplikasi KODE SPPG '$code_sppg' dalam file Excel.";
+                    $errorDetails[] = $errorMsg;
+                    if ($mode === 'replace') throw new \Exception($errorMsg);
                     continue;
                 }
 
                 $processedIds[] = $id_sppg;
                 if (!empty($code_sppg)) $processedCodes[] = $code_sppg;
 
-                // Cek duplikat di database jika mode Tambah Data
+                // Cek duplikat di database jika mode Tambah Data (Append)
                 if ($mode === 'append') {
                     $existsId = \App\Models\SppgUnit::where('id_sppg_unit', $id_sppg)->exists();
                     if ($existsId) {
@@ -462,41 +470,69 @@ class SppgUnitController extends Controller
                 }
 
                 try {
-                    \Illuminate\Support\Facades\DB::transaction(function () use ($row, $id_sppg, $name, $code_sppg, &$successCount, $mode) {
-                        
-                        // Parse status, default to Belum Operasional if match fails
-                        $statusRaw = strtolower(trim($row['STATUS (Operasional/Belum Operasional/Tutup Sementara/Tutup Permanen)'] ?? ''));
-                        $status = match($statusRaw) {
-                            'operasional' => 'Operasional',
-                            'belum operasional' => 'Belum Operasional',
-                            'tutup sementara' => 'Tutup Sementara',
-                            'tutup permanen' => 'Tutup Permanen',
-                            default => 'Belum Operasional'
-                        };
+                    // Parse status strictly
+                    $statusRaw = strtolower(trim($row['STATUS (Operasional/Belum Operasional/Tutup Sementara/Tutup Permanen)'] ?? ''));
+                    $status = match($statusRaw) {
+                        'operasional' => 'Operasional',
+                        'belum operasional' => 'Belum Operasional',
+                        'tutup sementara' => 'Tutup Sementara',
+                        'tutup permanen' => 'Tutup Permanen',
+                        default => null
+                    };
 
-                        $sppgData = [
-                            'code_sppg_unit' => !empty($code_sppg) ? $code_sppg : null,
-                            'name' => $name,
-                            'status' => $status,
-                            'operational_date' => !empty(trim($row['TANGGAL OPERASIONAL (DD-MM-YYYY)'] ?? '')) ? \Carbon\Carbon::createFromFormat('d-m-Y', trim($row['TANGGAL OPERASIONAL (DD-MM-YYYY)']))->format('Y-m-d') : null,
-                            'province' => trim($row['PROVINSI'] ?? ''),
-                            'regency' => trim($row['KABUPATEN'] ?? ''),
-                            'district' => trim($row['KECAMATAN'] ?? ''),
-                            'village' => trim($row['DESA/KELURAHAN'] ?? ''),
-                            'address' => trim($row['ALAMAT JALAN'] ?? null),
-                            'latitude_gps' => trim($row['LATITUDE GPS'] ?? ''),
-                            'longitude_gps' => trim($row['LONGITUDE GPS'] ?? ''),
-                        ];
+                    if (!$status) {
+                        $rawOrig = $row['STATUS (Operasional/Belum Operasional/Tutup Sementara/Tutup Permanen)'] ?? 'Kosong';
+                        throw new \Exception("Status '$rawOrig' tidak sesuai format contoh.");
+                    }
 
-                        $sppgData['id_sppg_unit'] = $id_sppg;
-                        \App\Models\SppgUnit::create($sppgData);
+                    // Strict Date Validation
+                    $rawDate = trim($row['TANGGAL OPERASIONAL (DD-MM-YYYY)'] ?? '');
+                    $operational_date = null;
+                    if (!empty($rawDate)) {
+                        try {
+                            $operational_date = \Carbon\Carbon::createFromFormat('d-m-Y', $rawDate)->format('Y-m-d');
+                        } catch (\Exception $e) {
+                            throw new \Exception("Format TANGGAL OPERASIONAL '$rawDate' salah. Gunakan DD-MM-YYYY.");
+                        }
+                    }
 
-                        $successCount++;
-                    });
+                    $sppgData = [
+                        'code_sppg_unit' => !empty($code_sppg) ? $code_sppg : null,
+                        'name' => $name,
+                        'status' => $status,
+                        'operational_date' => $operational_date,
+                        'province' => trim($row['PROVINSI'] ?? ''),
+                        'regency' => trim($row['KABUPATEN'] ?? ''),
+                        'district' => trim($row['KECAMATAN'] ?? ''),
+                        'village' => trim($row['DESA/KELURAHAN'] ?? ''),
+                        'address' => trim($row['ALAMAT JALAN'] ?? null),
+                        'latitude_gps' => trim($row['LATITUDE GPS'] ?? ''),
+                        'longitude_gps' => trim($row['LONGITUDE GPS'] ?? ''),
+                    ];
+
+                    $sppgData['id_sppg_unit'] = $id_sppg;
+                    $unit = \App\Models\SppgUnit::create($sppgData);
+
+                    $facebookUrl = trim($row['LINK FACEBOOK'] ?? '');
+                    $instagramUrl = trim($row['LINK INSTAGRAM'] ?? '');
+                    $tiktokUrl = trim($row['LINK TIKTOK'] ?? '');
+
+                    if ($facebookUrl || $instagramUrl || $tiktokUrl) {
+                        $unit->socialMedia()->create([
+                            'facebook_url' => $facebookUrl ?: null,
+                            'instagram_url' => $instagramUrl ?: null,
+                            'tiktok_url' => $tiktokUrl ?: null,
+                        ]);
+                    }
+
+                    $successCount++;
                 } catch (\Exception $e) {
                     $errorDetails[] = "Baris ID $id_sppg: " . $e->getMessage();
+                    if ($mode === 'replace') throw $e;
                 }
             }
+
+            DB::commit();
 
             $message = "Berhasil mengimpor $successCount Unit SPPG.";
             
@@ -513,6 +549,7 @@ class SppgUnitController extends Controller
                 ? $response->with('success', $message)
                 : $response->with('success', $message)->withErrors($errorDetails);
         } catch (\Exception $e) {
+            DB::rollBack();
             \Illuminate\Support\Facades\DB::statement('SET FOREIGN_KEY_CHECKS=1;');
             
             if ($request->ajax()) {

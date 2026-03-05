@@ -29,31 +29,36 @@
                     </div>
 
                     @php
-                    $mappingNames = [
-                        'no_sk' => 'NOMOR SK',
-                        'date_sk' => 'TANGGAL SK',
-                        'no_ba_verval' => 'NOMOR BA VERVAL',
-                        'date_ba_verval' => 'TANGGAL BA VERVAL',
-                        'sppg_unit_ids' => 'ID SPPG TERKAIT',
-                        'sppg_unit_names' => 'NAMA SPPG',
-                        'file_sk_link' => 'LINK FILE SK',
+                    $categories = [
+                        'DATA SURAT KEPUTUSAN' => [
+                            'type_sk' => 'TIPE SK',
+                            'no_sk' => 'NOMOR SK',
+                            'date_sk' => 'TANGGAL SK',
+                            'no_ba_verval' => 'NOMOR BA VERVAL',
+                            'date_ba_verval' => 'TANGGAL BA VERVAL',
+                            'sppg_unit_ids' => 'ID UNIT',
+                            'sppg_unit_names' => 'NAMA UNIT',
+                            'file_sk_link' => 'LINK FILE SK',
+                        ]
                     ];
-
-                    $chunks = array_chunk($mappingNames, ceil(count($mappingNames) / 4), true);
                     @endphp
 
-                    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-x-8 gap-y-4">
-                        @foreach($chunks as $chunk)
-                        <div class="flex flex-col gap-y-3">
-                            @foreach($chunk as $key => $label)
-                            <label class="flex items-center gap-3 cursor-pointer group">
-                                <input type="checkbox" name="columns[]" value="{{ $key }}" checked
-                                    class="export-checkbox rounded border-slate-300 text-indigo-600 focus:ring-indigo-500">
-                                <span class="text-[13px] text-slate-600 group-hover:text-indigo-600 leading-tight">
-                                    {{ $label }}
-                                </span>
-                            </label>
-                            @endforeach
+                    <div class="space-y-6">
+                        @foreach($categories as $categoryName => $fields)
+                        @php $catIndex = $loop->index; @endphp
+                        <div>
+                            <h4 class="text-[12px] font-bold text-slate-700 border-b border-slate-200 pb-2 mb-4">{{ $categoryName }}</h4>
+                            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-x-8 gap-y-3">
+                                @foreach($fields as $key => $label)
+                                <label class="flex items-center gap-3 cursor-pointer group">
+                                    <input type="checkbox" name="columns[]" value="{{ $key }}" checked
+                                        class="export-checkbox rounded border-slate-300 text-indigo-600 focus:ring-indigo-500">
+                                    <span class="text-[13px] text-slate-600 group-hover:text-indigo-600 leading-tight">
+                                        {{ $label }}
+                                    </span>
+                                </label>
+                                @endforeach
+                            </div>
                         </div>
                         @endforeach
                     </div>

@@ -38,7 +38,7 @@ class AssignmentDecreeExport extends DefaultValueBinder implements
 
     public function query()
     {
-        return AssignmentDecree::query()->with(['workAssignments.sppgUnit']);
+        return AssignmentDecree::query()->with(['workAssignments.sppgUnit', 'position']);
     }
 
     public function bindValue(Cell $cell, $value)
@@ -55,12 +55,13 @@ class AssignmentDecreeExport extends DefaultValueBinder implements
     public function headings(): array
     {
          $mappingNames = [
+            'type_sk' => 'TIPE SK',
             'no_sk' => 'NOMOR SK',
             'date_sk' => 'TANGGAL SK',
             'no_ba_verval' => 'NOMOR BA VERVAL',
             'date_ba_verval' => 'TANGGAL BA VERVAL',
-            'sppg_unit_ids' => 'ID SPPG TERKAIT',
-            'sppg_unit_names' => 'NAMA SPPG',
+            'sppg_unit_ids' => 'ID UNIT',
+            'sppg_unit_names' => 'NAMA UNIT',
             'file_sk_link' => 'LINK FILE SK',
         ];
 
@@ -90,12 +91,15 @@ class AssignmentDecreeExport extends DefaultValueBinder implements
             $fileUrl = url(Storage::url("sppgunits/{$sppgHash}/files/{$skHash}/{$decree->file_sk}"));
         }
 
+        $typeSkName = $decree->position->name_position ?? '-';
+
         // Return standard array matching headings exactly
         $row = [];
         foreach($this->columns as $col) {
             if ($col === 'id_assignment_decree') continue;
             
-            if ($col === 'no_sk') $row[] = $decree->no_sk ?? '-';
+            if ($col === 'type_sk') $row[] = $typeSkName;
+            elseif ($col === 'no_sk') $row[] = $decree->no_sk ?? '-';
             elseif ($col === 'date_sk') $row[] = $decree->date_sk ? \Carbon\Carbon::parse($decree->date_sk)->format('d-m-Y') : '-';
             elseif ($col === 'no_ba_verval') $row[] = $decree->no_ba_verval ?? '-';
             elseif ($col === 'date_ba_verval') $row[] = $decree->date_ba_verval ? \Carbon\Carbon::parse($decree->date_ba_verval)->format('d-m-Y') : '-';

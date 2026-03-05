@@ -1,7 +1,7 @@
     {{-- MODAL IMPORT SK --}}
     <div id="importModal" class="fixed inset-0 z-[100] hidden flex items-center justify-center p-4">
         <div class="absolute inset-0 bg-slate-900/60 backdrop-blur-sm" onclick="closeImportModal()"></div>
-        <div class="relative bg-white rounded-xl shadow-xl border border-slate-200 w-full max-w-4xl overflow-hidden font-sans">
+        <div class="relative bg-white rounded-xl shadow-xl border border-slate-200 w-full max-w-7xl overflow-hidden font-sans">
             <div class="p-6 border-b border-slate-100 bg-slate-50 flex justify-between items-center">
                 <div class="flex items-center gap-3">
                     <span class="p-1.5 bg-amber-50 text-amber-600 rounded-lg shadow-sm border border-amber-100">
@@ -57,10 +57,12 @@
                             <table class="w-full text-[12px] text-left border-collapse">
                                 <thead class="bg-slate-50 sticky top-0 shadow-sm">
                                     <tr>
+                                        <th class="p-3 border-b font-bold text-slate-500 uppercase">Tipe SK</th>
                                         <th class="p-3 border-b font-bold text-slate-500 uppercase">NOMOR SK</th>
                                         <th class="p-3 border-b font-bold text-slate-500 uppercase">TGL SK</th>
                                         <th class="p-3 border-b font-bold text-slate-500 uppercase">NOMOR BA</th>
-                                        <th class="p-3 border-b font-bold text-slate-500 uppercase">SPPG CAKUPAN</th>
+                                        <th class="p-3 border-b font-bold text-slate-500 uppercase">TGL BA</th>
+                                        <th class="p-3 border-b font-bold text-slate-500 uppercase min-w-[200px]">UNIT TERKAIT</th>
                                         <th class="p-3 border-b font-bold text-slate-500 uppercase">Catatan Sistem</th>
                                     </tr>
                                 </thead>
@@ -138,7 +140,26 @@
         </div>
     </div>
 
-<script>
+    <script>
+        const validPositions = {!! json_encode($positions->pluck('name_position')->map(fn($n) => strtolower(trim($n)))->toArray()) !!};
+
+        function isValidDate(dateString) {
+            const regex = /^\d{2}-\d{2}-\d{4}$/;
+            if (!regex.test(dateString)) return false;
+            
+            const parts = dateString.split("-");
+            const day = parseInt(parts[0], 10);
+            const month = parseInt(parts[1], 10);
+            const year = parseInt(parts[2], 10);
+            
+            if (month < 1 || month > 12) return false;
+            
+            const daysInMonth = new Date(year, month, 0).getDate();
+            if (day < 1 || day > daysInMonth) return false;
+            
+            return true;
+        }
+
         window.openImportModal = function() {
             const modal = document.getElementById('importModal');
             if (modal) {
@@ -272,15 +293,21 @@
 
             // 1. Validasi Kolom Terlebih Dahulu
             const firstRow = data[0] || {};
+            
+            // Header for TIPE SK can be dynamic
+            const headers = Object.keys(firstRow);
+            const tipeSkKey = headers.find(h => h.startsWith('TIPE SK'));
+
             const requiredHeaders = [
                 'NOMOR SK',
                 'TANGGAL SK (DD-MM-YYYY)',
                 'NOMOR BA VERVAL',
                 'TANGGAL BA VERVAL (DD-MM-YYYY)',
-                'ID SPPG TERKAIT (Pisahkan dengan Koma Jika >1)',
+                'ID UNIT TERKAIT (Pisahkan dengan Koma Jika >1)',
             ];
             
             const missingHeaders = requiredHeaders.filter(header => !(header in firstRow));
+            if (!tipeSkKey) missingHeaders.push('TIPE SK (...)');
 
             if (missingHeaders.length > 0) {
                  if (formatErrorContainer) {
@@ -297,13 +324,11 @@
                     formatErrorContainer.classList.remove('hidden');
                     formatErrorContainer.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
                  }
-                 // Tetap berada di Step 1
                  step1.classList.remove('hidden');
                  step2.classList.add('hidden');
                  return;
             }
 
-            // Jika Pengecekan Kolom Aman, Lanjut ke Rendering Loading Spin & Cek Duplikat:
             const renderSppgId = ++currentRenderSppgId;
             const btnSave = document.getElementById('btn-save-import');
             const summary = document.getElementById('summary-text');
@@ -322,45 +347,60 @@
             summary.innerHTML = `
                 <div class="flex items-center gap-2 text-slate-600">
                     <div class="w-4 h-4 border-2 border-slate-300 border-t-slate-600 rounded-full animate-spin"></div>
-                    <span class="text-[11px] font-bold uppercase tracking-wider">Memeriksa ketersediaan Nomor SK...</span>
+                    <span class="text-[11px] font-bold uppercase tracking-wider">Validasi Data...</span>
                 </div>
             `;
 
-            if (importMode === 'replace') {
-                renderPreview(data, [], renderSppgId);
-                return;
-            }
+            // Even in replace mode, we want to check if the SPPG IDs exist.
+            // So we don't skip the AJAX call entirely.
+            // But we can inform the server to skip existence/taken checks if needed?
+            // Actually, keep it simple: always call the server if we have data.
 
             const noSks = [];
+            const assignments = [];
             data.forEach(row => {
                 const no_sk = (row['NOMOR SK'] || '').toString().trim();
+                const type_name = (row[tipeSkKey] || '').toString().trim();
+                const ids_str = (row['ID UNIT TERKAIT (Pisahkan dengan Koma Jika >1)'] || '').toString().trim();
+
                 if (no_sk) noSks.push(no_sk);
+                if (type_name && ids_str) {
+                    const ids = ids_str.split(',').map(s => s.trim()).filter(id => id.length > 0);
+                    ids.forEach(id => {
+                        assignments.push({ id_sppg: id, type_name: type_name });
+                    });
+                }
             });
 
-            if (noSks.length === 0) {
-                renderPreview(data, [], renderSppgId);
+            if (noSks.length === 0 && assignments.length === 0) {
+                renderPreview(data, [], [], renderSppgId);
                 return;
             }
 
             try {
-                // Better URL param serialization for arrays:
-                const queryParams = new URLSearchParams();
-                noSks.forEach(sk => queryParams.append('numbers[]', sk));
-
-                const response = await fetch(`{{ route('admin.manage-assignment-decree.check-availability') }}?` + queryParams.toString(), {
-                    headers: { 'Accept': 'application/json' }
+                const response = await fetch(`{{ route('admin.manage-assignment-decree.check-availability') }}`, {
+                    method: 'POST',
+                    headers: { 
+                        'Content-Type': 'application/json',
+                        'Accept': 'application/json',
+                        'X-CSRF-TOKEN': '{{ csrf_token() }}'
+                    },
+                    body: JSON.stringify({
+                        numbers: noSks,
+                        assignments: assignments
+                    })
                 });
 
                 if (!response.ok) throw new Error('Network response was not ok');
 
                 const result = await response.json();
-                renderPreview(data, result.duplicates || [], renderSppgId);
+                renderPreview(data, result.duplicates || [], result.takenAssignments || [], renderSppgId, result.notFoundIds || []);
             } catch (error) {
-                console.error('Error checking SK availability:', error);
+                console.error('Error checking availability:', error);
                 summary.innerHTML = `
                     <div class="p-3 bg-rose-50 rounded-lg border border-rose-100 text-rose-600">
                         <span class="text-[11px] font-bold uppercase">Gagal Memeriksa Database</span>
-                        <p class="text-[10px] mt-1 text-rose-500">Terjadi kesalahan jaringan saat mengecek ketersediaan SK. Pastikan Anda masih terhubung ke internet.</p>
+                        <p class="text-[10px] mt-1 text-rose-500">Terjadi kesalahan jaringan. Pastikan Anda masih terhubung ke internet.</p>
                     </div>
                 `;
                 btnSave.disabled = true;
@@ -368,22 +408,16 @@
             }
         }
 
-        async function renderPreview(data, duplicatedNoSks = [], currentRenderId = null) {
-            // Jika dipanggil langsung, generate ID baru. Jika parsing dari fetch asinkronus, gunakan ID yg dipassed 
-            // agr selaras dengan check async checkSkAvailabilityAndRender
-            if (!currentRenderId) currentRenderId = ++currentRenderSppgId;
-            
+        async function renderPreview(data, duplicatedNoSks = [], takenAssignments = [], currentRenderId = null, notFoundIds = []) {
+            if (!currentRenderId) currentRenderId = ++currentRenderSppgId; 
             if (currentRenderId !== currentRenderSppgId) return;
 
             const tbody = document.getElementById('preview-body');
             const step1 = document.getElementById('import-step-1');
             const step2 = document.getElementById('import-step-2');
             const btnSave = document.getElementById('btn-save-import');
-            const formatErrorContainer = document.getElementById('format-error-msg');
-            let errorMessage = '';
-
+            
             tbody.innerHTML = '';
-
             processedRowsHTML = [];
             importCurrentPage = 1;
 
@@ -392,17 +426,23 @@
             let countError = 0;
             
             const seenNoSk = new Set();
+            const seenAssignmentsInFile = new Set(); // Format: "id_sppg|type_name"
+            
+            // Re-identify tipeSkKey
+            const firstRow = data[0] || {};
+            const headers = Object.keys(firstRow);
+            const tipeSkKey = headers.find(h => h.startsWith('TIPE SK'));
 
             for (let index = 0; index < data.length; index++) {
                 if (currentRenderId !== currentRenderSppgId) return;
 
                 const row = data[index];
-                const tr = document.createElement('tr');
-
+                const type_name = (row[tipeSkKey] || '').toString().trim();
                 const no_sk = row['NOMOR SK'] ? row['NOMOR SK'].toString().substring(0, 25) + (row['NOMOR SK'].length > 25 ? '...' : '') : '<span class="text-rose-500 italic">Kosong</span>';
                 const date_sk = row['TANGGAL SK (DD-MM-YYYY)'] || '-';
                 const no_ba_verval = row['NOMOR BA VERVAL'] ? row['NOMOR BA VERVAL'].toString().substring(0, 25) + (row['NOMOR BA VERVAL'].length > 25 ? '...' : '') : '<span class="text-rose-500 italic">Kosong</span>';
-                const id_sppg = row['ID SPPG TERKAIT (Pisahkan dengan Koma Jika >1)'] || '-';
+                const date_ba_verval = row['TANGGAL BA VERVAL (DD-MM-YYYY)'] || '-';
+                const id_sppg_str = (row['ID UNIT TERKAIT (Pisahkan dengan Koma Jika >1)'] || '').toString().trim();
                 
                 const rawNoSk = (row['NOMOR SK'] || '').toString().trim();
                 const rawBa = (row['NOMOR BA VERVAL'] || '').toString().trim();
@@ -411,15 +451,65 @@
 
                 if (!rawNoSk) errors.push('NOMOR SK kosong');
                 if (!rawBa) errors.push('NOMOR BA VERVAL kosong');
+                
+                if (!type_name) {
+                    errors.push('TIPE SK kosong');
+                } else if (!validPositions.includes(type_name.toLowerCase())) {
+                    errors.push(`TIPE SK '${type_name}' TIDAK VALID`);
+                }
+
+                if (date_sk !== '-' && !isValidDate(date_sk)) {
+                    errors.push('FORMAT TGL SK SALAH (Gunakan DD-MM-YYYY)');
+                }
+                if (date_ba_verval !== '-' && !isValidDate(date_ba_verval)) {
+                    errors.push('FORMAT TGL BA SALAH (Gunakan DD-MM-YYYY)');
+                }
 
                 if (rawNoSk && seenNoSk.has(rawNoSk)) errors.push('NOMOR SK ganda di file ini');
                 if (rawNoSk) seenNoSk.add(rawNoSk);
 
+                // Local Duplicate Assignment Check
+                if (id_sppg_str && type_name) {
+                    const ids = id_sppg_str.split(',').map(s => s.trim()).filter(id => id.length > 0);
+                    ids.forEach(id => {
+                        const key = `${id}|${type_name.toLowerCase()}`;
+                        if (seenAssignmentsInFile.has(key)) {
+                            errors.push(`UNIT ${id} UNTUK TIPE ${type_name} GANDA DI FILE INI`);
+                        }
+                        seenAssignmentsInFile.add(key);
+                    });
+                }
+
                 const importModeInput = document.querySelector('input[name="import_mode"]:checked');
                 const importMode = importModeInput ? importModeInput.value : 'append';
 
-                if (importMode === 'append' && rawNoSk && duplicatedNoSks.includes(rawNoSk)) {
-                    errors.push('NOMOR SK SUDAH ADA DI DATABASE');
+                if (importMode === 'append') {
+                    if (rawNoSk && duplicatedNoSks.includes(rawNoSk)) {
+                        errors.push('NOMOR SK SUDAH ADA DI DATABASE');
+                    }
+                }
+
+                // Existence check always (even in replace mode)
+                if (id_sppg_str) {
+                    const ids = id_sppg_str.split(',').map(s => s.trim()).filter(id => id.length > 0);
+                    ids.forEach(id => {
+                        if (notFoundIds && notFoundIds.includes(id)) {
+                            errors.push(`UNIT ${id} TIDAK DITEMUKAN DI DATABASE`);
+                        }
+                    });
+                }
+
+                if (importMode === 'append') {
+                    // Check taken assignments
+                    if (id_sppg_str && type_name) {
+                        const ids = id_sppg_str.split(',').map(s => s.trim()).filter(id => id.length > 0);
+                        ids.forEach(id => {
+                            const taken = takenAssignments.find(t => t.id_sppg === id && t.type_name.toLowerCase() === type_name.toLowerCase());
+                            if (taken) {
+                                errors.push(`UNIT ${id} SUDAH TERDAFTAR DI TIPE ${type_name}`);
+                            }
+                        });
+                    }
                 }
 
                 const isRowError = errors.length > 0;
@@ -432,10 +522,14 @@
 
                 processedRowsHTML.push(`
                 <tr class="${isRowError ? 'bg-rose-50/50' : 'hover:bg-slate-50'} transition-all text-[12px]">
+                    <td class="p-3 border-b border-slate-100 text-slate-600 font-bold">${type_name || '-'}</td>
                     <td class="p-3 border-b border-slate-100 text-slate-600 font-medium">${no_sk}</td>
                     <td class="p-3 border-b border-slate-100 text-slate-600">${date_sk}</td>
                     <td class="p-3 border-b border-slate-100">${no_ba_verval}</td>
-                    <td class="p-3 border-b border-slate-100 text-slate-600">${id_sppg}</td>
+                    <td class="p-3 border-b border-slate-100 text-slate-600">${date_ba_verval}</td>
+                    <td class="p-3 border-b border-slate-100 text-slate-600">
+                        <div class="max-w-[300px] whitespace-normal break-words leading-relaxed" title="${id_sppg_str}">${id_sppg_str || '-'}</div>
+                    </td>
                     <td class="p-3 border-b border-slate-100 text-slate-600">
                         ${isRowError 
                             ? `<div class="flex flex-col gap-0.5">${errors.map(msg => `<div class="flex items-center gap-1.5 text-rose-600 font-bold uppercase text-[9px]"><span>•</span> ${msg}</div>`).join('')}</div>` 
@@ -453,7 +547,6 @@
             document.querySelectorAll('input[name="import_mode"]').forEach(el => el.disabled = false);
 
             document.getElementById('json_data').value = JSON.stringify(data);
-
             renderTablePage();
 
             const summary = document.getElementById('summary-text');
@@ -466,7 +559,7 @@
                         <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/></svg>
                         <span class="text-[11px] font-bold uppercase">Gagal Membaca Detail</span>
                     </div>
-                    <p class="text-[11px] text-rose-500 mt-1">Terdapat ${countError} baris data yang error format. Mohon perbaiki.</p>
+                    <p class="text-[11px] text-rose-500 mt-1">Terdapat ${countError} baris data yang memiliki error (Duplikat SK atau Unit sudah terdaftar). Mohon perbaiki.</p>
                 `;
             } else {
                 btnSave.disabled = false;
@@ -476,7 +569,7 @@
                          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
                          <span class="text-[11px] font-bold uppercase">Siap Diimpor (${countValid} Baris Data Valid)</span>
                     </div>
-                    <p class="text-[11px] text-slate-500 mt-1">Langkah Terakhir: Pilih "Opsi Database" di bawah ini, lalu klik tombol "Simpan Ke Database". Validasi SPPG ganda akan berjalan otomatis di server.</p>
+                    <p class="text-[11px] text-slate-500 mt-1">Langkah Terakhir: Pilih "Opsi Database" di bawah ini, lalu klik tombol "Simpan Ke Database".</p>
                 `;
             }
         }

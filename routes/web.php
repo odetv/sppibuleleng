@@ -168,7 +168,7 @@ Route::middleware(['auth', 'role:administrator', 'profile.completed'])->prefix('
         Route::post('/export', [App\Http\Controllers\Admin\AssignmentDecreeController::class, 'exportExcel'])->name('export');
         Route::get('/template', [App\Http\Controllers\Admin\AssignmentDecreeController::class, 'exportTemplate'])->name('template');
         Route::post('/import', [App\Http\Controllers\Admin\AssignmentDecreeController::class, 'importDecree'])->name('import');
-        Route::get('/check-availability', [App\Http\Controllers\Admin\AssignmentDecreeController::class, 'checkAvailability'])->name('check-availability');
+        Route::post('/check-availability', [App\Http\Controllers\Admin\AssignmentDecreeController::class, 'checkAvailability'])->name('check-availability');
     });
 });
 

@@ -27,6 +27,9 @@ class SppgTemplateExport implements FromArray, WithHeadings, WithStyles, ShouldA
             'ALAMAT JALAN',
             'LATITUDE GPS',
             'LONGITUDE GPS',
+            'LINK FACEBOOK',
+            'LINK INSTAGRAM',
+            'LINK TIKTOK',
         ];
     }
 
@@ -45,7 +48,10 @@ class SppgTemplateExport implements FromArray, WithHeadings, WithStyles, ShouldA
                 'Banjar',
                 'Jalan Raya Banjar No. 123',
                 '-8.18844',
-                '114.9754'
+                '114.9754',
+                'https://facebook.com/sppgutara',
+                'https://instagram.com/sppgutara',
+                'https://tiktok.com/@sppgutara'
             ]
         ];
     }

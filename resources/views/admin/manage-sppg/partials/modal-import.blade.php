@@ -58,6 +58,7 @@
                                 <thead class="bg-slate-50 sticky top-0 shadow-sm">
                                     <tr>
                                         <th class="p-3 border-b font-bold text-slate-500 uppercase">ID SPPG</th>
+                                        <th class="p-3 border-b font-bold text-slate-500 uppercase">Kode SPPG</th>
                                         <th class="p-3 border-b font-bold text-slate-500 uppercase">Nama SPPG</th>
                                         <th class="p-3 border-b font-bold text-slate-500 uppercase">Status</th>
                                         <th class="p-3 border-b font-bold text-slate-500 uppercase">Tgl Operasional</th>
@@ -139,6 +140,22 @@
     </div>
 
 <script>
+        function isValidDate(dateString) {
+            const regex = /^\d{2}-\d{2}-\d{4}$/;
+            if (!regex.test(dateString)) return false;
+            
+            const parts = dateString.split("-");
+            const day = parseInt(parts[0], 10);
+            const month = parseInt(parts[1], 10);
+            const year = parseInt(parts[2], 10);
+            
+            if (month < 1 || month > 12) return false;
+            const daysInMonth = new Date(year, month, 0).getDate();
+            if (day < 1 || day > daysInMonth) return false;
+            
+            return true;
+        }
+
         // Fungsi untuk membuka modal Import
         window.openImportModal = function() {
             const modal = document.getElementById('importModal');
@@ -351,6 +368,7 @@
                 const tr = document.createElement('tr');
 
                 const id = row['ID SPPG'] ? row['ID SPPG'].substring(0, 15) + (row['ID SPPG'].length > 15 ? '...' : '') : '<span class="text-rose-500 italic">Kosong</span>';
+                const code = row['KODE SPPG'] ? row['KODE SPPG'].toString() : '-';
                 const name = row['NAMA SPPG'] ? row['NAMA SPPG'].substring(0, 25) + (row['NAMA SPPG'].length > 25 ? '...' : '') : '<span class="text-rose-500 italic">Kosong</span>';
                 const status = row['STATUS (Operasional/Belum Operasional/Tutup Sementara/Tutup Permanen)'] || '-';
                 const tgl = row['TANGGAL OPERASIONAL (DD-MM-YYYY)'] || '-';
@@ -361,6 +379,19 @@
 
                 if (!rawId) errors.push('ID SPPG kosong');
                 if (!row['NAMA SPPG']) errors.push('NAMA SPPG kosong');
+
+                // Validasi Status
+                const allowedStatus = ['operasional', 'belum operasional', 'tutup sementara', 'tutup permanen'];
+                if (status === '-') {
+                    errors.push('STATUS kosong');
+                } else if (!allowedStatus.includes(status.toString().toLowerCase().trim())) {
+                    errors.push('STATUS Tidak Sesuai Contoh (Cek Kolom Status)');
+                }
+
+                // Validasi Tanggal
+                if (tgl !== '-' && !isValidDate(tgl)) {
+                    errors.push('Format TGL Operasional Salah (Gunakan DD-MM-YYYY)');
+                }
 
                 // Validasi Internal (Wajib di semua mode)
                 if (rawId && seenIds.has(rawId)) errors.push('ID SPPG ganda di file ini');
@@ -394,7 +425,7 @@
                 }
 
                 const parseStatus = (s) => {
-                    const st = s.toLowerCase();
+                    const st = s.toLowerCase().trim();
                     if(st.includes('tutup permanen')) return '<span class="text-xs font-medium px-1.5 py-0.5 rounded border capitalize bg-black/50 text-white border-black/20">Tutup Permanen</span>';
                     if(st.includes('tutup sementara')) return '<span class="text-xs font-medium px-1.5 py-0.5 rounded border capitalize bg-rose-100 text-rose-600 border-rose-200">Tutup Sementara</span>';
                     if(st.includes('belum operasional')) return '<span class="text-xs font-medium px-1.5 py-0.5 rounded border capitalize bg-amber-100 text-amber-600 border-amber-200">Belum Operasional</span>';
@@ -405,6 +436,7 @@
                 processedRowsHTML.push(`
                 <tr class="${isRowError ? 'bg-rose-50/50' : 'hover:bg-slate-50'} transition-all text-[12px]">
                     <td class="p-3 border-b border-slate-100 text-slate-600 font-medium">${id}</td>
+                    <td class="p-3 border-b border-slate-100 text-slate-600 font-medium">${code}</td>
                     <td class="p-3 border-b border-slate-100 text-slate-600 font-medium">${name}</td>
                     <td class="p-3 border-b border-slate-100">${parseStatus(status)}</td>
                     <td class="p-3 border-b border-slate-100 text-slate-600">${tgl}</td>

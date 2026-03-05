@@ -17,6 +17,7 @@ class AssignmentDecreeTemplateExport implements FromCollection, WithHeadings, Wi
     {
         return collect([
             [
+                'Kepala SPPG',
                 'SK/BGN/2026/001',
                 '05-01-2026',
                 'BA/V/2026/01',
@@ -28,12 +29,16 @@ class AssignmentDecreeTemplateExport implements FromCollection, WithHeadings, Wi
 
     public function headings(): array
     {
+        $positions = \App\Models\RefPosition::pluck('name_position')->toArray();
+        $positionsList = implode('/', $positions);
+
         return [
+            "TIPE SK ($positionsList)",
             'NOMOR SK',
             'TANGGAL SK (DD-MM-YYYY)',
             'NOMOR BA VERVAL',
             'TANGGAL BA VERVAL (DD-MM-YYYY)',
-            'ID SPPG TERKAIT (Pisahkan dengan Koma Jika >1)',
+            'ID UNIT TERKAIT (Pisahkan dengan Koma Jika >1)',
         ];
     }
 

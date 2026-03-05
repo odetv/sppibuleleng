@@ -417,7 +417,7 @@ class AssignmentDecreeController extends Controller
         ]);
 
         $selectedColumns = $request->input('columns');
-        $fileName = 'DATA_SK_' . now()->format('d_M_Y_H_i') . '.xlsx';
+        $fileName = 'DATA SK ' . now()->format('His-dmY') . '.xlsx';
 
         return \Maatwebsite\Excel\Facades\Excel::download(
             new \App\Exports\AssignmentDecreeExport($selectedColumns),
@@ -427,7 +427,7 @@ class AssignmentDecreeController extends Controller
 
     public function exportTemplate()
     {
-        return \Maatwebsite\Excel\Facades\Excel::download(new \App\Exports\AssignmentDecreeTemplateExport, 'Template Import SK.xlsx');
+        return \Maatwebsite\Excel\Facades\Excel::download(new \App\Exports\AssignmentDecreeTemplateExport, 'TEMPLATE IMPORT SK.xlsx');
     }
 
     public function importDecree(Request $request)
@@ -439,10 +439,17 @@ class AssignmentDecreeController extends Controller
 
         $successCount = 0;
         $errorDetails = [];
-        
         $processedSk = [];
+        $processedAssignments = []; // [ id_sppg|type_id ]
+
+        // Mapping Tipe SK dari Database (Case-insensitive)
+        $positions = \App\Models\RefPosition::pluck('id_ref_position', 'name_position')
+            ->mapWithKeys(fn($id, $name) => [strtolower(trim($name)) => $id])
+            ->toArray();
 
         try {
+            DB::beginTransaction();
+
             if ($mode === 'replace') {
                 DB::statement('SET FOREIGN_KEY_CHECKS=0;');
                 // Hapus direktori file SK dari semua unit SPPG
@@ -475,23 +482,40 @@ class AssignmentDecreeController extends Controller
 
             foreach ($data as $row) {
                 // Parse Data
+                $positionsKeys = array_keys($row);
+                $tipeSkKey = collect($positionsKeys)->first(fn($key) => str_starts_with($key, 'TIPE SK'));
+                
+                $tipe_sk_name = trim($row[$tipeSkKey] ?? '');
                 $no_sk = trim($row['NOMOR SK'] ?? '');
                 $date_sk = trim($row['TANGGAL SK (DD-MM-YYYY)'] ?? '');
                 $no_ba_verval = trim($row['NOMOR BA VERVAL'] ?? '');
                 $date_ba_verval = trim($row['TANGGAL BA VERVAL (DD-MM-YYYY)'] ?? '');
                 
                 // Parse Assigned SPPGs (Comma separated)
-                $sppgRaw = trim($row['ID SPPG TERKAIT (Pisahkan dengan Koma Jika >1)'] ?? '');
-                $assignedSppgs = empty($sppgRaw) ? [] : array_map('trim', explode(',', $sppgRaw));
+                $sppgRaw = trim($row['ID UNIT TERKAIT (Pisahkan dengan Koma Jika >1)'] ?? '');
+                $assignedSppgs = empty($sppgRaw) ? [] : array_filter(array_map('trim', explode(',', $sppgRaw)));
 
-                if (empty($no_sk) || empty($no_ba_verval)) {
-                    $errorDetails[] = "Baris SK $no_sk terlewati: Nomor SK dan Nomor BA Verval wajib diisi.";
+                if (empty($tipe_sk_name) || empty($no_sk) || empty($no_ba_verval)) {
+                    $errorMsg = "Baris SK $no_sk terlewati: TIPE SK, Nomor SK dan Nomor BA Verval wajib diisi.";
+                    $errorDetails[] = $errorMsg;
+                    if ($mode === 'replace') throw new \Exception($errorMsg);
+                    continue;
+                }
+
+                // Map TIPE SK ke ID
+                $type_sk_id = $positions[strtolower($tipe_sk_name)] ?? null;
+                if (!$type_sk_id) {
+                    $errorMsg = "Baris SK $no_sk terlewati: TIPE SK '$tipe_sk_name' tidak terdaftar dalam sistem.";
+                    $errorDetails[] = $errorMsg;
+                    if ($mode === 'replace') throw new \Exception($errorMsg);
                     continue;
                 }
                 
                 // Cek duplikat dalam file excel itu sendiri
                 if (in_array($no_sk, $processedSk)) {
-                    $errorDetails[] = "Baris SK $no_sk terlewati: Terdapat duplikasi NOMOR SK '$no_sk' dalam file Excel.";
+                    $errorMsg = "Baris SK $no_sk terlewati: Terdapat duplikasi NOMOR SK '$no_sk' dalam file Excel.";
+                    $errorDetails[] = $errorMsg;
+                    if ($mode === 'replace') throw new \Exception($errorMsg);
                     continue;
                 }
                 $processedSk[] = $no_sk;
@@ -512,51 +536,89 @@ class AssignmentDecreeController extends Controller
                 foreach ($assignedSppgs as $sp_id) {
                     $existsSppg = \App\Models\SppgUnit::where('id_sppg_unit', $sp_id)->exists();
                     if (!$existsSppg) {
-                        $errorDetails[] = "Baris SK $no_sk terlewati: ID SPPG '$sp_id' tidak ditemukan di database.";
+                        $errorMsg = "Baris SK $no_sk terlewati: ID UNIT '$sp_id' tidak ditemukan di database.";
+                        $errorDetails[] = $errorMsg;
                         $sppgErrors = true;
                         break;
                     }
                     
-                    // Enforce 1:1 Rules => Does it already have an assignment?
-                    $alreadyAssigned = WorkAssignment::where('id_sppg_unit', $sp_id)->exists();
+                    // Enforce 1:1 Rules for specific Type => Does it already have an assignment for this TYPE?
+                    $alreadyAssigned = WorkAssignment::where('id_sppg_unit', $sp_id)
+                        ->whereHas('decree', function($q) use ($type_sk_id) {
+                            $q->where('type_sk', $type_sk_id);
+                        })->exists();
+
                     if ($alreadyAssigned) {
-                        $errorDetails[] = "Baris SK $no_sk terlewati: ID SPPG '$sp_id' sudah memiliki relasi dengan SK lain.";
+                        $errorMsg = "Baris SK $no_sk terlewati: ID SPPG '$sp_id' sudah terdaftar di tipe SK '$tipe_sk_name' pada dokumen lain.";
+                        $errorDetails[] = $errorMsg;
                         $sppgErrors = true;
                         break;
                     }
+
+                    // Check for within-file duplication
+                    $assignKey = "{$sp_id}|{$type_sk_id}";
+                    if (in_array($assignKey, $processedAssignments)) {
+                        $errorMsg = "Baris SK $no_sk terlewati: ID SPPG '$sp_id' dengan tipe '$tipe_sk_name' ganda di file Excel ini.";
+                        $errorDetails[] = $errorMsg;
+                        $sppgErrors = true;
+                        break;
+                    }
+                    $processedAssignments[] = $assignKey;
+
                     $validSppgs[] = $sp_id;
                 }
                 
                 if ($sppgErrors) {
+                    if ($mode === 'replace') throw new \Exception($errorDetails[count($errorDetails)-1]);
                     continue; // Skip SK insertion if ANY of the demanded SPPG are invalid.
                 }
 
                 try {
-                    DB::transaction(function () use ($no_sk, $date_sk, $no_ba_verval, $date_ba_verval, $validSppgs, &$successCount) {
-                        
-                        // Buat SK Kosong Tanpa File
-                        $decree = AssignmentDecree::create([
-                            'no_sk'          => $no_sk,
-                            'file_sk'        => null, // Import masal tidak membawa lampiran
-                            'date_sk'        => !empty($date_sk) ? \Carbon\Carbon::createFromFormat('d-m-Y', $date_sk)->format('Y-m-d') : null,
-                            'no_ba_verval'   => $no_ba_verval,
-                            'date_ba_verval' => !empty($date_ba_verval) ? \Carbon\Carbon::createFromFormat('d-m-Y', $date_ba_verval)->format('Y-m-d') : null,
-                        ]);
-
-                        // Kaitkan SPPG
-                        foreach ($validSppgs as $id_sppg) {
-                            WorkAssignment::create([
-                                'id_assignment_decree' => $decree->id_assignment_decree,
-                                'id_sppg_unit'         => $id_sppg
-                            ]);
+                    // Validasi Format Tanggal
+                    $parsedDateSk = null;
+                    if (!empty($date_sk)) {
+                        try {
+                            $parsedDateSk = \Carbon\Carbon::createFromFormat('d-m-Y', $date_sk)->format('Y-m-d');
+                        } catch (\Exception $e) {
+                            throw new \Exception("Format TANGGAL SK '$date_sk' salah. Gunakan DD-MM-YYYY.");
                         }
+                    }
 
-                        $successCount++;
-                    });
+                    $parsedDateBa = null;
+                    if (!empty($date_ba_verval)) {
+                        try {
+                            $parsedDateBa = \Carbon\Carbon::createFromFormat('d-m-Y', $date_ba_verval)->format('Y-m-d');
+                        } catch (\Exception $e) {
+                            throw new \Exception("Format TANGGAL BA VERVAL '$date_ba_verval' salah. Gunakan DD-MM-YYYY.");
+                        }
+                    }
+
+                    // Buat SK Kosong Tanpa File
+                    $decree = AssignmentDecree::create([
+                        'no_sk'          => $no_sk,
+                        'file_sk'        => null,
+                        'date_sk'        => $parsedDateSk,
+                        'no_ba_verval'   => $no_ba_verval,
+                        'date_ba_verval' => $parsedDateBa,
+                        'type_sk'        => $type_sk_id,
+                    ]);
+
+                    // Kaitkan SPPG
+                    foreach ($validSppgs as $id_sppg) {
+                        WorkAssignment::create([
+                            'id_assignment_decree' => $decree->id_assignment_decree,
+                            'id_sppg_unit'         => $id_sppg
+                        ]);
+                    }
+
+                    $successCount++;
                 } catch (\Exception $e) {
                     $errorDetails[] = "Baris SK $no_sk: " . $e->getMessage();
+                    if ($mode === 'replace') throw $e;
                 }
             }
+
+            DB::commit();
 
             $message = "Berhasil mengimpor $successCount Data SK.";
             
@@ -574,6 +636,7 @@ class AssignmentDecreeController extends Controller
                 : $response->with('success', $message)->withErrors($errorDetails);
 
         } catch (\Exception $e) {
+            DB::rollBack();
             DB::statement('SET FOREIGN_KEY_CHECKS=1;');
             
             if ($request->ajax()) {
@@ -590,14 +653,53 @@ class AssignmentDecreeController extends Controller
     public function checkAvailability(Request $request)
     {
         $numbers = $request->input('numbers', []);
-        if (empty($numbers)) {
-            return response()->json(['duplicates' => []]);
+        $assignments = $request->input('assignments', []); // [{id_sppg, type_name}]
+        
+        $duplicates = [];
+        if (!empty($numbers)) {
+            $duplicates = AssignmentDecree::whereIn('no_sk', $numbers)->pluck('no_sk')->toArray();
         }
 
-        $duplicates = AssignmentDecree::whereIn('no_sk', $numbers)->pluck('no_sk')->toArray();
+        $takenAssignments = [];
+        $notFoundIds = [];
+        if (!empty($assignments)) {
+            // Mapping Positions
+            $positions = \App\Models\RefPosition::pluck('id_ref_position', 'name_position')
+                ->mapWithKeys(fn($id, $name) => [strtolower(trim($name)) => $id])
+                ->toArray();
+
+            // Collect all unique SPPG IDs from request to check existence once
+            $allIds = collect($assignments)->pluck('id_sppg')->unique()->filter()->toArray();
+            $existingIds = \App\Models\SppgUnit::whereIn('id_sppg_unit', $allIds)->pluck('id_sppg_unit')->toArray();
+            $notFoundIds = array_values(array_diff($allIds, $existingIds));
+
+            foreach ($assignments as $item) {
+                $idSppg = trim($item['id_sppg'] ?? '');
+                $typeName = strtolower(trim($item['type_name'] ?? ''));
+                $posId = $positions[$typeName] ?? null;
+
+                // Only check availability if the ID actually exists
+                if ($idSppg && $posId && in_array($idSppg, $existingIds)) {
+                    $exists = \App\Models\WorkAssignment::where('id_sppg_unit', $idSppg)
+                        ->whereHas('decree', function($q) use ($posId) {
+                            $q->where('type_sk', $posId);
+                        })->exists();
+                    
+                    if ($exists) {
+                        $takenAssignments[] = [
+                            'id_sppg' => $idSppg,
+                            'type_name' => $item['type_name'] ?? $typeName,
+                            'error' => "Unit $idSppg sudah terdaftar di tipe SK ini."
+                        ];
+                    }
+                }
+            }
+        }
         
         return response()->json([
-            'duplicates' => $duplicates
+            'duplicates' => $duplicates,
+            'takenAssignments' => $takenAssignments,
+            'notFoundIds' => $notFoundIds
         ]);
     }
 }
