@@ -70,8 +70,16 @@ class SppgUnitController extends Controller
             'ak'     => SppgUnit::whereNotNull('accountant_id')->pluck('accountant_id')->toArray(),
         ];
 
-        $decrees = AssignmentDecree::orderBy('date_sk', 'desc')->get();
-        $assignedDecreeMap = WorkAssignment::pluck('id_assignment_decree', 'id_sppg_unit')->toArray();
+        $decrees = AssignmentDecree::orderBy('date_sk', 'desc')->get()->groupBy('type_sk');
+        
+        $assignedDecreeMap = WorkAssignment::join('assignment_decrees', 'work_assignments.id_assignment_decree', '=', 'assignment_decrees.id_assignment_decree')
+            ->select('work_assignments.id_sppg_unit', 'work_assignments.id_assignment_decree', 'assignment_decrees.type_sk')
+            ->get()
+            ->groupBy('id_sppg_unit')
+            ->map(function($items) {
+                return $items->pluck('id_assignment_decree', 'type_sk')->toArray();
+            })
+            ->toArray();
         $allBeneficiaries = Beneficiary::orderBy('name')->get();
 
         // Unique address data for filters
@@ -109,13 +117,15 @@ class SppgUnitController extends Controller
             'longitude_gps'         => 'required',
             'leader_id'             => 'required|string',
             'photo'                 => 'required|image|max:2048',
-            'id_assignment_decree'  => 'required|exists:assignment_decrees,id_assignment_decree',
+            'id_sk_leader'          => 'required|exists:assignment_decrees,id_assignment_decree',
+            'id_sk_nutritionist'    => 'nullable|exists:assignment_decrees,id_assignment_decree',
+            'id_sk_accountant'      => 'nullable|exists:assignment_decrees,id_assignment_decree',
             'facebook_url'          => 'nullable|url',
             'instagram_url'         => 'nullable|url',
             'tiktok_url'            => 'nullable|url',
         ], [
-            'id_assignment_decree.required' => 'Surat Keputusan (SK) wajib dipilih.',
-            'id_assignment_decree.exists'   => 'SK yang dipilih tidak valid.',
+            'id_sk_leader.required' => 'SK Kepala SPPG wajib dipilih.',
+            'id_sk_leader.exists'   => 'SK Kepala SPPG tidak valid.',
         ]);
 
         // 2. Jika Validasi Gagal (Termasuk Duplicate ID/Code)
@@ -155,13 +165,23 @@ class SppgUnitController extends Controller
                 'photo'           => $data['photo'] ?? null,
             ]);
 
-            $unit->syncPersonnel();
+            // Buat WorkAssignment untuk setiap SK yang dipilih
+            $decreeInputs = [
+                'id_sk_leader',
+                'id_sk_nutritionist',
+                'id_sk_accountant'
+            ];
 
-            // Buat WorkAssignment: hubungkan SPPG ini ke SK yang dipilih
-            WorkAssignment::create([
-                'id_assignment_decree' => $request->id_assignment_decree,
-                'id_sppg_unit'         => $unit->id_sppg_unit,
-            ]);
+            foreach ($decreeInputs as $input) {
+                if ($request->filled($input)) {
+                    WorkAssignment::create([
+                        'id_assignment_decree' => $request->{$input},
+                        'id_sppg_unit'         => $unit->id_sppg_unit,
+                    ]);
+                }
+            }
+
+            $unit->syncPersonnel();
 
             // Simpan Sosial Media
             $unit->socialMedia()->updateOrCreate(
@@ -209,13 +229,15 @@ class SppgUnitController extends Controller
             'latitude_gps'          => 'required',
             'longitude_gps'         => 'required',
             'photo'                 => 'nullable|image|max:2048',
-            'id_assignment_decree'  => 'required|exists:assignment_decrees,id_assignment_decree',
+            'id_sk_leader'          => 'required|exists:assignment_decrees,id_assignment_decree',
+            'id_sk_nutritionist'    => 'nullable|exists:assignment_decrees,id_assignment_decree',
+            'id_sk_accountant'      => 'nullable|exists:assignment_decrees,id_assignment_decree',
             'facebook_url'          => 'nullable|url',
             'instagram_url'         => 'nullable|url',
             'tiktok_url'            => 'nullable|url',
         ], [
-            'id_assignment_decree.required' => 'Surat Keputusan (SK) wajib dipilih.',
-            'id_assignment_decree.exists'   => 'SK yang dipilih tidak valid.',
+            'id_sk_leader.required' => 'SK Kepala SPPG wajib dipilih.',
+            'id_sk_leader.exists'   => 'SK Kepala SPPG tidak valid.',
         ]);
 
         if ($validator->fails()) {
@@ -262,14 +284,27 @@ class SppgUnitController extends Controller
             ]);
 
             $sppg->refresh();
-            $sppg->syncPersonnel();
 
-            // Update WorkAssignment: update SK ke yang baru dipilih
-            // Jika sudah ada WA untuk SPPG ini, update. Jika belum, buat baru.
-            WorkAssignment::updateOrCreate(
-                ['id_sppg_unit' => $request->id_sppg_unit],
-                ['id_assignment_decree' => $request->id_assignment_decree]
-            );
+            // Update WorkAssignments
+            // Hapus WA lama unit ini, lalu buat ulang berdasarkan pilihan 3 SK
+            WorkAssignment::where('id_sppg_unit', $request->id_sppg_unit)->delete();
+
+            $decreeInputs = [
+                'id_sk_leader',
+                'id_sk_nutritionist',
+                'id_sk_accountant'
+            ];
+
+            foreach ($decreeInputs as $input) {
+                if ($request->filled($input)) {
+                    WorkAssignment::create([
+                        'id_assignment_decree' => $request->{$input},
+                        'id_sppg_unit'         => $request->id_sppg_unit,
+                    ]);
+                }
+            }
+
+            $sppg->syncPersonnel();
 
             // Update Sosial Media: Cari menggunakan ID Lama, lalu update ke ID Baru
             SocialMedia::updateOrCreate(

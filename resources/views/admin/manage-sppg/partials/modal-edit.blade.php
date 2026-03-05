@@ -160,19 +160,52 @@
                 {{-- SECTION SK --}}
                 <div class="pt-10 border-t border-gray-100">
                     <h3 class="text-sm font-bold uppercase tracking-widest text-indigo-600 mb-6">Surat Keputusan (SK)</h3>
-                    <div class="grid grid-cols-1 gap-6">
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                        @php
+                            $leaderPos = \App\Models\RefPosition::where('slug_position', 'kasppg')->first();
+                            $nutriPos = \App\Models\RefPosition::where('slug_position', 'ag')->first();
+                            $accPos = \App\Models\RefPosition::where('slug_position', 'ak')->first();
+                        @endphp
+                        
+                        {{-- SK KEPALA --}}
                         <div>
-                            <label class="text-[11px] font-bold text-gray-500 uppercase tracking-wider">Nomor SK <span class="text-red-500">*</span></label>
-                            <select name="id_assignment_decree" id="e_decree" class="w-full mt-2 px-3 py-2.5 bg-gray-50 border-none rounded-lg text-sm focus:ring-2 focus:ring-indigo-500">
-                                <option value="" disabled>Pilih Nomor SK</option>
-                                @foreach($decrees as $decree)
+                            <label class="text-[11px] font-bold text-gray-500 uppercase tracking-wider">SK Kepala SPPG <span class="text-red-500">*</span></label>
+                            <select name="id_sk_leader" id="e_sk_leader" class="w-full mt-2 px-3 py-2.5 bg-gray-50 border-none rounded-lg text-sm focus:ring-2 focus:ring-indigo-500">
+                                <option value="" disabled>Pilih SK Kepala</option>
+                                @foreach($decrees[$leaderPos?->id_ref_position] ?? [] as $decree)
                                 <option value="{{ $decree->id_assignment_decree }}">
                                     {{ $decree->no_sk }} ({{ \Carbon\Carbon::parse($decree->date_sk)->format('d/m/Y') }})
-                                    &mdash; {{ $decree->no_ba_verval }} ({{ \Carbon\Carbon::parse($decree->date_ba_verval)->format('d/m/Y') }})
                                 </option>
                                 @endforeach
                             </select>
-                            <p class="text-[10px] text-slate-400 mt-1">1 SK dapat mencakup banyak SPPG. Mengubah SK akan memperbarui penugasan SPPG ini.</p>
+                        </div>
+
+                        {{-- SK AHLI GIZI --}}
+                        <div>
+                            <label class="text-[11px] font-bold text-gray-500 uppercase tracking-wider">SK Ahli Gizi</label>
+                            <select name="id_sk_nutritionist" id="e_sk_nutritionist" class="w-full mt-2 px-3 py-2.5 bg-gray-50 border-none rounded-lg text-sm focus:ring-2 focus:ring-emerald-500">
+                                <option value="placeholder" disabled>Pilih SK Ahli Gizi</option>
+                                <option value="">Belum Ada SK</option>
+                                @foreach($decrees[$nutriPos?->id_ref_position] ?? [] as $decree)
+                                <option value="{{ $decree->id_assignment_decree }}">
+                                    {{ $decree->no_sk }} ({{ \Carbon\Carbon::parse($decree->date_sk)->format('d/m/Y') }})
+                                </option>
+                                @endforeach
+                            </select>
+                        </div>
+
+                        {{-- SK AKUNTAN --}}
+                        <div>
+                            <label class="text-[11px] font-bold text-gray-500 uppercase tracking-wider">SK Akuntan</label>
+                            <select name="id_sk_accountant" id="e_sk_accountant" class="w-full mt-2 px-3 py-2.5 bg-gray-50 border-none rounded-lg text-sm focus:ring-2 focus:ring-amber-500">
+                                <option value="placeholder" disabled>Pilih SK Akuntan</option>
+                                <option value="">Belum Ada SK</option>
+                                @foreach($decrees[$accPos?->id_ref_position] ?? [] as $decree)
+                                <option value="{{ $decree->id_assignment_decree }}">
+                                    {{ $decree->no_sk }} ({{ \Carbon\Carbon::parse($decree->date_sk)->format('d/m/Y') }})
+                                </option>
+                                @endforeach
+                            </select>
                         </div>
                     </div>
                 </div>
@@ -252,6 +285,7 @@
                                 </span>
                                 <input type="url" name="tiktok_url" id="e_tiktok" class="flex-1 px-3 py-2.5 bg-gray-50 border-none text-sm focus:outline-none focus:ring-0" placeholder="https://tiktok.com/@...">
                             </div>
+                        </div>
                     </div>
                 </div>
 
@@ -350,6 +384,13 @@
                     allBeneficiaryList.push($event.detail.beneficiary);
                     showCreateBeneficiaryModal = false
                 "
+                @beneficiary-updated-integrated.window="
+                    const idx = selectedUnit.beneficiaries.findIndex(b => b.id_beneficiary === $event.detail.beneficiary.id_beneficiary);
+                    if (idx !== -1) selectedUnit.beneficiaries[idx] = $event.detail.beneficiary;
+                    const idxAll = allBeneficiaryList.findIndex(b => b.id_beneficiary === $event.detail.beneficiary.id_beneficiary);
+                    if (idxAll !== -1) allBeneficiaryList[idxAll] = $event.detail.beneficiary;
+                    showEditBeneficiaryModal = false
+                "
                 >
                     <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-6 gap-4">
                         <div class="flex items-center gap-3">
@@ -366,7 +407,7 @@
                                 <svg class="w-3.5 h-3.5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
                                 </svg>
-                                <span>Tambah Beneficiary Baru</span>
+                                <span>Tambah PM Baru</span>
                             </button>
                             <a :href="`/admin/manage-beneficiary?search=${selectedUnit.id_sppg_unit}`" target="_blank" class="px-4 py-2 bg-indigo-50 text-indigo-600 rounded-lg text-xs font-bold uppercase tracking-wider hover:bg-indigo-100 transition-all flex items-center">
                                 <span>Kelola Semua PM</span>
@@ -443,9 +484,9 @@
                             <table class="w-full text-left text-sm">
                                 <thead>
                                     <tr class="bg-indigo-600/5 text-[11px] font-bold text-indigo-600/60 uppercase tracking-widest border-b border-indigo-600/10">
-                                        <th class="px-5 py-4">Identitas Beneficiary</th>
+                                        <th class="px-5 py-4 text-center">Identitas PM</th>
+                                        <th class="px-5 py-4 text-center">Rincian Porsi</th>
                                         <th class="px-5 py-4">Alamat & GPS</th>
-                                        <th class="px-5 py-4">Rincian Porsi</th>
                                         <th class="px-5 py-4">PIC / Kontak</th>
                                         <th class="px-5 py-4 text-center">Aksi</th>
                                     </tr>
@@ -465,15 +506,6 @@
                                                               x-text="beneficiary.is_active ? 'Aktif' : 'Non-Aktif'"></span>
                                                     </div>
                                                 </td>
-                                                <td class="px-5 py-4 align-top max-w-[200px]">
-                                                    <div class="text-slate-600 line-clamp-2 text-sm" x-text="beneficiary.address || '-'"></div>
-                                                    <div class="text-[10px] text-slate-400 mt-1" x-text="(beneficiary.village || '-') + ', ' + (beneficiary.district || '-') + ' ' + (beneficiary.postal_code || '')"></div>
-                                                    <div class="text-[10px] text-slate-400" x-text="(beneficiary.regency || '-') + ', ' + (beneficiary.province || '-')"></div>
-                                                    <div class="mt-2 flex items-center text-[10px] font-bold text-indigo-500">
-                                                        <svg class="w-3.5 h-3.5 mr-1" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5a2.5 2.5 0 010-5 2.5 2.5 0 010 5z"/></svg>
-                                                        <span x-text="(beneficiary.latitude_gps && beneficiary.longitude_gps) ? beneficiary.latitude_gps.slice(0,10) + ', ' + beneficiary.longitude_gps.slice(0,10) : 'GPS Tidak Ada'"></span>
-                                                    </div>
-                                                </td>
                                                 <td class="px-5 py-4 align-top text-slate-600">
                                                     <div class="grid grid-cols-2 gap-x-4 gap-y-1 text-[11px]">
                                                         <span>Kecil (L/P):</span>
@@ -486,6 +518,18 @@
                                                         <span class="font-bold text-slate-700" x-text="beneficiary.cadre_portion || 0"></span>
                                                     </div>
                                                 </td>
+                                                <td class="px-5 py-4 align-top max-w-[200px]">
+                                                    <div class="text-slate-600 line-clamp-2 text-sm" x-text="beneficiary.address || '-'"></div>
+                                                    <div class="text-[10px] text-slate-400 mt-1" x-text="(beneficiary.village || '-') + ', ' + (beneficiary.district || '-') + ', ' + (beneficiary.regency || '-')"></div>
+                                                    <div class="text-[10px] text-slate-400" x-text="(beneficiary.province || '-') + ' ' + (beneficiary.postal_code || '')"></div>
+                                                    <div class="mt-2 flex items-center text-[10px] font-bold text-indigo-500">
+                                                        <svg class="w-3.5 h-3.5 mr-1" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5a2.5 2.5 0 010-5 2.5 2.5 0 010 5z"/></svg>
+                                                        <a :href="`https://www.google.com/maps?q=${beneficiary.latitude_gps},${beneficiary.longitude_gps}`" target="_blank" class="hover:underline flex items-center">
+                                                            <span x-text="(beneficiary.latitude_gps && beneficiary.longitude_gps) ? beneficiary.latitude_gps.slice(0,10) + ', ' + beneficiary.longitude_gps.slice(0,10) : 'GPS Tidak Ada'"></span>
+                                                            <svg class="w-2.5 h-2.5 ml-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" /></svg>
+                                                        </a>
+                                                    </div>
+                                                </td>
                                                 <td class="px-5 py-4 align-top">
                                                     <div class="text-slate-700 font-bold text-sm" x-text="beneficiary.pic_name || '-'"></div>
                                                     <div class="text-[11px] text-indigo-600 font-medium mt-1 flex items-center">
@@ -495,13 +539,22 @@
                                                     <div class="text-[10px] text-slate-400 mt-1 break-all" x-text="beneficiary.pic_email || '-'"></div>
                                                 </td>
                                                 <td class="px-5 py-4 text-center align-top">
-                                                    <button type="button" 
-                                                        @click="unlinkBeneficiary(beneficiary)"
-                                                        class="p-2 text-rose-500 hover:bg-rose-50 rounded-lg transition-all" title="Lepas Tautan">
-                                                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.875 18.825A10.05 10.05 0 0112 19c-4.478 0-8.268-2.943-9.543-7a9.97 9.97 0 011.563-3.029m5.858.908a3 3 0 114.243 4.243M9.878 9.878l4.242 4.242M9.88 9.88l-3.29-3.29m7.532 7.532l3.29 3.29M3 3l18 18" />
-                                                        </svg>
-                                                    </button>
+                                                    <div class="flex justify-center items-center gap-1">
+                                                        <button type="button" 
+                                                            @click="$dispatch('open-edit-beneficiary', { beneficiary: beneficiary })"
+                                                            class="p-2 text-indigo-500 hover:bg-indigo-50 rounded-lg transition-all" title="Ubah Data PM">
+                                                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+                                                            </svg>
+                                                        </button>
+                                                        <button type="button" 
+                                                            @click="unlinkBeneficiary(beneficiary)"
+                                                            class="p-2 text-rose-500 hover:bg-rose-50 rounded-lg transition-all" title="Lepas Tautan">
+                                                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.875 18.825A10.05 10.05 0 0112 19c-4.478 0-8.268-2.943-9.543-7a9.97 9.97 0 011.563-3.029m5.858.908a3 3 0 114.243 4.243M9.878 9.878l4.242 4.242M9.88 9.88l-3.29-3.29m7.532 7.532l3.29 3.29M3 3l18 18" />
+                                                            </svg>
+                                                        </button>
+                                                    </div>
                                                 </td>
                                             </tr>
                                         </template>
@@ -525,6 +578,51 @@
                             </table>
                         </div>
                     </div>
+
+                    {{-- Ringkasan Total PM --}}
+                    <template x-if="selectedUnit.beneficiaries && selectedUnit.beneficiaries.length > 0">
+                        <div class="mt-4 p-4 bg-indigo-50/60 rounded-xl border border-indigo-100">
+                            <div class="flex items-center gap-2 mb-3">
+                                <svg class="w-4 h-4 text-indigo-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 17v-2m3 2v-4m3 4v-6m2 10H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
+                                <span class="text-[11px] font-bold uppercase tracking-widest text-indigo-600">Ringkasan Total</span>
+                                <span class="ml-auto px-2.5 py-0.5 bg-indigo-600 text-white text-[11px] font-bold rounded-full" x-text="selectedUnit.beneficiaries.length + ' PM'"></span>
+                            </div>
+                            <div class="grid grid-cols-2 sm:grid-cols-4 gap-3">
+                                <div class="bg-white rounded-lg p-3 text-center border border-indigo-100/80 shadow-sm">
+                                    <div class="text-[10px] font-bold text-slate-400 uppercase mb-1">Porsi Kecil (L)</div>
+                                    <div class="text-lg font-bold text-slate-700" x-text="selectedUnit.beneficiaries.reduce((s, b) => s + parseInt(b.small_portion_male || 0), 0)"></div>
+                                </div>
+                                <div class="bg-white rounded-lg p-3 text-center border border-indigo-100/80 shadow-sm">
+                                    <div class="text-[10px] font-bold text-slate-400 uppercase mb-1">Porsi Kecil (P)</div>
+                                    <div class="text-lg font-bold text-slate-700" x-text="selectedUnit.beneficiaries.reduce((s, b) => s + parseInt(b.small_portion_female || 0), 0)"></div>
+                                </div>
+                                <div class="bg-white rounded-lg p-3 text-center border border-indigo-100/80 shadow-sm">
+                                    <div class="text-[10px] font-bold text-slate-400 uppercase mb-1">Porsi Besar (L)</div>
+                                    <div class="text-lg font-bold text-slate-700" x-text="selectedUnit.beneficiaries.reduce((s, b) => s + parseInt(b.large_portion_male || 0), 0)"></div>
+                                </div>
+                                <div class="bg-white rounded-lg p-3 text-center border border-indigo-100/80 shadow-sm">
+                                    <div class="text-[10px] font-bold text-slate-400 uppercase mb-1">Porsi Besar (P)</div>
+                                    <div class="text-lg font-bold text-slate-700" x-text="selectedUnit.beneficiaries.reduce((s, b) => s + parseInt(b.large_portion_female || 0), 0)"></div>
+                                </div>
+                                <div class="bg-white rounded-lg p-3 text-center border border-indigo-100/80 shadow-sm">
+                                    <div class="text-[10px] font-bold text-slate-400 uppercase mb-1">Porsi Guru</div>
+                                    <div class="text-lg font-bold text-slate-700" x-text="selectedUnit.beneficiaries.reduce((s, b) => s + parseInt(b.teacher_portion || 0), 0)"></div>
+                                </div>
+                                <div class="bg-white rounded-lg p-3 text-center border border-indigo-100/80 shadow-sm">
+                                    <div class="text-[10px] font-bold text-slate-400 uppercase mb-1">Porsi Staff</div>
+                                    <div class="text-lg font-bold text-slate-700" x-text="selectedUnit.beneficiaries.reduce((s, b) => s + parseInt(b.staff_portion || 0), 0)"></div>
+                                </div>
+                                <div class="bg-white rounded-lg p-3 text-center border border-indigo-100/80 shadow-sm">
+                                    <div class="text-[10px] font-bold text-slate-400 uppercase mb-1">Porsi Kader</div>
+                                    <div class="text-lg font-bold text-slate-700" x-text="selectedUnit.beneficiaries.reduce((s, b) => s + parseInt(b.cadre_portion || 0), 0)"></div>
+                                </div>
+                                <div class="bg-indigo-600 rounded-lg p-3 text-center shadow-sm">
+                                    <div class="text-[10px] font-bold text-indigo-200 uppercase mb-1">Total Seluruh</div>
+                                    <div class="text-lg font-bold text-white" x-text="selectedUnit.beneficiaries.reduce((s, b) => s + parseInt(b.small_portion_male || 0) + parseInt(b.small_portion_female || 0) + parseInt(b.large_portion_male || 0) + parseInt(b.large_portion_female || 0) + parseInt(b.teacher_portion || 0) + parseInt(b.staff_portion || 0) + parseInt(b.cadre_portion || 0), 0)"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </template>
                 </div>
 
 
@@ -589,12 +687,21 @@
         const accountantEl = document.getElementById('e_accountant');
         if (accountantEl) accountantEl.value = unit.accountant_id || 'NULL';
 
-        // Set select SK (dari workAssignments[0] jika ada)
-        const decreeEl = document.getElementById('e_decree');
-        if (decreeEl) {
-            const currentDecreeId = unit.work_assignment_decree_id || '';
-            decreeEl.value = currentDecreeId;
-        }
+        // Set select SKs (dari assignedDecreeMap)
+        const unitDecrees = @json($assignedDecreeMap)[unit.id_sppg_unit] || {};
+        
+        const leaderPosId = "{{ \App\Models\RefPosition::where('slug_position', 'kasppg')->first()?->id_ref_position }}";
+        const nutriPosId  = "{{ \App\Models\RefPosition::where('slug_position', 'ag')->first()?->id_ref_position }}";
+        const accPosId    = "{{ \App\Models\RefPosition::where('slug_position', 'ak')->first()?->id_ref_position }}";
+
+        const skLeaderEl = document.getElementById('e_sk_leader');
+        if (skLeaderEl) skLeaderEl.value = unitDecrees[leaderPosId] || '';
+        
+        const skNutriEl = document.getElementById('e_sk_nutritionist');
+        if (skNutriEl) skNutriEl.value = unitDecrees[nutriPosId] || '';
+        
+        const skAccEl = document.getElementById('e_sk_accountant');
+        if (skAccEl) skAccEl.value = unitDecrees[accPosId] || '';
 
         // Populate Hidden Wilayah Names
         document.getElementById('e_prov_name').value  = unit.province || '';
@@ -904,7 +1011,7 @@
     window.submitUpdateSppg = async function(formElement) {
         clearEditErrors();
 
-        const btn = document.getElementById('btnUpdateSppg');
+        const btnSubmit = document.getElementById('btnUpdateSppg');
         let hasLocalError = false;
 
         // Validasi Sisi Client
@@ -913,13 +1020,13 @@
             { id: 'e_id',      msg: 'ID SPPG wajib diisi' },
             { id: 'e_code',    msg: 'Kode SPPG wajib diisi' },
             { id: 'e_status',  msg: 'Pilih status operasional' },
-            { id: 'e_decree',  msg: 'Surat Keputusan (SK) wajib dipilih' },
+            { id: 'e_sk_leader', msg: 'SK Kepala SPPG wajib dipilih' },
             { id: 'e_prov',    msg: 'Provinsi wajib dipilih' },
             { id: 'e_reg',     msg: 'Kabupaten wajib dipilih' },
             { id: 'e_dist',    msg: 'Kecamatan wajib dipilih' },
             { id: 'e_vill',    msg: 'Desa/Kelurahan wajib dipilih' },
             { id: 'e_address', msg: 'Alamat wajib diisi' },
-            { id: 'e_lat',     msg: 'Titik GPS belum ditentukan (Klik pada peta)' },
+            { id: 'e_lat',     msg: 'Titik GPS belum ditentukan (Klik pada peta)' }
         ];
 
         fields.forEach(f => {
@@ -931,14 +1038,14 @@
         });
 
         if (hasLocalError) {
-            const first = document.querySelector('#editUnitForm .input-error-edit');
+            const first = document.querySelector('.input-error-edit');
             if (first) first.scrollIntoView({ behavior: 'smooth', block: 'center' });
             return;
         }
 
-        if (btn) {
-            btn.disabled = true;
-            btn.innerHTML = "Sedang Memproses...";
+        if (btnSubmit) {
+            btnSubmit.disabled = true;
+            btnSubmit.innerHTML = "Sedang Memproses...";
         }
 
         try {
@@ -955,11 +1062,11 @@
             const result = await response.json();
 
             if (response.ok) {
-                window.location.reload();
+                window.location.href = result.redirect || "{{ route('admin.manage-sppg.index') }}";
             } else {
-                if (btn) {
-                    btn.disabled = false;
-                    btn.innerHTML = "Simpan Perubahan";
+                if (btnSubmit) {
+                    btnSubmit.disabled = false;
+                    btnSubmit.innerHTML = "Simpan Perubahan";
                 }
 
                 if (result.errors) {
@@ -969,11 +1076,13 @@
                         if (key === 'code_sppg_unit')        fieldId = 'e_code';
                         if (key === 'operational_date')      fieldId = 'e_op_date';
                         if (key === 'photo')                 fieldId = 'edit_photo';
+                        if (key === 'id_sk_leader')          fieldId = 'e_sk_leader';
+                        if (key === 'id_sk_nutritionist')    fieldId = 'e_sk_nutritionist';
+                        if (key === 'id_sk_accountant')      fieldId = 'e_sk_accountant';
                         if (key === 'province_name')         fieldId = 'e_prov';
                         if (key === 'regency_name')          fieldId = 'e_reg';
                         if (key === 'district_name')         fieldId = 'e_dist';
                         if (key === 'village_name')          fieldId = 'e_vill';
-                        if (key === 'id_assignment_decree')  fieldId = 'e_decree';
 
                         result.errors[key].forEach(msg => {
                             showEditFieldError(fieldId, msg);
@@ -987,9 +1096,9 @@
                 }
             }
         } catch (err) {
-            if (btn) {
-                btn.disabled = false;
-                btn.innerHTML = "Simpan Perubahan";
+            if (btnSubmit) {
+                btnSubmit.disabled = false;
+                btnSubmit.innerHTML = "Simpan Perubahan";
             }
             console.error('Submit Error:', err);
             alert('Terjadi kesalahan jaringan/server: ' + err.message);

@@ -41,6 +41,8 @@
                       date_sk: '{{ old('date_sk') }}', 
                       no_ba_verval: '{{ old('no_ba_verval') }}', 
                       date_ba_verval: '{{ old('date_ba_verval') }}',
+                      type_sk: '{{ old('type_sk') }}',
+                      isCoreRole: false,
                       file_sk: null,
                       searchSppg: '', 
                       selectedUnits: [], 
@@ -49,7 +51,8 @@
                   }"
                   @submit.prevent="
                       isSubmitted = true; 
-                      if(no_sk && date_sk && no_ba_verval && date_ba_verval && file_sk && selectedUnits.length > 0) { 
+                      const isSppgValid = !isCoreRole || (isCoreRole && selectedUnits.length > 0);
+                      if(no_sk && date_sk && no_ba_verval && date_ba_verval && type_sk && file_sk && isSppgValid) { 
                           $el.submit(); 
                       }
                   " novalidate>
@@ -102,6 +105,24 @@
                 </div>
 
                 <div class="mb-6">
+                    <label class="text-[11px] font-bold text-gray-500 uppercase tracking-wider block">Peruntukan SK (Jabatan) <span class="text-rose-500">*</span></label>
+                    <select name="type_sk" x-model="type_sk" 
+                            @change="const slug = $event.target.selectedOptions[0].dataset.slug; isCoreRole = ['kasppg', 'ag', 'ak'].includes(slug);"
+                            class="w-full mt-2 px-4 py-2.5 bg-gray-50 rounded-lg text-sm text-slate-600 focus:ring-2 focus:ring-indigo-500 appearance-none cursor-pointer" :class="(isSubmitted && !type_sk) ? 'border-rose-500 ring-rose-500 border ring-1' : 'border-none @error('type_sk') border-rose-500 ring-rose-500 border ring-1 @enderror'">
+                        <option value="" disabled selected>Pilih Jabatan</option>
+                        @foreach($positions as $pos)
+                            <option value="{{ $pos->id_ref_position }}" data-slug="{{ $pos->slug_position }}">{{ $pos->name_position }}</option>
+                        @endforeach
+                    </select>
+                    <template x-if="isSubmitted && !type_sk">
+                        <p class="text-[11px] text-rose-500 mt-1.5 font-bold italic">* Wajib diisi</p>
+                    </template>
+                    @error('type_sk')
+                        <p class="text-xs text-rose-500 mt-1">{{ $message }}</p>
+                    @enderror
+                </div>
+
+                <div class="mb-6">
                     <label class="text-[11px] font-bold text-gray-500 uppercase tracking-wider block">File SK (PDF) <span class="text-rose-500">*</span></label>
                     <input type="file" name="file_sk" accept=".pdf" @change="file_sk = $event.target.files[0]" class="w-full mt-2 px-4 py-[7px] bg-gray-50 rounded-lg text-sm text-slate-600 focus:ring-2 focus:ring-indigo-500 file:mr-4 file:py-1 file:px-3 file:rounded-md file:border-0 file:text-[11px] file:font-semibold file:bg-indigo-50 file:text-indigo-700 hover:file:bg-indigo-100" :class="(isSubmitted && !file_sk) ? 'border-rose-500 ring-rose-500 border ring-1' : 'border-none @error('file_sk') border-rose-500 ring-rose-500 border ring-1 @enderror'">
                     <template x-if="isSubmitted && !file_sk">
@@ -112,7 +133,7 @@
                     @enderror
                 </div>
 
-                <div class="mb-4">
+                <div class="mb-4" x-show="isCoreRole">
                     <div class="flex items-center justify-between mb-2">
                         <label class="text-[11px] font-bold text-gray-500 uppercase tracking-wider block">Tetapkan SPPG Terkait <span class="text-rose-500">*</span></label>
                         <span class="text-[10px] text-indigo-600 font-bold bg-indigo-50 px-2 py-0.5 rounded-md" x-text="selectedUnits.length + ' Dipilih'"></span>
@@ -129,33 +150,33 @@
                     </div>
 
                     {{-- List View SPPG --}}
-                    <div class="bg-gray-50 border-none rounded-xl max-h-48 overflow-y-auto dropdown-sppg-scroll p-2 shadow-inner" :class="(isSubmitted && selectedUnits.length === 0) ? 'border-rose-500 ring-1 ring-rose-500' : 'border-slate-200'">
+                    <div class="bg-gray-50 border-none rounded-xl max-h-48 overflow-y-auto dropdown-sppg-scroll p-2 shadow-inner" :class="(isSubmitted && isCoreRole && selectedUnits.length === 0) ? 'border-rose-500 ring-1 ring-rose-500' : 'border-slate-200'">
                         <div class="grid grid-cols-1 md:grid-cols-2 gap-1">
                             @foreach($sppgUnits as $unit)
                             <label x-show="searchSppg === '' || '{{ strtolower($unit->name) }}'.includes(searchSppg.toLowerCase()) || '{{ strtolower($unit->id_sppg_unit) }}'.includes(searchSppg.toLowerCase())"
-                                   class="flex items-start gap-3 p-2 rounded-lg cursor-pointer transition-colors border"
+                                   class="flex items-start gap-3 p-2 rounded-lg cursor-pointer transition-colors border text-left"
                                    :class="{
-                                       'bg-slate-100/50 border-slate-200 cursor-not-allowed opacity-60': assignedMap['{{ $unit->id_sppg_unit }}'], 
-                                       'bg-emerald-50/50 border-emerald-100 hover:bg-emerald-50': !assignedMap['{{ $unit->id_sppg_unit }}'] && selectedUnits.includes('{{ $unit->id_sppg_unit }}'),
-                                       'hover:bg-slate-50 border-transparent hover:border-slate-100': !assignedMap['{{ $unit->id_sppg_unit }}'] && !selectedUnits.includes('{{ $unit->id_sppg_unit }}')
+                                       'bg-slate-100/50 border-slate-200 cursor-not-allowed opacity-60': type_sk && assignedMap[type_sk] && assignedMap[type_sk]['{{ $unit->id_sppg_unit }}'] !== undefined, 
+                                       'bg-emerald-50/50 border-emerald-100 hover:bg-emerald-50': !(type_sk && assignedMap[type_sk] && assignedMap[type_sk]['{{ $unit->id_sppg_unit }}'] !== undefined) && selectedUnits.includes('{{ $unit->id_sppg_unit }}'),
+                                       'hover:bg-slate-50 border-transparent hover:border-slate-100': !(type_sk && assignedMap[type_sk] && assignedMap[type_sk]['{{ $unit->id_sppg_unit }}'] !== undefined) && !selectedUnits.includes('{{ $unit->id_sppg_unit }}')
                                    }">
                                 <div class="flex items-center h-5">
                                     <input type="checkbox" name="sppg_units[]" value="{{ $unit->id_sppg_unit }}" 
                                            x-model="selectedUnits"
-                                           :disabled="assignedMap['{{ $unit->id_sppg_unit }}'] !== undefined"
+                                           :disabled="type_sk && assignedMap[type_sk] && assignedMap[type_sk]['{{ $unit->id_sppg_unit }}'] !== undefined"
                                            class="w-4 h-4 rounded"
-                                           :class="assignedMap['{{ $unit->id_sppg_unit }}'] ? 'text-slate-400 border-slate-200 bg-slate-100 cursor-not-allowed' : 'text-indigo-600 border-slate-300 focus:ring-indigo-500 focus:ring-2'">
+                                           :class="type_sk && assignedMap[type_sk] && assignedMap[type_sk]['{{ $unit->id_sppg_unit }}'] !== undefined ? 'text-slate-400 border-slate-200 bg-slate-100 cursor-not-allowed' : 'text-indigo-600 border-slate-300 focus:ring-indigo-500 focus:ring-2'">
                                 </div>
                                 <div class="flex flex-col flex-1">
                                     <div class="flex justify-between items-start gap-2">
                                         <span class="text-[13px] font-bold capitalize leading-none pt-0.5" 
-                                              :class="assignedMap['{{ $unit->id_sppg_unit }}'] ? 'text-slate-500' : 'text-slate-700'">{{ $unit->name }}</span>
-                                        <template x-if="assignedMap['{{ $unit->id_sppg_unit }}']">
-                                            <span class="text-[9px] bg-slate-200 text-slate-500 font-bold px-1.5 py-0.5 rounded leading-none shrink-0 border border-slate-300">Terdaftar</span>
+                                              :class="type_sk && assignedMap[type_sk] && assignedMap[type_sk]['{{ $unit->id_sppg_unit }}'] !== undefined ? 'text-slate-500' : 'text-slate-700'">{{ $unit->name }}</span>
+                                        <template x-if="type_sk && assignedMap[type_sk] && assignedMap[type_sk]['{{ $unit->id_sppg_unit }}'] !== undefined">
+                                            <span class="text-[9px] font-bold text-rose-500 bg-rose-50 px-1.5 py-0.5 rounded leading-none shrink-0 border border-rose-100 uppercase">Terdaftar</span>
                                         </template>
                                     </div>
-                                    <span class="text-[10px] mt-0.5 uppercase tracking-wider"
-                                          :class="assignedMap['{{ $unit->id_sppg_unit }}'] ? 'text-slate-400/80' : 'text-slate-400'">{{ $unit->id_sppg_unit }}</span>
+                                    <span class="text-[10px] uppercase tracking-wider font-bold mt-1" 
+                                          :class="type_sk && assignedMap[type_sk] && assignedMap[type_sk]['{{ $unit->id_sppg_unit }}'] !== undefined ? 'text-slate-400' : 'text-slate-500'">ID: {{ $unit->id_sppg_unit }}</span>
                                 </div>
                             </label>
                             @endforeach
@@ -178,7 +199,7 @@
                             </div>
                         </div>
                     </div>
-                    <template x-if="isSubmitted && selectedUnits.length === 0">
+                    <template x-if="isSubmitted && isCoreRole && selectedUnits.length === 0">
                         <p class="text-[11px] text-rose-500 mt-1.5 font-bold italic">* Minimal 1 SPPG wajib dipilih</p>
                     </template>
                     @error('sppg_units')

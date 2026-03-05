@@ -5,6 +5,11 @@
             const formObj = document.getElementById('form-edit-sk');
             if (formObj && selectedDecree.id_assignment_decree) {
                 formObj.action = '{{ route('admin.manage-assignment-decree.index') }}/' + selectedDecree.id_assignment_decree + '/update';
+                
+                // Initialize isCoreRole
+                const selectedOption = document.querySelector('#form-edit-sk select[name=type_sk] option:checked');
+                const slug = selectedOption ? selectedOption.dataset.slug : '';
+                window.dispatchEvent(new CustomEvent('update-core-role-edit', { detail: slug }));
             }
         }, 50);
     ">
@@ -44,10 +49,12 @@
         {{-- BODY MODAL --}}
         <div class="p-8 overflow-y-auto custom-scrollbar flex-1 bg-white">
             <form method="POST" id="form-edit-sk" enctype="multipart/form-data"
-                  x-data="{ isSubmitted: false, file_sk_edit: null }"
+                  x-data="{ isSubmitted: false, file_sk_edit: null, isCoreRole: false }"
+                  @update-core-role-edit.window="isCoreRole = ['kasppg', 'ag', 'ak'].includes($event.detail)"
                   @submit.prevent="
                       isSubmitted = true;
-                      if(selectedDecree.no_sk && selectedDecree.date_sk && selectedDecree.no_ba_verval && selectedDecree.date_ba_verval && selectedDecree.sppg_units && selectedDecree.sppg_units.length > 0) {
+                      const isSppgValid = !isCoreRole || (isCoreRole && selectedDecree.sppg_units && selectedDecree.sppg_units.length > 0);
+                      if(selectedDecree.no_sk && selectedDecree.date_sk && selectedDecree.no_ba_verval && selectedDecree.date_ba_verval && selectedDecree.type_sk && isSppgValid) {
                           $el.submit();
                       }
                   " novalidate>
@@ -101,6 +108,24 @@
                 </div>
 
                 <div class="mb-6">
+                    <label class="text-[11px] font-bold text-gray-500 uppercase tracking-wider block">Peruntukan SK (Jabatan) <span class="text-rose-500">*</span></label>
+                    <select name="type_sk" x-model="selectedDecree.type_sk" required 
+                            @change="const slug = $event.target.selectedOptions[0].dataset.slug; isCoreRole = ['kasppg', 'ag', 'ak'].includes(slug);"
+                            class="w-full mt-2 px-4 py-2.5 bg-gray-50 rounded-lg text-sm text-slate-600 focus:ring-2 focus:ring-indigo-500 appearance-none cursor-pointer" :class="(isSubmitted && !selectedDecree.type_sk) ? 'border-rose-500 ring-rose-500 border ring-1' : 'border-none @error('type_sk') border-rose-500 ring-rose-500 border ring-1 @enderror'">
+                        <option value="" disabled selected>Pilih Jabatan</option>
+                        @foreach($positions as $pos)
+                            <option value="{{ $pos->id_ref_position }}" data-slug="{{ $pos->slug_position }}">{{ $pos->name_position }}</option>
+                        @endforeach
+                    </select>
+                    <template x-if="isSubmitted && !selectedDecree.type_sk">
+                        <p class="text-[11px] text-rose-500 mt-1.5 font-bold italic">* Wajib diisi</p>
+                    </template>
+                    @error('type_sk')
+                        <p class="text-xs text-rose-500 mt-1">{{ $message }}</p>
+                    @enderror
+                </div>
+
+                <div class="mb-6">
                     <label class="text-[11px] font-bold text-gray-500 uppercase tracking-wider block">Ganti File SK (PDF)</label>
                     <input type="file" name="file_sk" accept=".pdf" @change="file_sk_edit = $event.target.files[0]" class="w-full mt-2 px-4 py-[7px] bg-gray-50 rounded-lg text-sm text-slate-600 focus:ring-2 focus:ring-indigo-500 file:mr-4 file:py-1 file:px-3 file:rounded-md file:border-0 file:text-[11px] file:font-semibold file:bg-indigo-50 file:text-indigo-700 hover:file:bg-indigo-100" :class="'border-none @error('file_sk') border-rose-500 ring-rose-500 border ring-1 @enderror'">
                     <p class="text-[10px] text-slate-400 mt-1">* Kosongkan jika tidak ingin mengubah file saat ini.</p>
@@ -118,7 +143,7 @@
                     @enderror
                 </div>
 
-                <div class="mb-4" x-data="{ 
+                <div class="mb-4" x-show="isCoreRole" x-data="{ 
                     searchSppgEdit: '', 
                     sppgData: {{ $sppgUnits->map(fn($u) => strtolower($u->name . ' ' . $u->id_sppg_unit))->values()->toJson() }},
                     assignedMap: {{ json_encode($assignedSppgsMap) }}
@@ -139,33 +164,33 @@
                     </div>
 
                     {{-- List View SPPG --}}
-                    <div class="bg-gray-50 border-none rounded-xl max-h-48 overflow-y-auto dropdown-sppg-scroll p-2 shadow-inner" :class="(isSubmitted && (!selectedDecree.sppg_units || selectedDecree.sppg_units.length === 0)) ? 'border-rose-500 ring-1 ring-rose-500' : 'border-slate-200'">
+                    <div class="bg-gray-50 border-none rounded-xl max-h-48 overflow-y-auto dropdown-sppg-scroll p-2 shadow-inner" :class="(isSubmitted && isCoreRole && (!selectedDecree.sppg_units || selectedDecree.sppg_units.length === 0)) ? 'border-rose-500 ring-1 ring-rose-500' : 'border-slate-200'">
                         <div class="grid grid-cols-1 md:grid-cols-2 gap-1">
                             @foreach($sppgUnits as $unit)
                             <label x-show="searchSppgEdit === '' || '{{ strtolower($unit->name) }}'.includes(searchSppgEdit.toLowerCase()) || '{{ strtolower($unit->id_sppg_unit) }}'.includes(searchSppgEdit.toLowerCase())"
-                                   class="flex items-start gap-3 p-2 rounded-lg cursor-pointer transition-colors border"
+                                   class="flex items-start gap-3 p-2 rounded-lg cursor-pointer transition-colors border text-left"
                                    :class="{
-                                       'bg-slate-100/50 border-slate-200 cursor-not-allowed opacity-60': assignedMap['{{ $unit->id_sppg_unit }}'] && assignedMap['{{ $unit->id_sppg_unit }}'] !== selectedDecree.id_assignment_decree, 
-                                       'bg-emerald-50/50 border-emerald-100 hover:bg-emerald-50': (!assignedMap['{{ $unit->id_sppg_unit }}'] || assignedMap['{{ $unit->id_sppg_unit }}'] === selectedDecree.id_assignment_decree) && selectedDecree.sppg_units && selectedDecree.sppg_units.includes('{{ $unit->id_sppg_unit }}'),
-                                       'hover:bg-slate-50 border-transparent hover:border-slate-100': (!assignedMap['{{ $unit->id_sppg_unit }}'] || assignedMap['{{ $unit->id_sppg_unit }}'] === selectedDecree.id_assignment_decree) && (!selectedDecree.sppg_units || !selectedDecree.sppg_units.includes('{{ $unit->id_sppg_unit }}'))
+                                       'bg-slate-100/50 border-slate-200 cursor-not-allowed opacity-60': selectedDecree.type_sk && assignedMap[selectedDecree.type_sk] && assignedMap[selectedDecree.type_sk]['{{ $unit->id_sppg_unit }}'] !== undefined && assignedMap[selectedDecree.type_sk]['{{ $unit->id_sppg_unit }}'] != selectedDecree.id_assignment_decree, 
+                                       'bg-emerald-50/50 border-emerald-100 hover:bg-emerald-50': selectedDecree.sppg_units && selectedDecree.sppg_units.includes('{{ $unit->id_sppg_unit }}'),
+                                       'hover:bg-slate-50 border-transparent hover:border-slate-100': !(selectedDecree.type_sk && assignedMap[selectedDecree.type_sk] && assignedMap[selectedDecree.type_sk]['{{ $unit->id_sppg_unit }}'] !== undefined && assignedMap[selectedDecree.type_sk]['{{ $unit->id_sppg_unit }}'] != selectedDecree.id_assignment_decree) && (!selectedDecree.sppg_units || !selectedDecree.sppg_units.includes('{{ $unit->id_sppg_unit }}'))
                                    }">
                                 <div class="flex items-center h-5">
                                     <input type="checkbox" name="sppg_units[]" value="{{ $unit->id_sppg_unit }}" 
                                            x-model="selectedDecree.sppg_units"
-                                           :disabled="assignedMap['{{ $unit->id_sppg_unit }}'] !== undefined && assignedMap['{{ $unit->id_sppg_unit }}'] !== selectedDecree.id_assignment_decree"
+                                           :disabled="selectedDecree.type_sk && assignedMap[selectedDecree.type_sk] && assignedMap[selectedDecree.type_sk]['{{ $unit->id_sppg_unit }}'] !== undefined && assignedMap[selectedDecree.type_sk]['{{ $unit->id_sppg_unit }}'] != selectedDecree.id_assignment_decree"
                                            class="w-4 h-4 rounded"
-                                           :class="(assignedMap['{{ $unit->id_sppg_unit }}'] && assignedMap['{{ $unit->id_sppg_unit }}'] !== selectedDecree.id_assignment_decree) ? 'text-slate-400 border-slate-200 bg-slate-100 cursor-not-allowed' : 'text-indigo-600 border-slate-300 focus:ring-indigo-500 focus:ring-2'">
+                                           :class="(selectedDecree.type_sk && assignedMap[selectedDecree.type_sk] && assignedMap[selectedDecree.type_sk]['{{ $unit->id_sppg_unit }}'] !== undefined && assignedMap[selectedDecree.type_sk]['{{ $unit->id_sppg_unit }}'] != selectedDecree.id_assignment_decree) ? 'text-slate-400 border-slate-200 bg-slate-100 cursor-not-allowed' : 'text-indigo-600 border-slate-300 focus:ring-indigo-500 focus:ring-2'">
                                 </div>
                                 <div class="flex flex-col flex-1">
                                     <div class="flex justify-between items-start gap-2">
                                         <span class="text-[13px] font-bold capitalize leading-none pt-0.5" 
-                                              :class="(assignedMap['{{ $unit->id_sppg_unit }}'] && assignedMap['{{ $unit->id_sppg_unit }}'] !== selectedDecree.id_assignment_decree) ? 'text-slate-500' : 'text-slate-700'">{{ $unit->name }}</span>
-                                        <template x-if="assignedMap['{{ $unit->id_sppg_unit }}'] && assignedMap['{{ $unit->id_sppg_unit }}'] !== selectedDecree.id_assignment_decree">
-                                            <span class="text-[9px] bg-slate-200 text-slate-500 font-bold px-1.5 py-0.5 rounded leading-none shrink-0 border border-slate-300">Telah Tertaut</span>
+                                              :class="(selectedDecree.type_sk && assignedMap[selectedDecree.type_sk] && assignedMap[selectedDecree.type_sk]['{{ $unit->id_sppg_unit }}'] !== undefined && assignedMap[selectedDecree.type_sk]['{{ $unit->id_sppg_unit }}'] != selectedDecree.id_assignment_decree) ? 'text-slate-500' : 'text-slate-700'">{{ $unit->name }}</span>
+                                        <template x-if="selectedDecree.type_sk && assignedMap[selectedDecree.type_sk] && assignedMap[selectedDecree.type_sk]['{{ $unit->id_sppg_unit }}'] !== undefined && assignedMap[selectedDecree.type_sk]['{{ $unit->id_sppg_unit }}'] != selectedDecree.id_assignment_decree">
+                                            <span class="text-[9px] font-bold text-rose-500 bg-rose-50 px-1.5 py-0.5 rounded leading-none shrink-0 border border-rose-100 uppercase">Terdaftar</span>
                                         </template>
                                     </div>
-                                    <span class="text-[10px] mt-0.5 uppercase tracking-wider"
-                                          :class="(assignedMap['{{ $unit->id_sppg_unit }}'] && assignedMap['{{ $unit->id_sppg_unit }}'] !== selectedDecree.id_assignment_decree) ? 'text-slate-400/80' : 'text-slate-400'">{{ $unit->id_sppg_unit }}</span>
+                                    <span class="text-[10px] uppercase tracking-wider font-bold mt-1" 
+                                          :class="(selectedDecree.type_sk && assignedMap[selectedDecree.type_sk] && assignedMap[selectedDecree.type_sk]['{{ $unit->id_sppg_unit }}'] !== undefined && assignedMap[selectedDecree.type_sk]['{{ $unit->id_sppg_unit }}'] != selectedDecree.id_assignment_decree) ? 'text-slate-400' : 'text-slate-500'">ID: {{ $unit->id_sppg_unit }}</span>
                                 </div>
                             </label>
                             @endforeach
@@ -188,7 +213,7 @@
                             </div>
                         </div>
                     </div>
-                    <template x-if="isSubmitted && (!selectedDecree.sppg_units || selectedDecree.sppg_units.length === 0)">
+                    <template x-if="isSubmitted && isCoreRole && (!selectedDecree.sppg_units || selectedDecree.sppg_units.length === 0)">
                         <p class="text-[11px] text-rose-500 mt-1.5 font-bold italic">* Minimal 1 SPPG wajib dipilih</p>
                     </template>
                     @error('sppg_units')

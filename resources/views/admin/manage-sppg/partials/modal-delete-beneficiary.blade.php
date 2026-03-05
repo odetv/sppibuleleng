@@ -17,7 +17,7 @@
         </div>
         <h3 class="text-lg font-bold text-slate-800 uppercase tracking-widest mb-2">Lepas Tautan?</h3>
         <p class="text-[13px] text-slate-500 mb-8 leading-relaxed px-4">
-            Apakah Anda yakin ingin melepas tautan beneficiary <span class="font-bold text-slate-700" x-text="beneficiaryToUnlink ? beneficiaryToUnlink.name : ''"></span> dari unit ini?
+            Apakah Anda yakin ingin melepas tautan PM <span class="font-bold text-slate-700" x-text="beneficiaryToUnlink ? beneficiaryToUnlink.name : ''"></span> dari unit ini?
         </p>
         <div class="flex gap-3">
             <button @click="showUnlinkModal = false" class="flex-1 py-3 text-[11px] font-bold uppercase tracking-wider text-slate-500 bg-slate-50 rounded-xl hover:bg-slate-100 transition-colors">Batal</button>

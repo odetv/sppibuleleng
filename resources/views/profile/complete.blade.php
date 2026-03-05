@@ -174,11 +174,12 @@
                                     @foreach($workAssignments as $wa)
                                     <option value="{{ $wa->id_work_assignment }}"
                                         data-unit="{{ $wa->id_sppg_unit }}"
-                                        data-leader="{{ $wa->sppgUnit->leader_id ?? '' }}"
-                                        data-nutritionist="{{ $wa->sppgUnit->nutritionist_id ?? '' }}"
-                                        data-accountant="{{ $wa->sppgUnit->accountant_id ?? '' }}"
+                                        data-pos-slug="{{ $wa->decree?->position?->slug_position ?? '' }}"
+                                        data-leader="{{ $wa->sppgUnit?->leader_id ?? '' }}"
+                                        data-nutritionist="{{ $wa->sppgUnit?->nutritionist_id ?? '' }}"
+                                        data-accountant="{{ $wa->sppgUnit?->accountant_id ?? '' }}"
                                         {{ old('id_work_assignment', $user->person?->id_work_assignment) == $wa->id_work_assignment ? 'selected' : '' }}>
-                                        {{ $wa->sppgUnit->name ?? '-' }} - {{ $wa->decree->no_sk ?? '-' }}
+                                        {{ $wa->id_sppg_unit ? ($wa->sppgUnit?->name ?? '-') : ($wa->decree?->position?->name_position ?? 'Posisi Tidak Ditemukan') }} - {{ $wa->decree?->no_sk ?? '-' }}
                                     </option>
                                     @endforeach
                                 </select>
@@ -629,55 +630,72 @@
         // ── LOGIKA FILTER & DISABLE OPSI UNIT PENUGASAN BERDASARKAN JABATAN ──
         const positionsMeta = @json($positions->pluck('slug_position', 'id_ref_position') ?? []);
 
-        function updateWaOptions() {
+        // Slugs yang punya slot spesifik di sppg_units (perlu cek occupancy)
+        const slugToOccupancyAttr = { kasppg: 'leader', ag: 'nutritionist', ak: 'accountant' };
+
+        function updateWaOptions(isUserChange = false) {
             const posEl = document.getElementById('id_ref_position');
             const waEl  = document.getElementById('id_work_assignment');
             const note  = document.getElementById('wa-occupied-note');
 
             const selectedPosId = posEl?.value;
-            const posSlug = selectedPosId ? positionsMeta[selectedPosId] : null;
+            // posSlug dari meta yang di-pass PHP
+            const posSlug = (selectedPosId && selectedPosId !== 'none')
+                ? (positionsMeta[selectedPosId] ?? null)
+                : null;
 
-            // Jabatan yang berhak memilih unit SPPG
-            const unitRoles = ['kasppg', 'ag', 'ak'];
-            const slugToAttr = { kasppg: 'leader', ag: 'nutritionist', ak: 'accountant' };
-            const isUnitRole = posSlug && unitRoles.includes(posSlug);
-            const attrKey    = isUnitRole ? slugToAttr[posSlug] : null;
+            // Jika dipicu oleh user (event change), reset pilihan WA ke 'none'
+            if (isUserChange) {
+                waEl.value = 'none';
+            }
 
             const waOptions = waEl.querySelectorAll('option[data-unit]');
             let anyDisabled = false;
 
             waOptions.forEach(opt => {
-                if (!isUnitRole) {
+                const optPosSlug = opt.getAttribute('data-pos-slug') || '';
+
+                // Tampilkan option hanya yang cocok slugnya dengan jabatan dipilih
+                if (!posSlug || optPosSlug !== posSlug) {
                     opt.hidden   = true;
                     opt.disabled = true;
                     opt.style.color = '#9ca3af';
                 } else {
                     opt.hidden = false;
-                    const occupantId = opt.getAttribute('data-' + attrKey);
-                    if (occupantId && occupantId !== '') {
-                        opt.disabled = true;
-                        opt.style.color = '#9ca3af';
-                        opt.title    = 'Sudah ditetapkan';
-                        anyDisabled  = true;
-                        if (waEl.value === opt.value) waEl.value = 'none';
+
+                    // Cek occupancy jika jabatan ini punya slot di sppg_units
+                    const attrKey = slugToOccupancyAttr[posSlug] ?? null;
+                    if (attrKey) {
+                        const occupantId = opt.getAttribute('data-' + attrKey) || '';
+                        if (occupantId !== '') {
+                            opt.disabled    = true;
+                            opt.style.color = '#9ca3af';
+                            opt.title       = 'Sudah ditetapkan ke orang lain';
+                            anyDisabled     = true;
+                            if (waEl.value === opt.value) waEl.value = 'none';
+                        } else {
+                            opt.disabled    = false;
+                            opt.style.color = '';
+                            opt.title       = '';
+                        }
                     } else {
-                        opt.disabled = false;
+                        opt.disabled    = false;
                         opt.style.color = '';
-                        opt.title    = '';
+                        opt.title       = '';
                     }
                 }
             });
 
-            // Jika jabatan bukan unit-role, paksa ke "Belum Penugasan"
-            if (!isUnitRole) {
+            // Jika tidak ada jabatan dipilih, pastikan WA ke 'none'
+            if (!posSlug) {
                 waEl.value = 'none';
             }
 
-            if (note) note.classList.toggle('hidden', !anyDisabled || !isUnitRole);
+            if (note) note.classList.toggle('hidden', !anyDisabled);
         }
 
-        document.getElementById('id_ref_position')?.addEventListener('change', updateWaOptions);
-        document.addEventListener('DOMContentLoaded', updateWaOptions);
+        document.getElementById('id_ref_position')?.addEventListener('change', () => updateWaOptions(true));
+        document.addEventListener('DOMContentLoaded', () => updateWaOptions(false));
 
         document.addEventListener('DOMContentLoaded', function() {
             // --- 1. GLOBAL VARIABLES & ELEMENTS ---

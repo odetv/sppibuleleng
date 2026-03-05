@@ -33,6 +33,7 @@
                         <option value="none">Belum Penugasan</option>
                         @foreach($workAssignments as $wa)
                         <option value="{{$wa->id_work_assignment}}"
+                            data-pos="{{ $wa->decree?->type_sk ?? '' }}"
                             data-unit="{{$wa->id_sppg_unit}}"
                             data-leader="{{$wa->sppgUnit->leader_id ?? ''}}"
                             data-nutritionist="{{$wa->sppgUnit->nutritionist_id ?? ''}}"
@@ -84,38 +85,68 @@
         const waEl  = document.getElementById('aa_wa');
         const note  = document.getElementById('aa-occupied-note');
 
-        const posSlug    = aaPositionsMeta[posEl?.value];
+        const selectedPosId = posEl?.value;
+        const posSlug       = aaPositionsMeta[selectedPosId];
+
         const unitRoles  = ['kasppg', 'ag', 'ak'];
         const slugToAttr = { kasppg: 'leader', ag: 'nutritionist', ak: 'accountant' };
         const isUnitRole = posSlug && unitRoles.includes(posSlug);
         const attrKey    = isUnitRole ? slugToAttr[posSlug] : null;
 
-        const waOptions = waEl.querySelectorAll('option[data-unit]');
+        const waOptions = waEl.querySelectorAll('option[data-pos]');
         let anyDisabled = false;
 
         waOptions.forEach(opt => {
-            if (!isUnitRole) {
+            const waPosId = opt.getAttribute('data-pos');
+
+            // 1. Filter based on Position ID (Must match unless it's the "none" option)
+            if (waPosId && selectedPosId && waPosId !== selectedPosId) {
+                opt.hidden   = true;
+                opt.disabled = true;
+                opt.style.color = '#9ca3af';
+            } else if (!selectedPosId || selectedPosId === 'none') {
+                // If no position selected, hide all except "none"
                 opt.hidden   = true;
                 opt.disabled = true;
                 opt.style.color = '#9ca3af';
             } else {
                 opt.hidden = false;
-                const occupantId = opt.getAttribute('data-' + attrKey);
-                if (occupantId && occupantId !== '') {
-                    opt.disabled = true;
-                    opt.style.color = '#9ca3af';
-                    opt.title    = 'Sudah ditetapkan';
-                    anyDisabled  = true;
-                    if (waEl.value === opt.value) waEl.value = 'none';
+
+                // 2. Check Occupancy ONLY for core roles (Head, AG, AK)
+                if (isUnitRole) {
+                    const occupantId = opt.getAttribute('data-' + attrKey);
+                    if (occupantId && occupantId !== '') {
+                        opt.disabled = true;
+                        opt.style.color = '#9ca3af';
+                        opt.title    = 'Sudah ditetapkan';
+                        anyDisabled  = true;
+                    } else {
+                        opt.disabled = false;
+                        opt.style.color = '';
+                        opt.title    = '';
+                    }
                 } else {
+                    // For other positions, we don't have occupancy check yet in SPPG Unit table
                     opt.disabled = false;
                     opt.style.color = '';
-                    opt.title    = '';
+                    opt.title = '';
                 }
             }
         });
 
-        if (!isUnitRole) waEl.value = 'none';
+        // Ensure "none" option is always visible
+        const noneOpt = waEl.querySelector('option[value="none"]');
+        if (noneOpt) {
+            noneOpt.hidden = false;
+            noneOpt.disabled = false;
+            noneOpt.style.color = '';
+        }
+
+        // If current selected value is now hidden/disabled, reset to none
+        if (waEl.options[waEl.selectedIndex] && (waEl.options[waEl.selectedIndex].hidden || waEl.options[waEl.selectedIndex].disabled) && waEl.value !== 'none') {
+            waEl.value = 'none';
+        }
+
         if (note) note.classList.toggle('hidden', !anyDisabled || !isUnitRole);
     }
 

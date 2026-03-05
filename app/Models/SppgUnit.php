@@ -78,8 +78,7 @@ class SppgUnit extends Model
      */
     public function syncPersonnel()
     {
-        $latestWA  = $this->workAssignments()->latest()->first();
-        $unitId    = $this->id_sppg_unit;
+        $unitId = $this->id_sppg_unit;
 
         $columns = [
             'leader_id'       => 'kasppg',
@@ -93,9 +92,16 @@ class SppgUnit extends Model
 
             if (!$position) continue;
 
-            // ── Langkah 1: Jika ada WA, bersihkan orang lama di jabatan ini yg terhubung ke WA ini ──
-            if ($latestWA) {
-                \App\Models\Person::where('id_work_assignment', $latestWA->id_work_assignment)
+            // Cari WorkAssignment yang sesuai dengan tipe jabatan ini untuk unit ini
+            $workAssignment = \App\Models\WorkAssignment::join('assignment_decrees', 'work_assignments.id_assignment_decree', '=', 'assignment_decrees.id_assignment_decree')
+                ->where('work_assignments.id_sppg_unit', $unitId)
+                ->where('assignment_decrees.type_sk', $position->id_ref_position)
+                ->select('work_assignments.*')
+                ->first();
+
+            // ── Langkah 1: Jika ada WA yang cocok, bersihkan orang lain di jabatan ini yang terhubung ke WA ini ──
+            if ($workAssignment) {
+                \App\Models\Person::where('id_work_assignment', $workAssignment->id_work_assignment)
                     ->where('id_ref_position', $position->id_ref_position)
                     ->when($newPersonId, fn($q) => $q->where('id_person', '!=', $newPersonId))
                     ->update([
@@ -125,7 +131,7 @@ class SppgUnit extends Model
             // ── Langkah 3: Tetapkan jabatan & penugasan ke person ini ──
             \App\Models\Person::where('id_person', $newPersonId)->update([
                 'id_ref_position'    => $position->id_ref_position,
-                'id_work_assignment' => $latestWA?->id_work_assignment,
+                'id_work_assignment' => $workAssignment?->id_work_assignment,
             ]);
         }
     }

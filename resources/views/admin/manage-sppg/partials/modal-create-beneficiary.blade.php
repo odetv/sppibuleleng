@@ -27,7 +27,7 @@
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M12 9v3m0 0v3m0-3h3m-3 0H9m12 0a9 9 0 11-18 0 9 9 0 0118 0z" />
                     </svg>
                 </span>
-                <h3 class="text-[14px] font-bold uppercase tracking-widest text-slate-800">Tambah Beneficiary Baru</h3>
+                <h3 class="text-[14px] font-bold uppercase tracking-widest text-slate-800">Tambah PM Baru</h3>
             </div>
             <button @click="showCreateBeneficiaryModal = false" class="text-slate-400 hover:text-slate-600 text-2xl duration-200">&times;</button>
         </div>
@@ -44,7 +44,7 @@
                     <h4 class="text-[11px] font-bold text-indigo-600 uppercase tracking-widest border-b border-indigo-50 pb-2">Identitas Utama</h4>
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                         <div class="md:col-span-2">
-                            <label class="text-[11px] font-bold text-gray-500 uppercase tracking-wider">Nama Penerima Manfaat (Beneficiary) <span class="text-rose-500">*</span></label>
+                            <label class="text-[11px] font-bold text-gray-500 uppercase tracking-wider">Nama Penerima Manfaat (PM) <span class="text-rose-500">*</span></label>
                             <input type="text" name="name" required class="w-full mt-2 px-4 py-2.5 bg-gray-50 border-none rounded-lg text-sm focus:ring-2 focus:ring-indigo-500 outline-none transition-all" placeholder="Nama Sekolah / Posyandu / Kelompok">
                         </div>
                         <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -64,7 +64,7 @@
                         </div>
                         <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                             <div>
-                                <label class="text-[11px] font-bold text-gray-500 uppercase tracking-wider">Kode Beneficiary</label>
+                                <label class="text-[11px] font-bold text-gray-500 uppercase tracking-wider">Kode PM</label>
                                 <input type="text" name="code" class="w-full mt-2 px-4 py-2.5 bg-gray-50 border-none rounded-lg text-sm focus:ring-2 focus:ring-indigo-500" placeholder="Kode Opsional">
                             </div>
                             <div>
@@ -113,10 +113,10 @@
                             </div>
                         </div>
                         <div>
-                            <div id="map-create-beneficiary-integrated" style="height: 180px; width: 100%; border-radius: 0.75rem;" class="border-2 border-slate-100 shadow-inner"></div>
+                            <div id="map-create-beneficiary-integrated" style="height: 300px; width: 100%; border-radius: 0.75rem; border: 4px solid white; box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1);"></div>
                             <div class="grid grid-cols-2 gap-4 mt-4">
-                                <input type="text" name="latitude_gps" id="beneficiary_c_lat" readonly class="px-3 py-2 bg-slate-100 rounded-lg text-[10px] text-slate-500" placeholder="Lat (Klik Peta)">
-                                <input type="text" name="longitude_gps" id="beneficiary_c_lng" readonly class="px-3 py-2 bg-slate-100 rounded-lg text-[10px] text-slate-500" placeholder="Lng (Klik Peta)">
+                                <input type="text" name="latitude_gps" id="beneficiary_c_lat" readonly class="px-3 py-2 bg-slate-100 rounded-lg text-[10px] text-slate-500 focus:outline-none cursor-not-allowed" placeholder="Lat (Klik Peta)">
+                                <input type="text" name="longitude_gps" id="beneficiary_c_lng" readonly class="px-3 py-2 bg-slate-100 rounded-lg text-[10px] text-slate-500 focus:outline-none cursor-not-allowed" placeholder="Lng (Klik Peta)">
                             </div>
                         </div>
                     </div>
@@ -167,7 +167,7 @@
                         </div>
                         <div>
                             <label class="text-[11px] font-bold text-gray-500 uppercase tracking-wider">Telepon PIC</label>
-                            <input type="number" name="pic_phone" class="w-full mt-2 px-4 py-2.5 bg-gray-50 border-none rounded-lg text-sm focus:ring-2 focus:ring-indigo-500 outline-none transition-all" placeholder="812xxxxx">
+                            <input type="text" name="pic_phone" class="w-full mt-2 px-4 py-2.5 bg-gray-50 border-none rounded-lg text-sm focus:ring-2 focus:ring-indigo-500 outline-none transition-all" placeholder="812xxxxx">
                         </div>
                         <div>
                             <label class="text-[11px] font-bold text-gray-500 uppercase tracking-wider">Email PIC</label>
@@ -179,7 +179,7 @@
 
             <div class="p-6 border-t border-slate-100 bg-slate-50/50 flex gap-4">
                 <button type="button" @click="showCreateBeneficiaryModal = false" class="flex-1 py-4 text-[11px] font-bold uppercase text-slate-500 bg-white border border-slate-200 rounded-xl hover:bg-slate-100 transition-all">Batal</button>
-                <button type="submit" class="flex-1 py-4 text-[11px] font-bold uppercase text-white bg-slate-800 rounded-xl shadow-lg hover:bg-slate-900 transition-all active:scale-95">Simpan Beneficiary Baru</button>
+                <button type="submit" class="flex-1 py-4 text-[11px] font-bold uppercase text-white bg-slate-800 rounded-xl shadow-lg hover:bg-slate-900 transition-all active:scale-95">Simpan PM Baru</button>
             </div>
         </form>
     </div>

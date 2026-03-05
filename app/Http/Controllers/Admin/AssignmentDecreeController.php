@@ -44,10 +44,22 @@ class AssignmentDecreeController extends Controller
         // Prepare list of all SPPGs for the Create/Edit Modals
         $sppgUnits = SppgUnit::orderBy('name', 'asc')->get();
 
-        // Ambil pemetaan SPPG mana yang sudah terkait dengan suatu SK (agar dropdown bisa dinonaktifkan di Frontend)
-        $assignedSppgsMap = WorkAssignment::pluck('id_assignment_decree', 'id_sppg_unit')->toArray();
+        // Ambil list jabatan untuk Tipe SK
+        $positions = DB::table('ref_positions')->orderBy('name_position', 'asc')->get();
 
-        return view('admin.manage-assignment-decree.index', compact('decrees', 'sppgUnits', 'assignedSppgsMap'));
+        // Ambil pemetaan SPPG mana yang sudah terkait dengan SK tertentu (dikelompokkan berdasarkan type_sk)
+        // Format: [type_sk => [id_sppg_unit1, id_sppg_unit2, ...]]
+        $assignedSppgsMap = DB::table('work_assignments')
+            ->join('assignment_decrees', 'work_assignments.id_assignment_decree', '=', 'assignment_decrees.id_assignment_decree')
+            ->select('work_assignments.id_sppg_unit', 'assignment_decrees.id_assignment_decree', 'assignment_decrees.type_sk')
+            ->get()
+            ->groupBy('type_sk')
+            ->map(function($items) {
+                return $items->pluck('id_assignment_decree', 'id_sppg_unit')->toArray();
+            })
+            ->toArray();
+
+        return view('admin.manage-assignment-decree.index', compact('decrees', 'sppgUnits', 'assignedSppgsMap', 'positions'));
     }
 
     /**
@@ -60,20 +72,44 @@ class AssignmentDecreeController extends Controller
             'date_sk'           => 'required|date',
             'no_ba_verval'      => 'required|string|max:255',
             'date_ba_verval'    => 'required|date',
+            'type_sk'           => 'required|exists:ref_positions,id_ref_position',
             'file_sk'           => 'required|file|mimes:pdf|max:2048',
-            'sppg_units'        => 'required|array|min:1',
-            'sppg_units.*'      => 'exists:sppg_units,id_sppg_unit|unique:work_assignments,id_sppg_unit'
+            'sppg_units'        => [
+                function ($attribute, $value, $fail) use ($request) {
+                    $pos = DB::table('ref_positions')->where('id_ref_position', $request->type_sk)->first();
+                    $isCoreRole = $pos && in_array($pos->slug_position, ['kasppg', 'ag', 'ak']);
+                    
+                    if ($isCoreRole && (empty($value) || !is_array($value) || count($value) === 0)) {
+                        $fail('Minimal 1 Unit SPPG harus ditugaskan untuk jabatan ini.');
+                    }
+                }
+            ],
+            'sppg_units.*'      => [
+                'exists:sppg_units,id_sppg_unit',
+                function ($attribute, $value, $fail) use ($request) {
+                    $exists = DB::table('work_assignments')
+                        ->join('assignment_decrees', 'work_assignments.id_assignment_decree', '=', 'assignment_decrees.id_assignment_decree')
+                        ->where('work_assignments.id_sppg_unit', $value)
+                        ->where('assignment_decrees.type_sk', $request->type_sk)
+                        ->exists();
+                    if ($exists) {
+                        $fail('Satu atau lebih Unit SPPG yang dipilih sudah memiliki SK untuk jabatan ini.');
+                    }
+                }
+            ]
         ], [
             'no_sk.unique' => 'Nomor SK ini sudah terdaftar sebelumnya.',
             'file_sk.required' => 'File SK (PDF) Wajib diunggah.',
-            'sppg_units.required' => 'Minimal 1 Unit SPPG harus ditugaskan/dipilih.',
-            'sppg_units.*.unique' => 'Satu atau lebih Unit SPPG yang dipilih sudah tertaut dengan SK lain.'
         ]);
 
         try {
             DB::beginTransaction();
 
-            // Simpan file original ke folder temporary agar bisa disalin, ini tidak terikat ID decre
+            // Ambil slug jabatan untuk path penyimpanan
+            $pos = DB::table('ref_positions')->where('id_ref_position', $request->type_sk)->first();
+            $posSlug = $pos->slug_position ?? 'unknown';
+
+            // Simpan file original ke folder temporary agar bisa disalin
             $originalFilePath = $request->file('file_sk')->store('temp/sk', 'public');
             $fileName = basename($originalFilePath);
 
@@ -83,11 +119,13 @@ class AssignmentDecreeController extends Controller
                 'date_sk'        => $request->date_sk,
                 'no_ba_verval'   => $request->no_ba_verval,
                 'date_ba_verval' => $request->date_ba_verval,
+                'type_sk'        => $request->type_sk,
             ]);
 
             $skHash = md5($decree->id_assignment_decree . config('app.key'));
 
             if ($request->filled('sppg_units')) {
+                // JIKA ADA SPPG (Wajib untuk KaSPPG, AG, AK; Opsional untuk lainnya)
                 foreach ($request->sppg_units as $id_sppg) {
                     WorkAssignment::create([
                         'id_assignment_decree' => $decree->id_assignment_decree,
@@ -100,6 +138,15 @@ class AssignmentDecreeController extends Controller
                     // Salin dari file temporary
                     Storage::disk('public')->copy($originalFilePath, $destPath);
                 }
+            } else {
+                // JIKA TIDAK ADA SPPG: buat WA dengan unit null agar muncul di dropdown penugasan
+                WorkAssignment::create([
+                    'id_assignment_decree' => $decree->id_assignment_decree,
+                    'id_sppg_unit'         => null
+                ]);
+
+                $destPath = "positions/{$posSlug}/files/{$skHash}/{$fileName}";
+                Storage::disk('public')->copy($originalFilePath, $destPath);
             }
             
             // Hapus file dari folder temporary
@@ -126,27 +173,53 @@ class AssignmentDecreeController extends Controller
             'date_sk'           => 'required|date',
             'no_ba_verval'      => 'required|string|max:255',
             'date_ba_verval'    => 'required|date',
+            'type_sk'           => 'required|exists:ref_positions,id_ref_position',
             'file_sk'           => 'nullable|file|mimes:pdf|max:2048',
-            'sppg_units'        => 'required|array|min:1',
+            'sppg_units'        => [
+                function ($attribute, $value, $fail) use ($request) {
+                    $pos = DB::table('ref_positions')->where('id_ref_position', $request->type_sk)->first();
+                    $isCoreRole = $pos && in_array($pos->slug_position, ['kasppg', 'ag', 'ak']);
+                    
+                    if ($isCoreRole && (empty($value) || !is_array($value) || count($value) === 0)) {
+                        $fail('Minimal 1 Unit SPPG harus ditugaskan untuk jabatan ini.');
+                    }
+                }
+            ],
             'sppg_units.*'      => [
                 'exists:sppg_units,id_sppg_unit',
-                \Illuminate\Validation\Rule::unique('work_assignments', 'id_sppg_unit')->whereNot('id_assignment_decree', $id)
+                function ($attribute, $value, $fail) use ($request, $id) {
+                    $exists = DB::table('work_assignments')
+                        ->join('assignment_decrees', 'work_assignments.id_assignment_decree', '=', 'assignment_decrees.id_assignment_decree')
+                        ->where('work_assignments.id_sppg_unit', $value)
+                        ->where('assignment_decrees.type_sk', $request->type_sk)
+                        ->where('assignment_decrees.id_assignment_decree', '!=', $id)
+                        ->exists();
+                    if ($exists) {
+                        $fail('Satu atau lebih Unit SPPG yang dipilih sudah memiliki SK untuk jabatan ini.');
+                    }
+                }
             ]
         ], [
             'no_sk.unique' => 'Nomor SK ini sudah terdaftar sebelumnya.',
-            'sppg_units.required' => 'Minimal 1 Unit SPPG harus ditugaskan/dipilih.',
-            'sppg_units.*.unique' => 'Satu atau lebih Unit SPPG yang dipilih sudah tertaut dengan SK lain.'
         ]);
 
         try {
             DB::beginTransaction();
+
+            // Info Jabatan Baru & Lama
+            $newPos = DB::table('ref_positions')->where('id_ref_position', $request->type_sk)->first();
+            $newPosSlug = $newPos->slug_position ?? 'unknown';
+            
+            $oldPos = DB::table('ref_positions')->where('id_ref_position', $decree->type_sk)->first();
+            $oldPosSlug = $oldPos->slug_position ?? 'unknown';
 
             $skHash = md5($decree->id_assignment_decree . config('app.key'));
             $oldFileName = $decree->file_sk;
             $newFileName = $oldFileName;
             
             $existingAssignments = WorkAssignment::where('id_assignment_decree', $id)->get();
-            $existingSppgIds = $existingAssignments->pluck('id_sppg_unit')->toArray();
+            // Filter out null sppg_unit (WA record untuk posisi non-unit)
+            $existingSppgIds = $existingAssignments->pluck('id_sppg_unit')->filter()->values()->toArray();
             $newSppgIds = $request->sppg_units ?? [];
             
             $toDelete = array_diff($existingSppgIds, $newSppgIds);
@@ -161,35 +234,65 @@ class AssignmentDecreeController extends Controller
                 $originalFilePath = $request->file('file_sk')->store('temp/sk', 'public');
                 $newFileName = basename($originalFilePath);
                 
-                // Hapus file lama di semua folder sppg yang ditugaskan selama ini
+                // 1. Bersihkan semua folder SPPG lama
                 foreach ($existingSppgIds as $id_sppg) {
                     $sppgHash = md5($id_sppg . config('app.key'));
                     Storage::disk('public')->deleteDirectory("sppgunits/{$sppgHash}/files/{$skHash}");
                 }
+
+                // 2. Bersihkan folder posisi lama
+                Storage::disk('public')->deleteDirectory("positions/{$oldPosSlug}/files/{$skHash}");
                 
-                // Copy file baru ke semua SPPG yang akan aktif (SPPG baru + SPPG dipertahankan)
-                foreach ($newSppgIds as $id_sppg) {
-                    $sppgHash = md5($id_sppg . config('app.key'));
-                    $destPath = "sppgunits/{$sppgHash}/files/{$skHash}/{$newFileName}";
+                // 3. Simpan ke destinasi baru
+                if (!empty($newSppgIds)) {
+                    foreach ($newSppgIds as $id_sppg) {
+                        $sppgHash = md5($id_sppg . config('app.key'));
+                        $destPath = "sppgunits/{$sppgHash}/files/{$skHash}/{$newFileName}";
+                        Storage::disk('public')->copy($originalFilePath, $destPath);
+                    }
+                } else {
+                    $destPath = "positions/{$newPosSlug}/files/{$skHash}/{$newFileName}";
                     Storage::disk('public')->copy($originalFilePath, $destPath);
                 }
             } else {
-                // JIKA TIDAK ADA FILE BARU TAPI ADA PERUBAHAN SPPG
-                // 1. Ambil file original sementara dari salah satu SPPG yang sudah ada jika ada SPPG baru yang ditambahkan
-                if(!empty($toAdd) && !empty($existingSppgIds)) {
-                     $tempSppgHash = md5($existingSppgIds[0] . config('app.key'));
-                     $sourceTemp = "sppgunits/{$tempSppgHash}/files/{$skHash}/{$oldFileName}";
-                     
-                     if(Storage::disk('public')->exists($sourceTemp)) {
-                         foreach ($toAdd as $id_sppg) {
-                             $sppgHash = md5($id_sppg . config('app.key'));
-                             $destPath = "sppgunits/{$sppgHash}/files/{$skHash}/{$oldFileName}";
-                             Storage::disk('public')->copy($sourceTemp, $destPath);
-                         }
-                     }
+                // JIKA TIDAK ADA FILE BARU TAPI ADA PERUBAHAN SPPG ATAU JABATAN
+                
+                // 1. Cari sumber file yang ada (bisa dari SPPG lama atau folder Posisi)
+                $sourcePath = null;
+                if (!empty($existingSppgIds)) {
+                    $tempSppgHash = md5($existingSppgIds[0] . config('app.key'));
+                    $sourcePath = "sppgunits/{$tempSppgHash}/files/{$skHash}/{$oldFileName}";
+                } else {
+                    $sourcePath = "positions/{$oldPosSlug}/files/{$skHash}/{$oldFileName}";
+                }
+
+                // Jika sumber ditemukan, lakukan migrasi/copy
+                if(Storage::disk('public')->exists($sourcePath)) {
+                    // Jika sekarang ada SPPG, copy ke yang baru/belum ada
+                    if (!empty($newSppgIds)) {
+                        foreach ($toAdd as $id_sppg) {
+                            $sppgHash = md5($id_sppg . config('app.key'));
+                            $destPath = "sppgunits/{$sppgHash}/files/{$skHash}/{$oldFileName}";
+                            Storage::disk('public')->copy($sourcePath, $destPath);
+                        }
+                        
+                        // Hapus folder posisi jika sebelumnya ada disana
+                        Storage::disk('public')->deleteDirectory("positions/{$oldPosSlug}/files/{$skHash}");
+                    } else {
+                        // Jika sekarang TIDAK ada SPPG, pindahkan ke folder posisi (jika ganti jabatan atau sebelumnya dari SPPG)
+                        $destPath = "positions/{$newPosSlug}/files/{$skHash}/{$oldFileName}";
+                        if ($newPosSlug !== $oldPosSlug || !empty($existingSppgIds)) {
+                            Storage::disk('public')->copy($sourcePath, $destPath);
+                            
+                            // Bersihkan folder lama jika bukan folder posisi yang sama
+                            if ($newPosSlug !== $oldPosSlug) {
+                                Storage::disk('public')->deleteDirectory("positions/{$oldPosSlug}/files/{$skHash}");
+                            }
+                        }
+                    }
                 }
                 
-                // 2. Hapus folder file di unit SPPG yang tidak dipilih lagi
+                // Hapus folder file di unit SPPG yang tidak dipilih lagi
                 foreach ($toDelete as $id_sppg) {
                     $sppgHash = md5($id_sppg . config('app.key'));
                     Storage::disk('public')->deleteDirectory("sppgunits/{$sppgHash}/files/{$skHash}");
@@ -202,6 +305,7 @@ class AssignmentDecreeController extends Controller
                 'date_sk'        => $request->date_sk,
                 'no_ba_verval'   => $request->no_ba_verval,
                 'date_ba_verval' => $request->date_ba_verval,
+                'type_sk'        => $request->type_sk,
             ]);
 
             // Jika ada yang dihapus, lepaskan dulu dari tabel persons agar tidak error null
@@ -225,7 +329,23 @@ class AssignmentDecreeController extends Controller
                     'id_sppg_unit'         => $id_sppg
                 ]);
             }
-            
+
+            // Jika tidak ada sppg_units (posisi non-unit), pastikan ada 1 WA null
+            if (empty($newSppgIds)) {
+                $hasNullWa = WorkAssignment::where('id_assignment_decree', $id)
+                    ->whereNull('id_sppg_unit')->exists();
+                if (!$hasNullWa) {
+                    WorkAssignment::create([
+                        'id_assignment_decree' => $decree->id_assignment_decree,
+                        'id_sppg_unit'         => null
+                    ]);
+                }
+            } else {
+                // Posisi berubah menjadi unit-role: hapus WA null jika ada
+                WorkAssignment::where('id_assignment_decree', $id)
+                    ->whereNull('id_sppg_unit')->delete();
+            }
+
             if ($originalFilePath) {
                 Storage::disk('public')->delete($originalFilePath);
             }
@@ -248,31 +368,39 @@ class AssignmentDecreeController extends Controller
             DB::beginTransaction();
             $decree = AssignmentDecree::findOrFail($id);
 
+            // Ambil info jabatan untuk path
+            $pos = DB::table('ref_positions')->where('id_ref_position', $decree->type_sk)->first();
+            $posSlug = $pos->slug_position ?? 'unknown';
+
             // Bersihkan Orphans form Persons
             $workAssignments = WorkAssignment::where('id_assignment_decree', $id)->get();
             $waIds = $workAssignments->pluck('id_work_assignment')->toArray();
             
             $skHash = md5($decree->id_assignment_decree . config('app.key'));
             
+            // 1. Hapus penugasan person
             if(!empty($waIds)) {
                 DB::table('persons')->whereIn('id_work_assignment', $waIds)->update([
                     'id_work_assignment' => null
                 ]);
+            }
                 
-                // Hapus file SK nya di folder SPPG masing - masing
-                foreach($workAssignments as $wa) {
-                    $sppgHash = md5($wa->id_sppg_unit . config('app.key'));
-                    Storage::disk('public')->deleteDirectory("sppgunits/{$sppgHash}/files/{$skHash}");
-                }
-                
-                WorkAssignment::whereIn('id_work_assignment', $waIds)->delete();
+            // 2. Hapus file SK di folder SPPG (jika ada relasi, skip jika id_sppg_unit null)
+            foreach($workAssignments as $wa) {
+                if (!$wa->id_sppg_unit) continue;
+                $sppgHash = md5($wa->id_sppg_unit . config('app.key'));
+                Storage::disk('public')->deleteDirectory("sppgunits/{$sppgHash}/files/{$skHash}");
             }
 
+            // 3. Hapus file SK di folder POSISI (jika tidak ada relasi SPPG)
+            Storage::disk('public')->deleteDirectory("positions/{$posSlug}/files/{$skHash}");
+            
+            // 4. Hapus Relasi & Decree
+            WorkAssignment::where('id_assignment_decree', $id)->delete();
             $decree->delete();
 
             DB::commit();
             
-            // Handle redirect via JS if using DELETE method
             return redirect()->route('admin.manage-assignment-decree.index')->with('success', 'Data SK berhasil dihapus secara permanen.');
         } catch (\Exception $e) {
             DB::rollBack();

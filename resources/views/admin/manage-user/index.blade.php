@@ -162,6 +162,7 @@
                                             <option value="none" {{ is_null($user->person?->id_work_assignment) ? 'selected' : '' }}>Belum Penugasan</option>
                                             @foreach($workAssignments as $wa)
                                             <option value="{{ $wa->id_work_assignment }}"
+                                                data-pos="{{ $wa->decree?->type_sk ?? '' }}"
                                                 data-leader="{{ $wa->sppgUnit->leader_id ?? '' }}"
                                                 data-nutritionist="{{ $wa->sppgUnit->nutritionist_id ?? '' }}"
                                                 data-accountant="{{ $wa->sppgUnit->accountant_id ?? '' }}"
@@ -889,31 +890,69 @@
             const waEl  = document.getElementById('wa-' + rowId);
             if (!posEl || !waEl) return;
 
-            const selectedOpt = posEl.options[posEl.selectedIndex];
-            const posSlug     = selectedOpt?.getAttribute('data-slug') ?? null;
-            const isUnitRole  = posSlug && inlineUnitRoles.includes(posSlug);
-            const attrKey     = isUnitRole ? inlineSlugToAttr[posSlug] : null;
+            const selectedPosId = posEl.value;
+            const selectedOpt   = posEl.options[posEl.selectedIndex];
+            const posSlug       = selectedOpt?.getAttribute('data-slug') ?? null;
+            
+            const unitRoles     = ['kasppg', 'ag', 'ak'];
+            const slugToAttr    = { kasppg: 'leader', ag: 'nutritionist', ak: 'accountant' };
+            const isUnitRole    = posSlug && unitRoles.includes(posSlug);
+            const attrKey       = isUnitRole ? slugToAttr[posSlug] : null;
 
             const selfPersonId = waEl.dataset.personId ?? '';
 
-            waEl.querySelectorAll('option[data-leader]').forEach(opt => {
-                if (!isUnitRole) {
+            waEl.querySelectorAll('option[data-pos]').forEach(opt => {
+                const waPosId = opt.getAttribute('data-pos');
+
+                // 1. Filter based on Position ID (Must match unless it's the "none" option)
+                if (waPosId && selectedPosId && waPosId !== selectedPosId) {
+                    opt.hidden   = true;
+                    opt.disabled = true;
+                    opt.style.color = '#9ca3af';
+                } else if (!selectedPosId || selectedPosId === 'none') {
+                    // If no position selected, hide all except "none"
                     opt.hidden   = true;
                     opt.disabled = true;
                     opt.style.color = '#9ca3af';
                 } else {
                     opt.hidden = false;
-                    const occupantId = opt.getAttribute('data-' + attrKey);
-                    // Disable hanya jika slot terisi DAN bukan milik user ini sendiri
-                    const isOwnSlot  = selfPersonId && String(occupantId) === String(selfPersonId);
-                    opt.disabled     = !!(occupantId && occupantId !== '' && !isOwnSlot);
-                    opt.style.color  = opt.disabled ? '#9ca3af' : '';
-                    opt.title        = opt.disabled ? 'Sudah ditetapkan' : '';
-                    if (opt.disabled && waEl.value === opt.value) waEl.value = 'none';
+                    
+                    // 2. Check Occupancy ONLY for core roles (Head, AG, AK)
+                    if (isUnitRole) {
+                        const occupantId = opt.getAttribute('data-' + attrKey);
+                        const isOwnSlot  = selfPersonId && String(occupantId) === String(selfPersonId);
+                        
+                        if (occupantId && occupantId !== '' && !isOwnSlot) {
+                            opt.disabled     = true;
+                            opt.style.color  = '#9ca3af';
+                            opt.title        = 'Sudah ditetapkan';
+                        } else {
+                            opt.disabled     = false;
+                            opt.style.color  = '';
+                            opt.title        = '';
+                        }
+                    } else {
+                        // For other positions, we don't have occupancy check yet in SPPG Unit table
+                        opt.disabled = false;
+                        opt.style.color = '';
+                        opt.title = '';
+                    }
                 }
             });
 
-            if (!isUnitRole) waEl.value = 'none';
+            // Ensure "none" option is always visible
+            const noneOpt = waEl.querySelector('option[value="none"]');
+            if (noneOpt) {
+                noneOpt.hidden = false;
+                noneOpt.disabled = false;
+                noneOpt.style.color = '';
+            }
+
+            // If current selected value is now hidden/disabled, reset to none
+            const activeOpt = waEl.options[waEl.selectedIndex];
+            if (activeOpt && (activeOpt.hidden || activeOpt.disabled) && waEl.value !== 'none') {
+                waEl.value = 'none';
+            }
         }
 
         // Inisialisasi semua baris saat load

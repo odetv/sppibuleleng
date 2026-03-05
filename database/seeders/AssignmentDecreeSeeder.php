@@ -9,25 +9,30 @@ class AssignmentDecreeSeeder extends Seeder
 {
     public function run(): void
     {
-        DB::table('assignment_decrees')->insert([
+        $posKepala = DB::table('ref_positions')->where('slug_position', 'kasppg')->first();
+        $posGizi = DB::table('ref_positions')->where('slug_position', 'ag')->first();
+
+        $decrees = [
             [
-                'id_assignment_decree' => 1,
-                'no_sk' => 'SK/BGN/2026/001',
-                'date_sk' => '2026-01-05',
-                'no_ba_verval' => 'BA/V/2026/01',
+                'no_sk'          => 'SK/BGN/2026/001',
+                'date_sk'        => '2026-01-05',
+                'no_ba_verval'   => 'BA/V/2026/01',
                 'date_ba_verval' => '2026-01-04',
-                'file_sk' => null,
-                'created_at' => now(),
+                'type_sk'        => $posKepala->id_ref_position,
+                'file_sk'        => null,
             ],
             [
-                'id_assignment_decree' => 2,
-                'no_sk' => 'SK/BGN/2026/002',
-                'date_sk' => '2026-01-12',
-                'no_ba_verval' => 'BA/V/2026/02',
+                'no_sk'          => 'SK/BGN/2026/002',
+                'date_sk'        => '2026-01-12',
+                'no_ba_verval'   => 'BA/V/2026/02',
                 'date_ba_verval' => '2026-01-11',
-                'file_sk' => null,
-                'created_at' => now(),
+                'type_sk'        => $posGizi->id_ref_position,
+                'file_sk'        => null,
             ],
-        ]);
+        ];
+
+        foreach ($decrees as $data) {
+            \App\Models\AssignmentDecree::create($data);
+        }
     }
 }

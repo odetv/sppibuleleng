@@ -70,9 +70,11 @@
             showCreateModal: false, 
             showEditModal: false,
             showCreateBeneficiaryModal: false,
+            showEditBeneficiaryModal: false,
             showUnlinkModal: false,
             beneficiaryToUnlink: null,
             selectedUnit: { beneficiaries: [] },
+            selectedPM: {},
             allBeneficiaryList: {{ json_encode($allBeneficiaries) }}
          }">
 
@@ -165,7 +167,7 @@
                         <select id="filter-decree" class="filter-input w-full text-[11px] border-slate-200 rounded-lg py-1.5 focus:ring-1 focus:ring-emerald-500 bg-white">
                             <option value="">Semua SK</option>
                             <option value="none" {{ request('id_assignment_decree') === 'none' ? 'selected' : '' }}>Belum Ada SK</option>
-                            @foreach($decrees as $d)
+                            @foreach($decrees->flatten() as $d)
                                 <option value="{{ $d->id_assignment_decree }}" {{ request('id_assignment_decree') == $d->id_assignment_decree ? 'selected' : '' }}>
                                     {{ $d->no_sk }}
                                 </option>
@@ -219,6 +221,7 @@
                                 <th class="px-6 py-4 text-center">KEPALA SPPG / TANGGAL OPS</th>
                                 <th class="px-6 py-4 text-center">SK</th>
                                 <th class="px-6 py-4">ALAMAT</th>
+                                <th class="px-6 py-4 text-center">TOTAL PORSI</th>
                                 <th class="px-6 py-4 text-center">STATUS</th>
                                 <th class="px-6 py-4 text-center">AKSI</th>
                             </tr>
@@ -255,27 +258,41 @@
 
                                 {{-- SK INFO --}}
                                 <td class="px-6 py-4 text-center">
-                                    @php
-                                        $latestWA = $unit->workAssignments()->latest()->first();
-                                        $decree = $latestWA?->decree;
-                                    @endphp
-                                    @if($decree)
-                                        <div class="flex flex-col items-center">
-                                            <div class="flex items-center gap-1 justify-center">
-                                                <span class="text-slate-500 text-xs block capitalize font-medium">{{ $decree->no_sk }} ({{ \Carbon\Carbon::parse($decree->date_sk)->translatedFormat('d/m/Y') }})</span>
+                                    <div class="flex flex-col items-center gap-1.5 grayscale opacity-90 hover:grayscale-0 hover:opacity-100 transition-all">
+                                        {{-- 1. Kepala SPPG --}}
+                                        @php
+                                            $unitDecrees = $assignedDecreeMap[$unit->id_sppg_unit] ?? [];
+                                            $leaderPos = \App\Models\RefPosition::where('slug_position', 'kasppg')->first();
+                                            $nutriPos = \App\Models\RefPosition::where('slug_position', 'ag')->first();
+                                            $accPos = \App\Models\RefPosition::where('slug_position', 'ak')->first();
+                                            
+                                            $leaderSk = isset($unitDecrees[$leaderPos?->id_ref_position]) ? \App\Models\AssignmentDecree::find($unitDecrees[$leaderPos->id_ref_position]) : null;
+                                            $nutriSk = isset($unitDecrees[$nutriPos?->id_ref_position]) ? \App\Models\AssignmentDecree::find($unitDecrees[$nutriPos->id_ref_position]) : null;
+                                            $accSk = isset($unitDecrees[$accPos?->id_ref_position]) ? \App\Models\AssignmentDecree::find($unitDecrees[$accPos->id_ref_position]) : null;
+                                        @endphp
+
+                                        @if($leaderSk || $nutriSk || $accSk)
+                                            {{-- 1. Kepala SPPG --}}
+                                            <div class="flex items-center gap-1.5 px-2 py-0.5 bg-indigo-50 border border-indigo-100 rounded text-[10px] text-indigo-700 font-bold" title="SK Kepala SPPG">
+                                                <span class="bg-indigo-600 text-white px-1 rounded-sm text-[8px]">KaSPPG</span>
+                                                <span>{{ $leaderSk->no_sk ?? '-' }}</span>
                                             </div>
-                                            @if($decree->no_ba_verval)
-                                                <div class="flex items-center gap-1 justify-center mt-1 text-slate-500 text-xs block capitalize font-medium">
-                                                    <span>{{ $decree->no_ba_verval }}</span>
-                                                    @if($decree->date_ba_verval)
-                                                        <span>({{ \Carbon\Carbon::parse($decree->date_ba_verval)->translatedFormat('d/m/Y') }})</span>
-                                                    @endif
-                                                </div>
-                                            @endif
-                                        </div>
-                                    @else
-                                        <span class="text-slate-300 text-xs block capitalize font-medium">Belum Ada SK</span>
-                                    @endif
+
+                                            {{-- 2. Ahli Gizi --}}
+                                            <div class="flex items-center gap-1.5 px-2 py-0.5 bg-emerald-50 border border-emerald-100 rounded text-[10px] text-emerald-700 font-bold" title="SK Ahli Gizi">
+                                                <span class="bg-emerald-600 text-white px-1 rounded-sm text-[8px]">AG</span>
+                                                <span>{{ $nutriSk->no_sk ?? '-' }}</span>
+                                            </div>
+
+                                            {{-- 3. Akuntan --}}
+                                            <div class="flex items-center gap-1.5 px-2 py-0.5 bg-amber-50 border border-amber-100 rounded text-[10px] text-amber-700 font-bold" title="SK Akuntan">
+                                                <span class="bg-amber-600 text-white px-1 rounded-sm text-[8px]">AK</span>
+                                                <span>{{ $accSk->no_sk ?? '-' }}</span>
+                                            </div>
+                                        @else
+                                            <span class="text-slate-300 text-xs block capitalize font-medium italic">Belum Ada SK</span>
+                                        @endif
+                                    </div>
                                 </td>
 
                                 {{-- ALAMAT --}}
@@ -294,6 +311,29 @@
                                         </div>
                                     </div>
                                 </td>
+
+                                {{-- TOTAL PORSI --}}
+                                <td class="px-6 py-4 text-center">
+                                    @php
+                                        $totalPorsi = $unit->beneficiaries->sum('small_portion_male')
+                                            + $unit->beneficiaries->sum('small_portion_female')
+                                            + $unit->beneficiaries->sum('large_portion_male')
+                                            + $unit->beneficiaries->sum('large_portion_female')
+                                            + $unit->beneficiaries->sum('teacher_portion')
+                                            + $unit->beneficiaries->sum('staff_portion')
+                                            + $unit->beneficiaries->sum('cadre_portion');
+                                        $pmCount = $unit->beneficiaries->count();
+                                    @endphp
+                                    @if($pmCount > 0)
+                                        <div class="flex flex-col items-center gap-0.5">
+                                            <span class="text-base font-bold text-slate-700">{{ number_format($totalPorsi) }}</span>
+                                            <span class="text-[10px] text-slate-400 font-medium">dari {{ $pmCount }} PM</span>
+                                        </div>
+                                    @else
+                                        <span class="text-slate-300 text-xs font-medium">-</span>
+                                    @endif
+                                </td>
+
 
                                 {{-- STATUS --}}
                                 <td class="px-6 py-4 text-center">
@@ -314,7 +354,7 @@
                                 {{-- AKSI --}}
                                 <td class="px-6 py-4 text-center">
                                     <div class="flex justify-center items-center gap-1">
-                                        <button type="button" @click="selectedUnit = {{ json_encode($unit->load(['socialMedia', 'beneficiaries'])) }}; selectedUnit.original_id = '{{ $unit->id_sppg_unit }}'; selectedUnit.work_assignment_decree_id = '{{ $assignedDecreeMap[$unit->id_sppg_unit] ?? '' }}'; showEditModal = true; setTimeout(() => window.dispatchEvent(new CustomEvent('init-edit-sppg', { detail: selectedUnit })), 300)"
+                                        <button type="button" @click="selectedUnit = {{ json_encode($unit->load(['socialMedia', 'beneficiaries'])) }}; selectedUnit.original_id = '{{ $unit->id_sppg_unit }}'; showEditModal = true; setTimeout(() => window.dispatchEvent(new CustomEvent('init-edit-sppg', { detail: selectedUnit })), 300)"
                                             title="Edit" class="p-2 text-slate-400 hover:text-indigo-600 cursor-pointer transition-colors hover:bg-indigo-50 rounded-lg">
                                             <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
                                                 <path d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path>
@@ -385,6 +425,7 @@
         @include('admin.manage-sppg.partials.modal-create')
         @include('admin.manage-sppg.partials.modal-edit')
         @include('admin.manage-sppg.partials.modal-create-beneficiary')
+        @include('admin.manage-sppg.partials.modal-edit-beneficiary')
         @include('admin.manage-sppg.partials.modal-cropper')
         @include('admin.manage-sppg.partials.modal-delete')
         @include('admin.manage-sppg.partials.modal-delete-beneficiary')

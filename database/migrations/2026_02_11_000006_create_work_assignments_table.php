@@ -17,12 +17,12 @@ return new class extends Migration
             // Relasi ke SK (Tetap foreignId karena di tabel asalnya biasanya bigInt auto-increment)
             $table->foreignId('id_assignment_decree')->constrained('assignment_decrees', 'id_assignment_decree');
 
-            // Relasi ke Unit SPPG (Wajib String agar cocok dengan tabel sppg_units)
-            $table->string('id_sppg_unit');
+            // Relasi ke Unit SPPG (Nullable: posisi non-unit seperti SPPI tidak harus punya unit)
+            $table->string('id_sppg_unit')->nullable();
             $table->foreign('id_sppg_unit')
                 ->references('id_sppg_unit')
                 ->on('sppg_units')
-                ->onDelete('cascade');
+                ->nullOnDelete();
 
             $table->timestamps();
         });

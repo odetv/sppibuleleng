@@ -158,19 +158,52 @@
                 {{-- SECTION SK --}}
                 <div class="pt-10 border-t border-gray-100">
                     <h3 class="text-sm font-bold uppercase tracking-widest text-indigo-600 mb-6">Surat Keputusan (SK)</h3>
-                    <div class="grid grid-cols-1 gap-6">
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                        @php
+                            $leaderPos = \App\Models\RefPosition::where('slug_position', 'kasppg')->first();
+                            $nutriPos = \App\Models\RefPosition::where('slug_position', 'ag')->first();
+                            $accPos = \App\Models\RefPosition::where('slug_position', 'ak')->first();
+                        @endphp
+                        
+                        {{-- SK KEPALA --}}
                         <div>
-                            <label class="text-[11px] font-bold text-gray-500 uppercase tracking-wider">Nomor SK <span class="text-red-500">*</span></label>
-                            <select name="id_assignment_decree" id="f_decree" class="w-full mt-2 px-3 py-2.5 bg-gray-50 border-none rounded-lg text-sm focus:ring-2 focus:ring-indigo-500">
-                                <option value="" disabled selected>Pilih Nomor SK</option>
-                                @foreach($decrees as $decree)
+                            <label class="text-[11px] font-bold text-gray-500 uppercase tracking-wider">SK Kepala SPPG <span class="text-red-500">*</span></label>
+                            <select name="id_sk_leader" id="f_sk_leader" class="w-full mt-2 px-3 py-2.5 bg-gray-50 border-none rounded-lg text-sm focus:ring-2 focus:ring-indigo-500">
+                                <option value="" disabled selected>Pilih SK Kepala</option>
+                                @foreach($decrees[$leaderPos?->id_ref_position] ?? [] as $decree)
                                 <option value="{{ $decree->id_assignment_decree }}">
                                     {{ $decree->no_sk }} ({{ \Carbon\Carbon::parse($decree->date_sk)->format('d/m/Y') }})
-                                    &mdash; {{ $decree->no_ba_verval }} ({{ \Carbon\Carbon::parse($decree->date_ba_verval)->format('d/m/Y') }})
                                 </option>
                                 @endforeach
                             </select>
-                            <p class="text-[10px] text-slate-400 mt-1">1 SK dapat mencakup banyak SPPG. SPPG ini akan terhubung ke SK yang dipilih.</p>
+                        </div>
+
+                        {{-- SK AHLI GIZI --}}
+                        <div>
+                            <label class="text-[11px] font-bold text-gray-500 uppercase tracking-wider">SK Ahli Gizi</label>
+                            <select name="id_sk_nutritionist" id="f_sk_nutritionist" class="w-full mt-2 px-3 py-2.5 bg-gray-50 border-none rounded-lg text-sm focus:ring-2 focus:ring-emerald-500">
+                                <option value="placeholder" disabled selected>Pilih SK Ahli Gizi</option>
+                                <option value="">Belum Ada SK</option>
+                                @foreach($decrees[$nutriPos?->id_ref_position] ?? [] as $decree)
+                                <option value="{{ $decree->id_assignment_decree }}">
+                                    {{ $decree->no_sk }} ({{ \Carbon\Carbon::parse($decree->date_sk)->format('d/m/Y') }})
+                                </option>
+                                @endforeach
+                            </select>
+                        </div>
+
+                        {{-- SK AKUNTAN --}}
+                        <div>
+                            <label class="text-[11px] font-bold text-gray-500 uppercase tracking-wider">SK Akuntan</label>
+                            <select name="id_sk_accountant" id="f_sk_accountant" class="w-full mt-2 px-3 py-2.5 bg-gray-50 border-none rounded-lg text-sm focus:ring-2 focus:ring-amber-500">
+                                <option value="placeholder" disabled selected>Pilih SK Akuntan</option>
+                                <option value="">Belum Ada SK</option>
+                                @foreach($decrees[$accPos?->id_ref_position] ?? [] as $decree)
+                                <option value="{{ $decree->id_assignment_decree }}">
+                                    {{ $decree->no_sk }} ({{ \Carbon\Carbon::parse($decree->date_sk)->format('d/m/Y') }})
+                                </option>
+                                @endforeach
+                            </select>
                         </div>
                     </div>
                 </div>
@@ -323,7 +356,7 @@
             { id: 'f_code',    msg: 'Kode SPPG wajib diisi' },
             { id: 'f_leader',  msg: 'Pilihan Kepala SPPG tidak valid' },
             { id: 'f_status',  msg: 'Pilih status operasional' },
-            { id: 'f_decree',  msg: 'Surat Keputusan (SK) wajib dipilih' },
+            { id: 'f_sk_leader',  msg: 'SK Kepala SPPG wajib dipilih' },
             { id: 'f_prov',    msg: 'Provinsi wajib dipilih' },
             { id: 'f_reg',     msg: 'Kabupaten wajib dipilih' },
             { id: 'f_dist',    msg: 'Kecamatan wajib dipilih' },
@@ -384,7 +417,9 @@
                         if (key === 'code_sppg_unit')        fieldId = 'f_code';
                         if (key === 'operational_date')      fieldId = 'f_op_date';
                         if (key === 'photo')                 fieldId = 'create_photo';
-                        if (key === 'id_assignment_decree')  fieldId = 'f_decree';
+                        if (key === 'id_sk_leader')          fieldId = 'f_sk_leader';
+                        if (key === 'id_sk_nutritionist')    fieldId = 'f_sk_nutritionist';
+                        if (key === 'id_sk_accountant')      fieldId = 'f_sk_accountant';
 
                         result.errors[key].forEach(msg => {
                             showFieldError(fieldId, msg);

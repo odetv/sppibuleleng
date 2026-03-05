@@ -37,7 +37,7 @@ class PersonController extends Controller
             })->toArray();
 
         $positions       = \App\Models\RefPosition::all();
-        $workAssignments = WorkAssignment::with('sppgUnit', 'decree')->get();
+        $workAssignments = WorkAssignment::with('sppgUnit', 'decree', 'decree.position')->get();
 
         return view('profile.complete', compact('user', 'workAssignments', 'positions', 'occupiedPositions'));
     }

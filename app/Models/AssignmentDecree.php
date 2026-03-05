@@ -15,8 +15,14 @@ class AssignmentDecree extends Model
         'file_sk',
         'date_sk',
         'no_ba_verval',
-        'date_ba_verval'
+        'date_ba_verval',
+        'type_sk'
     ];
+
+    public function position(): \Illuminate\Database\Eloquent\Relations\BelongsTo
+    {
+        return $this->belongsTo(RefPosition::class, 'type_sk', 'id_ref_position');
+    }
 
     /**
      * Relasi ke WorkAssignment (Satu SK bisa digunakan oleh banyak penugasan).
