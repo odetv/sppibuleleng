@@ -43,6 +43,7 @@
                             'district' => 'KECAMATAN',
                             'village' => 'DESA/KELURAHAN',
                             'address' => 'ALAMAT JALAN',
+                            'postal_code' => 'KODE POS',
                             'latitude_gps' => 'LATITUDE GPS',
                             'longitude_gps' => 'LONGITUDE GPS',
                             'small_portion_male' => 'PORSI KECIL LAKI-LAKI',

@@ -153,11 +153,8 @@
                                 <tr class="bg-slate-50 text-[11px] font-bold uppercase tracking-wider text-slate-400 border-b border-slate-100">
                                     <th class="px-6 py-4 whitespace-nowrap">INFORMASI PM</th>
                                     <th class="px-6 py-4 text-center whitespace-nowrap">SPPG UNIT</th>
-                                    <th class="px-6 py-4 text-center whitespace-nowrap">PROVINSI</th>
-                                    <th class="px-6 py-4 text-center whitespace-nowrap">KABUPATEN</th>
-                                    <th class="px-6 py-4 text-center whitespace-nowrap">KECAMATAN</th>
-                                    <th class="px-6 py-4 text-center whitespace-nowrap">DESA/KELURAHAN</th>
-                                    <th class="px-6 py-4 text-center whitespace-nowrap">DETIL PORSI</th>
+                                    <th class="px-6 py-4 whitespace-nowrap">ALAMAT</th>
+                                    <th class="px-6 py-4 text-center whitespace-nowrap">RINCIAN PORSI</th>
                                     <th class="px-6 py-4 text-center whitespace-nowrap">STATUS</th>
                                     <th class="px-6 py-4 text-center whitespace-nowrap">AKSI</th>
                                 </tr>
@@ -180,17 +177,11 @@
                                     <td class="px-6 py-4 text-center">
                                         <span class="text-slate-500 text-xs block capitalize font-medium">{{ $beneficiary->sppgUnit->name ?? 'Belum Diberikan' }}</span>
                                     </td>
-                                    <td class="px-6 py-4 text-center">
-                                        <span class="text-slate-500 text-xs block capitalize font-medium">{{ $beneficiary->province ?? '-' }}</span>
-                                    </td>
-                                    <td class="px-6 py-4 text-center">
-                                        <span class="text-slate-500 text-xs block capitalize font-medium">{{ $beneficiary->regency ?? '-' }}</span>
-                                    </td>
-                                    <td class="px-6 py-4 text-center">
-                                        <span class="text-slate-500 text-xs block capitalize font-medium">{{ $beneficiary->district ?? '-' }}</span>
-                                    </td>
-                                    <td class="px-6 py-4 text-center">
-                                        <span class="text-slate-500 text-xs block capitalize font-medium">{{ $beneficiary->village ?? '-' }}</span>
+                                    <td class="px-6 py-4 min-w-[200px] max-w-sm whitespace-normal break-words">
+                                        <div class="text-[12px] text-slate-600 font-medium leading-relaxed">
+                                            {{ $beneficiary->address }}<br>
+                                            <span class="text-slate-400 capitalize">{{ $beneficiary->village }}, {{ $beneficiary->district }}, {{ $beneficiary->regency }}, {{ $beneficiary->province }}, {{ $beneficiary->postal_code }}</span>
+                                        </div>
                                     </td>
                                     <td class="px-6 py-4">
                                         <div class="flex flex-col gap-1.5 min-w-[150px]">
@@ -213,6 +204,10 @@
                                             <div class="flex items-center justify-between text-[10px] bg-slate-50 px-2 py-0.5 rounded border border-slate-100">
                                                 <span class="font-bold text-slate-500 uppercase whitespace-nowrap">Kader</span>
                                                 <span class="text-slate-700 font-bold bg-white px-1.5 rounded shadow-sm text-[11px] whitespace-nowrap">{{ $beneficiary->cadre_portion }}</span>
+                                            </div>
+                                            <div class="flex items-center justify-between text-[10px] bg-indigo-50 px-2 py-1 rounded border border-indigo-100 mt-1">
+                                                <span class="font-bold text-indigo-700 uppercase whitespace-nowrap">Total Porsi</span>
+                                                <span class="text-indigo-800 font-bold bg-white px-1.5 rounded shadow-sm text-[11px] whitespace-nowrap">{{ array_sum([$beneficiary->small_portion_male, $beneficiary->small_portion_female, $beneficiary->large_portion_male, $beneficiary->large_portion_female, $beneficiary->teacher_portion, $beneficiary->staff_portion, $beneficiary->cadre_portion]) }}</span>
                                             </div>
                                         </div>
                                     </td>

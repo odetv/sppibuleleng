@@ -163,9 +163,15 @@
                         </div>
                     </div>
 
-                    <div class="mt-6">
-                        <label class="text-[11px] font-bold text-gray-500 uppercase tracking-wider">Alamat Lengkap <span class="text-rose-500">*</span></label>
-                        <textarea name="address" required rows="2" class="w-full mt-2 px-4 py-2.5 bg-gray-50 border-none rounded-lg text-sm focus:ring-2 focus:ring-indigo-500 outline-none transition-all" placeholder="Alamat Jalan, No Rumah, dll"></textarea>
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mt-6">
+                        <div class="md:col-span-2">
+                            <label class="text-[11px] font-bold text-gray-500 uppercase tracking-wider">Alamat Lengkap <span class="text-rose-500">*</span></label>
+                            <textarea name="address" required rows="2" class="w-full mt-2 px-4 py-2.5 bg-gray-50 border-none rounded-lg text-sm focus:ring-2 focus:ring-indigo-500 outline-none transition-all" placeholder="Alamat Jalan, No Rumah, dll"></textarea>
+                        </div>
+                        <div class="md:col-span-1">
+                            <label class="text-[11px] font-bold text-gray-500 uppercase tracking-wider">Kode Pos <span class="text-rose-500">*</span></label>
+                            <input type="text" name="postal_code" required class="w-full mt-2 px-4 py-2.5 bg-gray-50 border-none rounded-lg text-sm focus:ring-2 focus:ring-indigo-500 outline-none transition-all" placeholder="81119">
+                        </div>
                     </div>
 
                     <div class="mt-10 border-t border-slate-100 pt-6">

@@ -101,9 +101,9 @@
                         </select>
                     </div>
                     <div class="mt-4">
-                        <label class="flex items-center gap-3 p-3 bg-gray-50 rounded-lg w-fit opacity-70 cursor-not-allowed">
+                        <label class="flex items-center gap-3 p-3 bg-gray-50 rounded-lg w-fit cursor-pointer">
                             <input type="hidden" name="is_active" :value="(selectedBeneficiary.is_active == 1 || selectedBeneficiary.is_active == true || selectedBeneficiary.is_active === '1') ? 1 : 0">
-                            <input type="checkbox" :checked="selectedBeneficiary.is_active" disabled class="w-4 h-4 text-indigo-600 border-gray-300 rounded cursor-not-allowed">
+                            <input type="checkbox" :checked="selectedBeneficiary.is_active == 1 || selectedBeneficiary.is_active == true || selectedBeneficiary.is_active === '1'" @change="selectedBeneficiary.is_active = $event.target.checked ? 1 : 0" class="w-4 h-4 text-indigo-600 focus:ring-indigo-500 border-gray-300 rounded cursor-pointer">
                             <span class="text-[11px] font-bold text-gray-700 uppercase tracking-wider">Status Aktif (Tampilkan PM)</span>
                         </label>
                     </div>
@@ -163,9 +163,15 @@
                         </div>
                     </div>
 
-                    <div class="mt-6">
-                        <label class="text-[11px] font-bold text-gray-500 uppercase tracking-wider">Alamat Lengkap <span class="text-rose-500">*</span></label>
-                        <textarea name="address" x-model="selectedBeneficiary.address" required rows="2" class="w-full mt-2 px-4 py-2.5 bg-gray-50 border-none rounded-lg text-sm focus:ring-2 focus:ring-indigo-500 outline-none transition-all"></textarea>
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mt-6">
+                        <div class="md:col-span-2">
+                            <label class="text-[11px] font-bold text-gray-500 uppercase tracking-wider">Alamat Lengkap <span class="text-rose-500">*</span></label>
+                            <textarea name="address" x-model="selectedBeneficiary.address" required rows="2" class="w-full mt-2 px-4 py-2.5 bg-gray-50 border-none rounded-lg text-sm focus:ring-2 focus:ring-indigo-500 outline-none transition-all"></textarea>
+                        </div>
+                        <div class="md:col-span-1">
+                            <label class="text-[11px] font-bold text-gray-500 uppercase tracking-wider">Kode Pos <span class="text-rose-500">*</span></label>
+                            <input type="text" name="postal_code" x-model="selectedBeneficiary.postal_code" required class="w-full mt-2 px-4 py-2.5 bg-gray-50 border-none rounded-lg text-sm focus:ring-2 focus:ring-indigo-500 outline-none transition-all" placeholder="81119">
+                        </div>
                     </div>
 
                     <div class="mt-10 border-t border-slate-100 pt-6">

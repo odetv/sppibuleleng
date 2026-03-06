@@ -84,8 +84,8 @@ class BeneficiaryController extends Controller
             'province' => 'required|string',
             'regency' => 'required|string',
             'district' => 'required|string',
-            'village' => 'required|string',
             'address' => 'required|string',
+            'postal_code' => 'required|string',
             'latitude_gps' => 'required|string',
             'longitude_gps' => 'required|string',
             'pic_name' => 'required|string',
@@ -153,8 +153,8 @@ class BeneficiaryController extends Controller
             'district' => 'required|string',
             'village' => 'required|string',
             'address' => 'required|string',
+            'postal_code' => 'required|string',
             'latitude_gps' => 'required|string',
-            'longitude_gps' => 'required|string',
             'pic_name' => 'required|string',
             'pic_phone' => 'required|string',
             'small_portion_male' => 'required|integer|min:0',
@@ -293,7 +293,7 @@ class BeneficiaryController extends Controller
                 $requiredFields = [
                     'TIPE KELOMPOK (Sekolah/Posyandu)', 'KATEGORI', 'KODE PM', 'NAMA PENERIMA MANFAAT',
                     'NAMA PIC', 'NO TELEPON PIC', 'EMAIL PIC', 'PROVINSI', 'KABUPATEN/KOTA', 
-                    'KECAMATAN', 'DESA/KELURAHAN', 'ALAMAT JALAN', 'LATITUDE GPS', 'LONGITUDE GPS',
+                    'KECAMATAN', 'DESA/KELURAHAN', 'ALAMAT JALAN', 'KODE POS', 'LATITUDE GPS', 'LONGITUDE GPS',
                     'PORSI KECIL LAKI-LAKI', 'PORSI KECIL PEREMPUAN', 'PORSI BESAR LAKI-LAKI',
                     'PORSI BESAR PEREMPUAN', 'PORSI GURU', 'PORSI TENAGA KEPENDIDIKAN', 'PORSI KADER'
                 ];
@@ -360,6 +360,7 @@ class BeneficiaryController extends Controller
                         'district' => trim($row['KECAMATAN'] ?? ''),
                         'village' => trim($row['DESA/KELURAHAN'] ?? ''),
                         'address' => trim($row['ALAMAT JALAN'] ?? null),
+                        'postal_code' => trim($row['KODE POS'] ?? null),
                         'latitude_gps' => trim($row['LATITUDE GPS'] ?? ''),
                         'longitude_gps' => trim($row['LONGITUDE GPS'] ?? ''),
                         'pic_name' => trim($row['NAMA PIC'] ?? null),
