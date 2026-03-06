@@ -1,7 +1,7 @@
 <div x-show="showEditBeneficiaryModal" 
     class="fixed inset-0 z-[2000] flex items-center justify-center p-4 text-left" 
     @open-edit-beneficiary.window="
-        selectedPM = $event.detail.beneficiary;
+        selectedPM = JSON.parse(JSON.stringify($event.detail.beneficiary));
         showEditBeneficiaryModal = true; 
         setTimeout(() => {
             initEditBeneficiaryMap(selectedPM);
@@ -38,7 +38,7 @@
             <button @click="showEditBeneficiaryModal = false" class="text-slate-400 hover:text-slate-600 text-2xl duration-200">&times;</button>
         </div>
 
-        <form :action="'{{ route('admin.manage-beneficiary.index') }}/' + selectedPM.id_beneficiary + '/update'" method="POST" id="form-edit-beneficiary-integrated" @submit.prevent="submitEditBeneficiary($el, selectedPM)">
+        <form :action="'{{ route('admin.manage-beneficiary.index') }}/' + selectedPM.id_beneficiary + '/update'" method="POST" id="form-edit-beneficiary-integrated" @submit.prevent="submitEditBeneficiary($el, selectedPM)" x-data="{ categories: { 'Sekolah': ['Paud', 'TK', 'SD', 'SMP', 'SMA', 'SMK', 'Pesantren', 'RA', 'MI', 'MA', 'Pratama Widyalaya', 'Madyama Widyalaya', 'Utama Widyalaya', 'Utama Widyalaya Kejuruan'], 'Posyandu': ['Ibu Hamil', 'Ibu Menyusui', 'Balita'] } }">
             @csrf
             @method('PATCH')
             
@@ -54,22 +54,28 @@
                         <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                             <div>
                                 <label class="text-[11px] font-bold text-gray-500 uppercase tracking-wider">Tipe Kelompok <span class="text-rose-500">*</span></label>
-                                <select name="group_type" x-model="selectedPM.group_type" required class="w-full mt-2 px-3 py-2.5 bg-gray-50 border-none rounded-lg text-sm focus:ring-2 focus:ring-indigo-500 outline-none transition-all">
+                                <select name="group_type" x-model="selectedPM.group_type" @change="selectedPM.category = ''" required class="w-full mt-2 px-3 py-2.5 bg-gray-50 border-none rounded-lg text-sm focus:ring-2 focus:ring-indigo-500 outline-none transition-all">
                                     <option value="" disabled>Pilih Tipe</option>
                                     <option value="Sekolah">Sekolah</option>
                                     <option value="Posyandu">Posyandu</option>
-                                    <option value="Kelompok Lainnya">Kelompok Lainnya</option>
                                 </select>
                             </div>
                             <div>
                                 <label class="text-[11px] font-bold text-gray-500 uppercase tracking-wider">Kategori</label>
-                                <input type="text" name="category" x-model="selectedPM.category" class="w-full mt-2 px-4 py-2.5 bg-gray-50 border-none rounded-lg text-sm focus:ring-2 focus:ring-indigo-500" placeholder="Contoh: PAUD, SD, SMP">
+                                <select name="category" x-model="selectedPM.category" class="w-full mt-2 px-3 py-2.5 bg-gray-50 border-none rounded-lg text-sm focus:ring-2 focus:ring-indigo-500 outline-none transition-all">
+                                    <option value="" disabled selected>Pilih Kategori</option>
+                                    <template x-if="selectedPM.group_type && categories[selectedPM.group_type]">
+                                        <template x-for="cat in categories[selectedPM.group_type]" :key="cat">
+                                            <option :value="cat" x-text="cat"></option>
+                                        </template>
+                                    </template>
+                                </select>
                             </div>
                         </div>
                         <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                             <div>
                                 <label class="text-[11px] font-bold text-gray-500 uppercase tracking-wider">Kode PM</label>
-                                <input type="text" name="code" x-model="selectedPM.code" class="w-full mt-2 px-4 py-2.5 bg-gray-50 border-none rounded-lg text-sm focus:ring-2 focus:ring-indigo-500" placeholder="Kode Opsional">
+                                <input type="text" name="code" x-model="selectedPM.code" readonly class="w-full mt-2 px-4 py-2.5 bg-gray-50 border border-slate-200 rounded-lg text-sm text-slate-500 cursor-not-allowed focus:outline-none" placeholder="Kode Opsional">
                             </div>
                             <div>
                                 <label class="text-[11px] font-bold text-gray-500 uppercase tracking-wider">Jenis Kepemilikan</label>
@@ -92,6 +98,8 @@
                                 <input type="hidden" name="province" id="eb_prov_name" :value="selectedPM.province">
                                 <input type="hidden" name="regency" id="eb_reg_name" :value="selectedPM.regency">
                                 <input type="hidden" name="district" id="eb_dist_name" :value="selectedPM.district">
+                                <input type="hidden" name="id_sppg_unit" x-model="selectedPM.id_sppg_unit">
+                                <input type="hidden" name="is_active" :value="(selectedPM.is_active == 1 || selectedPM.is_active == true || selectedPM.is_active === '1') ? 1 : 0">
                                 <input type="hidden" name="village" id="eb_vill_name" :value="selectedPM.village">
 
                                 <select name="province_code" id="eb_prov" class="px-4 py-2.5 bg-gray-50 border-none rounded-lg text-sm focus:ring-2 focus:ring-indigo-500 outline-none transition-all">

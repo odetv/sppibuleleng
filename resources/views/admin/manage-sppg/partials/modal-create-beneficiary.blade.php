@@ -32,7 +32,7 @@
             <button @click="showCreateBeneficiaryModal = false" class="text-slate-400 hover:text-slate-600 text-2xl duration-200">&times;</button>
         </div>
 
-        <form action="{{ route('admin.manage-beneficiary.store') }}" method="POST" id="form-create-beneficiary-integrated" @submit.prevent="submitIntegratedBeneficiary($el)">
+        <form action="{{ route('admin.manage-beneficiary.store') }}" method="POST" id="form-create-beneficiary-integrated" @submit.prevent="submitIntegratedBeneficiary($el)" x-data="{ group_type: '', category: '', categories: { 'Sekolah': ['Paud', 'TK', 'SD', 'SMP', 'SMA', 'SMK', 'Pesantren', 'RA', 'MI', 'MA', 'Pratama Widyalaya', 'Madyama Widyalaya', 'Utama Widyalaya', 'Utama Widyalaya Kejuruan'], 'Posyandu': ['Ibu Hamil', 'Ibu Menyusui', 'Balita'] } }">
             @csrf
             {{-- Hidden link to the currently edited SPPG unit --}}
             <input type="hidden" name="id_sppg_unit" :value="selectedUnit.id_sppg_unit">
@@ -50,16 +50,22 @@
                         <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                             <div>
                                 <label class="text-[11px] font-bold text-gray-500 uppercase tracking-wider">Tipe Kelompok <span class="text-rose-500">*</span></label>
-                                <select name="group_type" required class="w-full mt-2 px-3 py-2.5 bg-gray-50 border-none rounded-lg text-sm focus:ring-2 focus:ring-indigo-500 outline-none transition-all">
+                                <select name="group_type" x-model="group_type" @change="category = ''" required class="w-full mt-2 px-3 py-2.5 bg-gray-50 border-none rounded-lg text-sm focus:ring-2 focus:ring-indigo-500 outline-none transition-all">
                                     <option value="" disabled selected>Pilih Tipe</option>
                                     <option value="Sekolah">Sekolah</option>
                                     <option value="Posyandu">Posyandu</option>
-                                    <option value="Kelompok Lainnya">Kelompok Lainnya</option>
                                 </select>
                             </div>
                             <div>
                                 <label class="text-[11px] font-bold text-gray-500 uppercase tracking-wider">Kategori</label>
-                                <input type="text" name="category" class="w-full mt-2 px-4 py-2.5 bg-gray-50 border-none rounded-lg text-sm focus:ring-2 focus:ring-indigo-500" placeholder="Contoh: PAUD, SD, SMP">
+                                <select name="category" x-model="category" class="w-full mt-2 px-3 py-2.5 bg-gray-50 border-none rounded-lg text-sm focus:ring-2 focus:ring-indigo-500 outline-none transition-all">
+                                    <option value="" disabled selected>Pilih Kategori</option>
+                                    <template x-if="group_type && categories[group_type]">
+                                        <template x-for="cat in categories[group_type]" :key="cat">
+                                            <option :value="cat" x-text="cat"></option>
+                                        </template>
+                                    </template>
+                                </select>
                             </div>
                         </div>
                         <div class="grid grid-cols-1 md:grid-cols-2 gap-4">

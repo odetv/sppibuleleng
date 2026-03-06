@@ -75,8 +75,45 @@
             beneficiaryToUnlink: null,
             selectedUnit: { beneficiaries: [] },
             selectedPM: {},
-            allBeneficiaryList: {{ json_encode($allBeneficiaries) }}
-         }">
+            allBeneficiaryList: {{ json_encode($allBeneficiaries) }},
+            unlinkBeneficiary(beneficiary) {
+                this.showUnlinkModal = true;
+                this.beneficiaryToUnlink = beneficiary;
+            },
+            async confirmUnlink() {
+                if (!this.beneficiaryToUnlink) return;
+                const beneficiary_id = this.beneficiaryToUnlink.id_beneficiary;
+                try {
+                    const resp = await fetch('{{ route("admin.manage-beneficiary.link-to-sppg") }}', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'X-CSRF-TOKEN': '{{ csrf_token() }}',
+                            'X-Requested-With': 'XMLHttpRequest',
+                            'Accept': 'application/json'
+                        },
+                        body: JSON.stringify({ id_beneficiary: beneficiary_id, id_sppg_unit: null })
+                    });
+                    if (resp.ok) {
+                        this.selectedUnit.beneficiaries = this.selectedUnit.beneficiaries.filter(b => b.id_beneficiary != beneficiary_id);
+                        
+                        const target = this.allBeneficiaryList.find(p => p.id_beneficiary == beneficiary_id);
+                        if (target) target.id_sppg_unit = null;
+                        
+                        window.dispatchEvent(new CustomEvent('beneficiary-unlinked-integrated', { 
+                            detail: { beneficiary_id: beneficiary_id } 
+                        }));
+
+                        this.showUnlinkModal = false;
+                        this.beneficiaryToUnlink = null;
+                    } else {
+                        const data = await resp.json();
+                        alert('Gagal melepas tautan: ' + (data.errors ? JSON.stringify(data.errors) : 'Unknown error'));
+                    }
+                } catch (err) { console.error(err); alert('Terjadi kesalahan jaringan'); }
+            }
+         }"
+         @open-unlink-modal.window="unlinkBeneficiary($event.detail.beneficiary)">
 
         <div class="max-w-full mx-auto space-y-6">
             {{-- 1. HEADER SECTION --}}

@@ -42,7 +42,7 @@
             <button @click="showEditModal = false" class="text-slate-400 hover:text-slate-600 text-2xl duration-200">&times;</button>
         </div>
 
-        <form :action="`/admin/manage-beneficiary/${selectedBeneficiary.id_beneficiary}/update`" method="POST" id="form-edit-beneficiary">
+        <form :action="`/admin/manage-beneficiary/${selectedBeneficiary.id_beneficiary}/update`" method="POST" id="form-edit-beneficiary" x-data="{ categories: { 'Sekolah': ['Paud', 'TK', 'SD', 'SMP', 'SMA', 'SMK', 'Pesantren', 'RA', 'MI', 'MA', 'Pratama Widyalaya', 'Madyama Widyalaya', 'Utama Widyalaya', 'Utama Widyalaya Kejuruan'], 'Posyandu': ['Ibu Hamil', 'Ibu Menyusui', 'Balita'] } }">
             @csrf
             @method('PATCH')
 
@@ -59,16 +59,15 @@
                     
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                         <div class="md:col-span-1">
-                            <label class="text-[11px] font-bold text-gray-500 uppercase tracking-wider">Kode</label>
-                            <input type="text" name="code" x-model="selectedBeneficiary.code" class="w-full mt-2 px-4 py-2.5 bg-gray-50 border-none rounded-lg text-sm focus:ring-2 focus:ring-indigo-500 outline-none transition-all">
+                            <label class="text-[11px] font-bold text-gray-500 uppercase tracking-wider">Kode <span class="text-rose-500">*</span></label>
+                            <input type="text" name="code" id="edit_code" x-model="selectedBeneficiary.code" readonly class="w-full mt-2 px-4 py-2.5 bg-gray-50 border border-slate-200 rounded-lg text-sm text-slate-500 cursor-not-allowed focus:outline-none transition-all">
                         </div>
                         <div class="md:col-span-1">
-                            <label class="text-[11px] font-bold text-gray-500 uppercase tracking-wider">Tipe Kelompok</label>
-                            <select name="group_type" x-model="selectedBeneficiary.group_type" class="w-full mt-2 px-3 py-2.5 bg-gray-50 border-none rounded-lg text-sm focus:ring-2 focus:ring-indigo-500 outline-none transition-all">
+                            <label class="text-[11px] font-bold text-gray-500 uppercase tracking-wider">Tipe Kelompok <span class="text-rose-500">*</span></label>
+                            <select name="group_type" x-model="selectedBeneficiary.group_type" required @change="selectedBeneficiary.category = ''" class="w-full mt-2 px-3 py-2.5 bg-gray-50 border-none rounded-lg text-sm focus:ring-2 focus:ring-indigo-500 outline-none transition-all">
                                 <option value="" disabled selected>Pilih Tipe</option>
                                 <option value="Sekolah">Sekolah</option>
                                 <option value="Posyandu">Posyandu</option>
-                                <option value="Kelompok Lainnya">Kelompok Lainnya</option>
                             </select>
                         </div>
                     </div>
@@ -79,15 +78,22 @@
                             <input type="text" name="name" x-model="selectedBeneficiary.name" required class="w-full mt-2 px-4 py-2.5 bg-gray-50 border-none rounded-lg text-sm focus:ring-2 focus:ring-indigo-500 outline-none transition-all">
                         </div>
                         <div>
-                            <label class="text-[11px] font-bold text-gray-500 uppercase tracking-wider">Kategori</label>
-                            <input type="text" name="category" x-model="selectedBeneficiary.category" class="w-full mt-2 px-4 py-2.5 bg-gray-50 border-none rounded-lg text-sm focus:ring-2 focus:ring-indigo-500 outline-none transition-all">
+                            <label class="text-[11px] font-bold text-gray-500 uppercase tracking-wider">Kategori <span class="text-rose-500">*</span></label>
+                            <select name="category" x-model="selectedBeneficiary.category" required class="w-full mt-2 px-3 py-2.5 bg-gray-50 border-none rounded-lg text-sm focus:ring-2 focus:ring-indigo-500 outline-none transition-all">
+                                <option value="" disabled selected>Pilih Kategori</option>
+                                <template x-if="selectedBeneficiary.group_type && categories[selectedBeneficiary.group_type]">
+                                    <template x-for="cat in categories[selectedBeneficiary.group_type]" :key="cat">
+                                        <option :value="cat" x-text="cat"></option>
+                                    </template>
+                                </template>
+                            </select>
                         </div>
                     </div>
 
                     <div>
                         <label class="text-[11px] font-bold text-gray-500 uppercase tracking-wider">SPPG Unit</label>
                         <select name="id_sppg_unit" x-model="selectedBeneficiary.id_sppg_unit" class="w-full mt-2 px-3 py-2.5 bg-gray-50 border-none rounded-lg text-sm focus:ring-2 focus:ring-indigo-500 outline-none transition-all">
-                            <option value="" disabled selected>-- Hubungkan ke Unit --</option>
+                            <option value="" disabled selected>Hubungkan ke Unit</option>
                             <option value="">Belum Diberikan</option>
                             @foreach($sppgUnits as $unit)
                                 <option value="{{ $unit->id_sppg_unit }}">{{ $unit->name }} ({{ $unit->id_sppg_unit }})</option>
@@ -95,9 +101,9 @@
                         </select>
                     </div>
                     <div class="mt-4">
-                        <label class="flex items-center gap-3 cursor-pointer p-3 bg-gray-50 rounded-lg w-fit">
-                            <input type="hidden" name="is_active" :value="selectedBeneficiary.is_active ? 1 : 0">
-                            <input type="checkbox" :checked="selectedBeneficiary.is_active" @change="selectedBeneficiary.is_active = $event.target.checked" class="w-4 h-4 text-indigo-600 focus:ring-indigo-500 border-gray-300 rounded">
+                        <label class="flex items-center gap-3 p-3 bg-gray-50 rounded-lg w-fit opacity-70 cursor-not-allowed">
+                            <input type="hidden" name="is_active" :value="(selectedBeneficiary.is_active == 1 || selectedBeneficiary.is_active == true || selectedBeneficiary.is_active === '1') ? 1 : 0">
+                            <input type="checkbox" :checked="selectedBeneficiary.is_active" disabled class="w-4 h-4 text-indigo-600 border-gray-300 rounded cursor-not-allowed">
                             <span class="text-[11px] font-bold text-gray-700 uppercase tracking-wider">Status Aktif (Tampilkan PM)</span>
                         </label>
                     </div>
@@ -110,16 +116,16 @@
                     <h3 class="text-sm font-bold uppercase tracking-widest text-indigo-600 mb-6">PIC (Penanggung Jawab)</h3>
                     <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
                         <div>
-                            <label class="text-[11px] font-bold text-gray-500 uppercase tracking-wider">Nama PIC</label>
-                            <input type="text" name="pic_name" x-model="selectedBeneficiary.pic_name" class="w-full mt-2 px-4 py-2.5 bg-gray-50 border-none rounded-lg text-sm focus:ring-2 focus:ring-indigo-500 outline-none transition-all">
+                            <label class="text-[11px] font-bold text-gray-500 uppercase tracking-wider">Nama PIC <span class="text-rose-500">*</span></label>
+                            <input type="text" name="pic_name" x-model="selectedBeneficiary.pic_name" required class="w-full mt-2 px-4 py-2.5 bg-gray-50 border-none rounded-lg text-sm focus:ring-2 focus:ring-indigo-500 outline-none transition-all">
                         </div>
                         <div>
-                            <label class="text-[11px] font-bold text-gray-500 uppercase tracking-wider">Telepon PIC</label>
-                            <input type="text" name="pic_phone" x-model="selectedBeneficiary.pic_phone" class="w-full mt-2 px-4 py-2.5 bg-gray-50 border-none rounded-lg text-sm focus:ring-2 focus:ring-indigo-500 outline-none transition-all">
+                            <label class="text-[11px] font-bold text-gray-500 uppercase tracking-wider">Telepon PIC <span class="text-rose-500">*</span></label>
+                            <input type="text" name="pic_phone" x-model="selectedBeneficiary.pic_phone" required class="w-full mt-2 px-4 py-2.5 bg-gray-50 border-none rounded-lg text-sm focus:ring-2 focus:ring-indigo-500 outline-none transition-all">
                         </div>
                         <div>
-                            <label class="text-[11px] font-bold text-gray-500 uppercase tracking-wider">Email PIC</label>
-                            <input type="email" name="pic_email" x-model="selectedBeneficiary.pic_email" class="w-full mt-2 px-4 py-2.5 bg-gray-50 border-none rounded-lg text-sm focus:ring-2 focus:ring-indigo-500 outline-none transition-all">
+                            <label class="text-[11px] font-bold text-gray-500 uppercase tracking-wider">Email PIC <span class="text-rose-500">*</span></label>
+                            <input type="email" name="pic_email" x-model="selectedBeneficiary.pic_email" required class="w-full mt-2 px-4 py-2.5 bg-gray-50 border-none rounded-lg text-sm focus:ring-2 focus:ring-indigo-500 outline-none transition-all">
                         </div>
                     </div>
                 </div>
@@ -132,34 +138,34 @@
                     
                     <div class="grid grid-cols-2 md:grid-cols-4 gap-6">
                         <div>
-                            <label class="text-[11px] font-bold text-gray-500 uppercase tracking-wider">Provinsi</label>
-                            <select name="province_code" id="be_prov" class="w-full mt-2 px-3 py-2.5 bg-gray-50 border-none rounded-lg text-sm focus:ring-2 focus:ring-indigo-500 outline-none transition-all">
+                            <label class="text-[11px] font-bold text-gray-500 uppercase tracking-wider">Provinsi <span class="text-rose-500">*</span></label>
+                            <select name="province_code" id="be_prov" required class="w-full mt-2 px-3 py-2.5 bg-gray-50 border-none rounded-lg text-sm focus:ring-2 focus:ring-indigo-500 outline-none transition-all">
                                 <option value="">Pilih Provinsi</option>
                             </select>
                         </div>
                         <div>
-                            <label class="text-[11px] font-bold text-gray-500 uppercase tracking-wider">Kabupaten</label>
-                            <select name="regency_code" id="be_reg" disabled class="input-disabled w-full mt-2 px-4 py-2.5 border-none rounded-lg text-sm focus:ring-2 focus:ring-indigo-500 outline-none transition-all">
+                            <label class="text-[11px] font-bold text-gray-500 uppercase tracking-wider">Kabupaten <span class="text-rose-500">*</span></label>
+                            <select name="regency_code" id="be_reg" required disabled class="input-disabled w-full mt-2 px-4 py-2.5 border-none rounded-lg text-sm focus:ring-2 focus:ring-indigo-500 outline-none transition-all">
                                 <option value="">Pilih Kabupaten</option>
                             </select>
                         </div>
                         <div>
-                            <label class="text-[11px] font-bold text-gray-500 uppercase tracking-wider">Kecamatan</label>
-                            <select name="district_code" id="be_dist" disabled class="input-disabled w-full mt-2 px-4 py-2.5 border-none rounded-lg text-sm focus:ring-2 focus:ring-indigo-500 outline-none transition-all">
+                            <label class="text-[11px] font-bold text-gray-500 uppercase tracking-wider">Kecamatan <span class="text-rose-500">*</span></label>
+                            <select name="district_code" id="be_dist" required disabled class="input-disabled w-full mt-2 px-4 py-2.5 border-none rounded-lg text-sm focus:ring-2 focus:ring-indigo-500 outline-none transition-all">
                                 <option value="">Pilih Kecamatan</option>
                             </select>
                         </div>
                         <div>
-                            <label class="text-[11px] font-bold text-gray-500 uppercase tracking-wider">Desa/Kelurahan</label>
-                            <select name="village_code" id="be_vill" disabled class="input-disabled w-full mt-2 px-4 py-2.5 border-none rounded-lg text-sm focus:ring-2 focus:ring-indigo-500 outline-none transition-all">
+                            <label class="text-[11px] font-bold text-gray-500 uppercase tracking-wider">Desa/Kelurahan <span class="text-rose-500">*</span></label>
+                            <select name="village_code" id="be_vill" required disabled class="input-disabled w-full mt-2 px-4 py-2.5 border-none rounded-lg text-sm focus:ring-2 focus:ring-indigo-500 outline-none transition-all">
                                 <option value="">Pilih Desa/Kelurahan</option>
                             </select>
                         </div>
                     </div>
 
                     <div class="mt-6">
-                        <label class="text-[11px] font-bold text-gray-500 uppercase tracking-wider">Alamat Lengkap</label>
-                        <textarea name="address" x-model="selectedBeneficiary.address" rows="2" class="w-full mt-2 px-4 py-2.5 bg-gray-50 border-none rounded-lg text-sm focus:ring-2 focus:ring-indigo-500 outline-none transition-all"></textarea>
+                        <label class="text-[11px] font-bold text-gray-500 uppercase tracking-wider">Alamat Lengkap <span class="text-rose-500">*</span></label>
+                        <textarea name="address" x-model="selectedBeneficiary.address" required rows="2" class="w-full mt-2 px-4 py-2.5 bg-gray-50 border-none rounded-lg text-sm focus:ring-2 focus:ring-indigo-500 outline-none transition-all"></textarea>
                     </div>
 
                     <div class="mt-10 border-t border-slate-100 pt-6">
@@ -168,12 +174,12 @@
                         
                         <div class="grid grid-cols-2 gap-6 mt-4">
                             <div>
-                                <label class="text-[11px] font-bold text-gray-500 uppercase tracking-wider">Latitude</label>
-                                <input type="text" name="latitude_gps" x-model="selectedBeneficiary.latitude_gps" id="e_lat" readonly class="w-full mt-2 px-4 py-2.5 bg-slate-100 border-none rounded-lg text-sm text-slate-500 focus:outline-none cursor-not-allowed" placeholder="Otomatis dari peta">
+                                <label class="text-[11px] font-bold text-gray-500 uppercase tracking-wider">Latitude <span class="text-rose-500">*</span></label>
+                                <input type="text" name="latitude_gps" x-model="selectedBeneficiary.latitude_gps" required id="e_lat" readonly class="w-full mt-2 px-4 py-2.5 bg-slate-100 border-none rounded-lg text-sm text-slate-500 focus:outline-none cursor-not-allowed" placeholder="Otomatis dari peta">
                             </div>
                             <div>
-                                <label class="text-[11px] font-bold text-gray-500 uppercase tracking-wider">Longitude</label>
-                                <input type="text" name="longitude_gps" x-model="selectedBeneficiary.longitude_gps" id="e_lng" readonly class="w-full mt-2 px-4 py-2.5 bg-slate-100 border-none rounded-lg text-sm text-slate-500 focus:outline-none cursor-not-allowed" placeholder="Otomatis dari peta">
+                                <label class="text-[11px] font-bold text-gray-500 uppercase tracking-wider">Longitude <span class="text-rose-500">*</span></label>
+                                <input type="text" name="longitude_gps" x-model="selectedBeneficiary.longitude_gps" required id="e_lng" readonly class="w-full mt-2 px-4 py-2.5 bg-slate-100 border-none rounded-lg text-sm text-slate-500 focus:outline-none cursor-not-allowed" placeholder="Otomatis dari peta">
                             </div>
                         </div>
                     </div>
@@ -187,43 +193,42 @@
                     
                     <div class="grid grid-cols-2 md:grid-cols-4 gap-6">
                         <div>
-                            <label class="text-[11px] font-bold text-gray-500 uppercase tracking-wider">Porsi Kecil (L)</label>
-                            <input type="number" name="small_portion_male" min="0" x-model="selectedBeneficiary.small_portion_male" class="w-full mt-2 px-4 py-2.5 bg-gray-50 border-none rounded-lg text-sm focus:ring-2 focus:ring-indigo-500 outline-none transition-all">
+                            <label class="text-[11px] font-bold text-gray-500 uppercase tracking-wider">Porsi Kecil (L) <span class="text-rose-500">*</span></label>
+                            <input type="number" name="small_portion_male" min="0" required x-model="selectedBeneficiary.small_portion_male" class="w-full mt-2 px-4 py-2.5 bg-gray-50 border-none rounded-lg text-sm focus:ring-2 focus:ring-indigo-500 outline-none transition-all">
                         </div>
                         <div>
-                            <label class="text-[11px] font-bold text-gray-500 uppercase tracking-wider">Porsi Kecil (P)</label>
-                            <input type="number" name="small_portion_female" min="0" x-model="selectedBeneficiary.small_portion_female" class="w-full mt-2 px-4 py-2.5 bg-gray-50 border-none rounded-lg text-sm focus:ring-2 focus:ring-indigo-500 outline-none transition-all">
+                            <label class="text-[11px] font-bold text-gray-500 uppercase tracking-wider">Porsi Kecil (P) <span class="text-rose-500">*</span></label>
+                            <input type="number" name="small_portion_female" min="0" required x-model="selectedBeneficiary.small_portion_female" class="w-full mt-2 px-4 py-2.5 bg-gray-50 border-none rounded-lg text-sm focus:ring-2 focus:ring-indigo-500 outline-none transition-all">
                         </div>
                         <div>
-                            <label class="text-[11px] font-bold text-gray-500 uppercase tracking-wider">Porsi Besar (L)</label>
-                            <input type="number" name="large_portion_male" min="0" x-model="selectedBeneficiary.large_portion_male" class="w-full mt-2 px-4 py-2.5 bg-gray-50 border-none rounded-lg text-sm focus:ring-2 focus:ring-indigo-500 outline-none transition-all">
+                            <label class="text-[11px] font-bold text-gray-500 uppercase tracking-wider">Porsi Besar (L) <span class="text-rose-500">*</span></label>
+                            <input type="number" name="large_portion_male" min="0" required x-model="selectedBeneficiary.large_portion_male" class="w-full mt-2 px-4 py-2.5 bg-gray-50 border-none rounded-lg text-sm focus:ring-2 focus:ring-indigo-500 outline-none transition-all">
                         </div>
                         <div>
-                            <label class="text-[11px] font-bold text-gray-500 uppercase tracking-wider">Porsi Besar (P)</label>
-                            <input type="number" name="large_portion_female" min="0" x-model="selectedBeneficiary.large_portion_female" class="w-full mt-2 px-4 py-2.5 bg-gray-50 border-none rounded-lg text-sm focus:ring-2 focus:ring-indigo-500 outline-none transition-all">
+                            <label class="text-[11px] font-bold text-gray-500 uppercase tracking-wider">Porsi Besar (P) <span class="text-rose-500">*</span></label>
+                            <input type="number" name="large_portion_female" min="0" required x-model="selectedBeneficiary.large_portion_female" class="w-full mt-2 px-4 py-2.5 bg-gray-50 border-none rounded-lg text-sm focus:ring-2 focus:ring-indigo-500 outline-none transition-all">
                         </div>
                     </div>
 
                     <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mt-6">
                         <div>
-                            <label class="text-[11px] font-bold text-gray-500 uppercase tracking-wider">Guru</label>
-                            <input type="number" name="teacher_portion" min="0" x-model="selectedBeneficiary.teacher_portion" class="w-full mt-2 px-4 py-2.5 bg-gray-50 border-none rounded-lg text-sm focus:ring-2 focus:ring-indigo-500 outline-none transition-all">
+                            <label class="text-[11px] font-bold text-gray-500 uppercase tracking-wider">Guru <span class="text-rose-500">*</span></label>
+                            <input type="number" name="teacher_portion" min="0" required x-model="selectedBeneficiary.teacher_portion" class="w-full mt-2 px-4 py-2.5 bg-gray-50 border-none rounded-lg text-sm focus:ring-2 focus:ring-indigo-500 outline-none transition-all">
                         </div>
                         <div>
-                            <label class="text-[11px] font-bold text-gray-500 uppercase tracking-wider">Staff</label>
-                            <input type="number" name="staff_portion" min="0" x-model="selectedBeneficiary.staff_portion" class="w-full mt-2 px-4 py-2.5 bg-gray-50 border-none rounded-lg text-sm focus:ring-2 focus:ring-indigo-500 outline-none transition-all">
+                            <label class="text-[11px] font-bold text-gray-500 uppercase tracking-wider">Staff <span class="text-rose-500">*</span></label>
+                            <input type="number" name="staff_portion" min="0" required x-model="selectedBeneficiary.staff_portion" class="w-full mt-2 px-4 py-2.5 bg-gray-50 border-none rounded-lg text-sm focus:ring-2 focus:ring-indigo-500 outline-none transition-all">
                         </div>
                         <div>
-                            <label class="text-[11px] font-bold text-gray-500 uppercase tracking-wider">Kader</label>
-                            <input type="number" name="cadre_portion" min="0" x-model="selectedBeneficiary.cadre_portion" class="w-full mt-2 px-4 py-2.5 bg-gray-50 border-none rounded-lg text-sm focus:ring-2 focus:ring-indigo-500 outline-none transition-all">
+                            <label class="text-[11px] font-bold text-gray-500 uppercase tracking-wider">Kader <span class="text-rose-500">*</span></label>
+                            <input type="number" name="cadre_portion" min="0" required x-model="selectedBeneficiary.cadre_portion" class="w-full mt-2 px-4 py-2.5 bg-gray-50 border-none rounded-lg text-sm focus:ring-2 focus:ring-indigo-500 outline-none transition-all">
                         </div>
                     </div>
                 </div>
             </div>
-
             <div class="p-6 border-t border-slate-100 bg-slate-50/50 flex gap-4">
                 <button type="button" @click="showEditModal = false" class="flex-1 py-4 text-[11px] font-bold uppercase text-slate-500 bg-white border border-slate-200 rounded-xl hover:bg-slate-100 transition-all">Batal</button>
-                <button type="submit" class="flex-1 py-4 text-[11px] font-bold uppercase text-white bg-slate-800 rounded-xl shadow-lg hover:bg-slate-900 transition-all active:scale-95">Simpan Perubahan</button>
+                <button type="submit" id="btn_submit_edit" class="flex-1 py-4 text-[11px] font-bold uppercase text-white bg-slate-800 rounded-xl shadow-lg hover:bg-slate-900 transition-all active:scale-95 disabled:bg-slate-300 disabled:cursor-not-allowed disabled:shadow-none">Simpan Perubahan</button>
             </div>
         </form>
     </div>

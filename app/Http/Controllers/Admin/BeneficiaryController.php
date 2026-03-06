@@ -76,17 +76,27 @@ class BeneficiaryController extends Controller
     {
         $validator = Validator::make($request->all(), [
             'id_sppg_unit' => 'nullable|exists:sppg_units,id_sppg_unit',
-            'group_type' => 'nullable|in:Sekolah,Posyandu,Kelompok Lainnya',
+            'group_type' => 'required|in:Sekolah,Posyandu',
             'name' => 'required|string|max:255',
-            'code' => 'nullable|string|unique:beneficiaries,code',
-            'is_active' => 'nullable|boolean',
-            'small_portion_male' => 'nullable|integer|min:0',
-            'small_portion_female' => 'nullable|integer|min:0',
-            'large_portion_male' => 'nullable|integer|min:0',
-            'large_portion_female' => 'nullable|integer|min:0',
-            'teacher_portion' => 'nullable|integer|min:0',
-            'staff_portion' => 'nullable|integer|min:0',
-            'cadre_portion' => 'nullable|integer|min:0',
+            'code' => 'required|string|unique:beneficiaries,code',
+            'is_active' => 'required|boolean',
+            'category' => 'required|string',
+            'province' => 'required|string',
+            'regency' => 'required|string',
+            'district' => 'required|string',
+            'village' => 'required|string',
+            'address' => 'required|string',
+            'latitude_gps' => 'required|string',
+            'longitude_gps' => 'required|string',
+            'pic_name' => 'required|string',
+            'pic_phone' => 'required|string',
+            'small_portion_male' => 'required|integer|min:0',
+            'small_portion_female' => 'required|integer|min:0',
+            'large_portion_male' => 'required|integer|min:0',
+            'large_portion_female' => 'required|integer|min:0',
+            'teacher_portion' => 'required|integer|min:0',
+            'staff_portion' => 'required|integer|min:0',
+            'cadre_portion' => 'required|integer|min:0',
         ]);
 
         if ($validator->fails()) {
@@ -133,17 +143,27 @@ class BeneficiaryController extends Controller
 
         $validator = Validator::make($request->all(), [
             'id_sppg_unit' => 'nullable|exists:sppg_units,id_sppg_unit',
-            'group_type' => 'nullable|in:Sekolah,Posyandu,Kelompok Lainnya',
+            'group_type' => 'required|in:Sekolah,Posyandu',
             'name' => 'required|string|max:255',
-            'code' => 'nullable|string|unique:beneficiaries,code,' . $id . ',id_beneficiary',
-            'is_active' => 'nullable|boolean',
-            'small_portion_male' => 'nullable|integer|min:0',
-            'small_portion_female' => 'nullable|integer|min:0',
-            'large_portion_male' => 'nullable|integer|min:0',
-            'large_portion_female' => 'nullable|integer|min:0',
-            'teacher_portion' => 'nullable|integer|min:0',
-            'staff_portion' => 'nullable|integer|min:0',
-            'cadre_portion' => 'nullable|integer|min:0',
+            'code' => 'required|string|unique:beneficiaries,code,' . $id . ',id_beneficiary',
+            'is_active' => 'required|boolean',
+            'category' => 'required|string',
+            'province' => 'required|string',
+            'regency' => 'required|string',
+            'district' => 'required|string',
+            'village' => 'required|string',
+            'address' => 'required|string',
+            'latitude_gps' => 'required|string',
+            'longitude_gps' => 'required|string',
+            'pic_name' => 'required|string',
+            'pic_phone' => 'required|string',
+            'small_portion_male' => 'required|integer|min:0',
+            'small_portion_female' => 'required|integer|min:0',
+            'large_portion_male' => 'required|integer|min:0',
+            'large_portion_female' => 'required|integer|min:0',
+            'teacher_portion' => 'required|integer|min:0',
+            'staff_portion' => 'required|integer|min:0',
+            'cadre_portion' => 'required|integer|min:0',
         ]);
 
         if ($validator->fails()) {
@@ -195,29 +215,195 @@ class BeneficiaryController extends Controller
     {
         $id = $request->query('id_beneficiary');
         $code = $request->query('code');
+        
+        $codeExists = false;
+        if ($code) {
+            $query = Beneficiary::where('code', $code);
+            if ($id) {
+                $query->where('id_beneficiary', '!=', $id);
+            }
+            $codeExists = $query->exists();
+        }
 
         return response()->json([
             'id_duplicate' => $id ? Beneficiary::where('id_beneficiary', $id)->exists() : false,
-            'code_duplicate' => $code ? Beneficiary::where('code', $code)->exists() : false,
+            'code_duplicate' => $codeExists,
         ]);
     }
 
     public function exportExcel(Request $request)
     {
-        // Implementation for export if needed
-        return response()->json(['message' => 'Export logic not implemented yet']);
+        $request->validate([
+            'columns' => 'required|array|min:1'
+        ], [
+            'columns.required' => 'Pilih minimal satu kolom data yang ingin diekspor!'
+        ]);
+
+        $selectedColumns = $request->input('columns');
+        $fileName = 'DATA PM ' . now()->format('His-dmY') . '.xlsx';
+
+        return \Maatwebsite\Excel\Facades\Excel::download(
+            new \App\Exports\BeneficiaryExport($selectedColumns),
+            $fileName
+        );
     }
 
     public function exportTemplate()
     {
-        // Implementation for template if needed
-        return response()->json(['message' => 'Template logic not implemented yet']);
+        return \Maatwebsite\Excel\Facades\Excel::download(new \App\Exports\BeneficiaryTemplateExport, 'TEMPLATE IMPORT PM.xlsx');
     }
 
     public function importBeneficiary(Request $request)
     {
-        // Implementation for import if needed
-        return response()->json(['message' => 'Import logic not implemented yet']);
+        $data = json_decode($request->json_data, true);
+        $mode = $request->import_mode;
+
+        if (!$data) return back()->with('error', 'Data tidak valid.');
+
+        $successCount = 0;
+        $errorDetails = [];
+        
+        $processedIds = [];
+        $processedCodes = [];
+
+        try {
+            DB::beginTransaction();
+
+            if ($mode === 'replace') {
+                \Illuminate\Support\Facades\DB::statement('SET FOREIGN_KEY_CHECKS=0;');
+                \Illuminate\Support\Facades\DB::table('beneficiaries')->delete();
+                \Illuminate\Support\Facades\DB::statement('SET FOREIGN_KEY_CHECKS=1;');
+            }
+
+            $processedCodes = [];
+
+            foreach ($data as $row) {
+                // Auto generate ID PM. Use uniqid or similar logic. Assuming PM- + timestamp or random.
+                $generateId = function() {
+                    $prefix = 'PM';
+                    $timestamp = now()->format('ymdHis');
+                    $random = str_pad(mt_rand(1, 9999), 4, '0', STR_PAD_LEFT);
+                    return "{$prefix}-{$timestamp}-{$random}";
+                };
+                
+                $id_beneficiary = $generateId();
+                $name = trim($row['NAMA PENERIMA MANFAAT'] ?? '');
+                $code = trim($row['KODE PM'] ?? '');
+                
+                $requiredFields = [
+                    'TIPE KELOMPOK (Sekolah/Posyandu)', 'KATEGORI', 'KODE PM', 'NAMA PENERIMA MANFAAT',
+                    'NAMA PIC', 'NO TELEPON PIC', 'EMAIL PIC', 'PROVINSI', 'KABUPATEN/KOTA', 
+                    'KECAMATAN', 'DESA/KELURAHAN', 'ALAMAT JALAN', 'LATITUDE GPS', 'LONGITUDE GPS',
+                    'PORSI KECIL LAKI-LAKI', 'PORSI KECIL PEREMPUAN', 'PORSI BESAR LAKI-LAKI',
+                    'PORSI BESAR PEREMPUAN', 'PORSI GURU', 'PORSI TENAGA KEPENDIDIKAN', 'PORSI KADER'
+                ];
+
+                $emptyFields = [];
+                foreach ($requiredFields as $field) {
+                    if (!isset($row[$field]) || trim((string)$row[$field]) === '') {
+                        $emptyFields[] = $field;
+                    }
+                }
+
+                if (!empty($emptyFields)) {
+                    $errorMsg = "Baris dengan Kode PM '" . ($code ?: '-') . "' terlewati: Kolom berikut wajib diisi: " . implode(', ', $emptyFields) . ".";
+                    $errorDetails[] = $errorMsg;
+                    if ($mode === 'replace') throw new \Exception($errorMsg);
+                    continue;
+                }
+                
+                // Cek duplikasi di raw data excel yang sedang diproses
+                if (!empty($code) && in_array($code, $processedCodes)) {
+                    $errorMsg = "Baris dengan Kode PM '$code' terlewati: Terdapat duplikasi KODE PM '$code' dalam file Excel.";
+                    $errorDetails[] = $errorMsg;
+                    if ($mode === 'replace') throw new \Exception($errorMsg);
+                    continue;
+                }
+
+                if (!empty($code)) $processedCodes[] = $code;
+
+                if ($mode === 'append') {
+                    // Hanya cek duplikasi kode jika mode append
+                    if (!empty($code) && Beneficiary::where('code', $code)->exists()) {
+                        $errorDetails[] = "Baris dengan Kode PM '$code' terlewati: KODE PM '$code' sudah terdaftar di sistem.";
+                        continue;
+                    }
+                }
+
+                try {
+                    // Status default selalu true (aktif)
+                    $isActive = true;
+
+                    $groupTypeRaw = ucfirst(strtolower(trim($row['TIPE KELOMPOK (Sekolah/Posyandu)'] ?? '')));
+                    $groupType = in_array($groupTypeRaw, ['Sekolah', 'Posyandu']) ? $groupTypeRaw : null;
+                    
+                    if (!$groupType && !empty($groupTypeRaw)) {
+                         throw new \Exception("Tipe Kelompok '$groupTypeRaw' tidak valid. Harus Sekolah atau Posyandu.");
+                    }
+
+                    $beneficiaryData = [
+                        'id_beneficiary' => $id_beneficiary,
+                        'code' => !empty($code) ? $code : null,
+                        'name' => $name,
+                        'group_type' => $groupType,
+                        'category' => trim($row['KATEGORI'] ?? null),
+                        'is_active' => $isActive,
+                        'small_portion_male' => abs((int)($row['PORSI KECIL LAKI-LAKI'] ?? 0)),
+                        'small_portion_female' => abs((int)($row['PORSI KECIL PEREMPUAN'] ?? 0)),
+                        'large_portion_male' => abs((int)($row['PORSI BESAR LAKI-LAKI'] ?? 0)),
+                        'large_portion_female' => abs((int)($row['PORSI BESAR PEREMPUAN'] ?? 0)),
+                        'teacher_portion' => abs((int)($row['PORSI GURU'] ?? 0)),
+                        'staff_portion' => abs((int)($row['PORSI TENAGA KEPENDIDIKAN'] ?? 0)),
+                        'cadre_portion' => abs((int)($row['PORSI KADER'] ?? 0)),
+                        'province' => trim($row['PROVINSI'] ?? ''),
+                        'regency' => trim($row['KABUPATEN/KOTA'] ?? ''),
+                        'district' => trim($row['KECAMATAN'] ?? ''),
+                        'village' => trim($row['DESA/KELURAHAN'] ?? ''),
+                        'address' => trim($row['ALAMAT JALAN'] ?? null),
+                        'latitude_gps' => trim($row['LATITUDE GPS'] ?? ''),
+                        'longitude_gps' => trim($row['LONGITUDE GPS'] ?? ''),
+                        'pic_name' => trim($row['NAMA PIC'] ?? null),
+                        'pic_phone' => trim($row['NO TELEPON PIC'] ?? null),
+                        'pic_email' => trim($row['EMAIL PIC'] ?? null),
+                    ];
+
+                    Beneficiary::create($beneficiaryData);
+                    $successCount++;
+                } catch (\Exception $e) {
+                    $errorDetails[] = "Baris dengan Kode PM '$code': " . $e->getMessage();
+                    if ($mode === 'replace') throw $e;
+                }
+            }
+
+            DB::commit();
+
+            $message = "Berhasil mengimpor $successCount Data PM.";
+            
+            if ($request->ajax()) {
+                return response()->json([
+                    'success' => empty($errorDetails) && $successCount > 0,
+                    'message' => $message,
+                    'errorDetails' => $errorDetails
+                ]);
+            }
+
+            $response = redirect()->route('admin.manage-beneficiary.index');
+            return empty($errorDetails)
+                ? $response->with('success', $message)
+                : $response->with('success', $message)->withErrors($errorDetails);
+        } catch (\Exception $e) {
+            DB::rollBack();
+            \Illuminate\Support\Facades\DB::statement('SET FOREIGN_KEY_CHECKS=1;');
+            
+            if ($request->ajax()) {
+                 return response()->json([
+                     'success' => false,
+                     'message' => 'Gagal sistem: ' . $e->getMessage()
+                 ]);
+            }
+            
+            return back()->with('error', 'Gagal sistem: ' . $e->getMessage());
+        }
     }
 
     public function linkToSppg(Request $request)

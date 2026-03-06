@@ -349,34 +349,6 @@
                         } finally {
                             this.isLinking = false;
                         }
-                    },
-                    unlinkBeneficiary(beneficiary) {
-                        showUnlinkModal = true;
-                        beneficiaryToUnlink = beneficiary;
-                    },
-                    async confirmUnlink() {
-                        if (!beneficiaryToUnlink) return;
-                        const beneficiary_id = beneficiaryToUnlink.id_beneficiary;
-                        try {
-                            const resp = await fetch('{{ route("admin.manage-beneficiary.link-to-sppg") }}', {
-                                method: 'POST',
-                                headers: {
-                                    'Content-Type': 'application/json',
-                                    'X-CSRF-TOKEN': '{{ csrf_token() }}',
-                                    'X-Requested-With': 'XMLHttpRequest',
-                                    'Accept': 'application/json'
-                                },
-                                body: JSON.stringify({ id_beneficiary: beneficiary_id, id_sppg_unit: null })
-                            });
-                            if (resp.ok) {
-                                selectedUnit.beneficiaries = selectedUnit.beneficiaries.filter(b => b.id_beneficiary != beneficiary_id);
-                                
-                                // Update global allBeneficiaryList to reflect it is now available again
-                                const target = allBeneficiaryList.find(p => p.id_beneficiary == beneficiary_id);
-                                if (target) target.id_sppg_unit = null;
-                                showUnlinkModal = false;
-                            }
-                        } catch (err) { console.error(err); }
                     }
                 }"
                 @beneficiary-created-integrated.window="
@@ -548,7 +520,7 @@
                                                             </svg>
                                                         </button>
                                                         <button type="button" 
-                                                            @click="unlinkBeneficiary(beneficiary)"
+                                                            @click="$dispatch('open-unlink-modal', { beneficiary: beneficiary })"
                                                             class="p-2 text-rose-500 hover:bg-rose-50 rounded-lg transition-all" title="Lepas Tautan">
                                                             <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.875 18.825A10.05 10.05 0 0112 19c-4.478 0-8.268-2.943-9.543-7a9.97 9.97 0 011.563-3.029m5.858.908a3 3 0 114.243 4.243M9.878 9.878l4.242 4.242M9.88 9.88l-3.29-3.29m7.532 7.532l3.29 3.29M3 3l18 18" />

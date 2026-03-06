@@ -121,36 +121,10 @@ class BeneficiarySeeder extends Seeder
                 'pic_email' => 'dewi@example.com',
                 'is_active' => true,
             ],
-            [
-                'id_sppg_unit' => $sppgUnits[4] ?? null,
-                'group_type' => 'Kelompok Lainnya',
-                'category' => 'Yayasan',
-                'code' => 'YYS05',
-                'name' => 'Yayasan Kasih Ibu',
-                'ownership_type' => 'Swasta',
-                'province' => 'Bali',
-                'regency' => 'Buleleng',
-                'district' => 'Buleleng',
-                'village' => 'Pemaron',
-                'address' => 'Jl. Sudirman No. 10',
-                'postal_code' => '81116',
-                'latitude_gps' => -8.134567,
-                'longitude_gps' => 115.067890,
-                'small_portion_male' => 30,
-                'small_portion_female' => 30,
-                'large_portion_male' => 0,
-                'large_portion_female' => 0,
-                'teacher_portion' => 5,
-                'staff_portion' => 5,
-                'cadre_portion' => 0,
-                'pic_name' => 'Wayan',
-                'pic_phone' => '081555666777',
-                'pic_email' => 'wayan@example.com',
-                'is_active' => true,
-            ],
         ];
 
-        foreach ($beneficiaries as $beneficiary) {
+        foreach ($beneficiaries as &$beneficiary) {
+            $beneficiary['id_beneficiary'] = 'PM-' . now()->format('ymdHis') . '-' . rand(1000, 9999);
             Beneficiary::create($beneficiary);
         }
     }

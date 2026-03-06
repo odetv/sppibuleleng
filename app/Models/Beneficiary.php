@@ -10,7 +10,8 @@ class Beneficiary extends Model
     protected $table = 'beneficiaries';
     protected $primaryKey = 'id_beneficiary';
 
-    public $incrementing = true;
+    public $incrementing = false;
+    protected $keyType = 'string';
 
     protected $fillable = [
         'id_beneficiary',

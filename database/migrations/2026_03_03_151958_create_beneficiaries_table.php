@@ -12,9 +12,9 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('beneficiaries', function (Blueprint $table) {
-            $table->id('id_beneficiary');
+            $table->string('id_beneficiary')->primary();
             $table->string('id_sppg_unit')->nullable();
-            $table->enum('group_type', ['Sekolah', 'Posyandu', 'Kelompok Lainnya'])->nullable();
+            $table->enum('group_type', ['Sekolah', 'Posyandu'])->nullable();
             $table->string('category')->nullable();
             $table->string('code')->nullable();
             $table->string('name')->nullable();

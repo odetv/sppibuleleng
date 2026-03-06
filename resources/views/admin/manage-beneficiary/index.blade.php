@@ -44,6 +44,22 @@
                 <div class="p-6 border-b border-slate-100 bg-slate-50/50 flex flex-col md:flex-row md:justify-between md:items-center gap-4">
                     <h3 class="font-bold text-slate-700 uppercase tracking-wider text-[14px]">Daftar Seluruh PM</h3>
                     <div class="flex flex-wrap items-center gap-3">
+                        {{-- Tombol Export --}}
+                        <button type="button" onclick="openExportModal()" class="flex items-center justify-center p-2.5 md:px-4 text-[11px] font-bold uppercase tracking-wider text-emerald-600 bg-white border border-emerald-200 rounded-lg hover:bg-emerald-600 hover:text-white transition-all cursor-pointer shadow-sm">
+                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="w-4 h-4">
+                                <path fill-rule="evenodd" d="M12 2.25a.75.75 0 0 1 .75.75v11.69l3.22-3.22a.75.75 0 1 1 1.06 1.06l-4.5 4.5a.75.75 0 0 1-1.06 0l-4.5-4.5a.75.75 0 1 1 1.06-1.06l3.22 3.22V3a.75.75 0 0 1 .75-.75Zm-9 13.5a.75.75 0 0 1 .75.75v2.25a1.5 1.5 0 0 0 1.5 1.5h13.5a1.5 1.5 0 0 0 1.5-1.5V16.5a.75.75 0 0 1 1.5 0v2.25a3 3 0 0 1-3 3H5.25a3 3 0 0 1-3-3V16.5a.75.75 0 0 1 .75-.75Z" clip-rule="evenodd" />
+                            </svg>
+                            <span class="hidden md:inline ml-2">Export</span>
+                        </button>
+
+                        {{-- Tombol Import --}}
+                        <button type="button" onclick="openImportModal()" class="flex items-center justify-center p-2.5 md:px-4 text-[11px] font-bold uppercase tracking-wider text-amber-600 bg-white border border-amber-200 rounded-lg hover:bg-amber-600 hover:text-white transition-all cursor-pointer shadow-sm">
+                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="w-4 h-4">
+                                <path fill-rule="evenodd" d="M11.47 2.47a.75.75 0 0 1 1.06 0l4.5 4.5a.75.75 0 1 1-1.06 1.06l-3.22-3.22V16.5a.75.75 0 0 1-1.5 0V4.81L8.03 8.03a.75.75 0 0 1-1.06-1.06l4.5-4.5ZM3 15.75a.75.75 0 0 1 .75.75v2.25a1.5 1.5 0 0 0 1.5 1.5h13.5a1.5 1.5 0 0 0 1.5-1.5V16.5a.75.75 0 0 1 1.5 0v2.25a3 3 0 0 1-3 3H5.25a3 3 0 0 1-3-3V16.5a.75.75 0 0 1 .75-.75Z" clip-rule="evenodd" />
+                            </svg>
+                            <span class="hidden md:inline ml-2">Import</span>
+                        </button>
+
                         <button @click="showCreateModal = true" class="flex items-center justify-center p-2.5 md:px-4 text-[11px] font-bold uppercase tracking-wider text-indigo-600 bg-white border border-indigo-200 rounded-lg hover:bg-indigo-600 hover:text-white transition-all cursor-pointer shadow-sm">
                             <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
@@ -278,6 +294,8 @@
         @include('admin.manage-beneficiary.partials.modal-create')
         @include('admin.manage-beneficiary.partials.modal-edit')
         @include('admin.manage-beneficiary.partials.modal-delete')
+        @include('admin.manage-beneficiary.partials.modal-import')
+        @include('admin.manage-beneficiary.partials.modal-export')
     </div>
 
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
@@ -438,5 +456,38 @@
                 }
             }
         });
+
+        async function validateBeneficiaryCode(input, excludeId = null) {
+            const code = input.value.trim();
+            const isEdit = excludeId !== null && excludeId !== '';
+            const errorSpan = isEdit ? document.getElementById('edit_code_error') : document.getElementById('create_code_error');
+            const submitBtn = isEdit ? document.getElementById('btn_submit_edit') : document.getElementById('btn_submit_create');
+
+            if (!code) {
+                if(errorSpan) errorSpan.classList.add('hidden');
+                if(submitBtn) submitBtn.disabled = false;
+                return;
+            }
+
+            try {
+                let url = `/admin/manage-beneficiary/check-availability?code=${encodeURIComponent(code)}`;
+                if (isEdit) {
+                    url += `&id_beneficiary=${encodeURIComponent(excludeId)}`;
+                }
+
+                const response = await fetch(url, { headers: { 'X-Requested-With': 'XMLHttpRequest' } });
+                const data = await response.json();
+
+                if (data.code_duplicate) {
+                    if(errorSpan) errorSpan.classList.remove('hidden');
+                    if(submitBtn) submitBtn.disabled = true;
+                } else {
+                    if(errorSpan) errorSpan.classList.add('hidden');
+                    if(submitBtn) submitBtn.disabled = false;
+                }
+            } catch (error) {
+                console.error('Error checking code availability:', error);
+            }
+        }
     </script>
 </x-app-layout>
