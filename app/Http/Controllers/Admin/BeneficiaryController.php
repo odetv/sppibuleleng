@@ -20,6 +20,9 @@ class BeneficiaryController extends Controller
         $regency = $request->query('regency');
         $district = $request->query('district');
         $village = $request->query('village');
+        $groupType = $request->query('group_type');
+        $category = $request->query('category');
+        $ownershipType = $request->query('ownership_type');
 
         $query = Beneficiary::with('sppgUnit');
 
@@ -51,6 +54,11 @@ class BeneficiaryController extends Controller
         if ($district) $query->where('district', $district);
         if ($village) $query->where('village', $village);
 
+        // Additional Filters
+        if ($groupType) $query->where('group_type', $groupType);
+        if ($category) $query->where('category', $category);
+        if ($ownershipType) $query->where('ownership_type', $ownershipType);
+
         $perPage = $request->query('per_page', 5);
         $beneficiaries = $query->latest()->paginate($perPage)->withQueryString();
 
@@ -63,6 +71,9 @@ class BeneficiaryController extends Controller
             'regencies' => $province ? Beneficiary::where('province', $province)->whereNotNull('regency')->distinct()->pluck('regency')->sort() : [],
             'districts' => $regency ? Beneficiary::where('regency', $regency)->whereNotNull('district')->distinct()->pluck('district')->sort() : [],
             'villages' => $district ? Beneficiary::where('district', $district)->whereNotNull('village')->distinct()->pluck('village')->sort() : [],
+            'group_types' => Beneficiary::whereNotNull('group_type')->distinct()->pluck('group_type')->sort(),
+            'categories' => $groupType ? Beneficiary::where('group_type', $groupType)->whereNotNull('category')->distinct()->pluck('category')->sort() : Beneficiary::whereNotNull('category')->distinct()->pluck('category')->sort(),
+            'ownership_types' => Beneficiary::whereNotNull('ownership_type')->distinct()->pluck('ownership_type')->sort(),
         ];
 
         if ($request->ajax()) {
@@ -81,6 +92,7 @@ class BeneficiaryController extends Controller
             'code' => 'required|string|unique:beneficiaries,code',
             'is_active' => 'required|boolean',
             'category' => 'required|string',
+            'ownership_type' => 'nullable|in:Negeri,Swasta',
             'province' => 'required|string',
             'regency' => 'required|string',
             'district' => 'required|string',
@@ -148,6 +160,7 @@ class BeneficiaryController extends Controller
             'code' => 'required|string|unique:beneficiaries,code,' . $id . ',id_beneficiary',
             'is_active' => 'required|boolean',
             'category' => 'required|string',
+            'ownership_type' => 'nullable|in:Negeri,Swasta',
             'province' => 'required|string',
             'regency' => 'required|string',
             'district' => 'required|string',
@@ -293,7 +306,7 @@ class BeneficiaryController extends Controller
                 $requiredFields = [
                     'TIPE KELOMPOK (Sekolah/Posyandu)', 'KATEGORI', 'KODE PM', 'NAMA PENERIMA MANFAAT',
                     'NAMA PIC', 'NO TELEPON PIC', 'EMAIL PIC', 'PROVINSI', 'KABUPATEN/KOTA', 
-                    'KECAMATAN', 'DESA/KELURAHAN', 'ALAMAT JALAN', 'KODE POS', 'LATITUDE GPS', 'LONGITUDE GPS',
+                    'KECAMATAN', 'DESA/KELURAHAN', 'ALAMAT JALAN', 'KODE POS', 'TIPE KEPEMILIKAN (Negeri/Swasta)', 'LATITUDE GPS', 'LONGITUDE GPS',
                     'PORSI KECIL LAKI-LAKI', 'PORSI KECIL PEREMPUAN', 'PORSI BESAR LAKI-LAKI',
                     'PORSI BESAR PEREMPUAN', 'PORSI GURU', 'PORSI TENAGA KEPENDIDIKAN', 'PORSI KADER'
                 ];
@@ -347,6 +360,7 @@ class BeneficiaryController extends Controller
                         'name' => $name,
                         'group_type' => $groupType,
                         'category' => trim($row['KATEGORI'] ?? null),
+                        'ownership_type' => trim($row['TIPE KEPEMILIKAN (Negeri/Swasta)'] ?? null),
                         'is_active' => $isActive,
                         'small_portion_male' => abs((int)($row['PORSI KECIL LAKI-LAKI'] ?? 0)),
                         'small_portion_female' => abs((int)($row['PORSI KECIL PEREMPUAN'] ?? 0)),

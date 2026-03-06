@@ -57,8 +57,8 @@
                                 </select>
                             </div>
                             <div>
-                                <label class="text-[11px] font-bold text-gray-500 uppercase tracking-wider">Kategori</label>
-                                <select name="category" x-model="category" class="w-full mt-2 px-3 py-2.5 bg-gray-50 border-none rounded-lg text-sm focus:ring-2 focus:ring-indigo-500 outline-none transition-all">
+                                <label class="text-[11px] font-bold text-gray-500 uppercase tracking-wider">Kategori <span class="text-rose-500">*</span></label>
+                                <select name="category" x-model="category" required class="w-full mt-2 px-3 py-2.5 bg-gray-50 border-none rounded-lg text-sm focus:ring-2 focus:ring-indigo-500 outline-none transition-all">
                                     <option value="" disabled selected>Pilih Kategori</option>
                                     <template x-if="group_type && categories[group_type]">
                                         <template x-for="cat in categories[group_type]" :key="cat">
@@ -70,12 +70,12 @@
                         </div>
                         <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                             <div>
-                                <label class="text-[11px] font-bold text-gray-500 uppercase tracking-wider">Kode PM</label>
-                                <input type="text" name="code" class="w-full mt-2 px-4 py-2.5 bg-gray-50 border-none rounded-lg text-sm focus:ring-2 focus:ring-indigo-500" placeholder="Kode Opsional">
+                                <label class="text-[11px] font-bold text-gray-500 uppercase tracking-wider">Kode PM <span class="text-rose-500">*</span></label>
+                                <input type="text" name="code" required class="w-full mt-2 px-4 py-2.5 bg-gray-50 border-none rounded-lg text-sm focus:ring-2 focus:ring-indigo-500" placeholder="Kode PM">
                             </div>
                             <div>
-                                <label class="text-[11px] font-bold text-gray-500 uppercase tracking-wider">Jenis Kepemilikan</label>
-                                <select name="ownership_type" class="w-full mt-2 px-3 py-2.5 bg-gray-50 border-none rounded-lg text-sm focus:ring-2 focus:ring-indigo-500">
+                                <label class="text-[11px] font-bold text-gray-500 uppercase tracking-wider">Tipe Kepemilikan <span class="text-rose-500">*</span></label>
+                                <select name="ownership_type" required class="w-full mt-2 px-3 py-2.5 bg-gray-50 border-none rounded-lg text-sm focus:ring-2 focus:ring-indigo-500">
                                     <option value="" disabled selected>Pilih</option>
                                     <option value="Negeri">Negeri</option>
                                     <option value="Swasta">Swasta</option>
@@ -111,10 +111,10 @@
                             </div>
                             <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
                                 <div class="sm:col-span-2">
-                                    <input type="text" name="address" placeholder="Alamat Jalan Lengkap" class="w-full px-4 py-2.5 bg-gray-50 border-none rounded-lg text-sm focus:ring-2 focus:ring-indigo-500">
+                                    <textarea name="address" required rows="2" placeholder="Alamat Jalan Lengkap" class="w-full px-4 py-2.5 bg-gray-50 border-none rounded-lg text-sm focus:ring-2 focus:ring-indigo-500 outline-none transition-all"></textarea>
                                 </div>
                                 <div>
-                                    <input type="text" name="postal_code" placeholder="Kode Pos" class="w-full px-4 py-2.5 bg-gray-50 border-none rounded-lg text-sm focus:ring-2 focus:ring-indigo-500">
+                                    <input type="text" name="postal_code" required placeholder="Kode Pos" class="w-full px-4 py-2.5 bg-gray-50 border-none rounded-lg text-sm focus:ring-2 focus:ring-indigo-500">
                                 </div>
                             </div>
                         </div>

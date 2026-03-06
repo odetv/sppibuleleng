@@ -89,7 +89,7 @@
                 </div>
 
                 {{-- FILTER SECTION --}}
-                <div class="p-4 bg-slate-50 border-b border-slate-100 grid grid-cols-3 lg:grid-cols-6 gap-3">
+                <div class="p-4 bg-slate-50 border-b border-slate-100 grid grid-cols-3 lg:grid-cols-9 gap-3">
                     <div>
                         <label class="text-[9px] font-bold text-slate-400 uppercase tracking-widest block mb-1 px-1">Status</label>
                         <select id="filter-status" class="filter-input w-full text-[11px] border-slate-200 rounded-lg py-1.5 focus:ring-1 focus:ring-indigo-500 bg-white">
@@ -109,6 +109,33 @@
                         </select>
                     </div>
                     <div>
+                        <label class="text-[9px] font-bold text-slate-400 uppercase tracking-widest block mb-1 px-1">Kelompok</label>
+                        <select id="filter-group-type" class="filter-input w-full text-[11px] border-slate-200 rounded-lg py-1.5 focus:ring-1 focus:ring-indigo-500 bg-white">
+                            <option value="">Semua</option>
+                            @foreach($filterData['group_types'] ?? [] as $gt)
+                                <option value="{{ $gt }}" {{ request('group_type') === $gt ? 'selected' : '' }}>{{ $gt }}</option>
+                            @endforeach
+                        </select>
+                    </div>
+                    <div>
+                        <label class="text-[9px] font-bold text-slate-400 uppercase tracking-widest block mb-1 px-1">Kategori</label>
+                        <select id="filter-category" class="filter-input w-full text-[11px] border-slate-200 rounded-lg py-1.5 focus:ring-1 focus:ring-indigo-500 bg-white">
+                            <option value="">Semua</option>
+                            @foreach($filterData['categories'] ?? [] as $cat)
+                                <option value="{{ $cat }}" {{ request('category') === $cat ? 'selected' : '' }}>{{ $cat }}</option>
+                            @endforeach
+                        </select>
+                    </div>
+                    <div>
+                        <label class="text-[9px] font-bold text-slate-400 uppercase tracking-widest block mb-1 px-1">Kepemilikan</label>
+                        <select id="filter-ownership-type" class="filter-input w-full text-[11px] border-slate-200 rounded-lg py-1.5 focus:ring-1 focus:ring-indigo-500 bg-white">
+                            <option value="">Semua</option>
+                            @foreach($filterData['ownership_types'] ?? [] as $ot)
+                                <option value="{{ $ot }}" {{ request('ownership_type') === $ot ? 'selected' : '' }}>{{ $ot }}</option>
+                            @endforeach
+                        </select>
+                    </div>
+                    <div>
                         <label class="text-[9px] font-bold text-slate-400 uppercase tracking-widest block mb-1 px-1">Provinsi</label>
                         <select id="filter-province" class="filter-input w-full text-[11px] border-slate-200 rounded-lg py-1.5 focus:ring-1 focus:ring-indigo-500 bg-white">
                             <option value="">Semua Provinsi</option>
@@ -118,9 +145,9 @@
                         </select>
                     </div>
                     <div>
-                        <label class="text-[9px] font-bold text-slate-400 uppercase tracking-widest block mb-1 px-1">Kabupaten</label>
+                        <label class="text-[9px] font-bold text-slate-400 uppercase tracking-widest block mb-1 px-1">Kabupaten/Kota</label>
                         <select id="filter-regency" {{ empty($filterData['regencies']) ? 'disabled' : '' }} class="filter-input w-full text-[11px] border-slate-200 rounded-lg py-1.5 focus:ring-1 focus:ring-indigo-500 bg-white disabled:bg-slate-100 disabled:text-slate-400">
-                            <option value="">Semua Kabupaten/Kota</option>
+                            <option value="">Semua</option>
                             @foreach($filterData['regencies'] as $r)
                                 <option value="{{ $r }}" {{ request('regency') === $r ? 'selected' : '' }}>{{ $r }}</option>
                             @endforeach
@@ -129,7 +156,7 @@
                     <div>
                         <label class="text-[9px] font-bold text-slate-400 uppercase tracking-widest block mb-1 px-1">Kecamatan</label>
                         <select id="filter-district" {{ empty($filterData['districts']) ? 'disabled' : '' }} class="filter-input w-full text-[11px] border-slate-200 rounded-lg py-1.5 focus:ring-1 focus:ring-indigo-500 bg-white disabled:bg-slate-100 disabled:text-slate-400">
-                            <option value="">Semua Kecamatan</option>
+                            <option value="">Semua</option>
                             @foreach($filterData['districts'] as $d)
                                 <option value="{{ $d }}" {{ request('district') === $d ? 'selected' : '' }}>{{ $d }}</option>
                             @endforeach
@@ -138,7 +165,7 @@
                     <div>
                         <label class="text-[9px] font-bold text-slate-400 uppercase tracking-widest block mb-1 px-1">Desa/Kelurahan</label>
                         <select id="filter-village" {{ empty($filterData['villages']) ? 'disabled' : '' }} class="filter-input w-full text-[11px] border-slate-200 rounded-lg py-1.5 focus:ring-1 focus:ring-indigo-500 bg-white disabled:bg-slate-100 disabled:text-slate-400">
-                            <option value="">Semua Desa/Kelurahan</option>
+                            <option value="">Semua</option>
                             @foreach($filterData['villages'] as $v)
                                 <option value="{{ $v }}" {{ request('village') === $v ? 'selected' : '' }}>{{ $v }}</option>
                             @endforeach
@@ -171,6 +198,7 @@
                                                 </div>
                                                 <div class="text-slate-500 text-xs block capitalize font-medium">Kelompok: {{ $beneficiary->group_type }}</div>
                                                 <div class="text-slate-500 text-xs block capitalize font-medium">Kategori: {{ $beneficiary->category }}</div>
+                                                <div class="text-slate-500 text-xs block capitalize font-medium">Kepemilikan: {{ $beneficiary->ownership_type ?? '-' }}</div>
                                             </div>
                                         </div>
                                     </td>
@@ -328,6 +356,9 @@
             const filters = {
                 'status': 'filter-status',
                 'sppg_unit': 'filter-sppg-unit',
+                'group_type': 'filter-group-type',
+                'category': 'filter-category',
+                'ownership_type': 'filter-ownership-type',
                 'province': 'filter-province',
                 'regency': 'filter-regency',
                 'district': 'filter-district',
@@ -370,7 +401,10 @@
                 // Update Filter Dropdowns (Cascading Logic)
                 const filterArea = doc.querySelector('.p-4.bg-slate-50.border-b');
                 if(filterArea) {
-                    const currentFilters = ['filter-province', 'filter-regency', 'filter-district', 'filter-village'];
+                    const currentFilters = [
+                        'filter-group-type', 'filter-category', 'filter-ownership-type',
+                        'filter-province', 'filter-regency', 'filter-district', 'filter-village'
+                    ];
                     currentFilters.forEach(id => {
                         const oldEl = document.getElementById(id);
                         const newEl = doc.getElementById(id);

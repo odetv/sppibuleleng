@@ -56,8 +56,8 @@ class BeneficiaryExport extends DefaultValueBinder implements
         $mappingNames = [
             'group_type' => 'TIPE KELOMPOK',
             'category' => 'KATEGORI',
-            'code' => 'KODE PM',
             'name' => 'NAMA PENERIMA MANFAAT',
+            'ownership_type' => 'TIPE KEPEMILIKAN',
             'pic_name' => 'NAMA PIC',
             'pic_phone' => 'NO TELEPON PIC',
             'pic_email' => 'EMAIL PIC',
@@ -93,6 +93,7 @@ class BeneficiaryExport extends DefaultValueBinder implements
                 'category' => $beneficiary->category ?? '-',
                 'code' => $beneficiary->code ?? '-',
                 'name' => $beneficiary->name ?? '-',
+                'ownership_type' => $beneficiary->ownership_type ?? '-',
                 'pic_name' => $beneficiary->pic_name ?? '-',
                 'pic_phone' => $beneficiary->pic_phone ?? '-',
                 'pic_email' => $beneficiary->pic_email ?? '-',

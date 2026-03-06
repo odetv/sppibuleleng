@@ -18,7 +18,7 @@ return new class extends Migration
             $table->string('category')->nullable();
             $table->string('code')->nullable();
             $table->string('name')->nullable();
-            $table->string('ownership_type')->nullable();
+            $table->enum('ownership_type', ['Negeri', 'Swasta'])->nullable();
             $table->string('province')->nullable();
             $table->string('regency')->nullable();
             $table->string('district')->nullable();

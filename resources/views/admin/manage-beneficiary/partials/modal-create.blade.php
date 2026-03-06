@@ -90,15 +90,25 @@
                         </div>
                     </div>
 
-                    <div>
-                        <label class="text-[11px] font-bold text-gray-500 uppercase tracking-wider">SPPG Unit</label>
-                        <select name="id_sppg_unit" class="w-full mt-2 px-3 py-2.5 bg-gray-50 border-none rounded-lg text-sm focus:ring-2 focus:ring-indigo-500 outline-none transition-all">
-                            <option value="" disabled selected>Hubungkan ke Unit</option>
-                            <option value="">Belum Diberikan</option>
-                            @foreach($sppgUnits as $unit)
-                                <option value="{{ $unit->id_sppg_unit }}">{{ $unit->name }} ({{ $unit->id_sppg_unit }})</option>
-                            @endforeach
-                        </select>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <div class="md:col-span-1">
+                            <label class="text-[11px] font-bold text-gray-500 uppercase tracking-wider">Tipe Kepemilikan <span class="text-rose-500">*</span></label>
+                            <select name="ownership_type" required class="w-full mt-2 px-3 py-2.5 bg-gray-50 border-none rounded-lg text-sm focus:ring-2 focus:ring-indigo-500 outline-none transition-all">
+                                <option value="" disabled selected>Pilih Kepemilikan</option>
+                                <option value="Negeri">Negeri</option>
+                                <option value="Swasta">Swasta</option>
+                            </select>
+                        </div>
+                        <div class="md:col-span-1">
+                            <label class="text-[11px] font-bold text-gray-500 uppercase tracking-wider">SPPG Unit</label>
+                            <select name="id_sppg_unit" class="w-full mt-2 px-3 py-2.5 bg-gray-50 border-none rounded-lg text-sm focus:ring-2 focus:ring-indigo-500 outline-none transition-all">
+                                <option value="" disabled selected>Hubungkan ke Unit</option>
+                                <option value="">Belum Diberikan</option>
+                                @foreach($sppgUnits as $unit)
+                                    <option value="{{ $unit->id_sppg_unit }}">{{ $unit->name }} ({{ $unit->id_sppg_unit }})</option>
+                                @endforeach
+                            </select>
+                        </div>
                     </div>
                     <div class="mt-4">
                         <label class="flex items-center gap-3 cursor-pointer p-3 bg-gray-50 rounded-lg w-fit">

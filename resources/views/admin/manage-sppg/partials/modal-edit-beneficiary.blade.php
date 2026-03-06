@@ -74,12 +74,12 @@
                         </div>
                         <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                             <div>
-                                <label class="text-[11px] font-bold text-gray-500 uppercase tracking-wider">Kode PM</label>
-                                <input type="text" name="code" x-model="selectedPM.code" readonly class="w-full mt-2 px-4 py-2.5 bg-gray-50 border border-slate-200 rounded-lg text-sm text-slate-500 cursor-not-allowed focus:outline-none" placeholder="Kode Opsional">
+                                <label class="text-[11px] font-bold text-gray-500 uppercase tracking-wider">Kode PM <span class="text-rose-500">*</span></label>
+                                <input type="text" name="code" x-model="selectedPM.code" required class="w-full mt-2 px-4 py-2.5 bg-gray-50 border-none rounded-lg text-sm focus:ring-2 focus:ring-indigo-500 outline-none transition-all" placeholder="Kode PM">
                             </div>
                             <div>
-                                <label class="text-[11px] font-bold text-gray-500 uppercase tracking-wider">Jenis Kepemilikan</label>
-                                <select name="ownership_type" x-model="selectedPM.ownership_type" class="w-full mt-2 px-3 py-2.5 bg-gray-50 border-none rounded-lg text-sm focus:ring-2 focus:ring-indigo-500">
+                                <label class="text-[11px] font-bold text-gray-500 uppercase tracking-wider">Tipe Kepemilikan <span class="text-rose-500">*</span></label>
+                                <select name="ownership_type" x-model="selectedPM.ownership_type" required class="w-full mt-2 px-3 py-2.5 bg-gray-50 border-none rounded-lg text-sm focus:ring-2 focus:ring-indigo-500">
                                     <option value="" disabled>Pilih</option>
                                     <option value="Negeri">Negeri</option>
                                     <option value="Swasta">Swasta</option>
@@ -117,7 +117,7 @@
                             </div>
                             <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
                                 <div class="sm:col-span-2">
-                                    <input type="text" name="address" x-model="selectedPM.address" placeholder="Alamat Jalan Lengkap" class="w-full px-4 py-2.5 bg-gray-50 border-none rounded-lg text-sm focus:ring-2 focus:ring-indigo-500">
+                                    <textarea name="address" x-model="selectedPM.address" required rows="2" placeholder="Alamat Jalan Lengkap" class="w-full px-4 py-2.5 bg-gray-50 border-none rounded-lg text-sm focus:ring-2 focus:ring-indigo-500 outline-none transition-all"></textarea>
                                 </div>
                                 <div>
                                     <input type="text" name="postal_code" x-model="selectedPM.postal_code" placeholder="Kode Pos" class="w-full px-4 py-2.5 bg-gray-50 border-none rounded-lg text-sm focus:ring-2 focus:ring-indigo-500">

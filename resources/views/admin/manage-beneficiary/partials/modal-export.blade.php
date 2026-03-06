@@ -35,6 +35,7 @@
                             'category' => 'KATEGORI',
                             'code' => 'KODE PM',
                             'name' => 'NAMA PENERIMA MANFAAT',
+                            'ownership_type' => 'TIPE KEPEMILIKAN',
                             'pic_name' => 'NAMA PIC',
                             'pic_phone' => 'NO TELEPON PIC',
                             'pic_email' => 'EMAIL PIC',
