@@ -38,6 +38,7 @@ class BeneficiaryTemplateExport implements FromArray, WithHeadings, WithStyles, 
             'PORSI GURU',
             'PORSI TENAGA KEPENDIDIKAN',
             'PORSI KADER',
+            'ID SPPG UNIT',
         ];
     }
 
@@ -68,6 +69,7 @@ class BeneficiaryTemplateExport implements FromArray, WithHeadings, WithStyles, 
                 '10',
                 '2',
                 '0',
+                '', // ID SPPG UNIT
             ],
             [
                 'Posyandu',
@@ -93,6 +95,7 @@ class BeneficiaryTemplateExport implements FromArray, WithHeadings, WithStyles, 
                 '0',
                 '0',
                 '5',
+                '', // ID SPPG UNIT
             ]
         ];
     }

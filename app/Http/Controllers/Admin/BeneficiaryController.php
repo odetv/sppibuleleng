@@ -228,6 +228,7 @@ class BeneficiaryController extends Controller
     {
         $id = $request->query('id_beneficiary');
         $code = $request->query('code');
+        $idSppgUnit = $request->query('id_sppg_unit');
         
         $codeExists = false;
         if ($code) {
@@ -238,9 +239,15 @@ class BeneficiaryController extends Controller
             $codeExists = $query->exists();
         }
 
+        $sppgExists = true;
+        if ($idSppgUnit) {
+            $sppgExists = \App\Models\SppgUnit::where('id_sppg_unit', $idSppgUnit)->exists();
+        }
+
         return response()->json([
             'id_duplicate' => $id ? Beneficiary::where('id_beneficiary', $id)->exists() : false,
             'code_duplicate' => $codeExists,
+            'sppg_exists' => $sppgExists,
         ]);
     }
 
@@ -343,6 +350,23 @@ class BeneficiaryController extends Controller
                     }
                 }
 
+                $idSppgUnitRaw = trim(str_replace("\xc2\xa0", "", $row['ID SPPG UNIT'] ?? ''));
+                if ($idSppgUnitRaw === '-' || $idSppgUnitRaw === '0') {
+                    $idSppgUnitRaw = '';
+                }
+                
+                $idSppgUnit = null;
+                if (!empty($idSppgUnitRaw)) {
+                    // Cek apakah SPPG Unit ada di database
+                    if (!\App\Models\SppgUnit::where('id_sppg_unit', $idSppgUnitRaw)->exists()) {
+                        $errorMsg = "Baris dengan Kode PM '$code' terlewati: ID SPPG UNIT '$idSppgUnitRaw' tidak ditemukan di sistem.";
+                        $errorDetails[] = $errorMsg;
+                        if ($mode === 'replace') throw new \Exception($errorMsg);
+                        continue;
+                    }
+                    $idSppgUnit = $idSppgUnitRaw;
+                }
+
                 try {
                     // Status default selalu true (aktif)
                     $isActive = true;
@@ -356,6 +380,7 @@ class BeneficiaryController extends Controller
 
                     $beneficiaryData = [
                         'id_beneficiary' => $id_beneficiary,
+                        'id_sppg_unit' => $idSppgUnit,
                         'code' => !empty($code) ? $code : null,
                         'name' => $name,
                         'group_type' => $groupType,

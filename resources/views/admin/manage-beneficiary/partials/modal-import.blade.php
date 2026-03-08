@@ -61,6 +61,7 @@
                                         <th class="p-3 border-b font-bold text-slate-500 uppercase">Kategori</th>
                                         <th class="p-3 border-b font-bold text-slate-500 uppercase">Kode PM</th>
                                         <th class="p-3 border-b font-bold text-slate-500 uppercase">Nama PM</th>
+                                        <th class="p-3 border-b font-bold text-slate-500 uppercase">ID Unit</th>
                                         <th class="p-3 border-b font-bold text-slate-500 uppercase">Status</th>
                                         <th class="p-3 border-b font-bold text-slate-500 uppercase">Catatan Sistem</th>
                                     </tr>
@@ -272,7 +273,7 @@
 
                     const firstSheetName = workbook.SheetNames[0];
                     const worksheet = workbook.Sheets[firstSheetName];
-                    const jsonData = XLSX.utils.sheet_to_json(worksheet);
+                    const jsonData = XLSX.utils.sheet_to_json(worksheet, { defval: "" });
 
                     // Cek jika data kosong
                     if (jsonData.length === 0) {
@@ -336,6 +337,7 @@
                 'PORSI GURU',
                 'PORSI TENAGA KEPENDIDIKAN',
                 'PORSI KADER',
+                'ID SPPG UNIT',
             ];
             
             const missingHeaders = requiredHeaders.filter(header => !(header in firstRow));
@@ -401,6 +403,12 @@
                 const groupType = row['TIPE KELOMPOK (Sekolah/Posyandu)'] || '-';
                 const category = row['KATEGORI'] || '-';
                 const rawCode = (row['KODE PM'] || '').toString().trim();
+                let idSppgUnit = (row['ID SPPG UNIT'] || '').toString().replace(/\u00A0/g, '').trim();
+                
+                // Jika user mengisi 0, -, kosongkan agar dianggap null
+                if (idSppgUnit === '-' || idSppgUnit === '0') {
+                    idSppgUnit = '';
+                }
 
                 let errors = [];
 
@@ -410,6 +418,7 @@
                     'KECAMATAN', 'DESA/KELURAHAN', 'ALAMAT JALAN', 'LATITUDE GPS', 'LONGITUDE GPS',
                     'PORSI KECIL LAKI-LAKI', 'PORSI KECIL PEREMPUAN', 'PORSI BESAR LAKI-LAKI',
                     'PORSI BESAR PEREMPUAN', 'PORSI GURU', 'PORSI TENAGA KEPENDIDIKAN', 'PORSI KADER'
+                    // ID SPPG UNIT is optional
                 ];
 
                 let missingFields = [];
@@ -459,12 +468,22 @@
                 const importMode = importModeInput ? importModeInput.value : 'append';
 
                 // Validasi Eksternal (Backend)
-                if (errors.length === 0 && importMode === 'append') {
+                if (errors.length === 0) {
                     try {
-                        const check = await fetch(`/admin/manage-beneficiary/check-availability?code=${encodeURIComponent(rawCode)}`).then(r => r.json());
+                        let url = `/admin/manage-beneficiary/check-availability?code=${encodeURIComponent(rawCode)}`;
+                        if (idSppgUnit) {
+                            url += `&id_sppg_unit=${encodeURIComponent(idSppgUnit)}`;
+                        }
+                        
+                        const check = await fetch(url).then(r => r.json());
                         if (renderSppgId !== currentRenderSppgId) return; // Batal jika ada render baru
 
-                        if (check.code_duplicate) errors.push('KODE PM sudah terdaftar di database');
+                        if (importMode === 'append' && check.code_duplicate) {
+                            errors.push('KODE PM sudah terdaftar di database');
+                        }
+                        if (idSppgUnit && check.sppg_exists === false) {
+                            errors.push('ID SPPG UNIT tidak ditemukan di sistem');
+                        }
                     } catch (e) {
                         errors.push('Gagal memvalidasi ke server');
                     }
@@ -486,6 +505,7 @@
                     <td class="p-3 border-b border-slate-100 text-slate-600">${category}</td>
                     <td class="p-3 border-b border-slate-100 text-slate-600 font-medium">${code}</td>
                     <td class="p-3 border-b border-slate-100 text-slate-600 font-medium">${name}</td>
+                    <td class="p-3 border-b border-slate-100 text-slate-600 font-medium">${idSppgUnit || '-'}</td>
                     <td class="p-3 border-b border-slate-100">${parseStatus}</td>
                     <td class="p-3 border-b border-slate-100 text-slate-600">
                         ${isRowError 

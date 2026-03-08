@@ -112,9 +112,8 @@
                         <label class="text-[9px] font-bold text-slate-400 uppercase tracking-widest block mb-1 px-1">Kelompok</label>
                         <select id="filter-group-type" class="filter-input w-full text-[11px] border-slate-200 rounded-lg py-1.5 focus:ring-1 focus:ring-indigo-500 bg-white">
                             <option value="">Semua</option>
-                            @foreach($filterData['group_types'] ?? [] as $gt)
-                                <option value="{{ $gt }}" {{ request('group_type') === $gt ? 'selected' : '' }}>{{ $gt }}</option>
-                            @endforeach
+                            <option value="Sekolah" {{ request('group_type') === 'Sekolah' ? 'selected' : '' }}>Sekolah</option>
+                            <option value="Posyandu" {{ request('group_type') === 'Posyandu' ? 'selected' : '' }}>Posyandu</option>
                         </select>
                     </div>
                     <div>
@@ -130,9 +129,8 @@
                         <label class="text-[9px] font-bold text-slate-400 uppercase tracking-widest block mb-1 px-1">Kepemilikan</label>
                         <select id="filter-ownership-type" class="filter-input w-full text-[11px] border-slate-200 rounded-lg py-1.5 focus:ring-1 focus:ring-indigo-500 bg-white">
                             <option value="">Semua</option>
-                            @foreach($filterData['ownership_types'] ?? [] as $ot)
-                                <option value="{{ $ot }}" {{ request('ownership_type') === $ot ? 'selected' : '' }}>{{ $ot }}</option>
-                            @endforeach
+                            <option value="Negeri" {{ request('ownership_type') === 'Negeri' ? 'selected' : '' }}>Negeri</option>
+                            <option value="Swasta" {{ request('ownership_type') === 'Swasta' ? 'selected' : '' }}>Swasta</option>
                         </select>
                     </div>
                     <div>
@@ -178,7 +176,11 @@
                         <table class="w-full text-left border-collapse text-sm">
                             <thead>
                                 <tr class="bg-slate-50 text-[11px] font-bold uppercase tracking-wider text-slate-400 border-b border-slate-100">
-                                    <th class="px-6 py-4 whitespace-nowrap">INFORMASI PM</th>
+                                    <th class="px-6 py-4 whitespace-nowrap">NAMA PM</th>
+                                    <th class="px-6 py-4 whitespace-nowrap">KODE</th>
+                                    <th class="px-6 py-4 whitespace-nowrap">KELOMPOK</th>
+                                    <th class="px-6 py-4 whitespace-nowrap">KATEGORI</th>
+                                    <th class="px-6 py-4 whitespace-nowrap">KEPEMILIKAN</th>
                                     <th class="px-6 py-4 text-center whitespace-nowrap">SPPG UNIT</th>
                                     <th class="px-6 py-4 whitespace-nowrap">ALAMAT</th>
                                     <th class="px-6 py-4 text-center whitespace-nowrap">RINCIAN PORSI</th>
@@ -190,17 +192,19 @@
                                 @forelse($beneficiaries as $beneficiary)
                                 <tr class="hover:bg-slate-50/50 transition-colors group">
                                     <td class="px-6 py-4">
-                                        <div class="flex items-center gap-4">
-                                            <div>
-                                                <div class="font-bold text-slate-700 capitalize text-sm">{{ $beneficiary->name }}</div>
-                                                <div class="text-slate-500 text-xs block capitalize font-medium">
-                                                    <span>Kode: {{ $beneficiary->code ?? '-' }}</span>
-                                                </div>
-                                                <div class="text-slate-500 text-xs block capitalize font-medium">Kelompok: {{ $beneficiary->group_type }}</div>
-                                                <div class="text-slate-500 text-xs block capitalize font-medium">Kategori: {{ $beneficiary->category }}</div>
-                                                <div class="text-slate-500 text-xs block capitalize font-medium">Kepemilikan: {{ $beneficiary->ownership_type ?? '-' }}</div>
-                                            </div>
-                                        </div>
+                                        <div class="font-bold text-slate-700 capitalize text-sm">{{ $beneficiary->name }}</div>
+                                    </td>
+                                    <td class="px-6 py-4 whitespace-nowrap">
+                                        <span class="text-slate-500 text-xs font-medium">{{ $beneficiary->code ?? '-' }}</span>
+                                    </td>
+                                    <td class="px-6 py-4 whitespace-nowrap">
+                                        <span class="text-slate-500 text-xs block capitalize font-medium">{{ $beneficiary->group_type }}</span>
+                                    </td>
+                                    <td class="px-6 py-4 whitespace-nowrap">
+                                        <span class="text-slate-500 text-xs block capitalize font-medium">{{ $beneficiary->category }}</span>
+                                    </td>
+                                    <td class="px-6 py-4 whitespace-nowrap">
+                                        <span class="text-slate-500 text-xs block capitalize font-medium">{{ $beneficiary->ownership_type ?? '-' }}</span>
                                     </td>
                                     <td class="px-6 py-4 text-center">
                                         <span class="text-slate-500 text-xs block capitalize font-medium">{{ $beneficiary->sppgUnit->name ?? 'Belum Diberikan' }}</span>
@@ -209,6 +213,18 @@
                                         <div class="text-[12px] text-slate-600 font-medium leading-relaxed">
                                             {{ $beneficiary->address }}<br>
                                             <span class="text-slate-400 capitalize">{{ $beneficiary->village }}, {{ $beneficiary->district }}, {{ $beneficiary->regency }}, {{ $beneficiary->province }}, {{ $beneficiary->postal_code }}</span>
+                                            
+                                            @if($beneficiary->latitude_gps && $beneficiary->longitude_gps)
+                                            <div class="mt-1.5 flex items-center gap-1 text-slate-400">
+                                                <svg class="w-3.5 h-3.5 text-rose-500 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"></path>
+                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"></path>
+                                                </svg>
+                                                <a href="https://www.google.com/maps/search/?api=1&query={{ $beneficiary->latitude_gps }},{{ $beneficiary->longitude_gps }}" target="_blank" class="text-[10px] hover:text-indigo-600 transition-colors uppercase font-medium mt-px" title="Lihat di Google Maps">
+                                                    {{ $beneficiary->latitude_gps }}, {{ $beneficiary->longitude_gps }}
+                                                </a>
+                                            </div>
+                                            @endif
                                         </div>
                                     </td>
                                     <td class="px-6 py-4">
@@ -263,7 +279,7 @@
                                 </tr>
                                 @empty
                                 <tr>
-                                <td colspan="9" class="px-6 py-12 text-center">
+                                <td colspan="10" class="px-6 py-12 text-center">
                                     <div class="flex flex-col items-center justify-center">
                                         <div class="p-3 bg-slate-50 rounded-full mb-3">
                                             <svg class="w-8 h-8 text-slate-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">

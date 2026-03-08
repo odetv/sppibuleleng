@@ -43,7 +43,7 @@ class BeneficiarySeeder extends Seeder
             [
                 'id_sppg_unit' => $sppgUnits[1] ?? null,
                 'group_type' => 'Posyandu',
-                'category' => 'Posyandu Balita',
+                'category' => 'Balita',
                 'code' => 'POS02',
                 'name' => 'Posyandu Mawar',
                 'ownership_type' => 'Swasta',
@@ -97,7 +97,7 @@ class BeneficiarySeeder extends Seeder
             [
                 'id_sppg_unit' => $sppgUnits[3] ?? null,
                 'group_type' => 'Posyandu',
-                'category' => 'Posyandu Lansia',
+                'category' => 'Ibu Hamil',
                 'code' => 'POS04',
                 'name' => 'Posyandu Melati',
                 'ownership_type' => 'Swasta',
