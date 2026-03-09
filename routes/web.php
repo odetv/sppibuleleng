@@ -74,9 +74,9 @@ Route::middleware('auth')->group(function () {
             Route::get('/kelompok-pm', function () {
                 return "Halaman: Kelompok PM";
             })->name('pm');
-            Route::get('/supplier-mbg', function () {
-                return "Halaman: Supplier MBG";
-            })->name('supplier');
+            Route::get('/supplier-mbg', [App\Http\Controllers\Sppg\SppgSupplierController::class, 'index'])->name('supplier');
+            Route::post('/supplier-mbg/assign', [App\Http\Controllers\Sppg\SppgSupplierController::class, 'assign'])->name('supplier.assign');
+            Route::post('/supplier-mbg/unassign', [App\Http\Controllers\Sppg\SppgSupplierController::class, 'unassign'])->name('supplier.unassign');
         });
 
         // Manajemen SK (Assignment Decrees)
@@ -141,9 +141,14 @@ Route::middleware(['auth', 'role:administrator', 'profile.completed'])->prefix('
         Route::get('/pm', function () {
             return "Halaman: Daftar PM";
         })->name('pm');
-        Route::get('/supplier', function () {
-            return "Halaman: Daftar Supplier";
-        })->name('supplier');
+    });
+
+    // Manajemen Supplier
+    Route::prefix('manage-supplier')->name('manage-supplier.')->group(function () {
+        Route::get('/', [App\Http\Controllers\Admin\SupplierController::class, 'index'])->name('index');
+        Route::post('/store', [App\Http\Controllers\Admin\SupplierController::class, 'store'])->name('store');
+        Route::patch('/{id}/update', [App\Http\Controllers\Admin\SupplierController::class, 'update'])->name('update');
+        Route::delete('/{id}', [App\Http\Controllers\Admin\SupplierController::class, 'destroy'])->name('destroy');
     });
 
     // Manajemen PM (Penerima Manfaat)

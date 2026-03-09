@@ -5,6 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\MorphOne;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class SppgUnit extends Model
@@ -63,6 +64,16 @@ class SppgUnit extends Model
     public function beneficiaries(): HasMany
     {
         return $this->hasMany(Beneficiary::class, 'id_sppg_unit', 'id_sppg_unit');
+    }
+
+    public function suppliers(): BelongsToMany
+    {
+        return $this->belongsToMany(
+            Supplier::class,
+            'sppg_unit_supplier',
+            'id_sppg_unit',
+            'id_supplier'
+        )->withPivot('is_active')->withTimestamps();
     }
 
     /**

@@ -6,7 +6,7 @@
             <div class="bg-white rounded-xl border border-slate-200 overflow-hidden shadow-sm w-full">
                 <div class="p-6 md:p-8 flex flex-col md:flex-row justify-between gap-4">
                     <div>
-                        <h2 class="text-xl font-bold text-slate-800 uppercase leading-tight">Kelola Jabatan</h2>
+                        <h2 class="text-xl font-bold text-slate-800 uppercase leading-tight">Manajemen Jabatan</h2>
                         <p class="text-sm text-slate-400 font-medium mt-1">Manajemen jabatan pengguna terdaftar di sistem</p>
                     </div>
                     <div class="flex items-center">

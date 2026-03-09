@@ -516,15 +516,41 @@ class OfficerController extends Controller
 
         // Validasi jabatan & unit
         $roles = RefRole::pluck('name_role')->map(fn($r) => strtolower($r))->toArray();
-        $positions = RefPosition::pluck('name_position')->toArray();
-        $units = SppgUnit::pluck('name')->toArray();
+        $positions = RefPosition::all();
+        $units = SppgUnit::all();
+
+        $occupied = $units->mapWithKeys(function($u) {
+            return [$u->name => [
+                'kasppg' => $u->leader_id ? true : false,
+                'ag' => $u->nutritionist_id ? true : false,
+                'ak' => $u->accountant_id ? true : false,
+            ]];
+        })->toArray();
+
+        // Check for existing WorkAssignment (SK) for core positions in each unit
+        $skMapping = [];
+        foreach ($units as $unit) {
+            $skMapping[$unit->name] = [];
+            foreach ($positions as $pos) {
+                if (in_array($pos->slug_position, ['kasppg', 'ag', 'ak'])) {
+                    $hasSk = \App\Models\WorkAssignment::join('assignment_decrees', 'work_assignments.id_assignment_decree', '=', 'assignment_decrees.id_assignment_decree')
+                        ->where('work_assignments.id_sppg_unit', $unit->id_sppg_unit)
+                        ->where('assignment_decrees.type_sk', $pos->id_ref_position)
+                        ->exists();
+                    $skMapping[$unit->name][$pos->slug_position] = $hasSk;
+                }
+            }
+        }
 
         return response()->json([
             'nik_duplicate' => $nikExists,
             'phone_duplicate' => $phoneExists,
             'valid_roles' => $roles,
-            'valid_positions' => $positions,
-            'valid_units' => $units
+            'valid_positions' => $positions->pluck('name_position')->toArray(),
+            'pos_slugs' => $positions->pluck('slug_position', 'name_position')->toArray(),
+            'valid_units' => $units->pluck('name')->toArray(),
+            'occupied_cores' => $occupied,
+            'sk_mapping' => $skMapping
         ]);
     }
 
@@ -547,6 +573,17 @@ class OfficerController extends Controller
         $seenNiks = [];
         $seenPhones = [];
 
+        // Ambil data personil yang sudah terisi di SPPG Unit untuk validasi agar 1 jabatan core hanya 1 orang per unit
+        $occupiedPositions = SppgUnit::select('id_sppg_unit', 'leader_id', 'nutritionist_id', 'accountant_id')
+            ->get()
+            ->mapWithKeys(function($unit) {
+                return [$unit->id_sppg_unit => [
+                    'kasppg' => $unit->leader_id,
+                    'ag' => $unit->nutritionist_id,
+                    'ak' => $unit->accountant_id,
+                ]];
+            })->toArray();
+
         try {
             DB::beginTransaction();
 
@@ -556,20 +593,23 @@ class OfficerController extends Controller
                 // Ambil semua data petugas yang ada
                 $officersToDelete = SppgOfficer::all();
                 foreach($officersToDelete as $off) {
-                    $p = $off->person; // Mengambil model Person (inklusif SoftDeleted jika relasi diatur benar, tapi di sini SppgOfficer hanya link ke active person biasanya)
+                    $p = $off->person; 
                     $u = $p?->user;
                     
-                    // JANGAN hapus diri sendiri (Admin yang sedang login)
                     if ($u && $u->id_user === \Illuminate\Support\Facades\Auth::id()) continue;
 
-                    // Hapus permanen data petugas
-                    $off->delete(); // SppgOfficer biasanya tidak pakai SoftDeletes, jika pakai gunakan forceDelete()
-                    
-                    // Hapus permanen User & Person agar tidak bentrok NIK/Phone saat re-import
-                    // Gunakan forceDelete() karena User & Person menggunakan SoftDeletes
+                    $off->delete(); 
                     if ($u) $u->forceDelete();
                     if ($p) $p->forceDelete();
                 }
+
+                // Kosongkan juga slot di unit karena semua personil akan direfresh
+                SppgUnit::query()->update([
+                    'leader_id' => null, 
+                    'nutritionist_id' => null, 
+                    'accountant_id' => null
+                ]);
+                $occupiedPositions = [];
                 
                 DB::statement('SET FOREIGN_KEY_CHECKS=1;');
             }
@@ -643,12 +683,40 @@ class OfficerController extends Controller
                 $unitId = $unitMapping[$unitName] ?? null;
                 if (!$unitId) $rowErrors[] = "Unit SPPG \"$unitName\" tidak valid";
 
+                // 5. Core Position Validation (1 Person per Position per Unit)
+                if ($posId && $unitId) {
+                    $posModel = RefPosition::find($posId);
+                    $posSlug = $posModel ? $posModel->slug_position : null;
+                    $mapping = ['kasppg' => 'leader_id', 'ag' => 'nutritionist_id', 'ak' => 'accountant_id'];
+                    $isCore = $posSlug && isset($mapping[$posSlug]);
+
+                    if ($isCore) {
+                        $existingOccupant = $occupiedPositions[$unitId][$posSlug] ?? null;
+                        if ($existingOccupant) {
+                            $rowErrors[] = "Unit \"$unitName\" sudah memiliki " . strtoupper($posSlug) . " aktif.";
+                        }
+                        // Tandai sudah terisi untuk baris berikutnya dalam file yang sama
+                        $occupiedPositions[$unitId][$posSlug] = true; 
+                    }
+                }
+
                 if (!empty($rowErrors)) {
                     $errorDetails[] = "Baris " . ($index + 1) . " (" . ($name ?: $nik ?: 'Data Kosong') . "): " . implode(', ', $rowErrors);
                     continue;
                 }
 
                 try {
+                    // Resolve Work Assignment (SK) otomatis untuk posisi yang sesuai
+                    $workAssignmentId = null;
+                    if ($posId && $unitId) {
+                        $wa = \App\Models\WorkAssignment::join('assignment_decrees', 'work_assignments.id_assignment_decree', '=', 'assignment_decrees.id_assignment_decree')
+                            ->where('work_assignments.id_sppg_unit', $unitId)
+                            ->where('assignment_decrees.type_sk', $posId)
+                            ->select('work_assignments.id_work_assignment')
+                            ->first();
+                        $workAssignmentId = $wa?->id_work_assignment;
+                    }
+
                     // Create/Update Person
                     $person = Person::updateOrCreate(
                         ['nik' => $nik],
@@ -661,10 +729,11 @@ class OfficerController extends Controller
                             'age'          => $birthDate ? $birthDate->age : null,
                             'religion'     => $row[$religionKey] ?? null,
                             'marital_status' => $row[$maritalKey] ?? null,
-                            'no_bpjs_kes'  => $row['NO. BPJS KESEHATAN'] ?? null,
-                            'no_bpjs_tk'   => $row['NO. BPJS KETENAGAKERJAAN'] ?? null,
-                            'id_ref_position' => $posId,
-                            'province_ktp' => $row['PROVINSI (KTP)'] ?? null,
+                             'no_bpjs_kes'  => $row['NO. BPJS KESEHATAN'] ?? null,
+                             'no_bpjs_tk'   => $row['NO. BPJS KETENAGAKERJAAN'] ?? null,
+                             'id_ref_position' => $posId,
+                             'id_work_assignment' => $workAssignmentId,
+                             'province_ktp' => $row['PROVINSI (KTP)'] ?? null,
                             'regency_ktp'  => $row['KABUPATEN (KTP)'] ?? null,
                             'district_ktp' => $row['KECAMATAN (KTP)'] ?? null,
                             'village_ktp'  => $row['DESA/KELURAHAN (KTP)'] ?? null,

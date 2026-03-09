@@ -45,7 +45,7 @@
             <div class="bg-white rounded-xl border border-slate-200 overflow-hidden shadow-sm">
                 <div class="p-6 md:p-8 flex flex-col md:flex-row justify-between gap-4">
                     <div>
-                        <h2 class="text-xl font-bold text-slate-800 uppercase leading-tight">Kelola SK Penugasan</h2>
+                        <h2 class="text-xl font-bold text-slate-800 uppercase leading-tight">Manajemen SK Penugasan</h2>
                         <p class="text-sm text-slate-400 font-medium mt-1">Manajemen Surat Keputusan & BA Verifikasi Validasi</p>
                     </div>
                     <div class="flex items-center">

@@ -14,15 +14,16 @@ class DatabaseSeeder extends Seeder
         $this->call([
             RoleSeeder::class,
             PositionSeeder::class,
-            UserSeeder::class,             // 1. Akun Login dibuat (id_person: null)
-            SppgUnitSeeder::class,         // 2. Unit SPPG dibuat (Leader merujuk ke id_user)
-            BeneficiarySeeder::class,      // 3. Data Penerima Manfaat
-            AssignmentDecreeSeeder::class, // 4. Data SK
-            WorkAssignmentSeeder::class,   // 5. Data Penugasan
-            PersonSeeder::class,           // 6. Data Diri diisi & Link ke users di-update
-            SppgOfficerSeeder::class,
-            SocialMediaSeeder::class,
+            UserSeeder::class,
+            PersonSeeder::class,
             SettingSeeder::class,
+            SocialMediaSeeder::class,
+            SppgUnitSeeder::class,
+            AssignmentDecreeSeeder::class,
+            WorkAssignmentSeeder::class,
+            SppgOfficerSeeder::class,
+            BeneficiarySeeder::class,
+            SupplierSeeder::class,
         ]);
     }
 }

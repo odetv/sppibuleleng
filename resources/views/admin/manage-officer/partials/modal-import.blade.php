@@ -467,8 +467,32 @@
                     }
                     
                     if (role && !master.valid_roles.includes(role)) errors.push(`Role "${role}" tidak valid`);
-                    if (pos && !master.valid_positions.includes(pos)) errors.push(`Jabatan "${pos}" tidak terdaftar`);
-                    if (unit && !master.valid_units.includes(unit)) errors.push(`Unit "${unit}" tidak terdaftar`);
+                    
+                    const unitExists = check.valid_units.includes(unit);
+                    const posExists = check.valid_positions.includes(pos);
+                    
+                    if (!unitExists) errors.push(`Unit "${unit}" tidak terdaftar`);
+                    if (!posExists) errors.push(`Jabatan "${pos}" tidak terdaftar`);
+
+                    // 4. Core Position & SK Check
+                    if (unitExists && posExists && mode === 'append') {
+                        const slug = check.pos_slugs[pos];
+                        const coreMapping = { 'kasppg': 'kasppg', 'ag': 'ag', 'ak': 'ak' };
+                        
+                        if (slug && coreMapping[slug]) {
+                            // Check Occupancy
+                            const isOccupied = check.occupied_cores[unit] && check.occupied_cores[unit][coreMapping[slug]];
+                            if (isOccupied) {
+                                errors.push(`Unit "${unit}" sudah memiliki ${pos} aktif.`);
+                            }
+                            
+                            // Check SK Existence
+                            const hasSk = check.sk_mapping[unit] && check.sk_mapping[unit][coreMapping[slug]];
+                            if (!hasSk) {
+                                errors.push(`Unit "${unit}" belum memiliki SK untuk ${pos}.`);
+                            }
+                        }
+                    }
                 } catch (e) {
                     errors.push('Gagal validasi ke server');
                 }

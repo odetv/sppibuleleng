@@ -19,10 +19,10 @@
                 <div class="p-6 md:p-8 flex flex-col md:flex-row justify-between gap-4">
                     <div>
                         <h2 class="text-xl font-bold text-slate-800 uppercase">
-                            Kelola Pengguna
+                            Manajemen Pengguna
                         </h2>
                         <p class="text-sm text-slate-400 font-medium mt-1">
-                            Kelola akun pengguna yang terdaftar dalam sistem
+                            Manajemen akun pengguna yang terdaftar dalam sistem
                         </p>
                     </div>
                     <div class="flex items-center">

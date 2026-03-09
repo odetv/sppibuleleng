@@ -26,6 +26,14 @@ return new class extends Migration
 
             $table->timestamps();
         });
+
+        // Tambahkan foreign key ke tabel persons (Circular dependency handling)
+        Schema::table('persons', function (Blueprint $table) {
+            $table->foreign('id_work_assignment')
+                ->references('id_work_assignment')
+                ->on('work_assignments')
+                ->onDelete('set null');
+        });
     }
 
     /**
@@ -33,6 +41,9 @@ return new class extends Migration
      */
     public function down(): void
     {
+        Schema::table('persons', function (Blueprint $table) {
+            $table->dropForeign(['id_work_assignment']);
+        });
         Schema::dropIfExists('work_assignments');
     }
 };
