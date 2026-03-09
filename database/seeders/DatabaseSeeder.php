@@ -20,6 +20,7 @@ class DatabaseSeeder extends Seeder
             AssignmentDecreeSeeder::class, // 4. Data SK
             WorkAssignmentSeeder::class,   // 5. Data Penugasan
             PersonSeeder::class,           // 6. Data Diri diisi & Link ke users di-update
+            SppgOfficerSeeder::class,
             SocialMediaSeeder::class,
             SettingSeeder::class,
         ]);

@@ -7,6 +7,7 @@ use App\Http\Controllers\Admin\UserController;
 use App\Http\Controllers\Admin\SppgUnitController;
 use App\Http\Controllers\Admin\AssignmentDecreeController;
 use App\Http\Controllers\Admin\BeneficiaryController;
+use App\Http\Controllers\Admin\OfficerController;
 use App\Http\Controllers\PersonController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\Sppg\OverviewController;
@@ -157,6 +158,19 @@ Route::middleware(['auth', 'role:administrator', 'profile.completed'])->prefix('
         Route::post('/export', [BeneficiaryController::class, 'exportExcel'])->name('export');
         Route::get('/template', [BeneficiaryController::class, 'exportTemplate'])->name('template');
         Route::post('/import', [BeneficiaryController::class, 'importBeneficiary'])->name('import');
+    });
+
+    // Manajemen Petugas (SPPG Officers)
+    Route::prefix('manage-officer')->name('manage-officer.')->group(function () {
+        Route::get('/', [OfficerController::class, 'index'])->name('index');
+        Route::post('/store', [OfficerController::class, 'store'])->name('store');
+        Route::post('/import-from-sppg', [OfficerController::class, 'importFromSppg'])->name('import-from-sppg');
+        Route::patch('/{id}/update', [OfficerController::class, 'update'])->name('update');
+        Route::delete('/{id}', [OfficerController::class, 'destroy'])->name('destroy');
+        Route::post('/export', [OfficerController::class, 'exportExcel'])->name('export');
+        Route::get('/template', [OfficerController::class, 'exportTemplate'])->name('template');
+        Route::post('/import', [OfficerController::class, 'importOfficers'])->name('import');
+        Route::get('/check-availability', [OfficerController::class, 'checkAvailability'])->name('check-availability');
     });
 
     // Manajemen SK (Assignment Decrees)

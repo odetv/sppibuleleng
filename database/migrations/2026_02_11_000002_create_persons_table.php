@@ -27,27 +27,27 @@ return new class extends Migration
             $table->unsignedBigInteger('id_work_assignment')->nullable();
 
             $table->string('nik', 16)->unique();
-            $table->string('no_kk', 16);
+            $table->string('no_kk', 16)->nullable();
             $table->string('name');
-            $table->string('nip');
-            $table->string('npwp');
-            $table->string('photo');
-            $table->string('title_education');
-            $table->enum('last_education', ['D-III', 'D-IV', 'S-1']);
-            $table->string('major_education');
-            $table->enum('clothing_size', ['XS', 'S', 'M', 'L', 'XL', 'XXL', 'XXXL', 'XXXXL', '4XL', '5XL', '6XL', '7XL', '8XL', '9XL', '10XL']);
-            $table->enum('shoe_size', ['35', '36', '37', '38', '39', '40', '41', '42', '43', '44', '45', '46', '47', '48', '49', '50']);
-            $table->enum('batch', ['1', '2', '3', 'Non-SPPI']);
-            $table->enum('employment_status', ['ASN', 'Non-ASN']);
-            $table->enum('payroll_bank_name', ['BNI', 'Mandiri', 'BCA', 'BTN', 'BSI', 'BPD Bali']);
-            $table->string('payroll_bank_account_number');
-            $table->string('payroll_bank_account_name');
+            $table->string('nip')->nullable();
+            $table->string('npwp')->nullable();
+            $table->string('photo')->nullable();
+            $table->string('title_education')->nullable();
+            $table->enum('last_education', ['D-III', 'D-IV', 'S-1'])->nullable();
+            $table->string('major_education')->nullable();
+            $table->enum('clothing_size', ['XS', 'S', 'M', 'L', 'XL', 'XXL', 'XXXL', 'XXXXL', '4XL', '5XL', '6XL', '7XL', '8XL', '9XL', '10XL'])->nullable();
+            $table->enum('shoe_size', ['35', '36', '37', '38', '39', '40', '41', '42', '43', '44', '45', '46', '47', '48', '49', '50'])->nullable();
+            $table->enum('batch', ['1', '2', '3', 'Non-SPPI'])->nullable();
+            $table->enum('employment_status', ['ASN', 'Non-ASN'])->nullable();
+            $table->enum('payroll_bank_name', ['BNI', 'Mandiri', 'BCA', 'BTN', 'BSI', 'BPD Bali'])->nullable();
+            $table->string('payroll_bank_account_number')->nullable();
+            $table->string('payroll_bank_account_name')->nullable();
             $table->enum('gender', ['L', 'P']);
             $table->string('place_birthday');
             $table->date('date_birthday');
             $table->integer('age');
-            $table->string('religion');
-            $table->string('marital_status');
+            $table->string('religion')->nullable();
+            $table->string('marital_status')->nullable();
 
             // --- FIELD BARU BPJS (NULLABLE) ---
             $table->string('no_bpjs_kes')->nullable();
@@ -68,8 +68,8 @@ return new class extends Migration
             $table->text('address_domicile');
 
             // GPS DOMISILI (Decimal lebih disarankan untuk koordinat)
-            $table->decimal('latitude_gps_domicile', 10, 8);
-            $table->decimal('longitude_gps_domicile', 11, 8);
+            $table->decimal('latitude_gps_domicile', 10, 8)->nullable()->default(0);
+            $table->decimal('longitude_gps_domicile', 11, 8)->nullable()->default(0);
 
             $table->timestamps();
             $table->softDeletes();

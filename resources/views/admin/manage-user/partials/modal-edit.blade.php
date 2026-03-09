@@ -78,22 +78,39 @@
                             {{-- UNIT PENUGASAN: difilter & di-disable berdasarkan jabatan --}}
                             <div class="col-span-2">
                                 <label class="text-[11px] font-bold text-gray-500 uppercase tracking-wider">Unit Penugasan</label>
-                                <select name="id_work_assignment" id="f_wa" class="w-full mt-2 px-3 py-2.5 bg-gray-50 border-none rounded-lg text-sm">
-                                    <option value="none">Belum Penugasan</option>
-                                    @foreach($workAssignments as $wa)
-                                        <option value="{{ $wa->id_work_assignment }}"
-                                            data-pos="{{ $wa->decree?->type_sk ?? '' }}"
-                                            data-unit="{{ $wa->id_sppg_unit }}"
-                                            data-leader="{{ $wa->sppgUnit->leader_id ?? '' }}"
-                                            data-nutritionist="{{ $wa->sppgUnit->nutritionist_id ?? '' }}"
-                                            data-accountant="{{ $wa->sppgUnit->accountant_id ?? '' }}">
-                                            {{ $wa->id_sppg_unit ? ($wa->sppgUnit?->name ?? '-') : ($wa->decree?->position?->name_position ?? 'Posisi Tidak Ditemukan') }} - {{ $wa->decree?->no_sk ?? 'SK Tidak Ditemukan' }}
-                                        </option>
-                                    @endforeach
-                                </select>
-                                <p id="f-wa-occupied-note" class="hidden text-[10px] text-amber-600 font-medium mt-1">
-                                    <i class="fas fa-info-circle mr-1"></i> Opsi yang sudah ditetapkan tidak dapat dipilih.
-                                </p>
+
+                                {{-- Dropdown untuk ASN/SPPI (via work_assignment) --}}
+                                <div id="wa-dropdown-wrapper">
+                                    <select name="id_work_assignment" id="f_wa" class="w-full mt-2 px-3 py-2.5 bg-gray-50 border-none rounded-lg text-sm">
+                                        <option value="none">Belum Penugasan</option>
+                                        @foreach($workAssignments as $wa)
+                                            <option value="{{ $wa->id_work_assignment }}"
+                                                data-pos="{{ $wa->decree?->type_sk ?? '' }}"
+                                                data-unit="{{ $wa->id_sppg_unit }}"
+                                                data-leader="{{ $wa->sppgUnit->leader_id ?? '' }}"
+                                                data-nutritionist="{{ $wa->sppgUnit->nutritionist_id ?? '' }}"
+                                                data-accountant="{{ $wa->sppgUnit->accountant_id ?? '' }}">
+                                                {{ $wa->id_sppg_unit ? ($wa->sppgUnit?->name ?? '-') : ($wa->decree?->position?->name_position ?? 'Posisi Tidak Ditemukan') }} - {{ $wa->decree?->no_sk ?? 'SK Tidak Ditemukan' }}
+                                            </option>
+                                        @endforeach
+                                    </select>
+                                    <p id="f-wa-occupied-note" class="hidden text-[10px] text-amber-600 font-medium mt-1">
+                                        <i class="fas fa-info-circle mr-1"></i> Opsi yang sudah ditetapkan tidak dapat dipilih.
+                                    </p>
+                                </div>
+
+                                {{-- Read-only display untuk Relawan (unit dari sppg_officers) --}}
+                                <div id="unit-dropdown-wrapper" class="hidden">
+                                    <select name="id_sppg_unit" id="f_unit_volunteer" class="w-full mt-2 px-3 py-2.5 bg-gray-50 border-none rounded-lg text-sm disabled:opacity-50" disabled>
+                                        <option value="none">Belum Penugasan (Relawan)</option>
+                                        @foreach($sppgUnits ?? [] as $unit)
+                                            <option value="{{ $unit->id_sppg_unit }}">
+                                                {{ $unit->name }}
+                                            </option>
+                                        @endforeach
+                                    </select>
+                                    <p class="text-[10px] text-gray-400 mt-1 italic"><i class="fas fa-info-circle mr-1"></i> Penugasan relawan langsung ke entitas SPPG.</p>
+                                </div>
                             </div>
                             <div><label class="text-[11px] font-bold text-gray-500 uppercase tracking-wider">Batch</label><select required name="batch" id="f_batch" class="w-full mt-2 px-3 py-2.5 bg-gray-50 border-none rounded-lg text-sm">@foreach(['1', '2', '3', 'Non-SPPI'] as $b) <option value="{{ $b }}">{{ $b }}</option> @endforeach</select></div>
                             <div><label class="text-[11px] font-bold text-gray-500 uppercase tracking-wider">Hak Akses Sistem</label><select required name="id_ref_role" id="f_role" class="w-full mt-2 px-3 py-2.5 bg-gray-50 border-none rounded-lg text-sm">@foreach($roles as $r)<option value="{{$r->id_ref_role}}">{{$r->name_role}}</option>@endforeach</select></div>
@@ -588,9 +605,13 @@
             setVal('f_bpjs_tk', person?.no_bpjs_tk);
 
             // 2. Kerja & Penempatan
-            // id_work_assignment null → 'none' agar dropdown Belum Penugasan terpilih
+            // Tunggu updateEditWaOptions untuk handle visibilitas
+            // Kita hanya set value awalnya saja
             const waEl2 = document.getElementById('f_wa');
+            const unitVolEl = document.getElementById('f_unit_volunteer');
+
             if (waEl2) waEl2.value = person?.id_work_assignment ?? 'none';
+            if (unitVolEl) unitVolEl.value = person?.sppg_officer?.id_sppg_unit ?? 'none';
             setVal('f_batch', person?.batch);
             setVal('f_emp', person?.employment_status);
             setVal('f_role', user.id_ref_role);
@@ -690,12 +711,43 @@
         // ── FILTER & DISABLE OPSI UNIT PENUGASAN BERDASARKAN JABATAN (modal-edit) ──
         function updateEditWaOptions() {
             const posEl  = document.getElementById('f_pos');
+            const waDropdownWrapper = document.getElementById('wa-dropdown-wrapper');
+            const unitDropdownWrapper = document.getElementById('unit-dropdown-wrapper');
             const waEl   = document.getElementById('f_wa');
+            const unitVolEl = document.getElementById('f_unit_volunteer');
             const note   = document.getElementById('f-wa-occupied-note');
 
             const selectedPosId = posEl?.value;
-            const posSlug       = editPositionsMeta[selectedPosId];
+            const posSlug       = editPositionsMeta[selectedPosId] ?? '';
 
+            // Toggle logic between Work Assignment (core) and Sppg Unit (volunteer)
+            const corePositionSlugs = ['kasppg', 'ag', 'ak', 'korwil', 'sppi', 'korcam', 'kasppg-pengganti'];
+            const isVolunteerDivision = selectedPosId && selectedPosId !== 'none' && !corePositionSlugs.includes(posSlug);
+
+            if (isVolunteerDivision) {
+                // Show volunteer unit dropdown, hide work assignment dropdown
+                if (waDropdownWrapper) waDropdownWrapper.classList.add('hidden');
+                if (unitDropdownWrapper) unitDropdownWrapper.classList.remove('hidden');
+                if (waEl) { waEl.disabled = true; waEl.value = 'none'; }
+                if (unitVolEl) unitVolEl.disabled = false;
+                if (note) note.classList.add('hidden');
+                // Ensure "none" option is always visible for unitVolEl if it exists
+                const noneUnitOpt = unitVolEl?.querySelector('option[value="none"]');
+                if (noneUnitOpt) {
+                    noneUnitOpt.hidden = false;
+                    noneUnitOpt.disabled = false;
+                    noneUnitOpt.style.color = '';
+                }
+                return; // skip further filtering for work assignments
+            } else {
+                // Show work assignment dropdown, hide volunteer unit dropdown
+                if (waDropdownWrapper) waDropdownWrapper.classList.remove('hidden');
+                if (unitDropdownWrapper) unitDropdownWrapper.classList.add('hidden');
+                if (waEl) waEl.disabled = false;
+                if (unitVolEl) { unitVolEl.disabled = true; unitVolEl.value = 'none'; }
+            }
+
+            // Occupancy logic for work assignments
             const unitRoles  = ['kasppg', 'ag', 'ak'];
             const slugToAttr = { kasppg: 'leader', ag: 'nutritionist', ak: 'accountant' };
             const isUnitRole = posSlug && unitRoles.includes(posSlug);
@@ -707,20 +759,19 @@
             waOptions.forEach(opt => {
                 const waPosId = opt.getAttribute('data-pos');
 
-                // 1. Filter based on Position ID (Must match unless it's the "none" option)
+                // 1. Filter based on Position ID
                 if (waPosId && selectedPosId && waPosId !== selectedPosId) {
                     opt.hidden   = true;
                     opt.disabled = true;
                     opt.style.color = '#9ca3af';
                 } else if (!selectedPosId || selectedPosId === 'none') {
-                    // If no position selected, hide all except "none"
                     opt.hidden   = true;
                     opt.disabled = true;
                     opt.style.color = '#9ca3af';
                 } else {
                     opt.hidden = false;
 
-                    // 2. Check Occupancy ONLY for core roles (Head, AG, AK)
+                    // 2. Check Occupancy ONLY for core roles
                     if (isUnitRole) {
                         const occupantId = opt.getAttribute('data-' + attrKey);
                         if (occupantId && occupantId !== '' && String(occupantId) !== String(currentPersonId())) {
@@ -734,7 +785,6 @@
                             opt.title    = '';
                         }
                     } else {
-                        // For other positions, we don't have occupancy check yet in SPPG Unit table
                         opt.disabled = false;
                         opt.style.color = '';
                         opt.title = '';
@@ -742,7 +792,7 @@
                 }
             });
 
-            // Ensure "none" option is always visible
+            // Ensure "none" option is always visible for waEl
             const noneOpt = waEl?.querySelector('option[value="none"]');
             if (noneOpt) {
                 noneOpt.hidden = false;

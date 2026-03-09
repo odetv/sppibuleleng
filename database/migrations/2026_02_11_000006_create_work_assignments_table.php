@@ -14,8 +14,8 @@ return new class extends Migration
         Schema::create('work_assignments', function (Blueprint $table) {
             $table->id('id_work_assignment');
 
-            // Relasi ke SK (Tetap foreignId karena di tabel asalnya biasanya bigInt auto-increment)
-            $table->foreignId('id_assignment_decree')->constrained('assignment_decrees', 'id_assignment_decree');
+            // Relasi ke SK (Nullable: relawan tidak selalu punya SK)
+            $table->foreignId('id_assignment_decree')->nullable()->constrained('assignment_decrees', 'id_assignment_decree')->nullOnDelete();
 
             // Relasi ke Unit SPPG (Nullable: posisi non-unit seperti SPPI tidak harus punya unit)
             $table->string('id_sppg_unit')->nullable();

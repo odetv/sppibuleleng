@@ -15,9 +15,9 @@ return new class extends Migration
             $table->id('id_user');
             $table->foreignId('id_person')->nullable()->constrained('persons', 'id_person');
             $table->foreignId('id_ref_role')->constrained('ref_roles', 'id_ref_role');
-            $table->string('email')->unique();
+            $table->string('email')->unique()->nullable();
             $table->timestamp('email_verified_at')->nullable();
-            $table->string('password');
+            $table->string('password')->nullable();
             $table->string('phone')->unique();
             $table->enum('status_user', ['pending', 'active', 'inactive'])->default('pending');
             $table->rememberToken();

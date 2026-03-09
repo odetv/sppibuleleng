@@ -19,6 +19,15 @@ class PositionSeeder extends Seeder
             ['name_position' => 'Kepala SPPG', 'slug_position' => 'kasppg'],
             ['name_position' => 'Ahli Gizi', 'slug_position' => 'ag'],
             ['name_position' => 'Akuntansi', 'slug_position' => 'ak'],
+            ['name_position' => 'Asisten Lapangan', 'slug_position' => 'aslap'],
+            ['name_position' => 'Chef', 'slug_position' => 'chef'],
+            ['name_position' => 'Pengolahan', 'slug_position' => 'pengolahan'],
+            ['name_position' => 'Persiapan', 'slug_position' => 'persiapan'],
+            ['name_position' => 'Pemorsian', 'slug_position' => 'pemorsian'],
+            ['name_position' => 'Distribusi', 'slug_position' => 'distribusi'],
+            ['name_position' => 'Cuci Ompreng', 'slug_position' => 'cuci-ompreng'],
+            ['name_position' => 'Kebersihan', 'slug_position' => 'kebersihan'],
+            ['name_position' => 'Keamanan', 'slug_position' => 'keamanan'],
         ];
 
         foreach ($positions as $pos) {

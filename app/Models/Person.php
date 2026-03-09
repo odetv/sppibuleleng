@@ -69,6 +69,7 @@ class Person extends Model
         'longitude_gps_domicile',
     ];
 
+
     public function position(): BelongsTo
     {
         return $this->belongsTo(RefPosition::class, 'id_ref_position', 'id_ref_position');
@@ -84,56 +85,88 @@ class Person extends Model
         return $this->belongsTo(WorkAssignment::class, 'id_work_assignment', 'id_work_assignment');
     }
 
+    public function sppgOfficer(): HasOne
+    {
+        return $this->hasOne(SppgOfficer::class, 'id_person', 'id_person');
+    }
+
     public function socialMedia(): MorphOne
     {
         return $this->morphOne(SocialMedia::class, 'socialable');
     }
 
     /**
-     * Sinkronisasi data person dengan unit SPPG setelah profil/penugasan diubah.
-     * Dipanggil dari UserController saat admin mengubah penugasan di manage-user.
+     * Sinkronisasi data Person ke SppgUnit (jika jabatan inti) 
+     * dan ke SppgOfficer (Manage Officer).
      */
-    public function syncWithUnit()
+    public function syncWithUnit($forcedUnitId = 'use_existing')
     {
         $idPerson = $this->id_person;
         $posSlug  = $this->position?->slug_position;
         $mapping  = ['kasppg' => 'leader_id', 'ag' => 'nutritionist_id', 'ak' => 'accountant_id'];
 
-        // 1. Bersihkan person ini dari SEMUA unit yang saat ini mencantumkannya
-        \App\Models\SppgUnit::where('leader_id', $idPerson)
-            ->orWhere('nutritionist_id', $idPerson)
-            ->orWhere('accountant_id', $idPerson)
-            ->each(function($u) use ($idPerson) {
-                $u->update([
-                    'leader_id'       => $u->leader_id       == $idPerson ? null : $u->leader_id,
-                    'nutritionist_id' => $u->nutritionist_id == $idPerson ? null : $u->nutritionist_id,
-                    'accountant_id'   => $u->accountant_id   == $idPerson ? null : $u->accountant_id,
-                ]);
-            });
+        // 1. Bersihkan dulu slot di Unit manapun jika person ini adalah Kasppg/AG/AK sebelumnya
+        \App\Models\SppgUnit::where('leader_id', $idPerson)->update(['leader_id' => null]);
+        \App\Models\SppgUnit::where('nutritionist_id', $idPerson)->update(['nutritionist_id' => null]);
+        \App\Models\SppgUnit::where('accountant_id', $idPerson)->update(['accountant_id' => null]);
 
-        // 2. Jika tidak ada penugasan atau jabatan yang relevan, selesai
-        if (!$this->id_work_assignment || !$posSlug || !isset($mapping[$posSlug])) {
-            return;
+        // 2. Tentukan Target Unit ID secara ketat
+        $targetSppgUnitId = null;
+
+        if ($forcedUnitId !== 'use_existing') {
+            // Jika ada paksaan (dari controller), patuhi sepenuhnya (bisa null/none untuk lepas penugasan)
+            $targetSppgUnitId = ($forcedUnitId === 'none' || !$forcedUnitId) ? null : $forcedUnitId;
+        } else {
+            // Jika tidak dipaksa, coba cari dari SK atau data lama
+            if ($this->id_work_assignment && $this->workAssignment) {
+                $targetSppgUnitId = $this->workAssignment->id_sppg_unit;
+            } else if ($this->sppgOfficer) {
+                $targetSppgUnitId = $this->sppgOfficer->id_sppg_unit;
+            }
         }
 
-        // 3. Dapatkan unit tujuan dari WorkAssignment
-        $wa   = $this->workAssignment;
-        $unit = $wa?->sppgUnit;
-
-        if (!$unit) return;
-
-        $column = $mapping[$posSlug];
-
-        // 4. Jika slot di unit tujuan sudah dipakai orang lain, kosongkan orang lain itu
-        $otherPersonId = $unit->{$column};
-        if ($otherPersonId && $otherPersonId != $idPerson) {
-            \App\Models\Person::where('id_person', $otherPersonId)->update([
-                'id_work_assignment' => null,
-                'id_ref_position'    => null,
-            ]);
+        // 3. Update Slot di SppgUnit jika Jabatan Inti
+        $isCore = $posSlug && isset($mapping[$posSlug]);
+        if ($isCore && $targetSppgUnitId) {
+            $targetSppgUnit = \App\Models\SppgUnit::find($targetSppgUnitId);
+            if ($targetSppgUnit) {
+                $column = $mapping[$posSlug];
+                
+                // Jika slot di unit tujuan sudah dipakai orang lain, kosongkan orang lain itu
+                $otherPersonId = $targetSppgUnit->{$column};
+                if ($otherPersonId && $otherPersonId != $idPerson) {
+                    \App\Models\Person::where('id_person', $otherPersonId)->update([
+                        'id_work_assignment' => null,
+                        'id_ref_position'    => null,
+                    ]);
+                }
+                // Set person ini ke slot unit tujuan
+                $targetSppgUnit->update([$column => $idPerson]);
+            }
+            
+            // Sync SK: Jika unit di SK berbeda dengan unit yang dipetakan, kosongkan link SK agar sinkron
+            if ($this->id_work_assignment && $this->workAssignment && $this->workAssignment->id_sppg_unit != $targetSppgUnitId) {
+                $this->update(['id_work_assignment' => null]);
+                $this->id_work_assignment = null;
+                $this->load('workAssignment');
+            }
         }
 
-        // 5. Tetapkan diri sendiri di unit tersebut
-        $unit->update([$column => $idPerson]);
+        // 4. Sinkronisasi ke Tabel sppg_officers (Pintu Utama Manage Officer)
+        $nonOfficerSlugs = ['sppi', 'korwil', 'korcam', 'none'];
+        if ($posSlug && !in_array($posSlug, $nonOfficerSlugs)) {
+            $isActive = $this->sppgOfficer ? $this->sppgOfficer->is_active : true;
+            \App\Models\SppgOfficer::updateOrCreate(
+                ['id_person' => $idPerson],
+                [
+                    'id_ref_position' => $this->id_ref_position,
+                    'id_sppg_unit'    => $targetSppgUnitId,
+                    'is_active'       => $isActive,
+                    'daily_honor'     => $this->sppgOfficer->daily_honor ?? 100000 
+                ]
+            );
+        } else if ($this->sppgOfficer) {
+            $this->sppgOfficer->delete();
+        }
     }
 }

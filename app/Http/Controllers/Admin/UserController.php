@@ -24,7 +24,7 @@ class UserController extends Controller
 {
     public function index(Request $request)
     {
-        $allUsersDisplay = User::with(['person.position', 'person.workAssignment.sppgUnit', 'person.workAssignment.decree', 'person.socialMedia', 'role'])->latest()->get();
+        $allUsersDisplay = User::with(['person.position', 'person.workAssignment.sppgUnit', 'person.workAssignment.decree', 'person.socialMedia', 'person.sppgOfficer.sppgUnit', 'role'])->latest()->get();
 
         // Pagination & Search settings
         $perPagePending = $request->query('per_page_pending', 5);
@@ -32,7 +32,7 @@ class UserController extends Controller
         $perPageTrash = $request->query('per_page_trash', 5);
 
         // 1. Antrian Verifikasi (Pending)
-        $pendingQuery = User::query()->with(['person.position', 'person.workAssignment.sppgUnit', 'role'])
+        $pendingQuery = User::query()->with(['person.position', 'person.workAssignment.sppgUnit', 'person.sppgOfficer.sppgUnit', 'role'])
             ->where('status_user', 'pending');
             
         if ($searchPending = $request->query('search_pending')) {
@@ -45,7 +45,7 @@ class UserController extends Controller
         $pendingUsers = $pendingQuery->latest()->paginate($perPagePending, ['*'], 'pending_page')->withQueryString();
 
         // 2. Daftar Seluruh Pengguna (Active/Filters)
-        $allQuery = User::query()->with(['person.position', 'person.workAssignment.sppgUnit', 'role'])
+        $allQuery = User::query()->with(['person.position', 'person.workAssignment.sppgUnit', 'person.sppgOfficer.sppgUnit', 'role'])
             ->select('users.*')
             ->leftJoin('persons', 'users.id_person', '=', 'persons.id_person')
             ->where('status_user', '!=', 'inactive') // Usually status is active/pending
@@ -127,7 +127,8 @@ class UserController extends Controller
 
         $roles = RefRole::all();
         $positions = RefPosition::all();
-        $workAssignments = WorkAssignment::with(['sppgUnit', 'decree'])->get();
+        $workAssignments = WorkAssignment::with(['sppgUnit', 'decree'])->whereNotNull('id_assignment_decree')->get();
+        $sppgUnits = SppgUnit::orderBy('name')->get();
 
         // Ambil data personil yang sudah terisi di SPPG Unit untuk validasi UI
         $occupiedPositions = SppgUnit::select('id_sppg_unit', 'leader_id', 'nutritionist_id', 'accountant_id')
@@ -141,10 +142,10 @@ class UserController extends Controller
             })->toArray();
 
         if ($request->ajax()) {
-            return view('admin.manage-user.index', compact('pendingUsers', 'allUsersDisplay', 'allUsers', 'trashedUsers', 'stats', 'roles', 'positions', 'workAssignments', 'occupiedPositions', 'filterData'))->render();
+            return view('admin.manage-user.index', compact('pendingUsers', 'allUsersDisplay', 'allUsers', 'trashedUsers', 'stats', 'roles', 'positions', 'workAssignments', 'occupiedPositions', 'filterData', 'sppgUnits'))->render();
         }
 
-        return view('admin.manage-user.index', compact('pendingUsers', 'allUsersDisplay', 'allUsers', 'trashedUsers', 'stats', 'roles', 'positions', 'workAssignments', 'occupiedPositions', 'filterData'));
+        return view('admin.manage-user.index', compact('pendingUsers', 'allUsersDisplay', 'allUsers', 'trashedUsers', 'stats', 'roles', 'positions', 'workAssignments', 'occupiedPositions', 'filterData', 'sppgUnits'));
     }
 
     public function checkAvailability(Request $request)
@@ -413,10 +414,12 @@ class UserController extends Controller
                 $person->update($data);
 
                 // --- TRIGGER SINKRONISASI SATU PINTU ---
-                // PENTING: refresh() diperlukan agar Eloquent me-reload relasi dari DB
-                // (workAssignment, position) setelah update, bukan pakai cache lama
                 $person->refresh();
-                $person->syncWithUnit();
+                
+                // Ambil unit dari SK jika ada, atau gunakan input 'id_sppg_unit' 
+                // (di Manage User biasanya id_work_assignment yang jadi acuan unit)
+                $assignedUnit = $person->workAssignment?->id_sppg_unit ?? $request->input('id_sppg_unit', 'none');
+                $person->syncWithUnit($assignedUnit);
 
                 // SIMPAN / UPDATE SOSIAL MEDIA
                 $person->socialMedia()->updateOrCreate(
