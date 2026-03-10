@@ -73,9 +73,78 @@
             showEditBeneficiaryModal: false,
             showUnlinkModal: false,
             beneficiaryToUnlink: null,
-            selectedUnit: { beneficiaries: [] },
+            selectedUnit: { beneficiaries: [], suppliers: [] },
             selectedPM: {},
             allBeneficiaryList: {{ json_encode($allBeneficiaries) }},
+            
+            // PM Management Shared State
+            stagedBeneficiaries: [],
+            isLinking: false,
+            searchTerm: '',
+            get filteredAllBeneficiaries() {
+                if (!this.searchTerm) return [];
+                const lower = this.searchTerm.toLowerCase();
+                return this.allBeneficiaryList.filter(b => 
+                    (b.name.toLowerCase().includes(lower) || (b.code && b.code.toLowerCase().includes(lower))) &&
+                    !this.selectedUnit.beneficiaries.find(s => s.id_beneficiary === b.id_beneficiary) &&
+                    !this.stagedBeneficiaries.find(s => s.id_beneficiary === b.id_beneficiary)
+                ).slice(0, 5);
+            },
+            addStagedBeneficiary(beneficiary) {
+                this.stagedBeneficiaries.push(beneficiary);
+                this.searchTerm = '';
+            },
+            removeStagedBeneficiary(beneficiaryId) {
+                this.stagedBeneficiaries = this.stagedBeneficiaries.filter(p => p.id_beneficiary !== beneficiaryId);
+            },
+            async linkStagedBeneficiaries() {
+                if (this.stagedBeneficiaries.length === 0) return;
+                
+                if (this.showEditModal) {
+                    // Edit Mode: Save to Database immediately
+                    this.isLinking = true;
+                    const idsToLink = this.stagedBeneficiaries.map(p => p.id_beneficiary);
+                    try {
+                        const resp = await fetch('{{ route("admin.manage-beneficiary.batch-link-to-sppg") }}', {
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/json',
+                                'X-CSRF-TOKEN': '{{ csrf_token() }}',
+                                'X-Requested-With': 'XMLHttpRequest',
+                                'Accept': 'application/json'
+                            },
+                            body: JSON.stringify({ 
+                                id_beneficiary_list: idsToLink, 
+                                id_sppg_unit: this.selectedUnit.id_sppg_unit 
+                            })
+                        });
+                        const data = await resp.json();
+                        if (resp.ok) {
+                            this.selectedUnit.beneficiaries = data.unit_beneficiaries;
+                            this.allBeneficiaryList.forEach(p => {
+                                if (idsToLink.includes(p.id_beneficiary)) {
+                                    p.id_sppg_unit = this.selectedUnit.id_sppg_unit;
+                                }
+                            });
+                            this.stagedBeneficiaries = [];
+                            this.searchTerm = '';
+                        } else {
+                            alert('Gagal menautkan: ' + (data.errors ? JSON.stringify(data.errors) : 'Unknown error'));
+                        }
+                    } catch (err) {
+                        console.error(err);
+                        alert('Gagal menyambung ke server');
+                    } finally {
+                        this.isLinking = false;
+                    }
+                } else {
+                    // Create Mode: Just move to selectedUnit list (visually)
+                    this.selectedUnit.beneficiaries.push(...this.stagedBeneficiaries);
+                    this.stagedBeneficiaries = [];
+                    this.searchTerm = '';
+                }
+            },
+
             unlinkBeneficiary(beneficiary) {
                 this.showUnlinkModal = true;
                 this.beneficiaryToUnlink = beneficiary;
@@ -83,37 +152,42 @@
             async confirmUnlink() {
                 if (!this.beneficiaryToUnlink) return;
                 const beneficiary_id = this.beneficiaryToUnlink.id_beneficiary;
-                try {
-                    const resp = await fetch('{{ route("admin.manage-beneficiary.link-to-sppg") }}', {
-                        method: 'POST',
-                        headers: {
-                            'Content-Type': 'application/json',
-                            'X-CSRF-TOKEN': '{{ csrf_token() }}',
-                            'X-Requested-With': 'XMLHttpRequest',
-                            'Accept': 'application/json'
-                        },
-                        body: JSON.stringify({ id_beneficiary: beneficiary_id, id_sppg_unit: null })
-                    });
-                    if (resp.ok) {
-                        this.selectedUnit.beneficiaries = this.selectedUnit.beneficiaries.filter(b => b.id_beneficiary != beneficiary_id);
-                        
-                        const target = this.allBeneficiaryList.find(p => p.id_beneficiary == beneficiary_id);
-                        if (target) target.id_sppg_unit = null;
-                        
-                        window.dispatchEvent(new CustomEvent('beneficiary-unlinked-integrated', { 
-                            detail: { beneficiary_id: beneficiary_id } 
-                        }));
 
-                        this.showUnlinkModal = false;
-                        this.beneficiaryToUnlink = null;
-                    } else {
-                        const data = await resp.json();
-                        alert('Gagal melepas tautan: ' + (data.errors ? JSON.stringify(data.errors) : 'Unknown error'));
+                if (this.showEditModal) {
+                    try {
+                        const resp = await fetch('{{ route("admin.manage-beneficiary.link-to-sppg") }}', {
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/json',
+                                'X-CSRF-TOKEN': '{{ csrf_token() }}',
+                                'X-Requested-With': 'XMLHttpRequest',
+                                'Accept': 'application/json'
+                            },
+                            body: JSON.stringify({ id_beneficiary: beneficiary_id, id_sppg_unit: null })
+                        });
+                        if (resp.ok) {
+                            this.selectedUnit.beneficiaries = this.selectedUnit.beneficiaries.filter(b => b.id_beneficiary != beneficiary_id);
+                            const target = this.allBeneficiaryList.find(p => p.id_beneficiary == beneficiary_id);
+                            if (target) target.id_sppg_unit = null;
+                            this.showUnlinkModal = false;
+                            this.beneficiaryToUnlink = null;
+                        } else {
+                            const data = await resp.json();
+                            alert('Gagal melepas tautan: ' + (data.errors ? JSON.stringify(data.errors) : 'Unknown error'));
+                        }
+                    } catch (err) {
+                        console.error(err);
+                        alert('Terjadi kesalahan jaringan');
                     }
-                } catch (err) { console.error(err); alert('Terjadi kesalahan jaringan'); }
+                } else {
+                    // Create Mode: Just remove from visual list
+                    this.selectedUnit.beneficiaries = this.selectedUnit.beneficiaries.filter(b => b.id_beneficiary != beneficiary_id);
+                    this.showUnlinkModal = false;
+                    this.beneficiaryToUnlink = null;
+                }
             }
-         }"
-         @open-unlink-modal.window="unlinkBeneficiary($event.detail.beneficiary)">
+        }"
+        @open-unlink-modal.window="unlinkBeneficiary($event.detail.beneficiary)">
 
         <div class="max-w-full mx-auto space-y-6">
             {{-- 1. HEADER SECTION --}}
@@ -157,7 +231,7 @@
                             </button>
 
                             {{-- Tombol Tambah --}}
-                            <button @click="showCreateModal = true" class="flex items-center justify-center p-2.5 md:px-4 text-[11px] font-bold uppercase tracking-wider text-indigo-600 bg-white border border-indigo-200 rounded-lg hover:bg-indigo-600 hover:text-white transition-all cursor-pointer shadow-sm">
+                            <button @click="selectedUnit = { beneficiaries: [], suppliers: [] }; stagedBeneficiaries = []; searchTerm = ''; showCreateModal = true" class="flex items-center justify-center p-2.5 md:px-4 text-[11px] font-bold uppercase tracking-wider text-indigo-600 bg-white border border-indigo-200 rounded-lg hover:bg-indigo-600 hover:text-white transition-all cursor-pointer shadow-sm">
                                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
                     </svg>
@@ -391,7 +465,7 @@
                                 {{-- AKSI --}}
                                 <td class="px-6 py-4 text-center">
                                     <div class="flex justify-center items-center gap-1">
-                                        <button type="button" @click="selectedUnit = {{ json_encode($unit->load(['socialMedia', 'beneficiaries'])) }}; selectedUnit.original_id = '{{ $unit->id_sppg_unit }}'; showEditModal = true; setTimeout(() => window.dispatchEvent(new CustomEvent('init-edit-sppg', { detail: selectedUnit })), 300)"
+                                        <button type="button" @click="selectedUnit = {{ json_encode($unit->load(['socialMedia', 'beneficiaries', 'suppliers'])) }}; selectedUnit.original_id = '{{ $unit->id_sppg_unit }}'; showEditModal = true; setTimeout(() => window.dispatchEvent(new CustomEvent('init-edit-sppg', { detail: selectedUnit })), 300)"
                                             title="Edit" class="p-2 text-slate-400 hover:text-indigo-600 cursor-pointer transition-colors hover:bg-indigo-50 rounded-lg">
                                             <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
                                                 <path d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path>

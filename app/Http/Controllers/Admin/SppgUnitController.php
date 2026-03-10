@@ -27,7 +27,7 @@ class SppgUnitController extends Controller
         $village = $request->query('village');
 
         // Ambil data unit dengan eager loading relasi
-        $query = SppgUnit::with(['leader', 'nutritionist', 'accountant', 'socialMedia', 'workAssignments.decree', 'beneficiaries']);
+        $query = SppgUnit::with(['leader', 'nutritionist', 'accountant', 'socialMedia', 'workAssignments.decree', 'beneficiaries', 'suppliers']);
 
         if ($search) {
             $query->where(function ($q) use ($search) {
@@ -81,6 +81,7 @@ class SppgUnitController extends Controller
             })
             ->toArray();
         $allBeneficiaries = Beneficiary::orderBy('name')->get();
+        $allSuppliers = \App\Models\Supplier::orderBy('name_supplier')->get();
 
         // Unique address data for filters
         $filterData = [
@@ -91,10 +92,10 @@ class SppgUnitController extends Controller
         ];
 
         if ($request->ajax()) {
-            return view('admin.manage-sppg.index', compact('units', 'leaders', 'nutritionists', 'accountants', 'occupiedPeople', 'decrees', 'assignedDecreeMap', 'allBeneficiaries', 'filterData'))->fragment('sppg-table-container');
+            return view('admin.manage-sppg.index', compact('units', 'leaders', 'nutritionists', 'accountants', 'occupiedPeople', 'decrees', 'assignedDecreeMap', 'allBeneficiaries', 'allSuppliers', 'filterData'))->fragment('sppg-table-container');
         }
 
-        return view('admin.manage-sppg.index', compact('units', 'leaders', 'nutritionists', 'accountants', 'occupiedPeople', 'decrees', 'assignedDecreeMap', 'allBeneficiaries', 'filterData'));
+        return view('admin.manage-sppg.index', compact('units', 'leaders', 'nutritionists', 'accountants', 'occupiedPeople', 'decrees', 'assignedDecreeMap', 'allBeneficiaries', 'allSuppliers', 'filterData'));
     }
 
     /**
@@ -182,6 +183,13 @@ class SppgUnitController extends Controller
             }
 
             $unit->syncPersonnel();
+            $unit->suppliers()->sync($request->supplier_ids);
+
+            // Tautkan Penerima Manfaat (PM) jika ada yang dipilih saat pembuatan
+            if ($request->filled('beneficiary_ids')) {
+                \App\Models\Beneficiary::whereIn('id_beneficiary', $request->beneficiary_ids)
+                    ->update(['id_sppg_unit' => $unit->id_sppg_unit]);
+            }
 
             // Simpan Sosial Media
             $unit->socialMedia()->updateOrCreate(
@@ -305,6 +313,7 @@ class SppgUnitController extends Controller
             }
 
             $sppg->syncPersonnel();
+            $sppg->suppliers()->sync($request->supplier_ids);
 
             // Update Sosial Media: Cari menggunakan ID Lama, lalu update ke ID Baru
             SocialMedia::updateOrCreate(

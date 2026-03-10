@@ -1,9 +1,33 @@
 <x-app-layout title="Manajemen Supplier">
+    <script src="https://cdn.jsdelivr.net/npm/xlsx/dist/xlsx.full.min.js"></script>
     <style>
         [x-cloak] { display: none !important; }
         .custom-scrollbar::-webkit-scrollbar { width: 4px; }
         .custom-scrollbar::-webkit-scrollbar-track { background: #f1f1f1; }
         .custom-scrollbar::-webkit-scrollbar-thumb { background: #e2e8f0; border-radius: 10px; }
+        .input-disabled {
+            background-color: #f8fafc !important;
+            color: #94a3b8 !important;
+            cursor: not-allowed !important;
+            pointer-events: none;
+            border: 1px solid #e2e8f0 !important;
+        }
+        .is-invalid {
+            border: 1px solid #ef4444 !important;
+            box-shadow: 0 0 0 2px #fef2f2 !important;
+            background-color: #fff1f2 !important;
+        }
+        .error-warning {
+            color: #ef4444;
+            font-size: 10px;
+            font-weight: 700;
+            font-style: italic;
+            margin-top: 4px;
+            display: block;
+        }
+        .validation-hidden {
+            display: none !important;
+        }
     </style>
 
     <div class="py-8 w-full px-4 sm:px-6 lg:px-8 relative"
@@ -12,77 +36,7 @@
             showEditModal: false, 
             showDeleteModal: false,
             selectedSupplier: { sppg_units: [] },
-            provinces: [], regencies: [], districts: [], villages: [],
-            
-            cleanName(name) {
-                return name.replace(/^(KABUPATEN|KOTA|KAB\.)\s+/i, '').trim();
-            },
 
-            fetchProvinces() {
-                fetch('https://www.emsifa.com/api-wilayah-indonesia/api/provinces.json')
-                    .then(res => res.json())
-                    .then(data => this.provinces = data.map(i => ({ code: i.id, name: this.cleanName(i.name) })));
-            },
-            fetchRegencies(provId) {
-                if(!provId) { this.regencies = []; return Promise.resolve(); }
-                return fetch(`https://www.emsifa.com/api-wilayah-indonesia/api/regencies/${provId}.json`)
-                    .then(res => res.json())
-                    .then(data => {
-                        this.regencies = data.map(i => ({ code: i.id, name: this.cleanName(i.name) }));
-                        this.districts = [];
-                        this.villages = [];
-                    });
-            },
-            fetchDistricts(regId) {
-                if(!regId) { this.districts = []; return Promise.resolve(); }
-                return fetch(`https://www.emsifa.com/api-wilayah-indonesia/api/districts/${regId}.json`)
-                    .then(res => res.json())
-                    .then(data => {
-                        this.districts = data.map(i => ({ code: i.id, name: this.cleanName(i.name) }));
-                        this.villages = [];
-                    });
-            },
-            fetchVillages(distId) {
-                if(!distId) { this.villages = []; return Promise.resolve(); }
-                return fetch(`https://www.emsifa.com/api-wilayah-indonesia/api/villages/${distId}.json`)
-                    .then(res => res.json())
-                    .then(data => this.villages = data.map(i => ({ code: i.id, name: this.cleanName(i.name) })));
-            },
-
-            async populateEditRegions(supplier) {
-                // Reset codes
-                this.selectedSupplier.province_code = '';
-                this.selectedSupplier.regency_code = '';
-                this.selectedSupplier.district_code = '';
-                this.selectedSupplier.village_code = '';
-
-                // 1. Match Province
-                const prov = this.provinces.find(p => p.name.toUpperCase() === (supplier.province || '').toUpperCase());
-                if (prov) {
-                    this.selectedSupplier.province_code = prov.code;
-                    await this.fetchRegencies(prov.code);
-                    
-                    // 2. Match Regency
-                    const reg = this.regencies.find(r => r.name.toUpperCase() === (supplier.regency || '').toUpperCase());
-                    if (reg) {
-                        this.selectedSupplier.regency_code = reg.code;
-                        await this.fetchDistricts(reg.code);
-                        
-                        // 3. Match District
-                        const dist = this.districts.find(d => d.name.toUpperCase() === (supplier.district || '').toUpperCase());
-                        if (dist) {
-                            this.selectedSupplier.district_code = dist.code;
-                            await this.fetchVillages(dist.code);
-                            
-                            // 4. Match Village
-                            const vill = this.villages.find(v => v.name.toUpperCase() === (supplier.village || '').toUpperCase());
-                            if (vill) {
-                                this.selectedSupplier.village_code = vill.code;
-                            }
-                        }
-                    }
-                }
-            },
 
             openEdit(supplier) {
                 // Ensure sppg_units is always an array of strings for proper checkbox matching
@@ -92,13 +46,15 @@
                     sppg_units: units.map(u => String(u.id_sppg_unit || u))
                 };
                 this.showEditModal = true;
+                // Dispatch event for regional pre-population (vanilla JS listener in modal-edit)
+                setTimeout(() => window.dispatchEvent(new CustomEvent('init-edit-supplier', { detail: this.selectedSupplier })), 100);
             },
 
             openDelete(supplier) {
                 this.selectedSupplier = supplier;
                 this.showDeleteModal = true;
             }
-        }" x-init="fetchProvinces(); $watch('showEditModal', value => { if(value && selectedSupplier) { populateEditRegions(selectedSupplier) } })">
+        }" x-init="">
         
         <div class="max-w-full mx-auto space-y-6">
             {{-- 1. HEADER SECTION --}}
@@ -126,11 +82,25 @@
 
                     <div class="flex flex-col md:flex-row items-stretch md:items-center gap-4">
                         <div class="flex items-center gap-2 overflow-x-auto pb-1 md:pb-0 hide-scrollbar">
-                            <button @click="selectedSupplier = { sppg_units: [], province_code: '', regency_code: '', district_code: '', village_code: '' }; showCreateModal = true" class="flex items-center justify-center p-2.5 md:px-4 text-[11px] font-bold uppercase tracking-wider text-indigo-600 bg-white border border-indigo-200 rounded-lg hover:bg-indigo-600 hover:text-white transition-all cursor-pointer shadow-sm">
+                            <button onclick="openExportModal()" class="flex items-center justify-center p-2.5 md:px-4 text-[11px] font-bold uppercase tracking-wider text-emerald-600 bg-white border border-emerald-200 rounded-lg hover:bg-emerald-600 hover:text-white transition-all cursor-pointer shadow-sm">
+                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                                </svg>
+                                <span class="hidden sm:inline ml-2 text-nowrap">Export</span>
+                            </button>
+
+                            <button onclick="openImportModal()" class="flex items-center justify-center p-2.5 md:px-4 text-[11px] font-bold uppercase tracking-wider text-amber-600 bg-white border border-amber-200 rounded-lg hover:bg-amber-600 hover:text-white transition-all cursor-pointer shadow-sm">
+                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12" />
+                                </svg>
+                                <span class="hidden sm:inline ml-2 text-nowrap">Import</span>
+                            </button>
+
+                            <button @click="selectedSupplier = { sppg_units: [] }; showCreateModal = true" class="flex items-center justify-center p-2.5 md:px-4 text-[11px] font-bold uppercase tracking-wider text-indigo-600 bg-white border border-indigo-200 rounded-lg hover:bg-indigo-600 hover:text-white transition-all cursor-pointer shadow-sm">
                                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
                                 </svg>
-                                <span class="hidden lg:inline ml-2 text-nowrap">Tambah Supplier</span>
+                                <span class="hidden sm:inline ml-2 text-nowrap">Tambah</span>
                             </button>
                         </div>
 
@@ -236,8 +206,9 @@
                                         @endif
                                     </td>
                                     <td class="px-6 py-4">
-                                        <div class="text-xs text-slate-700 font-medium capitalize">{{ strtolower($supplier->village) }}, {{ strtolower($supplier->district) }}</div>
-                                        <div class="text-[10px] text-slate-400 mt-1 tracking-tight capitalize">{{ strtolower($supplier->regency) }}, {{ strtolower($supplier->province) }}</div>
+                                        <div class="text-[11px] text-slate-800 font-bold mb-1 line-clamp-1" title="{{ $supplier->address }}">{{ $supplier->address }}</div>
+                                        <div class="text-xs text-slate-600 font-medium capitalize">{{ strtolower($supplier->village) }}, {{ strtolower($supplier->district) }}</div>
+                                        <div class="text-[10px] text-slate-400 mt-1 tracking-tight capitalize">{{ strtolower($supplier->regency) }}, {{ strtolower($supplier->province) }}, {{ $supplier->postal_code }}</div>
                                     </td>
                                     <td class="px-6 py-4">
                                         <div class="flex items-center justify-end gap-2">
@@ -282,6 +253,7 @@
                         <div class="flex items-center gap-2">
                             <span class="text-sm text-slate-600">Tampilkan</span>
                             <select id="supplier-per-page" class="per-page-select border-slate-200 rounded-lg text-sm py-1.5 pl-3 pr-8 focus:ring-indigo-500 text-slate-600 font-medium cursor-pointer bg-slate-50 hover:bg-slate-100 transition-colors">
+                                <option value="5" {{ request('per_page') == '5' || !request('per_page') ? 'selected' : '' }}>5</option>
                                 <option value="10" {{ request('per_page') == '10' ? 'selected' : '' }}>10</option>
                                 <option value="25" {{ request('per_page') == '25' ? 'selected' : '' }}>25</option>
                                 <option value="50" {{ request('per_page') == '50' ? 'selected' : '' }}>50</option>
@@ -304,9 +276,12 @@
         @include('admin.manage-supplier.partials.modal-create')
         @include('admin.manage-supplier.partials.modal-edit')
         @include('admin.manage-supplier.partials.modal-delete')
+        @include('admin.manage-supplier.partials.modal-import')
+        @include('admin.manage-supplier.partials.modal-export')
     </div>
 
     <script>
+        window.validSppgIds = {!! json_encode($validSppgIds) !!};
         let searchTimer;
 
         // 1. Get Current URL Modifiers
@@ -339,11 +314,19 @@
             .then(html => {
                 const parser = new DOMParser();
                 const doc = parser.parseFromString(html, 'text/html');
-                const newContent = doc.getElementById('supplier-table-container');
                 const oldContent = document.getElementById('supplier-table-container');
 
-                if (newContent && oldContent) {
-                    oldContent.innerHTML = newContent.innerHTML;
+                // If response is just the fragment, doc could be parsed into body.
+                // We'll try to find the container in the response, otherwise just use the body content.
+                const newContent = doc.getElementById('supplier-table-container');
+
+                if (oldContent) {
+                    if (newContent) {
+                        oldContent.innerHTML = newContent.innerHTML;
+                    } else {
+                        // Fallback if Laravel returns only the fragment content
+                        oldContent.innerHTML = doc.body.innerHTML;
+                    }
                 }
 
                 // Sync URL

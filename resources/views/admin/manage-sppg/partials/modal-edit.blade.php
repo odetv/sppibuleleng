@@ -255,7 +255,25 @@
                     </div>
                 </div>
 
-                {{-- SECTION 4: SOSIAL MEDIA --}}
+                {{-- SECTION 4: SUPPLIER TERKAIT --}}
+                <div class="pt-10 border-t border-gray-100">
+                    <h3 class="text-sm font-bold uppercase tracking-widest text-indigo-600 mb-6">Supplier Terkait <span class="text-slate-400 font-normal normal-case tracking-normal text-xs">(Opsional)</span></h3>
+                    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 max-h-48 overflow-y-auto p-4 bg-slate-50 rounded-xl border border-slate-200 custom-scrollbar">
+                        @foreach($allSuppliers as $supplier)
+                        <label class="flex items-center gap-3 p-2 hover:bg-white rounded-lg transition-colors cursor-pointer group">
+                            <input type="checkbox" name="supplier_ids[]" value="{{ $supplier->id_supplier }}" 
+                                :checked="selectedUnit.suppliers && selectedUnit.suppliers.some(s => s.id_supplier == {{ $supplier->id_supplier }})"
+                                class="rounded border-slate-300 text-indigo-600 focus:ring-indigo-500">
+                            <div class="flex flex-col">
+                                <span class="text-[13px] font-bold text-slate-700 group-hover:text-indigo-600">{{ $supplier->name_supplier }}</span>
+                                <span class="text-[10px] text-slate-400">{{ $supplier->type_supplier }}</span>
+                            </div>
+                        </label>
+                        @endforeach
+                    </div>
+                </div>
+
+                {{-- SECTION 5: SOSIAL MEDIA --}}
                 <div class="pt-10 border-t border-gray-100">
                     <h3 class="text-sm font-bold uppercase tracking-widest text-indigo-600 mb-6">Sosial Media</h3>
                     <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
@@ -290,67 +308,7 @@
                 </div>
 
                 {{-- SECTION 5: DAFTAR PM --}}
-                <div class="pt-10 border-t border-gray-100" x-data="{ 
-                    stagedBeneficiaries: [], 
-                    isLinking: false,
-                    searchTerm: '',
-                    get filteredAllBeneficiaries() {
-                        if (!this.searchTerm) return [];
-                        const lower = this.searchTerm.toLowerCase();
-                        return allBeneficiaryList.filter(b => 
-                            (b.name.toLowerCase().includes(lower) || (b.code && b.code.toLowerCase().includes(lower))) &&
-                            !this.stagedBeneficiaries.find(s => s.id_beneficiary === b.id_beneficiary)
-                        ).slice(0, 5);
-                    },
-                    addStagedBeneficiary(beneficiary) {
-                        this.stagedBeneficiaries.push(beneficiary);
-                        this.searchTerm = '';
-                    },
-                    removeStagedBeneficiary(beneficiaryId) {
-                        this.stagedBeneficiaries = this.stagedBeneficiaries.filter(p => p.id_beneficiary !== beneficiaryId);
-                    },
-                    async linkStagedBeneficiaries() {
-                        if (this.stagedBeneficiaries.length === 0) return;
-                        this.isLinking = true;
-                        const idsToLink = this.stagedBeneficiaries.map(p => p.id_beneficiary);
-                        try {
-                            const resp = await fetch('{{ route("admin.manage-beneficiary.batch-link-to-sppg") }}', {
-                                method: 'POST',
-                                headers: {
-                                    'Content-Type': 'application/json',
-                                    'X-CSRF-TOKEN': '{{ csrf_token() }}',
-                                    'X-Requested-With': 'XMLHttpRequest',
-                                    'Accept': 'application/json'
-                                },
-                                body: JSON.stringify({ 
-                                    id_beneficiary_list: idsToLink, 
-                                    id_sppg_unit: selectedUnit.id_sppg_unit 
-                                })
-                            });
-                            const data = await resp.json();
-                            if (resp.ok) {
-                                selectedUnit.beneficiaries = data.unit_beneficiaries;
-                                
-                                // Update global allBeneficiaryList to reflect these are now taken
-                                allBeneficiaryList.forEach(p => {
-                                    if (idsToLink.includes(p.id_beneficiary)) {
-                                        p.id_sppg_unit = selectedUnit.id_sppg_unit;
-                                    }
-                                });
-
-                                this.stagedBeneficiaries = [];
-                                this.searchTerm = '';
-                            } else {
-                                alert('Gagal menautkan: ' + (data.errors ? JSON.stringify(data.errors) : 'Unknown error'));
-                            }
-                        } catch (err) {
-                            console.error(err);
-                            alert('Gagal menyambung ke server');
-                        } finally {
-                            this.isLinking = false;
-                        }
-                    }
-                }"
+                <div class="pt-10 border-t border-gray-100"
                 @beneficiary-created-integrated.window="
                     selectedUnit.beneficiaries.push($event.detail.beneficiary); 
                     allBeneficiaryList.push($event.detail.beneficiary);

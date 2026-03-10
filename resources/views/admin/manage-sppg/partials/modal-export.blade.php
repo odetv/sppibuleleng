@@ -50,6 +50,7 @@
                             'sppg_facebook_url' => 'LINK AKUN FACEBOOK (SPPG)',
                             'sppg_instagram_url' => 'LINK AKUN INSTAGRAM (SPPG)',
                             'sppg_tiktok_url' => 'LINK AKUN TIKTOK (SPPG)',
+                            'sppg_suppliers' => 'SUPPLIER TERKAIT',
                         ],
                         'DATA SURAT KEPUTUSAN (SK KASPPG)' => [
                             'sk_kasppg_number' => 'NOMOR SK KASPPG',

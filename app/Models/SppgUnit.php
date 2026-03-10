@@ -73,7 +73,7 @@ class SppgUnit extends Model
             'sppg_unit_supplier',
             'id_sppg_unit',
             'id_supplier'
-        )->withPivot('is_active')->withTimestamps();
+        )->withTimestamps();
     }
 
     /**

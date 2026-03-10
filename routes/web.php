@@ -149,6 +149,10 @@ Route::middleware(['auth', 'role:administrator', 'profile.completed'])->prefix('
         Route::post('/store', [App\Http\Controllers\Admin\SupplierController::class, 'store'])->name('store');
         Route::patch('/{id}/update', [App\Http\Controllers\Admin\SupplierController::class, 'update'])->name('update');
         Route::delete('/{id}', [App\Http\Controllers\Admin\SupplierController::class, 'destroy'])->name('destroy');
+        Route::post('/export', [App\Http\Controllers\Admin\SupplierController::class, 'exportExcel'])->name('export');
+        Route::get('/template', [App\Http\Controllers\Admin\SupplierController::class, 'exportTemplate'])->name('template');
+        Route::get('/check-availability', [App\Http\Controllers\Admin\SupplierController::class, 'checkAvailability'])->name('check-availability');
+        Route::post('/import', [App\Http\Controllers\Admin\SupplierController::class, 'importSupplier'])->name('import');
     });
 
     // Manajemen PM (Penerima Manfaat)

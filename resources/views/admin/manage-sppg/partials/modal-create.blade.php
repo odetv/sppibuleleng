@@ -252,7 +252,211 @@
                         <input type="text" name="longitude_gps" id="f_lng" readonly class="w-full px-4 py-2.5 bg-slate-100 border-none rounded-lg text-sm text-slate-500" placeholder="Longitude Otomatis">
                     </div>
                 </div>
-                {{-- SECTION 4: SOSIAL MEDIA --}}
+                {{-- SECTION 4: SUPPLIER TERKAIT --}}
+                <div class="pt-10 border-t border-gray-100">
+                    <h3 class="text-sm font-bold uppercase tracking-widest text-indigo-600 mb-6">Supplier Terkait <span class="text-slate-400 font-normal normal-case tracking-normal text-xs">(Opsional)</span></h3>
+                    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 max-h-48 overflow-y-auto p-4 bg-slate-50 rounded-xl border border-slate-200 custom-scrollbar">
+                        @foreach($allSuppliers as $supplier)
+                        <label class="flex items-center gap-3 p-2 hover:bg-white rounded-lg transition-colors cursor-pointer group">
+                            <input type="checkbox" name="supplier_ids[]" value="{{ $supplier->id_supplier }}" class="rounded border-slate-300 text-indigo-600 focus:ring-indigo-500">
+                            <div class="flex flex-col">
+                                <span class="text-[13px] font-bold text-slate-700 group-hover:text-indigo-600">{{ $supplier->name_supplier }}</span>
+                                <span class="text-[10px] text-slate-400">{{ $supplier->type_supplier }}</span>
+                            </div>
+                        </label>
+                        @endforeach
+                    </div>
+                </div>
+
+                {{-- SECTION 5: DAFTAR PM --}}
+                <div class="pt-10 border-t border-gray-100"
+                @beneficiary-created-integrated.window="
+                    selectedUnit.beneficiaries.push($event.detail.beneficiary); 
+                    allBeneficiaryList.push($event.detail.beneficiary);
+                    showCreateBeneficiaryModal = false
+                "
+                @beneficiary-updated-integrated.window="
+                    const idx = selectedUnit.beneficiaries.findIndex(b => b.id_beneficiary === $event.detail.beneficiary.id_beneficiary);
+                    if (idx !== -1) selectedUnit.beneficiaries[idx] = $event.detail.beneficiary;
+                    const idxAll = allBeneficiaryList.findIndex(b => b.id_beneficiary === $event.detail.beneficiary.id_beneficiary);
+                    if (idxAll !== -1) allBeneficiaryList[idxAll] = $event.detail.beneficiary;
+                    showEditBeneficiaryModal = false
+                "
+                >
+                    <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-6 gap-4">
+                        <div class="flex items-center gap-3">
+                            <span class="p-1.5 bg-indigo-50 text-indigo-600 rounded-lg">
+                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
+                                </svg>
+                            </span>
+                            <h3 class="text-sm font-bold uppercase tracking-widest text-indigo-600">Penerima Manfaat (PM) Terhubung</h3>
+                        </div>
+                        
+                        <div class="flex items-center gap-3">
+                            <button type="button" @click="$dispatch('open-create-beneficiary')" class="px-4 py-2 bg-emerald-50 text-emerald-600 border border-emerald-100 rounded-lg text-xs font-bold uppercase tracking-wider hover:bg-emerald-100 transition-all flex items-center">
+                                <svg class="w-3.5 h-3.5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
+                                </svg>
+                                <span>Tambah PM Baru</span>
+                            </button>
+                        </div>
+                    </div>
+
+                    {{-- Link Existing PM Tool --}}
+                    <div class="mb-6 p-4 bg-slate-50 rounded-xl border border-slate-200">
+                        <label class="text-[10px] font-bold text-slate-500 uppercase tracking-widest block mb-2">Tautkan PM yang Sudah Ada</label>
+                        <div class="flex gap-2 relative">
+                            <div class="relative flex-1">
+                                <input type="text" x-model="searchTerm" placeholder="Cari Nama atau Kode PM..." class="w-full px-4 py-2.5 bg-white border border-slate-200 rounded-lg text-sm focus:ring-2 focus:ring-indigo-500 outline-none">
+                                <div x-show="searchTerm && filteredAllBeneficiaries.length > 0" class="absolute z-[100] left-0 right-0 mt-1 bg-white border border-slate-200 rounded-lg shadow-xl overflow-hidden max-h-60 overflow-y-auto">
+                                    <template x-for="item in filteredAllBeneficiaries" :key="item.id_beneficiary">
+                                        <button type="button" 
+                                            @click="if(!item.id_sppg_unit) addStagedBeneficiary(item)" 
+                                            :disabled="item.id_sppg_unit !== null"
+                                            class="w-full text-left px-4 py-3 hover:bg-indigo-50 flex flex-row items-center justify-between border-b border-slate-50 last:border-0 group transition-all"
+                                            :class="item.id_sppg_unit ? 'opacity-60 cursor-not-allowed bg-slate-50' : 'cursor-pointer'">
+                                            <div class="flex flex-col gap-0.5">
+                                                <span class="font-bold text-slate-700" x-text="item.name"></span>
+                                                <span class="text-[10px] text-slate-400" x-text="item.group_type + (item.code ? ' • ' + item.code : '')"></span>
+                                            </div>
+                                            <div class="flex flex-col items-end gap-1">
+                                                <template x-if="item.id_sppg_unit === null">
+                                                    <span class="px-2 py-0.5 bg-emerald-50 text-emerald-600 text-[9px] font-bold uppercase rounded border border-emerald-100 group-hover:bg-emerald-600 group-hover:text-white transition-colors">Pilih</span>
+                                                </template>
+                                                <template x-if="item.id_sppg_unit !== null">
+                                                    <div class="flex flex-col items-end">
+                                                        <span class="px-2 py-0.5 bg-rose-50 text-rose-500 text-[9px] font-bold uppercase rounded border border-rose-100">Sudah Ditautkan</span>
+                                                        <span class="text-[8px] text-rose-400 mt-0.5 italic" x-text="'Unit: ' + item.id_sppg_unit"></span>
+                                                    </div>
+                                                </template>
+                                            </div>
+                                        </button>
+                                    </template>
+                                </div>
+                                <div x-show="searchTerm && filteredAllBeneficiaries.length === 0" class="absolute z-[100] left-0 right-0 mt-1 bg-white border border-slate-200 rounded-lg shadow-xl p-4 text-center">
+                                    <p class="text-[10px] font-bold text-slate-400 uppercase tracking-widest italic">Tidak ada PM ditemukan</p>
+                                </div>
+                            </div>
+                            <button type="button" 
+                                @click="linkStagedBeneficiaries()"
+                                :disabled="stagedBeneficiaries.length === 0"
+                                class="px-6 py-2.5 bg-indigo-600 text-white rounded-lg text-xs font-bold uppercase transition-all hover:bg-indigo-700 disabled:bg-slate-300">
+                                <span>Tautkan <span x-show="stagedBeneficiaries.length > 0" x-text="'(' + stagedBeneficiaries.length + ')'"></span></span>
+                            </button>
+                        </div>
+
+                        {{-- Staged Beneficiaries List --}}
+                        <template x-if="stagedBeneficiaries.length > 0">
+                            <div class="mt-4 flex flex-wrap gap-2">
+                                <template x-for="beneficiary in stagedBeneficiaries" :key="beneficiary.id_beneficiary">
+                                    <div class="px-3 py-1.5 bg-indigo-100 text-indigo-700 rounded-lg text-[10px] font-bold flex items-center gap-2 border border-indigo-200 shadow-sm animate-in fade-in zoom-in duration-200">
+                                        <span x-text="beneficiary.name"></span>
+                                        <button type="button" @click="removeStagedBeneficiary(beneficiary.id_beneficiary)" class="p-0.5 hover:bg-indigo-200 rounded-full transition-colors text-indigo-400 hover:text-indigo-600">
+                                            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                                            </svg>
+                                        </button>
+                                    </div>
+                                </template>
+                            </div>
+                        </template>
+                    </div>
+
+                    {{-- Hidden Inputs for Form Submission --}}
+                    <template x-for="b in selectedUnit.beneficiaries" :key="b.id_beneficiary">
+                        <input type="hidden" name="beneficiary_ids[]" :value="b.id_beneficiary">
+                    </template>
+                    
+                    <div class="bg-white rounded-xl overflow-hidden border border-slate-200 shadow-sm">
+                        <div class="overflow-x-auto custom-scrollbar">
+                            <table class="w-full text-left text-sm">
+                                <thead>
+                                    <tr class="bg-indigo-600/5 text-[11px] font-bold text-indigo-600/60 uppercase tracking-widest border-b border-indigo-600/10">
+                                        <th class="px-5 py-4 text-center">Identitas PM</th>
+                                        <th class="px-5 py-4 text-center">Rincian Porsi</th>
+                                        <th class="px-5 py-4">Alamat & GPS</th>
+                                        <th class="px-5 py-4">PIC / Kontak</th>
+                                        <th class="px-5 py-4 text-center">Aksi</th>
+                                    </tr>
+                                </thead>
+                                <tbody class="divide-y divide-slate-100 bg-white">
+                                    <template x-if="selectedUnit.beneficiaries && selectedUnit.beneficiaries.length > 0">
+                                        <template x-for="beneficiary in selectedUnit.beneficiaries" :key="beneficiary.id_beneficiary">
+                                            <tr class="hover:bg-indigo-50/30 transition-colors">
+                                                <td class="px-5 py-4 align-top">
+                                                    <div class="font-bold text-slate-800 capitalize leading-tight text-sm" x-text="beneficiary.name"></div>
+                                                    <div class="text-[11px] font-bold text-indigo-600 mt-1 uppercase" x-text="beneficiary.group_type + (beneficiary.category ? ' • ' + beneficiary.category : '')"></div>
+                                                    <div class="text-[10px] text-slate-500 mt-1" x-text="'Kepemilikan: ' + (beneficiary.ownership_type || '-')"></div>
+                                                    <div class="text-[10px] text-slate-400 mt-0.5" x-text="beneficiary.code ? 'Kode: ' + beneficiary.code : ''"></div>
+                                                </td>
+                                                <td class="px-5 py-4 align-top text-slate-600">
+                                                    <div class="grid grid-cols-2 gap-x-4 gap-y-1 text-[11px]">
+                                                        <span>Kecil (L/P):</span>
+                                                        <span class="font-bold text-slate-700" x-text="(beneficiary.small_portion_male || 0) + '/' + (beneficiary.small_portion_female || 0)"></span>
+                                                        <span>Besar (L/P):</span>
+                                                        <span class="font-bold text-slate-700" x-text="(beneficiary.large_portion_male || 0) + '/' + (beneficiary.large_portion_female || 0)"></span>
+                                                        <span>Guru/Staff:</span>
+                                                        <span class="font-bold text-slate-700" x-text="(beneficiary.teacher_portion || 0) + '/' + (beneficiary.staff_portion || 0)"></span>
+                                                        <span>Kader:</span>
+                                                        <span class="font-bold text-slate-700" x-text="beneficiary.cadre_portion || 0"></span>
+                                                    </div>
+                                                </td>
+                                                <td class="px-5 py-4 align-top max-w-[200px]">
+                                                    <div class="text-slate-600 line-clamp-2 text-sm" x-text="beneficiary.address || '-'"></div>
+                                                    <div class="text-[10px] text-slate-400 mt-1" x-text="(beneficiary.village || '-') + ', ' + (beneficiary.district || '-') + ', ' + (beneficiary.regency || '-')"></div>
+                                                    <div class="mt-2 flex items-center text-[10px] font-bold text-indigo-500">
+                                                        <svg class="w-3.5 h-3.5 mr-1" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5a2.5 2.5 0 010-5 2.5 2.5 0 010 5z"/></svg>
+                                                        <span x-text="(beneficiary.latitude_gps && beneficiary.longitude_gps) ? beneficiary.latitude_gps.slice(0,10) + ', ' + beneficiary.longitude_gps.slice(0,10) : 'GPS Tidak Ada'"></span>
+                                                    </div>
+                                                </td>
+                                                <td class="px-5 py-4 align-top">
+                                                    <div class="text-slate-700 font-bold text-sm" x-text="beneficiary.pic_name || '-'"></div>
+                                                    <div class="text-[11px] text-indigo-600 font-medium mt-1" x-text="beneficiary.pic_phone || '-'"></div>
+                                                </td>
+                                                <td class="px-5 py-4 text-center align-top">
+                                                    <div class="flex justify-center items-center gap-1">
+                                                        <button type="button" 
+                                                            @click="$dispatch('open-edit-beneficiary', { beneficiary: beneficiary })"
+                                                            class="p-2 text-indigo-500 hover:bg-indigo-50 rounded-lg transition-all" title="Ubah Data PM">
+                                                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+                                                            </svg>
+                                                        </button>
+                                                        <button type="button" 
+                                                            @click="unlinkBeneficiary(beneficiary)"
+                                                            class="p-2 text-rose-500 hover:bg-rose-50 rounded-lg transition-all" title="Lepas Tautan">
+                                                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.875 18.825A10.05 10.05 0 0112 19c-4.478 0-8.268-2.943-9.543-7a9.97 9.97 0 011.563-3.029m5.858.908a3 3 0 114.243 4.243M9.878 9.878l4.242 4.242M9.88 9.88l-3.29-3.29m7.532 7.532l3.29 3.29M3 3l18 18" />
+                                                        </svg>
+                                                    </button>
+                                                </div>
+                                                </td>
+                                            </tr>
+                                        </template>
+                                    </template>
+                                    <template x-if="!selectedUnit.beneficiaries || selectedUnit.beneficiaries.length === 0">
+                                        <tr>
+                                            <td colspan="5" class="px-5 py-12 text-center">
+                                                <div class="flex flex-col items-center">
+                                                    <div class="p-3 bg-slate-50 rounded-full mb-3">
+                                                        <svg class="w-10 h-10 text-slate-200" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
+                                                        </svg>
+                                                    </div>
+                                                    <p class="text-[11px] font-bold uppercase tracking-widest text-slate-400 italic">Belum ada PM terhubung</p>
+                                                    <p class="text-[10px] text-slate-300 mt-1">Gunakan alat pencarian atau tambah PM baru untuk mengisi daftar ini</p>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                    </template>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+
+                {{-- SECTION 6: SOSIAL MEDIA --}}
                 <div class="pt-10 border-t border-gray-100">
                     <h3 class="text-sm font-bold uppercase tracking-widest text-indigo-600 mb-6">Sosial Media <span class="text-slate-400 font-normal normal-case tracking-normal text-xs">(Opsional)</span></h3>
                     <div class="grid grid-cols-1 md:grid-cols-3 gap-6">

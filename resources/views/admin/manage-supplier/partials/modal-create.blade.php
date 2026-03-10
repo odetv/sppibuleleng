@@ -32,7 +32,7 @@
             <button @click="showCreateModal = false" class="text-slate-400 hover:text-slate-600 text-2xl duration-200">&times;</button>
         </div>
 
-        <form action="{{ route('admin.manage-supplier.store') }}" method="POST">
+        <form action="{{ route('admin.manage-supplier.store') }}" method="POST" id="createSupplierForm" @submit.prevent="window.submitCreateSupplier($el)">
             @csrf
             
             <div class="p-8 max-h-[75vh] overflow-y-auto space-y-10 custom-scrollbar">
@@ -43,7 +43,7 @@
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                         <div>
                             <label class="text-[11px] font-bold text-gray-500 uppercase tracking-wider">Jenis Supplier <span class="text-rose-500">*</span></label>
-                            <select name="type_supplier" required class="w-full mt-2 text-sm bg-gray-50 border-none rounded-lg py-2.5 px-4 focus:ring-2 focus:ring-indigo-500 outline-none transition-all">
+                            <select name="type_supplier" id="f_type" class="w-full mt-2 text-sm bg-gray-50 border-none rounded-lg py-2.5 px-4 focus:ring-2 focus:ring-indigo-500 outline-none transition-all">
                                 <option value="">Pilih Jenis</option>
                                 @foreach($supplierTypes as $type)
                                 <option value="{{ $type }}">{{ $type }}</option>
@@ -52,19 +52,21 @@
                         </div>
                         <div>
                             <label class="text-[11px] font-bold text-gray-500 uppercase tracking-wider">Nama Instansi/Toko <span class="text-rose-500">*</span></label>
-                            <input type="text" name="name_supplier" required class="w-full mt-2 text-sm bg-gray-50 border-none rounded-lg py-2.5 px-4 focus:ring-2 focus:ring-indigo-500 outline-none transition-all" placeholder="Misal: PT. Sembako Jaya">
+                            <input type="text" name="name_supplier" id="f_name" class="w-full mt-2 text-sm bg-gray-50 border-none rounded-lg py-2.5 px-4 focus:ring-2 focus:ring-indigo-500 outline-none transition-all" placeholder="Misal: PT. Sembako Jaya">
                         </div>
                         <div>
                             <label class="text-[11px] font-bold text-gray-500 uppercase tracking-wider">Nama Pimpinan <span class="text-rose-500">*</span></label>
-                            <input type="text" name="leader_name" required class="w-full mt-2 text-sm bg-gray-50 border-none rounded-lg py-2.5 px-4 focus:ring-2 focus:ring-indigo-500 outline-none transition-all" placeholder="Nama lengkap">
+                            <input type="text" name="leader_name" id="f_leader" class="w-full mt-2 text-sm bg-gray-50 border-none rounded-lg py-2.5 px-4 focus:ring-2 focus:ring-indigo-500 outline-none transition-all" placeholder="Nama lengkap">
                         </div>
                         <div>
                             <label class="text-[11px] font-bold text-gray-500 uppercase tracking-wider">No. HP/Telepon <span class="text-rose-500">*</span></label>
-                            <input type="text" name="phone" required class="w-full mt-2 text-sm bg-gray-50 border-none rounded-lg py-2.5 px-4 focus:ring-2 focus:ring-indigo-500 outline-none transition-all" placeholder="08xxxxxxxxxx">
+                            <input type="text" name="phone" id="f_phone" 
+                                oninput="this.value = this.value.replace(/[^0-9]/g, '')"
+                                class="w-full mt-2 text-sm bg-gray-50 border-none rounded-lg py-2.5 px-4 focus:ring-2 focus:ring-indigo-500 outline-none transition-all" placeholder="08xxxxxxxxxx">
                         </div>
                         <div class="md:col-span-2">
                             <label class="text-[11px] font-bold text-gray-500 uppercase tracking-wider">Komoditas Utama <span class="text-rose-500">*</span></label>
-                            <textarea name="commodities" required rows="2" class="w-full mt-2 text-sm bg-gray-50 border-none rounded-lg py-2.5 px-4 focus:ring-2 focus:ring-indigo-500 outline-none transition-all" placeholder="Contoh: Beras, Telur, Daging Ayam, Sayuran"></textarea>
+                            <textarea name="commodities" id="f_commodities" rows="2" class="w-full mt-2 text-sm bg-gray-50 border-none rounded-lg py-2.5 px-4 focus:ring-2 focus:ring-indigo-500 outline-none transition-all" placeholder="Contoh: Beras, Telur, Daging Ayam, Sayuran"></textarea>
                         </div>
                     </div>
                 </div>
@@ -74,79 +76,38 @@
                     <h3 class="text-sm font-bold uppercase tracking-widest text-indigo-600 mb-6">Lokasi Supplier</h3>
                     
                     {{-- Hidden inputs for clean names --}}
-                    <input type="hidden" name="province" x-ref="prov_name">
-                    <input type="hidden" name="regency" x-ref="reg_name">
-                    <input type="hidden" name="district" x-ref="dist_name">
-                    <input type="hidden" name="village" x-ref="vill_name">
+                    <input type="hidden" name="province_name" id="f_prov_name">
+                    <input type="hidden" name="regency_name" id="f_reg_name">
+                    <input type="hidden" name="district_name" id="f_dist_name">
+                    <input type="hidden" name="village_name" id="f_vill_name">
 
                     <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
                         <div>
                             <label class="text-[11px] font-bold text-gray-500 uppercase tracking-wider">Provinsi <span class="text-rose-500">*</span></label>
-                            <select name="province_code" required 
-                                x-model="selectedSupplier.province_code"
-                                @change="
-                                    $refs.prov_name.value = $event.target.options[$event.target.selectedIndex].text;
-                                    selectedSupplier.province = $refs.prov_name.value;
-                                    fetchRegencies($event.target.value);
-                                    selectedSupplier.regency_code = '';
-                                    selectedSupplier.district_code = '';
-                                    selectedSupplier.village_code = '';
-                                "
+                            <select name="province" id="f_prov" 
                                 class="w-full mt-2 text-sm bg-gray-50 border-none rounded-lg py-2.5 px-4 focus:ring-2 focus:ring-indigo-500 outline-none transition-all capitalize">
-                                <option value="">Pilih</option>
-                                <template x-for="p in provinces" :key="p.code">
-                                    <option :value="p.code" x-text="p.name.toLowerCase()"></option>
-                                </template>
+                                <option value="">Pilih Provinsi</option>
                             </select>
                         </div>
                         <div>
                             <label class="text-[11px] font-bold text-gray-500 uppercase tracking-wider">Kab/Kota <span class="text-rose-500">*</span></label>
-                            <select name="regency_code" required :disabled="!selectedSupplier.province_code"
-                                x-model="selectedSupplier.regency_code"
-                                @change="
-                                    $refs.reg_name.value = $event.target.options[$event.target.selectedIndex].text;
-                                    selectedSupplier.regency = $refs.reg_name.value;
-                                    fetchDistricts($event.target.value);
-                                    selectedSupplier.district_code = '';
-                                    selectedSupplier.village_code = '';
-                                "
-                                class="w-full mt-2 text-sm bg-gray-50 border-none rounded-lg py-2.5 px-4 focus:ring-2 focus:ring-indigo-500 outline-none transition-all disabled:opacity-50 disabled:cursor-not-allowed capitalize">
-                                <option value="">Pilih</option>
-                                <template x-for="r in regencies" :key="r.code">
-                                    <option :value="r.code" x-text="r.name.toLowerCase()"></option>
-                                </template>
+                            <select name="regency" id="f_reg" disabled
+                                class="w-full mt-2 text-sm border-none rounded-lg py-2.5 px-4 focus:ring-2 focus:ring-indigo-500 outline-none transition-all disabled:opacity-50 disabled:cursor-not-allowed capitalize input-disabled">
+                                <option value="">Pilih Kabupaten</option>
                             </select>
                         </div>
                         <div>
                             <label class="text-[11px] font-bold text-gray-500 uppercase tracking-wider">Kecamatan <span class="text-rose-500">*</span></label>
-                            <select name="district_code" required :disabled="!selectedSupplier.regency_code"
-                                x-model="selectedSupplier.district_code"
-                                @change="
-                                    $refs.dist_name.value = $event.target.options[$event.target.selectedIndex].text;
-                                    selectedSupplier.district = $refs.dist_name.value;
-                                    fetchVillages($event.target.value);
-                                    selectedSupplier.village_code = '';
-                                "
-                                class="w-full mt-2 text-sm bg-gray-50 border-none rounded-lg py-2.5 px-4 focus:ring-2 focus:ring-indigo-500 outline-none transition-all disabled:opacity-50 disabled:cursor-not-allowed capitalize">
-                                <option value="">Pilih</option>
-                                <template x-for="d in districts" :key="d.code">
-                                    <option :value="d.code" x-text="d.name.toLowerCase()"></option>
-                                </template>
+                            <select name="district" id="f_dist" disabled
+                                class="w-full mt-2 text-sm border-none rounded-lg py-2.5 px-4 focus:ring-2 focus:ring-indigo-500 outline-none transition-all disabled:opacity-50 disabled:cursor-not-allowed capitalize input-disabled">
+                                <option value="">Pilih Kecamatan</option>
                             </select>
                         </div>
                         <div>
                             <label class="text-[11px] font-bold text-gray-500 uppercase tracking-wider">Kelurahan <span class="text-rose-500">*</span></label>
-                            <select name="village_code" required :disabled="!selectedSupplier.district_code"
-                                x-model="selectedSupplier.village_code"
-                                @change="
-                                    $refs.vill_name.value = $event.target.options[$event.target.selectedIndex].text;
-                                    selectedSupplier.village = $refs.vill_name.value;
-                                "
-                                class="w-full mt-2 text-sm bg-gray-50 border-none rounded-lg py-2.5 px-4 focus:ring-2 focus:ring-indigo-500 outline-none transition-all disabled:opacity-50 disabled:cursor-not-allowed capitalize">
-                                <option value="">Pilih</option>
-                                <template x-for="v in villages" :key="v.code">
-                                    <option :value="v.code" x-text="v.name.toLowerCase()"></option>
-                                </template>
+                            <select name="village" id="f_vill" disabled
+                                class="w-full mt-2 text-sm border-none rounded-lg py-2.5 px-4 focus:ring-2 focus:ring-indigo-500 outline-none transition-all disabled:opacity-50 disabled:cursor-not-allowed capitalize input-disabled">
+                                <option value="">Pilih Desa/Kelurahan</option>
                             </select>
                         </div>
                     </div>
@@ -154,11 +115,13 @@
                     <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
                         <div class="md:col-span-2">
                             <label class="text-[11px] font-bold text-gray-500 uppercase tracking-wider">Alamat Detail <span class="text-rose-500">*</span></label>
-                            <textarea name="address" required rows="2" class="w-full mt-2 text-sm bg-gray-50 border-none rounded-lg py-2.5 px-4 focus:ring-2 focus:ring-indigo-500 outline-none transition-all" placeholder="Nama jalan, nomor rumah, RT/RW"></textarea>
+                            <textarea name="address" id="f_address" rows="2" class="w-full mt-2 text-sm bg-gray-50 border-none rounded-lg py-2.5 px-4 focus:ring-2 focus:ring-indigo-500 outline-none transition-all" placeholder="Nama jalan, nomor rumah, RT/RW"></textarea>
                         </div>
                         <div>
-                            <label class="text-[11px] font-bold text-gray-500 uppercase tracking-wider">Kode Pos</label>
-                            <input type="text" name="postal_code" class="w-full mt-2 text-sm bg-gray-50 border-none rounded-lg py-2.5 px-4 focus:ring-2 focus:ring-indigo-500 outline-none transition-all" placeholder="811xx">
+                            <label class="text-[11px] font-bold text-gray-500 uppercase tracking-wider">Kode Pos <span class="text-rose-500">*</span></label>
+                            <input type="text" name="postal_code" id="f_postal" 
+                                oninput="this.value = this.value.replace(/[^0-9]/g, '')"
+                                class="w-full mt-2 text-sm bg-gray-50 border-none rounded-lg py-2.5 px-4 focus:ring-2 focus:ring-indigo-500 outline-none transition-all" placeholder="811xx">
                         </div>
                     </div>
                 </div>
@@ -183,8 +146,167 @@
 
             <div class="p-6 border-t border-slate-100 bg-slate-50/50 flex gap-4">
                 <button type="button" @click="showCreateModal = false" class="flex-1 py-4 text-[11px] font-bold uppercase text-slate-500 bg-white border border-slate-200 rounded-xl hover:bg-slate-50 transition-all">Batal</button>
-                <button type="submit" class="flex-1 py-4 text-[11px] font-bold uppercase text-white bg-slate-800 rounded-xl shadow-lg hover:bg-slate-900 transition-all active:scale-95">Simpan Supplier</button>
+                <button type="submit" id="btnSubmitSupplier" class="flex-1 py-4 text-[11px] font-bold uppercase text-white bg-slate-800 rounded-xl shadow-lg hover:bg-slate-900 transition-all active:scale-95">Simpan Supplier</button>
             </div>
         </form>
     </div>
 </div>
+
+<script>
+    (function() {
+        const apiBase = "/api-wilayah";
+        const sel = {
+            p: document.getElementById('f_prov'),
+            r: document.getElementById('f_reg'),
+            d: document.getElementById('f_dist'),
+            v: document.getElementById('f_vill')
+        };
+        const hid = {
+            p: document.getElementById('f_prov_name'),
+            r: document.getElementById('f_reg_name'),
+            d: document.getElementById('f_dist_name'),
+            v: document.getElementById('f_vill_name')
+        };
+
+        function setSelectState(el, isDisabled) {
+            el.disabled = isDisabled;
+            if (isDisabled) {
+                el.classList.add('input-disabled');
+                el.classList.remove('bg-gray-50');
+            } else {
+                el.classList.remove('input-disabled');
+                el.classList.add('bg-gray-50');
+            }
+        }
+
+        async function populate(target, path, label) {
+            target.innerHTML = '<option value="">Memuat...</option>';
+            try {
+                const resp = await fetch(`${apiBase}/${path}.json`);
+                const json = await resp.json();
+                let h = `<option value="">Pilih ${label}</option>`;
+                json.data.forEach(i => {
+                    const name = i.name.replace(/^(KABUPATEN|KOTA|KAB\.)\s+/i, "").trim();
+                    h += `<option value="${i.code}" data-name="${name}">${name}</option>`;
+                });
+                target.innerHTML = h;
+                setSelectState(target, false);
+            } catch (e) {
+                target.innerHTML = '<option value="">Gagal</option>';
+            }
+        }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            populate(sel.p, 'provinces', 'Provinsi');
+        });
+
+        sel.p.onchange = async function() {
+            hid.p.value = this.options[this.selectedIndex].getAttribute('data-name') || '';
+            sel.r.innerHTML = sel.d.innerHTML = sel.v.innerHTML = '<option value="">Pilih...</option>';
+            [sel.r, sel.d, sel.v].forEach(s => setSelectState(s, true));
+            if (this.value) await populate(sel.r, `regencies/${this.value}`, 'Kabupaten');
+        };
+        sel.r.onchange = async function() {
+            hid.r.value = this.options[this.selectedIndex].getAttribute('data-name') || '';
+            sel.d.innerHTML = sel.v.innerHTML = '<option value="">Pilih...</option>';
+            [sel.d, sel.v].forEach(s => setSelectState(s, true));
+            if (this.value) await populate(sel.d, `districts/${this.value}`, 'Kecamatan');
+        };
+        sel.d.onchange = async function() {
+            hid.d.value = this.options[this.selectedIndex].getAttribute('data-name') || '';
+            sel.v.innerHTML = '<option value="">Pilih...</option>';
+            setSelectState(sel.v, true);
+            if (this.value) await populate(sel.v, `villages/${this.value}`, 'Desa');
+        };
+        sel.v.onchange = function() {
+            hid.v.value = this.options[this.selectedIndex].getAttribute('data-name') || '';
+        };
+
+        function clearErrors() {
+            document.querySelectorAll('#createSupplierForm .is-invalid').forEach(el => el.classList.remove('is-invalid'));
+            document.querySelectorAll('#createSupplierForm .error-warning').forEach(el => {
+                el.classList.add('validation-hidden');
+                el.innerText = '';
+            });
+        }
+
+        function showFieldError(id, msg) {
+            const el = document.getElementById(id);
+            if (!el) return;
+
+            el.classList.add('is-invalid');
+
+            const errorId = 'error-' + id;
+            let errorEl = document.getElementById(errorId);
+            if (!errorEl) {
+                errorEl = document.createElement('span');
+                errorEl.id = errorId;
+                errorEl.className = 'error-warning';
+                el.parentNode.appendChild(errorEl);
+            }
+            errorEl.innerText = '* ' + msg;
+            errorEl.classList.remove('validation-hidden');
+        }
+
+        window.submitCreateSupplier = async function(formElement) {
+            clearErrors();
+            const btnSubmit = document.getElementById('btnSubmitSupplier');
+            
+            if (btnSubmit) {
+                btnSubmit.disabled = true;
+                btnSubmit.innerHTML = "Memproses...";
+            }
+
+            try {
+                const formData = new FormData(formElement);
+                const response = await fetch(formElement.action, {
+                    method: 'POST',
+                    body: formData,
+                    headers: {
+                        'X-Requested-With': 'XMLHttpRequest',
+                        'Accept': 'application/json'
+                    }
+                });
+
+                const result = await response.json();
+
+                if (response.ok) {
+                    window.location.reload();
+                } else {
+                    if (btnSubmit) {
+                        btnSubmit.disabled = false;
+                        btnSubmit.innerHTML = "Simpan Supplier";
+                    }
+
+                    if (result.errors) {
+                        Object.keys(result.errors).forEach(key => {
+                            let fieldId = 'f_' + key;
+                            // Map backend keys to frontend IDs
+                            if (key === 'province_name') fieldId = 'f_prov';
+                            if (key === 'regency_name')  fieldId = 'f_reg';
+                            if (key === 'district_name') fieldId = 'f_dist';
+                            if (key === 'village_name')  fieldId = 'f_vill';
+                            if (key === 'postal_code')   fieldId = 'f_postal';
+                            if (key === 'type_supplier') fieldId = 'f_type';
+                            if (key === 'name_supplier') fieldId = 'f_name';
+                            if (key === 'leader_name')   fieldId = 'f_leader';
+                            if (key === 'commodities')   fieldId = 'f_commodities';
+
+                            showFieldError(fieldId, result.errors[key][0]);
+                        });
+                        
+                        // Scroll to first error
+                        const firstErr = document.querySelector('#createSupplierForm .is-invalid');
+                        if (firstErr) firstErr.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                    }
+                }
+            } catch (err) {
+                if (btnSubmit) {
+                    btnSubmit.disabled = false;
+                    btnSubmit.innerHTML = "Simpan Supplier";
+                }
+                console.error('Submit Error:', err);
+            }
+        };
+    })();
+</script>
