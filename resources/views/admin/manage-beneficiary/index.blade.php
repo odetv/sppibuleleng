@@ -216,7 +216,6 @@
                             <thead>
                                 <tr class="bg-slate-50 text-[11px] font-bold uppercase tracking-wider text-slate-400 border-b border-slate-100">
                                     <th class="px-6 py-4 whitespace-nowrap">NAMA PM</th>
-                                    <th class="px-6 py-4 whitespace-nowrap">KODE</th>
                                     <th class="px-6 py-4 whitespace-nowrap">KELOMPOK</th>
                                     <th class="px-6 py-4 whitespace-nowrap">KATEGORI</th>
                                     <th class="px-6 py-4 whitespace-nowrap">KEPEMILIKAN</th>
@@ -232,9 +231,7 @@
                                 <tr class="hover:bg-slate-50/50 transition-colors group">
                                     <td class="px-6 py-4">
                                         <div class="font-bold text-slate-700 capitalize text-sm">{{ $beneficiary->name }}</div>
-                                    </td>
-                                    <td class="px-6 py-4 whitespace-nowrap">
-                                        <span class="text-slate-500 text-xs font-medium">{{ $beneficiary->code ?? '-' }}</span>
+                                        <div class="text-[10px] text-slate-400 font-bold uppercase tracking-widest mt-0.5">{{ $beneficiary->code ?? '-' }}</div>
                                     </td>
                                     <td class="px-6 py-4 whitespace-nowrap">
                                         <span class="text-slate-500 text-xs block capitalize font-medium">{{ $beneficiary->group_type }}</span>

@@ -99,11 +99,13 @@ class SppgUnitController extends Controller
             'villages' => $district ? SppgUnit::where('district', $district)->whereNotNull('village')->distinct()->pluck('village')->sort() : [],
         ];
 
+        $sppgUnits = SppgUnit::orderBy('name')->get(['id_sppg_unit', 'name']);
+
         if ($request->ajax()) {
-            return view('admin.manage-sppg.index', compact('units', 'leaders', 'nutritionists', 'accountants', 'occupiedPeople', 'decrees', 'assignedDecreeMap', 'allBeneficiaries', 'allSuppliers', 'supplierTypes', 'filterData'))->fragment('sppg-table-container');
+            return view('admin.manage-sppg.index', compact('units', 'leaders', 'nutritionists', 'accountants', 'occupiedPeople', 'decrees', 'assignedDecreeMap', 'allBeneficiaries', 'allSuppliers', 'supplierTypes', 'filterData', 'sppgUnits'))->fragment('sppg-table-container');
         }
 
-        return view('admin.manage-sppg.index', compact('units', 'leaders', 'nutritionists', 'accountants', 'occupiedPeople', 'decrees', 'assignedDecreeMap', 'allBeneficiaries', 'allSuppliers', 'supplierTypes', 'filterData'));
+        return view('admin.manage-sppg.index', compact('units', 'leaders', 'nutritionists', 'accountants', 'occupiedPeople', 'decrees', 'assignedDecreeMap', 'allBeneficiaries', 'allSuppliers', 'supplierTypes', 'filterData', 'sppgUnits'));
     }
 
     /**

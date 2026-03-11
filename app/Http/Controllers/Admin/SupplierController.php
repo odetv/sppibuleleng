@@ -19,6 +19,7 @@ class SupplierController extends Controller
         $search = $request->query('search');
         $type = $request->query('type');
         $status = $request->query('status');
+        $sppgUnitId = $request->query('sppg_unit');
 
         $query = Supplier::with('sppgUnits');
 
@@ -29,9 +30,14 @@ class SupplierController extends Controller
                   ->orWhere('phone', 'like', "%{$search}%");
             });
         }
-
         if ($type) {
             $query->where('type_supplier', $type);
+        }
+
+        if ($sppgUnitId) {
+            $query->whereHas('sppgUnits', function($q) use ($sppgUnitId) {
+                $q->where('sppg_unit_supplier.id_sppg_unit', $sppgUnitId);
+            });
         }
 
 

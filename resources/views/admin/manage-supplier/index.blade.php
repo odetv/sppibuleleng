@@ -53,6 +53,7 @@
             showEditModal: false, 
             showDeleteModal: false,
             selectedSupplier: { sppg_units: [] },
+            hideAssignments: false,
 
 
             openEdit(supplier) {
@@ -162,16 +163,16 @@
                     <div class="w-full overflow-x-auto custom-scrollbar">
                         <table class="w-full text-left border-collapse min-w-[1000px]">
                             <thead>
-                                <tr class="bg-slate-50/50 border-b border-slate-100">
-                                    <th class="px-6 py-4 text-[10px] font-bold text-slate-400 uppercase tracking-widest">Supplier</th>
-                                    <th class="px-6 py-4 text-[10px] font-bold text-slate-400 uppercase tracking-widest">Pimpinan & Kontak</th>
-                                    <th class="px-6 py-4 text-[10px] font-bold text-slate-400 uppercase tracking-widest">Komoditas</th>
-                                    <th class="px-6 py-4 text-[10px] font-bold text-slate-400 uppercase tracking-widest">Unit SPPG</th>
-                                    <th class="px-6 py-4 text-[10px] font-bold text-slate-400 uppercase tracking-widest">Lokasi</th>
-                                    <th class="px-6 py-4 text-[10px] font-bold text-slate-400 uppercase tracking-widest text-right">Aksi</th>
+                                <tr class="bg-slate-50 text-[11px] font-bold uppercase tracking-wider text-slate-400 border-b border-slate-100">
+                                    <th class="px-6 py-4">Supplier</th>
+                                    <th class="px-6 py-4">Pimpinan & Kontak</th>
+                                    <th class="px-6 py-4">Komoditas</th>
+                                    <th class="px-6 py-4">Unit SPPG</th>
+                                    <th class="px-6 py-4">ALAMAT</th>
+                                    <th class="px-6 py-4 text-right">Aksi</th>
                                 </tr>
                             </thead>
-                            <tbody class="divide-y divide-slate-50">
+                            <tbody class="divide-y divide-slate-100">
                                 @forelse($suppliers as $supplier)
                                 <tr class="hover:bg-slate-50/50 transition-colors group">
                                     <td class="px-6 py-4">
@@ -222,10 +223,12 @@
                                         <span class="text-[10px] font-bold text-slate-300 uppercase tracking-widest italic">Belum Ada Unit</span>
                                         @endif
                                     </td>
-                                    <td class="px-6 py-4">
-                                        <div class="text-[11px] text-slate-800 font-bold mb-1 line-clamp-1" title="{{ $supplier->address }}">{{ $supplier->address }}</div>
-                                        <div class="text-xs text-slate-600 font-medium capitalize">{{ strtolower($supplier->village) }}, {{ strtolower($supplier->district) }}</div>
-                                        <div class="text-[10px] text-slate-400 mt-1 tracking-tight capitalize">{{ strtolower($supplier->regency) }}, {{ strtolower($supplier->province) }}, {{ $supplier->postal_code }}</div>
+                                    <td class="px-6 py-4 min-w-[200px] max-w-sm whitespace-normal break-words">
+                                        <div class="text-[12px] text-slate-800 font-bold leading-tight line-clamp-2" title="{{ $supplier->address }}">{{ $supplier->address }}</div>
+                                        <div class="text-[11px] text-slate-400 font-medium capitalize mt-1 tracking-tight">
+                                            {{ strtolower($supplier->village) }}, {{ strtolower($supplier->district) }},<br>
+                                            {{ strtolower($supplier->regency) }}, {{ strtolower($supplier->province) }}, {{ $supplier->postal_code }}
+                                        </div>
                                     </td>
                                     <td class="px-6 py-4">
                                         <div class="flex items-center justify-end gap-2">
@@ -259,17 +262,17 @@
                         </table>
                     </div>
 
-                    <div class="px-6 py-4 bg-slate-50 border-t border-slate-100 flex flex-col md:flex-row justify-between items-center gap-4 text-xs
+                    <div class="px-6 py-4 bg-white border-t border-slate-100 flex flex-col md:flex-row justify-between items-center gap-4 text-xs
                         [&_nav]:flex [&_nav]:justify-between [&_nav]:items-center [&_nav]:w-full md:[&_nav]:w-auto
                         [&_a]:bg-white [&_a]:text-slate-600 [&_a]:border-slate-200 [&_a]:rounded-lg [&_a]:hover:bg-slate-50
                         [&_span]:bg-white [&_span]:text-slate-600 [&_span]:border-slate-200 [&_span]:rounded-lg
-                        [&_.bg-gray-800]:bg-indigo-600 [&_.bg-gray-800]:text-white [&_.bg-gray-800]:border-indigo-600
+                        [&_.bg-gray-800]:bg-emerald-600 [&_.bg-gray-800]:text-white [&_.bg-gray-800]:border-emerald-600
                         [&_.dark\:bg-gray-800]:bg-white [&_.dark\:text-gray-400]:text-slate-600">
 
                         {{-- DROPDOWN PER PAGE --}}
                         <div class="flex items-center gap-2">
                             <span class="text-sm text-slate-600">Tampilkan</span>
-                            <select id="supplier-per-page" class="per-page-select border-slate-200 rounded-lg text-sm py-1.5 pl-3 pr-8 focus:ring-indigo-500 text-slate-600 font-medium cursor-pointer bg-slate-50 hover:bg-slate-100 transition-colors">
+                            <select id="supplier-per-page" class="per-page-select border-slate-200 rounded-lg text-sm py-1.5 pl-3 pr-8 focus:ring-emerald-500 text-slate-600 font-medium cursor-pointer bg-slate-50 hover:bg-slate-100 transition-colors">
                                 <option value="5" {{ request('per_page') == '5' || !request('per_page') ? 'selected' : '' }}>5</option>
                                 <option value="10" {{ request('per_page') == '10' ? 'selected' : '' }}>10</option>
                                 <option value="25" {{ request('per_page') == '25' ? 'selected' : '' }}>25</option>
@@ -299,9 +302,7 @@
 
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
     <script>
-        window.validSppgIds = {
-            !!json_encode($validSppgIds) !!
-        };
+        window.validSppgIds = {!! json_encode($validSppgIds) !!};
         let searchTimer;
 
         // 1. Get Current URL Modifiers

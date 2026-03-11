@@ -282,15 +282,22 @@
                 const json = await resp.json();
                 let h = `<option value="">Pilih ${label}</option>`;
                 let foundCode = null;
+
+                const normalize = (s) => s ? s.toLowerCase().replace(/[^a-z0-9]/g, '').replace(/^(provinsi|kabupaten|kota|kecamatan|desa|kelurahan)/g, '') : '';
+                const normSelected = normalize(selectedName);
+
                 json.data.forEach(i => {
-                    const name = i.name.replace(/^(KABUPATEN|KOTA|KAB\.)\s+/i, "").trim();
+                    const apiName = i.name.replace(/^(KABUPATEN|KOTA|KAB\.)\s+/i, "").trim();
+                    const normApi = normalize(apiName);
+                    
                     let isSelected = false;
-                    if (selectedName && name.toUpperCase() === selectedName.toUpperCase()) {
+                    if (normSelected && normApi === normSelected) {
                         isSelected = true;
                         foundCode = i.code;
                     }
+
                     const s = isSelected ? 'selected' : '';
-                    h += `<option value="${i.code}" data-name="${name}" ${s}>${name}</option>`;
+                    h += `<option value="${i.code}" data-name="${apiName}" ${s}>${apiName}</option>`;
                 });
                 target.innerHTML = h;
                 setSelectState(target, false);

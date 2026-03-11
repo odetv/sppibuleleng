@@ -33,19 +33,23 @@
         </div>
 
         <form x-bind:action="selectedSupplier ? `/admin/manage-supplier/${selectedSupplier.id_supplier}/update` : ''" 
-            method="POST" id="editSupplierForm" @submit.prevent="window.submitUpdateSupplier($el)">
+            method="POST" id="editSupplierForm" @submit.prevent="window.submitS_UpdateSupplier($el)">
             @csrf
             @method('PATCH')
             
-            <div class="p-8 max-h-[75vh] overflow-y-auto space-y-10 custom-scrollbar">
+            <div class="p-8 max-h-[75vh] overflow-y-auto space-y-8 custom-scrollbar">
                 
                 {{-- SECTION 1: INFORMASI DASAR --}}
-                <div class="space-y-8">
-                    <h3 class="text-sm font-bold uppercase tracking-widest text-indigo-600 mb-6">Informasi Dasar</h3>
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div class="space-y-6">
+                    <h3 class="text-xs font-bold uppercase tracking-widest text-indigo-600">Informasi Dasar</h3>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div class="lg:col-span-2">
+                            <label class="text-[10px] font-bold text-gray-500 uppercase tracking-wider">Nama Instansi/Toko <span class="text-rose-500">*</span></label>
+                            <input type="text" name="name_supplier" id="s_e_name" x-model="selectedSupplier.name_supplier" class="w-full mt-1.5 text-xs bg-gray-50 border-slate-200 rounded-lg py-2 px-3 focus:ring-2 focus:ring-indigo-500 outline-none transition-all">
+                        </div>
                         <div>
-                            <label class="text-[11px] font-bold text-gray-500 uppercase tracking-wider">Jenis Supplier <span class="text-rose-500">*</span></label>
-                            <select name="type_supplier" id="e_type" x-model="selectedSupplier.type_supplier" class="w-full mt-2 text-sm bg-gray-50 border-none rounded-lg py-2.5 px-4 focus:ring-2 focus:ring-indigo-500 outline-none transition-all">
+                            <label class="text-[10px] font-bold text-gray-500 uppercase tracking-wider">Jenis Supplier <span class="text-rose-500">*</span></label>
+                            <select name="type_supplier" id="s_e_type" x-model="selectedSupplier.type_supplier" class="w-full mt-1.5 text-xs bg-gray-50 border-slate-200 rounded-lg py-2 px-3 focus:ring-2 focus:ring-indigo-500 outline-none transition-all">
                                 <option value="">Pilih Jenis</option>
                                 @foreach($supplierTypes as $type)
                                 <option value="{{ $type }}">{{ $type }}</option>
@@ -53,113 +57,109 @@
                             </select>
                         </div>
                         <div>
-                            <label class="text-[11px] font-bold text-gray-500 uppercase tracking-wider">Nama Instansi/Toko <span class="text-rose-500">*</span></label>
-                            <input type="text" name="name_supplier" id="e_name" x-model="selectedSupplier.name_supplier" class="w-full mt-2 text-sm bg-gray-50 border-none rounded-lg py-2.5 px-4 focus:ring-2 focus:ring-indigo-500 outline-none transition-all">
-                        </div>
-                        <div>
-                            <label class="text-[11px] font-bold text-gray-500 uppercase tracking-wider">Nama Pimpinan <span class="text-rose-500">*</span></label>
-                            <input type="text" name="leader_name" id="e_leader" x-model="selectedSupplier.leader_name" class="w-full mt-2 text-sm bg-gray-50 border-none rounded-lg py-2.5 px-4 focus:ring-2 focus:ring-indigo-500 outline-none transition-all">
-                        </div>
-                        <div>
-                            <label class="text-[11px] font-bold text-gray-500 uppercase tracking-wider">No. HP/Telepon <span class="text-rose-500">*</span></label>
-                            <input type="text" name="phone" id="e_phone" 
+                            <label class="text-[10px] font-bold text-gray-500 uppercase tracking-wider">No. HP/Telepon <span class="text-rose-500">*</span></label>
+                            <input type="text" name="phone" id="s_e_phone" 
                                 oninput="this.value = this.value.replace(/[^0-9]/g, '')"
-                                x-model="selectedSupplier.phone" class="w-full mt-2 text-sm bg-gray-50 border-none rounded-lg py-2.5 px-4 focus:ring-2 focus:ring-indigo-500 outline-none transition-all">
+                                x-model="selectedSupplier.phone" class="w-full mt-1.5 text-xs bg-gray-50 border-slate-200 rounded-lg py-2 px-3 focus:ring-2 focus:ring-indigo-500 outline-none transition-all">
                         </div>
-                        <div class="md:col-span-2">
-                            <label class="text-[11px] font-bold text-gray-500 uppercase tracking-wider">Komoditas Utama <span class="text-rose-500">*</span></label>
-                            <textarea name="commodities" id="e_commodities" rows="2" x-model="selectedSupplier.commodities" class="w-full mt-2 text-sm bg-gray-50 border-none rounded-lg py-2.5 px-4 focus:ring-2 focus:ring-indigo-500 outline-none transition-all"></textarea>
+                        <div class="lg:col-span-2">
+                            <label class="text-[10px] font-bold text-gray-500 uppercase tracking-wider">Nama Pimpinan <span class="text-rose-500">*</span></label>
+                            <input type="text" name="leader_name" id="s_e_leader" x-model="selectedSupplier.leader_name" class="w-full mt-1.5 text-xs bg-gray-50 border-slate-200 rounded-lg py-2 px-3 focus:ring-2 focus:ring-indigo-500 outline-none transition-all">
+                        </div>
+                        <div class="lg:col-span-2">
+                            <label class="text-[10px] font-bold text-gray-500 uppercase tracking-wider">Komoditas Utama <span class="text-rose-500">*</span></label>
+                            <textarea name="commodities" id="s_e_commodities" rows="1" x-model="selectedSupplier.commodities" class="w-full mt-1.5 text-xs bg-gray-50 border-slate-200 rounded-lg py-2 px-3 focus:ring-2 focus:ring-indigo-500 outline-none transition-all"></textarea>
                         </div>
                     </div>
                 </div>
 
-                {{-- SECTION 2: LOKASI --}}
-                <div class="space-y-8 pt-4 border-t border-slate-50">
-                    <h3 class="text-sm font-bold uppercase tracking-widest text-indigo-600 mb-6">Lokasi Supplier</h3>
+                        {{-- SECTION 2: LOKASI --}}
+                <div class="space-y-6 pt-6 border-t border-slate-100">
+                    <h3 class="text-xs font-bold uppercase tracking-widest text-indigo-600">Lokasi Supplier</h3>
                     
                     <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
-                        {{-- Form Section --}}
-                        <div class="space-y-8">
+                        {{-- LEFT COLUMN: FORM --}}
+                        <div class="space-y-6">
                             {{-- Hidden inputs for clean names --}}
-                            <input type="hidden" name="province_name" id="e_prov_name">
-                            <input type="hidden" name="regency_name" id="e_reg_name">
-                            <input type="hidden" name="district_name" id="e_dist_name">
-                            <input type="hidden" name="village_name" id="e_vill_name">
+                            <input type="hidden" name="province_name" id="s_e_prov_name">
+                            <input type="hidden" name="regency_name" id="s_e_reg_name">
+                            <input type="hidden" name="district_name" id="s_e_dist_name">
+                            <input type="hidden" name="village_name" id="s_e_vill_name">
 
-                            <div class="grid grid-cols-2 gap-6">
+                            <div class="grid grid-cols-2 gap-4">
                                 <div>
-                                    <label class="text-[11px] font-bold text-gray-500 uppercase tracking-wider">Provinsi <span class="text-rose-500">*</span></label>
-                                    <select name="province" id="e_prov" 
-                                        class="w-full mt-2 text-sm bg-gray-50 border-none rounded-lg py-2.5 px-4 focus:ring-2 focus:ring-indigo-500 outline-none transition-all capitalize">
+                                    <label class="text-[10px] font-bold text-gray-400 uppercase tracking-widest">Provinsi <span class="text-rose-500">*</span></label>
+                                    <select name="province" id="s_e_prov" 
+                                        class="w-full mt-1.5 text-[11px] bg-gray-50 border-slate-200 rounded-lg py-2 px-3 focus:ring-2 focus:ring-indigo-500 outline-none transition-all capitalize">
                                         <option value="">Pilih Provinsi</option>
                                     </select>
                                 </div>
                                 <div>
-                                    <label class="text-[11px] font-bold text-gray-500 uppercase tracking-wider">Kab/Kota <span class="text-rose-500">*</span></label>
-                                    <select name="regency" id="e_reg" disabled
-                                        class="w-full mt-2 text-sm border-none rounded-lg py-2.5 px-4 focus:ring-2 focus:ring-indigo-500 outline-none transition-all disabled:opacity-50 disabled:cursor-not-allowed capitalize input-disabled">
+                                    <label class="text-[10px] font-bold text-gray-400 uppercase tracking-widest">Kab/Kota <span class="text-rose-500">*</span></label>
+                                    <select name="regency" id="s_e_reg" disabled
+                                        class="w-full mt-1.5 text-[11px] border-slate-200 rounded-lg py-2 px-3 focus:ring-2 focus:ring-indigo-500 outline-none transition-all disabled:opacity-50 disabled:cursor-not-allowed capitalize input-disabled">
                                         <option value="">Pilih Kabupaten</option>
                                     </select>
                                 </div>
                                 <div>
-                                    <label class="text-[11px] font-bold text-gray-500 uppercase tracking-wider">Kecamatan <span class="text-rose-500">*</span></label>
-                                    <select name="district" id="e_dist" disabled
-                                        class="w-full mt-2 text-sm border-none rounded-lg py-2.5 px-4 focus:ring-2 focus:ring-indigo-500 outline-none transition-all disabled:opacity-50 disabled:cursor-not-allowed capitalize input-disabled">
+                                    <label class="text-[10px] font-bold text-gray-400 uppercase tracking-widest">Kecamatan <span class="text-rose-500">*</span></label>
+                                    <select name="district" id="s_e_dist" disabled
+                                        class="w-full mt-1.5 text-[11px] border-slate-200 rounded-lg py-2 px-3 focus:ring-2 focus:ring-indigo-500 outline-none transition-all disabled:opacity-50 disabled:cursor-not-allowed capitalize input-disabled">
                                         <option value="">Pilih Kecamatan</option>
                                     </select>
                                 </div>
                                 <div>
-                                    <label class="text-[11px] font-bold text-gray-500 uppercase tracking-wider">Kelurahan <span class="text-rose-500">*</span></label>
-                                    <select name="village" id="e_vill" disabled
-                                        class="w-full mt-2 text-sm border-none rounded-lg py-2.5 px-4 focus:ring-2 focus:ring-indigo-500 outline-none transition-all disabled:opacity-50 disabled:cursor-not-allowed capitalize input-disabled">
+                                    <label class="text-[10px] font-bold text-gray-400 uppercase tracking-widest">Kelurahan <span class="text-rose-500">*</span></label>
+                                    <select name="village" id="s_e_vill" disabled
+                                        class="w-full mt-1.5 text-[11px] border-slate-200 rounded-lg py-2 px-3 focus:ring-2 focus:ring-indigo-500 outline-none transition-all disabled:opacity-50 disabled:cursor-not-allowed capitalize input-disabled">
                                         <option value="">Pilih Desa/Kelurahan</option>
                                     </select>
                                 </div>
                             </div>
 
-                            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
                                 <div class="md:col-span-2">
-                                    <label class="text-[11px] font-bold text-gray-500 uppercase tracking-wider">Alamat Detail <span class="text-rose-500">*</span></label>
-                                    <textarea name="address" id="e_address" rows="2" x-model="selectedSupplier.address" class="w-full mt-2 text-sm bg-gray-50 border-none rounded-lg py-2.5 px-4 focus:ring-2 focus:ring-indigo-500 outline-none transition-all"></textarea>
+                                    <label class="text-[10px] font-bold text-gray-500 uppercase tracking-wider">Alamat Lengkap <span class="text-rose-500">*</span></label>
+                                    <textarea name="address" id="s_e_address" rows="1" x-model="selectedSupplier.address" class="w-full mt-1.5 text-xs bg-gray-50 border-slate-200 rounded-lg py-2 px-3 focus:ring-2 focus:ring-indigo-500 outline-none transition-all" placeholder="Nama Jalan, Blok, No Rumah..."></textarea>
                                 </div>
                                 <div>
-                                    <label class="text-[11px] font-bold text-gray-500 uppercase tracking-wider">Kode Pos <span class="text-rose-500">*</span></label>
-                                    <input type="text" name="postal_code" id="e_postal" 
+                                    <label class="text-[10px] font-bold text-gray-500 uppercase tracking-wider">Kode Pos <span class="text-rose-500">*</span></label>
+                                    <input type="text" name="postal_code" id="s_e_postal" 
                                         oninput="this.value = this.value.replace(/[^0-9]/g, '')"
-                                        x-model="selectedSupplier.postal_code" class="w-full mt-2 text-sm bg-gray-50 border-none rounded-lg py-2.5 px-4 focus:ring-2 focus:ring-indigo-500 outline-none transition-all">
+                                        x-model="selectedSupplier.postal_code" class="w-full mt-1.5 text-xs bg-gray-50 border-slate-200 rounded-lg py-2 px-3 focus:ring-2 focus:ring-indigo-500 outline-none transition-all">
                                 </div>
-                                <div class="hidden">
-                                     {{-- GPS group --}}
+                            </div>
+
+                            <div class="grid grid-cols-2 gap-4 pt-4 border-t border-slate-100">
+                                <div>
+                                    <label class="text-[10px] font-bold text-gray-500 uppercase tracking-wider">Latitude GPS <span class="text-rose-500">*</span></label>
+                                    <input type="text" name="latitude_gps" id="s_e_lat" 
+                                        x-model="selectedSupplier.latitude_gps" class="w-full mt-1.5 text-xs bg-gray-50 border-slate-200 rounded-lg py-2 px-3 focus:ring-2 focus:ring-indigo-500 outline-none transition-all" placeholder="-8.xxxxx">
                                 </div>
                                 <div>
-                                    <label class="text-[11px] font-bold text-gray-500 uppercase tracking-wider">Latitude GPS <span class="text-rose-500">*</span></label>
-                                    <input type="text" name="latitude_gps" id="e_latitude" 
-                                        x-model="selectedSupplier.latitude_gps" class="w-full mt-2 text-sm bg-gray-50 border-none rounded-lg py-2.5 px-4 focus:ring-2 focus:ring-indigo-500 outline-none transition-all" placeholder="-8.xxxxx">
-                                </div>
-                                <div>
-                                    <label class="text-[11px] font-bold text-gray-500 uppercase tracking-wider">Longitude GPS <span class="text-rose-500">*</span></label>
-                                    <input type="text" name="longitude_gps" id="e_longitude" 
-                                        x-model="selectedSupplier.longitude_gps" class="w-full mt-2 text-sm bg-gray-50 border-none rounded-lg py-2.5 px-4 focus:ring-2 focus:ring-indigo-500 outline-none transition-all" placeholder="115.xxxxx">
+                                    <label class="text-[10px] font-bold text-gray-500 uppercase tracking-wider">Longitude GPS <span class="text-rose-500">*</span></label>
+                                    <input type="text" name="longitude_gps" id="s_e_lng" 
+                                        x-model="selectedSupplier.longitude_gps" class="w-full mt-1.5 text-xs bg-gray-50 border-slate-200 rounded-lg py-2 px-3 focus:ring-2 focus:ring-indigo-500 outline-none transition-all" placeholder="115.xxxxx">
                                 </div>
                             </div>
                         </div>
 
-                        {{-- Map Section --}}
+                        {{-- RIGHT COLUMN: MAP --}}
                         <div class="space-y-4">
-                            <label class="text-[11px] font-bold text-gray-400 uppercase tracking-widest">Pilih Lokasi Di Peta <span class="text-rose-500">*</span></label>
-                            <div id="map-edit" class="w-full h-full min-h-[350px] rounded-xl border-2 border-slate-100 shadow-inner z-10"></div>
-                            <p class="text-[10px] text-slate-400 italic font-medium px-1">Klik pada peta untuk mengubah titik koordinat supplier.</p>
+                            <label class="text-[10px] font-bold text-gray-400 uppercase tracking-widest">Pilih Lokasi Di Peta <span class="text-rose-500">*</span></label>
+                            <div id="map-edit-supplier" class="w-full rounded-xl border-2 border-slate-100 shadow-inner z-10" style="height: 380px; background: #f8fafc;"></div>
+                            <p class="text-[9px] text-slate-400 italic font-medium px-1">Seret penanda atau klik pada peta untuk menentukan koordinat yang akurat.</p>
                         </div>
                     </div>
                 </div>
 
                 {{-- SECTION 3: PENUGASAN UNIT SPPG --}}
-                <div class="space-y-8 pt-4 border-t border-slate-50">
-                    <h3 class="text-sm font-bold uppercase tracking-widest text-indigo-600 mb-6">Penugasan Unit SPPG</h3>
+                <div x-show="!hideAssignments" class="space-y-6 pt-6 border-t border-slate-100">
+                    <h3 class="text-xs font-bold uppercase tracking-widest text-indigo-600">Penugasan Unit SPPG</h3>
                     
                     <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
                         @foreach($sppgUnits as $unit)
-                        <label class="relative flex items-center p-3 rounded-xl border border-slate-100 bg-slate-50/30 hover:bg-slate-50 transition-all cursor-pointer group">
+                        <label class="relative flex items-center p-3 rounded-xl border border-slate-100 bg-slate-50/30 hover:bg-white hover:shadow-md hover:border-indigo-100 transition-all cursor-pointer group">
                             <input type="checkbox" name="sppg_units[]" value="{{ $unit->id_sppg_unit }}"
                                 x-model="selectedSupplier.sppg_units"
                                 class="w-4 h-4 text-indigo-600 border-slate-300 rounded focus:ring-indigo-500 focus:ring-offset-0 transition-all">
@@ -167,13 +167,13 @@
                         </label>
                         @endforeach
                     </div>
-                    <p class="text-[10px] text-slate-400 italic font-medium px-1">Pilih minimal satu unit SPPG yang akan dilayani oleh supplier ini.</p>
+                    <p class="text-[10px] text-slate-400 italic font-medium px-1">Daftar ini menunjukkan unit SPPG mana saja yang dilayani oleh supplier ini.</p>
                 </div>
             </div>
 
             <div class="p-6 border-t border-slate-100 bg-slate-50/50 flex gap-4">
-                <button type="button" @click="showEditModal = false" class="flex-1 py-4 text-[11px] font-bold uppercase text-slate-500 bg-white border border-slate-200 rounded-xl hover:bg-slate-50 transition-all">Batal</button>
-                <button type="submit" id="btnUpdateSupplier" class="flex-1 py-4 text-[11px] font-bold uppercase text-white bg-slate-800 rounded-xl shadow-lg hover:bg-slate-900 transition-all active:scale-95">Simpan Perubahan</button>
+                <button type="button" @click="showEditModal = false" class="flex-1 py-3 text-[10px] font-bold uppercase text-slate-500 bg-white border border-slate-200 rounded-xl hover:bg-slate-50 transition-all">Batal</button>
+                <button type="submit" id="btnUpdateSupplier" class="flex-1 py-3 text-[10px] font-bold uppercase text-white bg-indigo-600 rounded-xl shadow-lg hover:bg-indigo-700 transition-all active:scale-95">Simpan Perubahan</button>
             </div>
         </form>
     </div>
@@ -181,22 +181,23 @@
 
 <script>
     (function() {
-        async function syncEditWilayah(supplier) {
+        async function syncS_EditWilayah(supplier) {
             const apiBase = "/api-wilayah";
             const sel = {
-                p: document.getElementById('e_prov'),
-                r: document.getElementById('e_reg'),
-                d: document.getElementById('e_dist'),
-                v: document.getElementById('e_vill')
+                p: document.getElementById('s_e_prov'),
+                r: document.getElementById('s_e_reg'),
+                d: document.getElementById('s_e_dist'),
+                v: document.getElementById('s_e_vill')
             };
             const hid = {
-                p: document.getElementById('e_prov_name'),
-                r: document.getElementById('e_reg_name'),
-                d: document.getElementById('e_dist_name'),
-                v: document.getElementById('e_vill_name')
+                p: document.getElementById('s_e_prov_name'),
+                r: document.getElementById('s_e_reg_name'),
+                d: document.getElementById('s_e_dist_name'),
+                v: document.getElementById('s_e_vill_name')
             };
 
             function setSelectState(el, isDisabled) {
+                if(!el) return;
                 el.disabled = isDisabled;
                 if (isDisabled) {
                     el.classList.add('input-disabled');
@@ -208,112 +209,136 @@
             }
 
             async function populate(target, path, label, selectedName) {
+                if(!target) return null;
                 target.innerHTML = '<option value="">Memuat...</option>';
                 try {
                     const resp = await fetch(`${apiBase}/${path}.json`);
                     const json = await resp.json();
                     let h = `<option value="">Pilih ${label}</option>`;
                     let foundCode = null;
+                    
+                    // Improved matching logic: normalize whitespace and casing
+                    const normalize = (s) => (s || "").toString().toUpperCase().replace(/[^A-Z0-9]/g, "").trim();
+                    const targetNorm = normalize(selectedName);
+
                     json.data.forEach(i => {
                         const name = i.name.replace(/^(KABUPATEN|KOTA|KAB\.)\s+/i, "").trim();
+                        const itemNorm = normalize(name);
+                        
                         let isSelected = false;
-                        if (selectedName && name.toUpperCase() === selectedName.toUpperCase()) {
+                        if (targetNorm && itemNorm === targetNorm) {
                             isSelected = true;
                             foundCode = i.code;
                         }
                         const s = isSelected ? 'selected' : '';
                         h += `<option value="${i.code}" data-name="${name}" ${s}>${name}</option>`;
                     });
+                    
                     target.innerHTML = h;
                     setSelectState(target, false);
                     return foundCode;
                 } catch (e) {
-                    target.innerHTML = '<option value="">Gagal</option>';
+                    target.innerHTML = `<option value="">Gagal Memuat ${label}</option>`;
                     return null;
                 }
             }
 
-            setSelectState(sel.p, true);
-            setSelectState(sel.r, true);
-            setSelectState(sel.d, true);
-            setSelectState(sel.v, true);
+            // Reset states
+            [sel.p, sel.r, sel.d, sel.v].forEach(s => setSelectState(s, true));
 
+            // Chain population
             const pCode = await populate(sel.p, 'provinces', 'Provinsi', supplier.province);
             if (pCode) {
-                hid.p.value = supplier.province;
+                if (hid.p) hid.p.value = supplier.province || '';
                 const rCode = await populate(sel.r, `regencies/${pCode}`, 'Kabupaten', supplier.regency);
                 if (rCode) {
-                    hid.r.value = supplier.regency;
+                    if (hid.r) hid.r.value = supplier.regency || '';
                     const dCode = await populate(sel.d, `districts/${rCode}`, 'Kecamatan', supplier.district);
                     if (dCode) {
-                        hid.d.value = supplier.district;
-                        await populate(sel.v, `villages/${dCode}`, 'Desa', supplier.village);
-                        if (supplier.village) hid.v.value = supplier.village;
+                        if (hid.d) hid.d.value = supplier.district || '';
+                        const vCode = await populate(sel.v, `villages/${dCode}`, 'Desa', supplier.village);
+                        if (hid.v) hid.v.value = supplier.village || '';
                     }
                 }
             }
 
+            // Event handlers for manual changes
             sel.p.onchange = async function() {
-                hid.p.value = this.options[this.selectedIndex].getAttribute('data-name') || '';
+                const opt = this.options[this.selectedIndex];
+                if (hid.p) hid.p.value = opt.getAttribute('data-name') || '';
                 sel.r.innerHTML = sel.d.innerHTML = sel.v.innerHTML = '<option value="">Pilih...</option>';
                 [sel.r, sel.d, sel.v].forEach(s => setSelectState(s, true));
                 if (this.value) await populate(sel.r, `regencies/${this.value}`, 'Kabupaten');
             };
             sel.r.onchange = async function() {
-                hid.r.value = this.options[this.selectedIndex].getAttribute('data-name') || '';
+                const opt = this.options[this.selectedIndex];
+                if (hid.r) hid.r.value = opt.getAttribute('data-name') || '';
                 sel.d.innerHTML = sel.v.innerHTML = '<option value="">Pilih...</option>';
                 [sel.d, sel.v].forEach(s => setSelectState(s, true));
                 if (this.value) await populate(sel.d, `districts/${this.value}`, 'Kecamatan');
             };
             sel.d.onchange = async function() {
-                hid.d.value = this.options[this.selectedIndex].getAttribute('data-name') || '';
+                const opt = this.options[this.selectedIndex];
+                if (hid.d) hid.d.value = opt.getAttribute('data-name') || '';
                 sel.v.innerHTML = '<option value="">Pilih...</option>';
                 setSelectState(sel.v, true);
                 if (this.value) await populate(sel.v, `villages/${this.value}`, 'Desa');
             };
             sel.v.onchange = function() {
-                hid.v.value = this.options[this.selectedIndex].getAttribute('data-name') || '';
+                const opt = this.options[this.selectedIndex];
+                if (hid.v) hid.v.value = opt.getAttribute('data-name') || '';
             };
         }
+        window.syncS_EditWilayah = syncS_EditWilayah;
 
-        function initEditMapModal(supplier) {
+        function initS_EditMapModal(supplier) {
             if (typeof L === 'undefined') return;
-            const container = document.getElementById('map-edit');
+            const container = document.getElementById('map-edit-supplier');
             if (!container) return;
 
             const lat = parseFloat(supplier.latitude_gps);
             const lng = parseFloat(supplier.longitude_gps);
             const coords = (lat && lng) ? [lat, lng] : [-8.1127, 115.0911];
 
-            if (window.editMapInstance) {
-                window.editMapInstance.setView(coords, 15);
-                if (window.editMarkerInstance) {
-                    window.editMarkerInstance.setLatLng(coords);
+            // Ensure previous instances are cleaned up or reused
+            if (window.s_editMapInstance) {
+                window.s_editMapInstance.setView(coords, (lat && lng) ? 15 : 12);
+                if (window.s_editMarkerInstance) {
+                    window.s_editMarkerInstance.setLatLng(coords);
                 } else if (lat && lng) {
-                    window.editMarkerInstance = L.marker(coords, { draggable: true }).addTo(window.editMapInstance);
-                    setupMarkerEvents(window.editMarkerInstance);
+                    window.s_editMarkerInstance = L.marker(coords, { draggable: true }).addTo(window.s_editMapInstance);
+                    setupMarkerEvents(window.s_editMarkerInstance);
                 }
-                setTimeout(() => window.editMapInstance.invalidateSize(), 150);
+                
+                // CRITICAL: Leaflet needs a small delay after visibility change
+                setTimeout(() => {
+                    window.s_editMapInstance.invalidateSize(true);
+                }, 400);
                 return;
             }
 
-            window.editMapInstance = L.map('map-edit').setView(coords, (lat && lng) ? 15 : 12);
+            // Create new instance
+            window.s_editMapInstance = L.map('map-edit-supplier', {
+                attributionControl: false
+            });
+            
             L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-                maxZoom: 19,
-                attribution: '© OpenStreetMap'
-            }).addTo(window.editMapInstance);
+                maxZoom: 19
+            }).addTo(window.s_editMapInstance);
+
+            window.s_editMapInstance.setView(coords, (lat && lng) ? 15 : 12);
 
             if (lat && lng) {
-                window.editMarkerInstance = L.marker(coords, { draggable: true }).addTo(window.editMapInstance);
-                setupMarkerEvents(window.editMarkerInstance);
+                window.s_editMarkerInstance = L.marker(coords, { draggable: true }).addTo(window.s_editMapInstance);
+                setupMarkerEvents(window.s_editMarkerInstance);
             }
 
-            window.editMapInstance.on('click', function(e) {
-                if (window.editMarkerInstance) {
-                    window.editMarkerInstance.setLatLng(e.latlng);
+            window.s_editMapInstance.on('click', function(e) {
+                if (window.s_editMarkerInstance) {
+                    window.s_editMarkerInstance.setLatLng(e.latlng);
                 } else {
-                    window.editMarkerInstance = L.marker(e.latlng, { draggable: true }).addTo(window.editMapInstance);
-                    setupMarkerEvents(window.editMarkerInstance);
+                    window.s_editMarkerInstance = L.marker(e.latlng, { draggable: true }).addTo(window.s_editMapInstance);
+                    setupMarkerEvents(window.s_editMarkerInstance);
                 }
                 updateCoords(e.latlng.lat, e.latlng.lng);
             });
@@ -326,59 +351,61 @@
             }
 
             function updateCoords(lat, lng) {
-                const latEl = document.getElementById('e_latitude');
-                const lngEl = document.getElementById('e_longitude');
+                const latEl = document.getElementById('s_e_lat');
+                const lngEl = document.getElementById('s_e_lng');
                 if (latEl) latEl.value = lat.toFixed(8);
                 if (lngEl) lngEl.value = lng.toFixed(8);
                 
                 // Trigger Alpine.js models
-                latEl.dispatchEvent(new Event('input'));
-                lngEl.dispatchEvent(new Event('input'));
+                if(latEl) latEl.dispatchEvent(new Event('input'));
+                if(lngEl) lngEl.dispatchEvent(new Event('input'));
                 
-                if (typeof clearEditErrors === 'function') clearEditErrors('e_latitude');
+                if (typeof clearS_EditErrors === 'function') clearS_EditErrors('s_e_lat');
             }
 
-            setTimeout(() => window.editMapInstance.invalidateSize(), 150);
+            // Initial invalidation after creation
+            setTimeout(() => {
+                if(window.s_editMapInstance) {
+                    window.s_editMapInstance.invalidateSize();
+                    window.s_editMapInstance.setView(coords, (lat && lng) ? 15 : 12);
+                    // Force a re-render of tiles
+                    window.s_editMapInstance.fire('resize');
+                }
+            }, 800);
         }
 
+        // Global Event Listener for integrated use
         window.addEventListener('init-edit-supplier', (e) => {
-            syncEditWilayah(e.detail);
-            setTimeout(() => initEditMapModal(e.detail), 300);
+            syncS_EditWilayah(e.detail);
+            // Longer delay for map to ensure modal transition and display is solid
+            setTimeout(() => initS_EditMapModal(e.detail), 1000);
         });
 
-        function clearEditErrors() {
-            document.querySelectorAll('#editSupplierForm .is-invalid').forEach(el => el.classList.remove('is-invalid'));
-            document.querySelectorAll('#editSupplierForm .error-warning').forEach(el => {
-                el.classList.add('validation-hidden');
-                el.innerText = '';
-            });
+        function clearS_EditErrors() {
+            document.querySelectorAll('#editSupplierForm .is-invalid').forEach(el => el.classList.remove('is-invalid', 'ring-rose-500', 'bg-rose-50'));
+            document.querySelectorAll('#editSupplierForm .error-warning').forEach(el => el.remove());
         }
 
-        function showEditFieldError(id, msg) {
+        function showS_EditFieldError(id, msg) {
             const el = document.getElementById(id);
             if (!el) return;
 
-            el.classList.add('is-invalid');
+            el.classList.add('is-invalid', 'ring-2', 'ring-rose-500', 'bg-rose-50');
 
-            const errorId = 'error-' + id;
-            let errorEl = document.getElementById(errorId);
-            if (!errorEl) {
-                errorEl = document.createElement('span');
-                errorEl.id = errorId;
-                errorEl.className = 'error-warning';
-                el.parentNode.appendChild(errorEl);
-            }
+            const errorEl = document.createElement('span');
+            errorEl.className = 'error-warning text-[10px] text-rose-500 font-bold mt-1 block px-1';
             errorEl.innerText = '* ' + msg;
-            errorEl.classList.remove('validation-hidden');
+            el.parentNode.appendChild(errorEl);
         }
 
-        window.submitUpdateSupplier = async function(formElement) {
-            clearEditErrors();
+        window.submitS_UpdateSupplier = async function(formElement) {
+            clearS_EditErrors();
             const btnSubmit = document.getElementById('btnUpdateSupplier');
+            const originalHtml = btnSubmit ? btnSubmit.innerHTML : "";
             
             if (btnSubmit) {
                 btnSubmit.disabled = true;
-                btnSubmit.innerHTML = "Memproses...";
+                btnSubmit.innerHTML = `<svg class="animate-spin h-4 w-4 mr-2" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4" fill="none"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg> Memproses...`;
             }
 
             try {
@@ -395,28 +422,42 @@
                 const result = await response.json();
 
                 if (response.ok) {
-                    window.location.reload();
+                    Swal.fire({
+                        icon: 'success',
+                        title: 'Berhasil',
+                        text: 'Data supplier berhasil diperbarui.',
+                        timer: 2000,
+                        showConfirmButton: false
+                    }).then(() => {
+                        window.location.reload();
+                    });
                 } else {
                     if (btnSubmit) {
                         btnSubmit.disabled = false;
-                        btnSubmit.innerHTML = "Simpan Perubahan";
+                        btnSubmit.innerHTML = originalHtml;
                     }
 
                     if (result.errors) {
                         Object.keys(result.errors).forEach(key => {
-                            let fieldId = 'e_' + key;
-                            // Map backend keys to frontend IDs
-                            if (key === 'province_name') fieldId = 'e_prov';
-                            if (key === 'regency_name')  fieldId = 'e_reg';
-                            if (key === 'district_name') fieldId = 'e_dist';
-                            if (key === 'village_name')  fieldId = 'e_vill';
-                            if (key === 'postal_code')   fieldId = 'e_postal';
-                            if (key === 'type_supplier') fieldId = 'e_type';
-                            if (key === 'name_supplier') fieldId = 'e_name';
-                            if (key === 'leader_name')   fieldId = 'e_leader';
-                            if (key === 'commodities')   fieldId = 'e_commodities';
-
-                            showEditFieldError(fieldId, result.errors[key][0]);
+                            // Map backend keys to NEW frontend IDs
+                            const mapping = {
+                                'province_name': 's_e_prov',
+                                'regency_name':  's_e_reg',
+                                'district_name': 's_e_dist',
+                                'village_name':  's_e_vill',
+                                'postal_code':   's_e_postal',
+                                'type_supplier': 's_e_type',
+                                'name_supplier': 's_e_name',
+                                'leader_name':   's_e_leader',
+                                'commodities':   's_e_commodities',
+                                'phone':         's_e_phone',
+                                'address':       's_e_address',
+                                'latitude_gps':  's_e_lat',
+                                'longitude_gps': 's_e_lng'
+                            };
+                            
+                            const fieldId = mapping[key] || ('s_e_' + key);
+                            showS_EditFieldError(fieldId, result.errors[key][0]);
                         });
                         
                         // Scroll to first error
@@ -427,7 +468,7 @@
             } catch (err) {
                 if (btnSubmit) {
                     btnSubmit.disabled = false;
-                    btnSubmit.innerHTML = "Simpan Perubahan";
+                    btnSubmit.innerHTML = originalHtml;
                 }
                 console.error('Submit Error:', err);
             }

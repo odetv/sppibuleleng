@@ -115,7 +115,7 @@
                         </div>
                         <div>
                             <label class="text-[11px] font-bold text-gray-500 uppercase tracking-wider block mb-2">Tanggal Operasional</label>
-                            <input type="date" name="operational_date" x-model="selectedUnit.operational_date" class="w-full mt-2 px-4 py-2.5 bg-gray-50 border-none rounded-lg text-sm text-slate-600 focus:ring-2 focus:ring-indigo-500">
+                            <input type="date" name="operational_date" id="e_op_date" x-model="selectedUnit.operational_date" class="w-full mt-2 px-4 py-2.5 bg-gray-50 border-none rounded-lg text-sm text-slate-600 focus:ring-2 focus:ring-indigo-500">
                         </div>
                         <div>
                             <label class="text-[11px] font-bold text-gray-500 uppercase tracking-wider">Kepala SPPG <span class="text-rose-500">*</span></label>
@@ -272,6 +272,12 @@
                                 </svg>
                                 <span>Tambah Supplier Baru</span>
                             </button>
+                            <a :href="`/admin/manage-supplier?sppg_unit=${selectedUnit.id_sppg_unit}`" target="_blank" class="px-4 py-2 bg-indigo-50 text-indigo-600 rounded-lg text-xs font-bold uppercase tracking-wider hover:bg-indigo-100 transition-all flex items-center group">
+                                <span>Kelola Semua Supplier</span>
+                                <svg class="w-3.5 h-3.5 ml-2 group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
+                                </svg>
+                            </a>
                         </div>
                     </div>
 
@@ -351,12 +357,20 @@
                                                     <div class="text-[10px] text-slate-400 mt-0.5" x-text="s.leader_name || ''"></div>
                                                 </td>
                                                 <td class="px-5 py-4 text-center align-top">
-                                                    <button type="button" @click="unlinkSupplier(s)"
-                                                        class="p-2 text-rose-500 hover:bg-rose-50 rounded-lg transition-all" title="Lepas Tautan">
-                                                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.875 18.825A10.05 10.05 0 0112 19c-4.478 0-8.268-2.943-9.543-7a9.97 9.97 0 011.563-3.029m5.858.908a3 3 0 114.243 4.243M9.878 9.878l4.242 4.242M9.88 9.88l-3.29-3.29m7.532 7.532l3.29 3.29M3 3l18 18" />
-                                                        </svg>
-                                                    </button>
+                                                    <div class="flex justify-center items-center gap-1">
+                                                        <button type="button" @click="window.dispatchEvent(new CustomEvent('open-modal-edit-supplier', { detail: s }))"
+                                                            class="p-2 text-indigo-500 hover:bg-indigo-50 rounded-lg transition-all" title="Ubah Data Supplier">
+                                                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+                                                            </svg>
+                                                        </button>
+                                                        <button type="button" @click="unlinkSupplier(s)"
+                                                            class="p-2 text-rose-500 hover:bg-rose-50 rounded-lg transition-all" title="Lepas Tautan">
+                                                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.875 18.825A10.05 10.05 0 0112 19c-4.478 0-8.268-2.943-9.543-7a9.97 9.97 0 011.563-3.029m5.858.908a3 3 0 114.243 4.243M9.878 9.878l4.242 4.242M9.88 9.88l-3.29-3.29m7.532 7.532l3.29 3.29M3 3l18 18" />
+                                                            </svg>
+                                                        </button>
+                                                    </div>
                                                 </td>
                                             </tr>
                                         </template>
@@ -416,9 +430,9 @@
                                 </svg>
                                 <span>Tambah PM Baru</span>
                             </button>
-                            <a :href="`/admin/manage-beneficiary?search=${selectedUnit.id_sppg_unit}`" target="_blank" class="px-4 py-2 bg-indigo-50 text-indigo-600 rounded-lg text-xs font-bold uppercase tracking-wider hover:bg-indigo-100 transition-all flex items-center">
+                            <a :href="`/admin/manage-beneficiary?sppg_unit=${selectedUnit.id_sppg_unit}`" target="_blank" class="px-4 py-2 bg-indigo-50 text-indigo-600 rounded-lg text-xs font-bold uppercase tracking-wider hover:bg-indigo-100 transition-all flex items-center group">
                                 <span>Kelola Semua PM</span>
-                                <svg class="w-3.5 h-3.5 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <svg class="w-3.5 h-3.5 ml-2 group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
                                 </svg>
                             </a>
@@ -719,7 +733,6 @@
         document.getElementById('e_id').value = unit.id_sppg_unit || '';
         document.getElementById('e_code').value = unit.code_sppg_unit || '';
         document.getElementById('e_op_date').value = unit.operational_date || '';
-        document.getElementById('e_address').value = unit.address || '';
         document.getElementById('e_address').value = unit.address || '';
         
         // Populate lat lng (Double check property names)
@@ -1035,15 +1048,22 @@
                 const json = await resp.json();
                 let h = `<option value="">Pilih ${label}</option>`;
                 let foundCode = null;
+
+                const normalize = (s) => s ? s.toLowerCase().replace(/[^a-z0-9]/g, '').replace(/^(provinsi|kabupaten|kota|kecamatan|desa|kelurahan)/g, '') : '';
+                const normSelected = normalize(selectedName);
+
                 json.data.forEach(i => {
-                    const name = i.name.replace(/^(KABUPATEN|KOTA|KAB\.)\s+/i, "").trim();
+                    const apiName = i.name.replace(/^(KABUPATEN|KOTA|KAB\.)\s+/i, "").trim();
+                    const normApi = normalize(apiName);
+                    
                     let isSelected = false;
-                    if (selectedName && name.toUpperCase() === selectedName.toUpperCase()) {
+                    if (normSelected && normApi === normSelected) {
                         isSelected = true;
                         foundCode = i.code;
                     }
+
                     const s = isSelected ? 'selected' : '';
-                    h += `<option value="${i.code}" data-name="${name}" ${s}>${name}</option>`;
+                    h += `<option value="${i.code}" data-name="${apiName}" ${s}>${apiName}</option>`;
                 });
                 target.innerHTML = h;
                 setSelectState(target, false);

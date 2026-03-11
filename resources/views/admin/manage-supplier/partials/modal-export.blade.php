@@ -40,6 +40,8 @@
                             'village'       => 'DESA/KELURAHAN',
                             'address'       => 'ALAMAT JALAN',
                             'postal_code'   => 'KODE POS',
+                            'latitude_gps'  => 'LATITUDE GPS',
+                            'longitude_gps' => 'LONGITUDE GPS',
                             'linked_sppg'   => 'UNIT SPPG TERKAIT',
                         ];
                         @endphp

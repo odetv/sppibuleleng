@@ -70,10 +70,12 @@
             showCreateModal: false, 
             showEditModal: false,
             showCreateSupplierModal: false,
+            showUnlinkSupplierModal: false,
             showCreateBeneficiaryModal: false,
             showEditBeneficiaryModal: false,
             showUnlinkModal: false,
             beneficiaryToUnlink: null,
+            supplierToUnlink: null,
             selectedUnit: { beneficiaries: [], suppliers: [] },
             selectedPM: {},
             allBeneficiaryList: {{ json_encode($allBeneficiaries) }},
@@ -249,8 +251,13 @@
                     this.supplierSearchTerm = '';
                 }
             },
-            async unlinkSupplier(supplier) {
-                if (!confirm(`Yakin ingin melepas tautan supplier '${supplier.name_supplier}'?`)) return;
+            unlinkSupplier(supplier) {
+                this.supplierToUnlink = supplier;
+                this.showUnlinkSupplierModal = true;
+            },
+            async confirmUnlinkSupplier() {
+                if (!this.supplierToUnlink) return;
+                const supplier = this.supplierToUnlink;
                 
                 if (this.showEditModal) {
                     try {
@@ -270,6 +277,8 @@
                         const data = await resp.json();
                         if (resp.ok) {
                             this.selectedUnit.suppliers = data.unit_suppliers;
+                            this.showUnlinkSupplierModal = false;
+                            this.supplierToUnlink = null;
                         } else {
                             alert('Gagal melepas tautan: ' + (data.errors ? JSON.stringify(data.errors) : 'Unknown error'));
                         }
@@ -279,6 +288,8 @@
                     }
                 } else {
                     this.selectedUnit.suppliers = this.selectedUnit.suppliers.filter(s => s.id_supplier != supplier.id_supplier);
+                    this.showUnlinkSupplierModal = false;
+                    this.supplierToUnlink = null;
                 }
             },
 
@@ -666,6 +677,11 @@
         @include('admin.manage-sppg.partials.modal-delete')
         @include('admin.manage-sppg.partials.modal-delete-beneficiary')
         @include('admin.manage-sppg.partials.modal-create-supplier')
+        <div x-data="{ showEditModal: false, selectedSupplier: {}, hideAssignments: true }" 
+             @open-modal-edit-supplier.window="selectedSupplier = $event.detail; showEditModal = true; $nextTick(() => window.dispatchEvent(new CustomEvent('init-edit-supplier', { detail: $event.detail })))">
+            @include('admin.manage-supplier.partials.modal-edit')
+        </div>
+        @include('admin.manage-sppg.partials.modal-unlink-supplier')
     </div>
 
     {{-- SCRIPTS UTAMA --}}

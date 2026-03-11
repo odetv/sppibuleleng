@@ -61,9 +61,7 @@
                                         <th class="p-3 border-b font-bold text-slate-500 uppercase">Jenis</th>
                                         <th class="p-3 border-b font-bold text-slate-500 uppercase">Pimpinan</th>
                                         <th class="p-3 border-b font-bold text-slate-500 uppercase">Telepon</th>
-                                        <th class="p-3 border-b font-bold text-slate-500 uppercase">Latitude</th>
-                                        <th class="p-3 border-b font-bold text-slate-500 uppercase">Longitude</th>
-                                        <th class="p-3 border-b font-bold text-slate-500 uppercase">SPPG</th>
+                                        <th class="p-3 border-b font-bold text-slate-500 uppercase text-center w-32">SPPG</th>
                                         <th class="p-3 border-b font-bold text-slate-500 uppercase">Catatan Sistem</th>
                                     </tr>
                                 </thead>
@@ -277,7 +275,7 @@
                 'JENIS SUPPLIER (Koperasi Desa Merah Putih/Koperasi/Bumdes/Bumdesma/UMKM/Supplier Lain)',
                 'NAMA SUPPLIER',
                 'NAMA PIMPINAN',
-                'TELEPON (Hanya Angka)',
+                ['TELEPON (Hanya Angka)', 'TELEPON', 'PHONE'],
                 'KOMODITAS (Contoh: Beras, Sayuran, Daging)',
                 'PROVINSI',
                 'KABUPATEN',
@@ -285,12 +283,17 @@
                 'DESA/KELURAHAN',
                 'ALAMAT JALAN',
                 'KODE POS',
-                'LATITUDE_GPS',
-                'LONGITUDE_GPS',
+                ['LATITUDE_GPS', 'LATITUDE GPS'],
+                ['LONGITUDE_GPS', 'LONGITUDE GPS'],
                 'ID UNIT SPPG TERKAIT (Pisahkan dengan koma jika banyak)'
             ];
             
-            const missingHeaders = requiredHeaders.filter(header => !(header in firstRow));
+            const missingHeaders = requiredHeaders.filter(h => {
+                if (Array.isArray(h)) {
+                    return !h.some(alt => alt in firstRow);
+                }
+                return !(h in firstRow);
+            });
 
             if (missingHeaders.length > 0) {
                  if (formatErrorContainer) {
@@ -324,9 +327,9 @@
                 const type = (row['JENIS SUPPLIER (Koperasi Desa Merah Putih/Koperasi/Bumdes/Bumdesma/UMKM/Supplier Lain)'] || '').toString();
                 const name = (row['NAMA SUPPLIER'] || '').toString().trim();
                 const leader = (row['NAMA PIMPINAN'] || '').toString();
-                const phone = (row['TELEPON (Hanya Angka)'] || '').toString();
-                const lat = (row['LATITUDE_GPS'] || '').toString().trim();
-                const lng = (row['LONGITUDE_GPS'] || '').toString().trim();
+                const phone = (row['TELEPON (Hanya Angka)'] || row['TELEPON'] || row['PHONE'] || '').toString();
+                const lat = (row['LATITUDE_GPS'] || row['LATITUDE GPS'] || '').toString().trim();
+                const lng = (row['LONGITUDE_GPS'] || row['LONGITUDE GPS'] || '').toString().trim();
                 const sppgIds = (row['ID UNIT SPPG TERKAIT (Pisahkan dengan koma jika banyak)'] || '').toString();
 
                 let errors = [];
@@ -373,9 +376,7 @@
                     <td class="p-3 border-b border-slate-100 text-slate-600 font-medium">${type || '-'}</td>
                     <td class="p-3 border-b border-slate-100 text-slate-600 font-medium">${leader || '-'}</td>
                     <td class="p-3 border-b border-slate-100 text-slate-600">${phone || '-'}</td>
-                    <td class="p-3 border-b border-slate-100 text-slate-600 font-mono text-[10px]">${lat || '-'}</td>
-                    <td class="p-3 border-b border-slate-100 text-slate-600 font-mono text-[10px]">${lng || '-'}</td>
-                    <td class="p-3 border-b border-slate-100 text-slate-400 font-bold tracking-tight">${sppgIds || '-'}</td>
+                    <td class="p-3 border-b border-slate-100 text-slate-400 font-bold tracking-tight text-center">${sppgIds || '-'}</td>
                     <td class="p-3 border-b border-slate-100 text-slate-600">
                         ${isRowError 
                             ? `<div class="flex flex-col gap-0.5">${errors.map(msg => `<div class="flex items-center gap-1.5 text-rose-600 font-bold uppercase text-[9px]"><span>•</span> ${msg}</div>`).join('')}</div>` 
