@@ -8,6 +8,10 @@ use App\Http\Controllers\Admin\SppgUnitController;
 use App\Http\Controllers\Admin\AssignmentDecreeController;
 use App\Http\Controllers\Admin\BeneficiaryController;
 use App\Http\Controllers\Admin\OfficerController;
+use App\Http\Controllers\Admin\FoundationController;
+use App\Http\Controllers\Admin\PartnerController;
+use App\Http\Controllers\Admin\PicController;
+use App\Http\Controllers\Admin\CertificationController;
 use App\Http\Controllers\PersonController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\Sppg\OverviewController;
@@ -194,6 +198,27 @@ Route::middleware(['auth', 'role:administrator', 'profile.completed'])->prefix('
         Route::get('/template', [App\Http\Controllers\Admin\AssignmentDecreeController::class, 'exportTemplate'])->name('template');
         Route::post('/import', [App\Http\Controllers\Admin\AssignmentDecreeController::class, 'importDecree'])->name('import');
         Route::post('/check-availability', [App\Http\Controllers\Admin\AssignmentDecreeController::class, 'checkAvailability'])->name('check-availability');
+    });
+
+    // Kelola Kemitraan
+    Route::prefix('manage-foundation')->name('manage-foundation.')->group(function () {
+        Route::get('/', [FoundationController::class, 'index'])->name('index');
+        // CRUD routes will be added later
+    });
+
+    Route::prefix('manage-partner')->name('manage-partner.')->group(function () {
+        Route::get('/', [PartnerController::class, 'index'])->name('index');
+        // CRUD routes will be added later
+    });
+
+    Route::prefix('manage-pic')->name('manage-pic.')->group(function () {
+        Route::get('/', [PicController::class, 'index'])->name('index');
+        // CRUD routes will be added later
+    });
+
+    Route::prefix('manage-certification')->name('manage-certification.')->group(function () {
+        Route::get('/', [CertificationController::class, 'index'])->name('index');
+        // CRUD routes will be added later
     });
 });
 

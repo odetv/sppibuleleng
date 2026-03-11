@@ -8,8 +8,9 @@
         selected: '{{ 
             request()->routeIs('profile.*') ? 'profil' : 
             (request()->routeIs('admin.manage-user.*', 'admin.manage-role.*', 'admin.manage-position.*', 'admin.manage-assignment-decree.*') ? 'admin_kelola_pengguna' : 
-            (request()->routeIs('admin.manage-sppg.*', 'admin.manage-officer.*', 'admin.manage-beneficiary.*', 'admin.manage-supplier.*') ? 'admin_kelola_unit' : 
-            (request()->routeIs('sppg.*') && !request()->routeIs('admin.manage-sppg.*') && !request()->routeIs('admin.manage-officer.*') ? 'sppg' : ''))) 
+            (request()->routeIs('admin.manage-foundation.*', 'admin.manage-partner.*', 'admin.manage-pic.*') ? 'admin_kelola_kemitraan' : 
+            (request()->routeIs('admin.manage-sppg.*', 'admin.manage-officer.*', 'admin.manage-beneficiary.*', 'admin.manage-supplier.*', 'admin.manage-certification.*') ? 'admin_kelola_unit' : 
+            (request()->routeIs('sppg.*') && !request()->routeIs('admin.manage-sppg.*') && !request()->routeIs('admin.manage-officer.*') ? 'sppg' : '')))) 
         }}' 
     }"
     :class="[
@@ -82,6 +83,28 @@
                         </ul>
                     </li>
 
+                    {{-- Kelola Kemitraan (Dropdown) --}}
+                    <li>
+                        <button @click="selected = (selected === 'admin_kelola_kemitraan' ? '' : 'admin_kelola_kemitraan')"
+                            :class="(sidebarExpanded || isHovered || mobileSidebar) ? 'px-4' : 'justify-center'"
+                            class="w-full group relative flex items-center gap-3 rounded-lg py-2.5 text-[14px] font-medium transition-all duration-200 {{ request()->routeIs('admin.manage-foundation.*', 'admin.manage-partner.*', 'admin.manage-pic.*') ? 'bg-indigo-50/50 text-indigo-600' : 'text-slate-600 hover:bg-indigo-50 hover:text-indigo-600' }}">
+                            <div class="shrink-0 flex items-center justify-center">
+                                <svg class="w-5.5 h-5.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
+                                </svg>
+                            </div>
+                            <span x-show="sidebarExpanded || isHovered || mobileSidebar" class="flex-1 text-left whitespace-nowrap">Kelola Kemitraan</span>
+                            <svg x-show="sidebarExpanded || isHovered || mobileSidebar" class="w-4 h-4 transition-transform duration-200" :class="selected === 'admin_kelola_kemitraan' ? 'rotate-180' : ''" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+                            </svg>
+                        </button>
+                        <ul x-show="selected === 'admin_kelola_kemitraan' && (sidebarExpanded || isHovered || mobileSidebar)" x-transition class="ml-9 mt-1 flex flex-col gap-1 border-l border-slate-100">
+                            <li><a href="{{ route('admin.manage-foundation.index') }}" class="block py-2 px-3 text-[13px] transition-colors {{ request()->routeIs('admin.manage-foundation.index') ? 'text-indigo-600 font-bold' : 'text-slate-500 hover:text-indigo-600' }}">Manajemen Yayasan</a></li>
+                            <li><a href="{{ route('admin.manage-partner.index') }}" class="block py-2 px-3 text-[13px] transition-colors {{ request()->routeIs('admin.manage-partner.index') ? 'text-indigo-600 font-bold' : 'text-slate-500 hover:text-indigo-600' }}">Manajemen Mitra</a></li>
+                            <li><a href="{{ route('admin.manage-pic.index') }}" class="block py-2 px-3 text-[13px] transition-colors {{ request()->routeIs('admin.manage-pic.index') ? 'text-indigo-600 font-bold' : 'text-slate-500 hover:text-indigo-600' }}">Manajemen PIC</a></li>
+                        </ul>
+                    </li>
+
                     {{-- Kelola Unit (Dropdown) --}}
                     <li>
                         <button @click="selected = (selected === 'admin_kelola_unit' ? '' : 'admin_kelola_unit')"
@@ -102,6 +125,7 @@
                             <li><a href="{{ route('admin.manage-officer.index') }}" class="block py-2 px-3 text-[13px] transition-colors {{ request()->routeIs('admin.manage-officer.index') ? 'text-indigo-600 font-bold' : 'text-slate-500 hover:text-indigo-600' }}">Manajemen Petugas</a></li>
                             <li><a href="{{ route('admin.manage-beneficiary.index') }}" class="block py-2 px-3 text-[13px] transition-colors {{ request()->routeIs('admin.manage-beneficiary.index') ? 'text-indigo-600 font-bold' : 'text-slate-500 hover:text-indigo-600' }}">Manajemen PM</a></li>
                             <li><a href="{{ route('admin.manage-supplier.index') }}" class="block py-2 px-3 text-[13px] transition-colors {{ request()->routeIs('admin.manage-supplier.index') ? 'text-indigo-600 font-bold' : 'text-slate-500 hover:text-indigo-600' }}">Manajemen Supplier</a></li>
+                            <li><a href="{{ route('admin.manage-certification.index') }}" class="block py-2 px-3 text-[13px] transition-colors {{ request()->routeIs('admin.manage-certification.index') ? 'text-indigo-600 font-bold' : 'text-slate-500 hover:text-indigo-600' }}">Manajemen Sertifikasi</a></li>
                         </ul>
                     </li>
                 </ul>
