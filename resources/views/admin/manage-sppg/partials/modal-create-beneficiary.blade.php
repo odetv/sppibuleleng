@@ -96,16 +96,16 @@
                                 <input type="hidden" name="district" id="ib_dist_name">
                                 <input type="hidden" name="village" id="ib_vill_name">
 
-                                <select name="province_code" id="ib_prov" class="px-4 py-2.5 bg-gray-50 border-none rounded-lg text-sm focus:ring-2 focus:ring-indigo-500 outline-none transition-all">
+                                <select required name="province_code" id="ib_prov" class="px-4 py-2.5 bg-gray-50 border-none rounded-lg text-sm focus:ring-2 focus:ring-indigo-500 outline-none transition-all">
                                     <option value="">Pilih Provinsi</option>
                                 </select>
-                                <select name="regency_code" id="ib_reg" disabled class="input-disabled px-4 py-2.5 border-none rounded-lg text-sm focus:ring-2 focus:ring-indigo-500 outline-none transition-all">
+                                <select required name="regency_code" id="ib_reg" disabled class="input-disabled px-4 py-2.5 border-none rounded-lg text-sm focus:ring-2 focus:ring-indigo-500 outline-none transition-all">
                                     <option value="">Pilih Kabupaten</option>
                                 </select>
-                                <select name="district_code" id="ib_dist" disabled class="input-disabled px-4 py-2.5 border-none rounded-lg text-sm focus:ring-2 focus:ring-indigo-500 outline-none transition-all">
+                                <select required name="district_code" id="ib_dist" disabled class="input-disabled px-4 py-2.5 border-none rounded-lg text-sm focus:ring-2 focus:ring-indigo-500 outline-none transition-all">
                                     <option value="">Pilih Kecamatan</option>
                                 </select>
-                                <select name="village_code" id="ib_vill" disabled class="input-disabled px-4 py-2.5 border-none rounded-lg text-sm focus:ring-2 focus:ring-indigo-500 outline-none transition-all">
+                                <select required name="village_code" id="ib_vill" disabled class="input-disabled px-4 py-2.5 border-none rounded-lg text-sm focus:ring-2 focus:ring-indigo-500 outline-none transition-all">
                                     <option value="">Pilih Desa</option>
                                 </select>
                             </div>
@@ -121,8 +121,8 @@
                         <div>
                             <div id="map-create-beneficiary-integrated" style="height: 300px; width: 100%; border-radius: 0.75rem; border: 4px solid white; box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1);"></div>
                             <div class="grid grid-cols-2 gap-4 mt-4">
-                                <input type="text" name="latitude_gps" id="beneficiary_c_lat" readonly class="px-3 py-2 bg-slate-100 rounded-lg text-[10px] text-slate-500 focus:outline-none cursor-not-allowed" placeholder="Lat (Klik Peta)">
-                                <input type="text" name="longitude_gps" id="beneficiary_c_lng" readonly class="px-3 py-2 bg-slate-100 rounded-lg text-[10px] text-slate-500 focus:outline-none cursor-not-allowed" placeholder="Lng (Klik Peta)">
+                                <input type="text" name="latitude_gps" id="beneficiary_c_lat" required readonly class="px-3 py-2 bg-slate-100 rounded-lg text-[10px] text-slate-500 focus:outline-none cursor-not-allowed" placeholder="Lat (Klik Peta)">
+                                <input type="text" name="longitude_gps" id="beneficiary_c_lng" required readonly class="px-3 py-2 bg-slate-100 rounded-lg text-[10px] text-slate-500 focus:outline-none cursor-not-allowed" placeholder="Lng (Klik Peta)">
                             </div>
                         </div>
                     </div>
@@ -133,32 +133,32 @@
                     <h4 class="text-[11px] font-bold text-indigo-600 uppercase tracking-widest border-b border-indigo-50 pb-2">Rincian Porsi Penerimaan</h4>
                     <div class="grid grid-cols-2 md:grid-cols-4 gap-6">
                         <div>
-                            <label class="text-[10px] font-bold text-gray-400 uppercase">Porsi Kecil (L)</label>
-                            <input type="number" name="small_portion_male" min="0" value="0" class="w-full mt-2 px-4 py-2.5 bg-gray-50 border-none rounded-lg text-sm" placeholder="0">
+                            <label class="text-[10px] font-bold text-gray-400 uppercase">Porsi Kecil (L) <span class="text-rose-500">*</span></label>
+                            <input type="number" name="small_portion_male" required min="0" value="0" class="w-full mt-2 px-4 py-2.5 bg-gray-50 border-none rounded-lg text-sm" placeholder="0">
                         </div>
                         <div>
-                            <label class="text-[10px] font-bold text-gray-400 uppercase">Porsi Kecil (P)</label>
-                            <input type="number" name="small_portion_female" min="0" value="0" class="w-full mt-2 px-4 py-2.5 bg-gray-50 border-none rounded-lg text-sm" placeholder="0">
+                            <label class="text-[10px] font-bold text-gray-400 uppercase">Porsi Kecil (P) <span class="text-rose-500">*</span></label>
+                            <input type="number" name="small_portion_female" required min="0" value="0" class="w-full mt-2 px-4 py-2.5 bg-gray-50 border-none rounded-lg text-sm" placeholder="0">
                         </div>
                         <div>
-                            <label class="text-[10px] font-bold text-gray-400 uppercase">Porsi Besar (L)</label>
-                            <input type="number" name="large_portion_male" min="0" value="0" class="w-full mt-2 px-4 py-2.5 bg-gray-50 border-none rounded-lg text-sm" placeholder="0">
+                            <label class="text-[10px] font-bold text-gray-400 uppercase">Porsi Besar (L) <span class="text-rose-500">*</span></label>
+                            <input type="number" name="large_portion_male" required min="0" value="0" class="w-full mt-2 px-4 py-2.5 bg-gray-50 border-none rounded-lg text-sm" placeholder="0">
                         </div>
                         <div>
-                            <label class="text-[10px] font-bold text-gray-400 uppercase">Porsi Besar (P)</label>
-                            <input type="number" name="large_portion_female" min="0" value="0" class="w-full mt-2 px-4 py-2.5 bg-gray-50 border-none rounded-lg text-sm" placeholder="0">
+                            <label class="text-[10px] font-bold text-gray-400 uppercase">Porsi Besar (P) <span class="text-rose-500">*</span></label>
+                            <input type="number" name="large_portion_female" required min="0" value="0" class="w-full mt-2 px-4 py-2.5 bg-gray-50 border-none rounded-lg text-sm" placeholder="0">
                         </div>
                         <div>
-                            <label class="text-[10px] font-bold text-gray-400 uppercase">Porsi Guru</label>
-                            <input type="number" name="teacher_portion" min="0" value="0" class="w-full mt-2 px-4 py-2.5 bg-gray-50 border-none rounded-lg text-sm" placeholder="0">
+                            <label class="text-[10px] font-bold text-gray-400 uppercase">Porsi Guru <span class="text-rose-500">*</span></label>
+                            <input type="number" name="teacher_portion" required min="0" value="0" class="w-full mt-2 px-4 py-2.5 bg-gray-50 border-none rounded-lg text-sm" placeholder="0">
                         </div>
                         <div>
-                            <label class="text-[10px] font-bold text-gray-400 uppercase">Porsi Staff</label>
-                            <input type="number" name="staff_portion" min="0" value="0" class="w-full mt-2 px-4 py-2.5 bg-gray-50 border-none rounded-lg text-sm" placeholder="0">
+                            <label class="text-[10px] font-bold text-gray-400 uppercase">Porsi Staff <span class="text-rose-500">*</span></label>
+                            <input type="number" name="staff_portion" required min="0" value="0" class="w-full mt-2 px-4 py-2.5 bg-gray-50 border-none rounded-lg text-sm" placeholder="0">
                         </div>
                         <div>
-                            <label class="text-[10px] font-bold text-gray-400 uppercase">Porsi Kader</label>
-                            <input type="number" name="cadre_portion" min="0" value="0" class="w-full mt-2 px-4 py-2.5 bg-gray-50 border-none rounded-lg text-sm" placeholder="0">
+                            <label class="text-[10px] font-bold text-gray-400 uppercase">Porsi Kader <span class="text-rose-500">*</span></label>
+                            <input type="number" name="cadre_portion" required min="0" value="0" class="w-full mt-2 px-4 py-2.5 bg-gray-50 border-none rounded-lg text-sm" placeholder="0">
                         </div>
                     </div>
                 </div>
@@ -168,16 +168,16 @@
                     <h4 class="text-[11px] font-bold text-indigo-600 uppercase tracking-widest border-b border-indigo-50 pb-2">Informasi Penanggung Jawab (PIC)</h4>
                     <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
                         <div>
-                            <label class="text-[11px] font-bold text-gray-500 uppercase tracking-wider">Nama PIC</label>
-                            <input type="text" name="pic_name" class="w-full mt-2 px-4 py-2.5 bg-gray-50 border-none rounded-lg text-sm focus:ring-2 focus:ring-indigo-500" placeholder="Nama Lengkap">
+                            <label class="text-[11px] font-bold text-gray-500 uppercase tracking-wider">Nama PIC <span class="text-rose-500">*</span></label>
+                            <input type="text" name="pic_name" required class="w-full mt-2 px-4 py-2.5 bg-gray-50 border-none rounded-lg text-sm focus:ring-2 focus:ring-indigo-500" placeholder="Nama Lengkap">
                         </div>
                         <div>
-                            <label class="text-[11px] font-bold text-gray-500 uppercase tracking-wider">Telepon PIC</label>
-                            <input type="text" name="pic_phone" class="w-full mt-2 px-4 py-2.5 bg-gray-50 border-none rounded-lg text-sm focus:ring-2 focus:ring-indigo-500 outline-none transition-all" placeholder="812xxxxx">
+                            <label class="text-[11px] font-bold text-gray-500 uppercase tracking-wider">Telepon PIC <span class="text-rose-500">*</span></label>
+                            <input type="text" name="pic_phone" required class="w-full mt-2 px-4 py-2.5 bg-gray-50 border-none rounded-lg text-sm focus:ring-2 focus:ring-indigo-500 outline-none transition-all" placeholder="812xxxxx">
                         </div>
                         <div>
-                            <label class="text-[11px] font-bold text-gray-500 uppercase tracking-wider">Email PIC</label>
-                            <input type="email" name="pic_email" class="w-full mt-2 px-4 py-2.5 bg-gray-50 border-none rounded-lg text-sm focus:ring-2 focus:ring-indigo-500" placeholder="email@contoh.com">
+                            <label class="text-[11px] font-bold text-gray-500 uppercase tracking-wider">Email PIC <span class="text-rose-500">*</span></label>
+                            <input type="email" name="pic_email" required class="w-full mt-2 px-4 py-2.5 bg-gray-50 border-none rounded-lg text-sm focus:ring-2 focus:ring-indigo-500" placeholder="email@contoh.com">
                         </div>
                     </div>
                 </div>

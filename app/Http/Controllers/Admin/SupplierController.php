@@ -109,7 +109,11 @@ class SupplierController extends Controller
             DB::commit();
 
             if ($request->ajax()) {
-                return response()->json(['success' => true, 'message' => 'Supplier berhasil ditambahkan.']);
+                return response()->json([
+                    'success' => true, 
+                    'message' => 'Supplier berhasil ditambahkan.',
+                    'supplier' => $supplier
+                ]);
             }
 
             return redirect()->route('admin.manage-supplier.index')->with('success', 'Supplier berhasil ditambahkan.');
@@ -324,6 +328,62 @@ class SupplierController extends Controller
             DB::rollBack();
             DB::statement('SET FOREIGN_KEY_CHECKS=1;');
             return response()->json(['success' => false, 'message' => 'Gagal sistem: ' . $e->getMessage()]);
+        }
+    }
+    
+    public function batchLinkToSppg(Request $request)
+    {
+        $validator = Validator::make($request->all(), [
+            'id_supplier_list' => 'required|array',
+            'id_supplier_list.*' => 'exists:suppliers,id_supplier',
+            'id_sppg_unit' => 'required|exists:sppg_units,id_sppg_unit',
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json(['errors' => $validator->errors()], 422);
+        }
+
+        try {
+            DB::beginTransaction();
+            $unit = SppgUnit::findOrFail($request->id_sppg_unit);
+            $unit->suppliers()->syncWithoutDetaching($request->id_supplier_list);
+            DB::commit();
+
+            $unitSuppliers = $unit->suppliers()->get();
+
+            return response()->json([
+                'success' => true,
+                'unit_suppliers' => $unitSuppliers
+            ]);
+        } catch (\Exception $e) {
+            DB::rollBack();
+            return response()->json(['errors' => ['system' => [$e->getMessage()]]], 500);
+        }
+    }
+
+    public function unlinkFromSppg(Request $request)
+    {
+        $validator = Validator::make($request->all(), [
+            'id_supplier' => 'required|exists:suppliers,id_supplier',
+            'id_sppg_unit' => 'required|exists:sppg_units,id_sppg_unit',
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json(['errors' => $validator->errors()], 422);
+        }
+
+        try {
+            $unit = SppgUnit::findOrFail($request->id_sppg_unit);
+            $unit->suppliers()->detach($request->id_supplier);
+            
+            $unitSuppliers = $unit->suppliers()->get();
+
+            return response()->json([
+                'success' => true, 
+                'unit_suppliers' => $unitSuppliers
+            ]);
+        } catch (\Exception $e) {
+            return response()->json(['errors' => ['system' => [$e->getMessage()]]], 500);
         }
     }
 }

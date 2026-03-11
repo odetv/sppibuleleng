@@ -1,10 +1,23 @@
 <x-app-layout title="Manajemen Supplier">
     <script src="https://cdn.jsdelivr.net/npm/xlsx/dist/xlsx.full.min.js"></script>
     <style>
-        [x-cloak] { display: none !important; }
-        .custom-scrollbar::-webkit-scrollbar { width: 4px; }
-        .custom-scrollbar::-webkit-scrollbar-track { background: #f1f1f1; }
-        .custom-scrollbar::-webkit-scrollbar-thumb { background: #e2e8f0; border-radius: 10px; }
+        [x-cloak] {
+            display: none !important;
+        }
+
+        .custom-scrollbar::-webkit-scrollbar {
+            width: 4px;
+        }
+
+        .custom-scrollbar::-webkit-scrollbar-track {
+            background: #f1f1f1;
+        }
+
+        .custom-scrollbar::-webkit-scrollbar-thumb {
+            background: #e2e8f0;
+            border-radius: 10px;
+        }
+
         .input-disabled {
             background-color: #f8fafc !important;
             color: #94a3b8 !important;
@@ -12,11 +25,13 @@
             pointer-events: none;
             border: 1px solid #e2e8f0 !important;
         }
+
         .is-invalid {
             border: 1px solid #ef4444 !important;
             box-shadow: 0 0 0 2px #fef2f2 !important;
             background-color: #fff1f2 !important;
         }
+
         .error-warning {
             color: #ef4444;
             font-size: 10px;
@@ -25,6 +40,7 @@
             margin-top: 4px;
             display: block;
         }
+
         .validation-hidden {
             display: none !important;
         }
@@ -55,14 +71,14 @@
                 this.showDeleteModal = true;
             }
         }" x-init="">
-        
+
         <div class="max-w-full mx-auto space-y-6">
             {{-- 1. HEADER SECTION --}}
             <div class="bg-white rounded-xl border border-slate-200 overflow-hidden shadow-sm">
                 <div class="p-6 md:p-8 flex flex-col md:flex-row justify-between gap-4">
                     <div>
                         <h2 class="text-xl font-bold text-slate-800 uppercase leading-tight">Manajemen Supplier</h2>
-                        <p class="text-sm text-slate-400 font-medium mt-1">Manajemen data mitra pemasok (Supplier MBG)</p>
+                        <p class="text-sm text-slate-400 font-medium mt-1">Manajemen data pemasok atau supplier MBG</p>
                     </div>
                     <div class="flex items-center">
                         <span class="inline-flex items-center px-4 py-2 text-[10px] font-bold rounded bg-white text-slate-600 uppercase border border-slate-200 tracking-widest shadow-sm">
@@ -83,15 +99,15 @@
                     <div class="flex flex-col md:flex-row items-stretch md:items-center gap-4">
                         <div class="flex items-center gap-2 overflow-x-auto pb-1 md:pb-0 hide-scrollbar">
                             <button onclick="openExportModal()" class="flex items-center justify-center p-2.5 md:px-4 text-[11px] font-bold uppercase tracking-wider text-emerald-600 bg-white border border-emerald-200 rounded-lg hover:bg-emerald-600 hover:text-white transition-all cursor-pointer shadow-sm">
-                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="w-4 h-4">
+                                    <path fill-rule="evenodd" d="M12 2.25a.75.75 0 0 1 .75.75v11.69l3.22-3.22a.75.75 0 1 1 1.06 1.06l-4.5 4.5a.75.75 0 0 1-1.06 0l-4.5-4.5a.75.75 0 1 1 1.06-1.06l3.22 3.22V3a.75.75 0 0 1 .75-.75Zm-9 13.5a.75.75 0 0 1 .75.75v2.25a1.5 1.5 0 0 0 1.5 1.5h13.5a1.5 1.5 0 0 0 1.5-1.5V16.5a.75.75 0 0 1 1.5 0v2.25a3 3 0 0 1-3 3H5.25a3 3 0 0 1-3-3V16.5a.75.75 0 0 1 .75-.75Z" clip-rule="evenodd" />
                                 </svg>
                                 <span class="hidden sm:inline ml-2 text-nowrap">Export</span>
                             </button>
 
                             <button onclick="openImportModal()" class="flex items-center justify-center p-2.5 md:px-4 text-[11px] font-bold uppercase tracking-wider text-amber-600 bg-white border border-amber-200 rounded-lg hover:bg-amber-600 hover:text-white transition-all cursor-pointer shadow-sm">
-                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12" />
+                                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="w-4 h-4">
+                                    <path fill-rule="evenodd" d="M11.47 2.47a.75.75 0 0 1 1.06 0l4.5 4.5a.75.75 0 1 1-1.06 1.06l-3.22-3.22V16.5a.75.75 0 0 1-1.5 0V4.81L8.03 8.03a.75.75 0 0 1-1.06-1.06l4.5-4.5ZM3 15.75a.75.75 0 0 1 .75.75v2.25a1.5 1.5 0 0 0 1.5 1.5h13.5a1.5 1.5 0 0 0 1.5-1.5V16.5a.75.75 0 0 1 1.5 0v2.25a3 3 0 0 1-3 3H5.25a3 3 0 0 1-3-3V16.5a.75.75 0 0 1 .75-.75Z" clip-rule="evenodd" />
                                 </svg>
                                 <span class="hidden sm:inline ml-2 text-nowrap">Import</span>
                             </button>
@@ -183,22 +199,22 @@
                                             </div>
 
                                             @if($supplier->sppgUnits->count() > 1)
-                                                <div class="mt-2.5 pt-2.5 border-t border-indigo-200/60 w-full">
-                                                    <ul class="text-[11px] font-medium text-left space-y-1.5 list-none text-indigo-900/80">
-                                                        @foreach($supplier->sppgUnits as $unit)
-                                                            <li class="leading-tight relative pl-2.5 whitespace-normal">
-                                                                <span class="absolute left-0 top-0 opacity-60 font-medium">-</span>
-                                                                {{ $unit->name }}
-                                                            </li>
-                                                        @endforeach
-                                                    </ul>
-                                                </div>
+                                            <div class="mt-2.5 pt-2.5 border-t border-indigo-200/60 w-full">
+                                                <ul class="text-[11px] font-medium text-left space-y-1.5 list-none text-indigo-900/80">
+                                                    @foreach($supplier->sppgUnits as $unit)
+                                                    <li class="leading-tight relative pl-2.5 whitespace-normal">
+                                                        <span class="absolute left-0 top-0 opacity-60 font-medium">-</span>
+                                                        {{ $unit->name }}
+                                                    </li>
+                                                    @endforeach
+                                                </ul>
+                                            </div>
                                             @elseif($supplier->sppgUnits->count() == 1)
-                                                <div class="mt-2.5 pt-2.5 border-t border-indigo-200/60 w-full">
-                                                    <p class="text-[11px] font-medium text-left leading-tight whitespace-normal text-indigo-900/80">
-                                                        {{ $supplier->sppgUnits->first()->name }}
-                                                    </p>
-                                                </div>
+                                            <div class="mt-2.5 pt-2.5 border-t border-indigo-200/60 w-full">
+                                                <p class="text-[11px] font-medium text-left leading-tight whitespace-normal text-indigo-900/80">
+                                                    {{ $supplier->sppgUnits->first()->name }}
+                                                </p>
+                                            </div>
                                             @endif
                                         </div>
                                         @else
@@ -248,7 +264,7 @@
                         [&_span]:bg-white [&_span]:text-slate-600 [&_span]:border-slate-200 [&_span]:rounded-lg
                         [&_.bg-gray-800]:bg-indigo-600 [&_.bg-gray-800]:text-white [&_.bg-gray-800]:border-indigo-600
                         [&_.dark\:bg-gray-800]:bg-white [&_.dark\:text-gray-400]:text-slate-600">
-                        
+
                         {{-- DROPDOWN PER PAGE --}}
                         <div class="flex items-center gap-2">
                             <span class="text-sm text-slate-600">Tampilkan</span>
@@ -264,7 +280,7 @@
 
                         {{-- LARAVEL PAGINATION --}}
                         @if($suppliers->hasPages())
-                            {{ $suppliers->links() }}
+                        {{ $suppliers->links() }}
                         @endif
                     </div>
                     @endfragment
@@ -281,7 +297,9 @@
     </div>
 
     <script>
-        window.validSppgIds = {!! json_encode($validSppgIds) !!};
+        window.validSppgIds = {
+            !!json_encode($validSppgIds) !!
+        };
         let searchTimer;
 
         // 1. Get Current URL Modifiers
@@ -291,9 +309,12 @@
             const type = document.getElementById('filter-type').value;
             const perPage = document.getElementById('supplier-per-page').value;
 
-            if (search) url.searchParams.set('search', search); else url.searchParams.delete('search');
-            if (type) url.searchParams.set('type', type); else url.searchParams.delete('type');
-            if (perPage) url.searchParams.set('per_page', perPage); else url.searchParams.delete('per_page');
+            if (search) url.searchParams.set('search', search);
+            else url.searchParams.delete('search');
+            if (type) url.searchParams.set('type', type);
+            else url.searchParams.delete('type');
+            if (perPage) url.searchParams.set('per_page', perPage);
+            else url.searchParams.delete('per_page');
 
             // Reset page if trigger is not pagination
             if (triggerEl && !triggerEl.closest('nav')) {
@@ -306,46 +327,46 @@
         // 2. Refresh Table Function
         function refreshTable(url, focusId = null) {
             fetch(url, {
-                headers: {
-                    'X-Requested-With': 'XMLHttpRequest'
-                }
-            })
-            .then(response => response.text())
-            .then(html => {
-                const parser = new DOMParser();
-                const doc = parser.parseFromString(html, 'text/html');
-                const oldContent = document.getElementById('supplier-table-container');
-
-                // If response is just the fragment, doc could be parsed into body.
-                // We'll try to find the container in the response, otherwise just use the body content.
-                const newContent = doc.getElementById('supplier-table-container');
-
-                if (oldContent) {
-                    if (newContent) {
-                        oldContent.innerHTML = newContent.innerHTML;
-                    } else {
-                        // Fallback if Laravel returns only the fragment content
-                        oldContent.innerHTML = doc.body.innerHTML;
+                    headers: {
+                        'X-Requested-With': 'XMLHttpRequest'
                     }
-                }
+                })
+                .then(response => response.text())
+                .then(html => {
+                    const parser = new DOMParser();
+                    const doc = parser.parseFromString(html, 'text/html');
+                    const oldContent = document.getElementById('supplier-table-container');
 
-                // Sync URL
-                window.history.pushState({}, '', url);
+                    // If response is just the fragment, doc could be parsed into body.
+                    // We'll try to find the container in the response, otherwise just use the body content.
+                    const newContent = doc.getElementById('supplier-table-container');
 
-                // Restore focus
-                if (focusId) {
-                    requestAnimationFrame(() => {
-                        const activeInput = document.getElementById(focusId);
-                        if (activeInput) {
-                            activeInput.focus();
-                            const val = activeInput.value;
-                            activeInput.value = '';
-                            activeInput.value = val;
+                    if (oldContent) {
+                        if (newContent) {
+                            oldContent.innerHTML = newContent.innerHTML;
+                        } else {
+                            // Fallback if Laravel returns only the fragment content
+                            oldContent.innerHTML = doc.body.innerHTML;
                         }
-                    });
-                }
-            })
-            .catch(error => console.error('Error:', error));
+                    }
+
+                    // Sync URL
+                    window.history.pushState({}, '', url);
+
+                    // Restore focus
+                    if (focusId) {
+                        requestAnimationFrame(() => {
+                            const activeInput = document.getElementById(focusId);
+                            if (activeInput) {
+                                activeInput.focus();
+                                const val = activeInput.value;
+                                activeInput.value = '';
+                                activeInput.value = val;
+                            }
+                        });
+                    }
+                })
+                .catch(error => console.error('Error:', error));
         }
 
         // 3. Reset Filters
@@ -386,7 +407,7 @@
             let anchor = e.target.closest('#supplier-table-container nav a');
             if (anchor && anchor.getAttribute('href')) {
                 let url = new URL(anchor.getAttribute('href'));
-                
+
                 // Ensure per_page and filters are preserved
                 const modUrl = new URL(getCurrentUrlModifiers());
                 modUrl.searchParams.set('page', url.searchParams.get('page'));

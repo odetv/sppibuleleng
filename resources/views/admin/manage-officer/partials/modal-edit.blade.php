@@ -55,12 +55,12 @@
                     <input type="hidden" name="id_person" id="e_id_person" x-model="selectedOfficer.id_person">
 
                     <div>
-                        <label class="text-[11px] font-bold text-gray-500 uppercase tracking-wider">Nama Lengkap (Sesuai KTP) <span class="text-red-500">*</span></label>
+                        <label class="text-[11px] font-bold text-gray-500 uppercase tracking-wider">Nama Lengkap (Sesuai KTP) <span class="text-rose-500">*</span></label>
                         <input type="text" name="name_person" id="e_name_person" x-model="selectedOfficer.person.name" class="w-full mt-2 px-4 py-2.5 bg-gray-50 border-none rounded-lg text-sm focus:ring-2 focus:ring-amber-500" placeholder="Masukkan Nama Lengkap">
                     </div>
 
                     <div>
-                        <label class="text-[11px] font-bold text-gray-500 uppercase tracking-wider">No. Kartu Keluarga (KK) <span class="text-red-500">*</span></label>
+                        <label class="text-[11px] font-bold text-gray-500 uppercase tracking-wider">No. Kartu Keluarga (KK) <span class="text-rose-500">*</span></label>
                         <input type="text" name="no_kk" id="e_no_kk" x-model="selectedOfficer.person.no_kk" maxlength="16" class="w-full mt-2 px-4 py-2.5 bg-gray-50 border-none rounded-lg text-sm focus:ring-2 focus:ring-amber-500" placeholder="Masukkan Nomor KK">
                     </div>
 
@@ -75,13 +75,13 @@
                     </div>
                     
                     <div>
-                        <label class="text-[11px] font-bold text-gray-500 uppercase tracking-wider">NIK (16 Digit) <span class="text-red-500">*</span></label>
+                        <label class="text-[11px] font-bold text-gray-500 uppercase tracking-wider">NIK (16 Digit) <span class="text-rose-500">*</span></label>
                         <input type="text" name="nik_person" id="e_nik_person" x-model="selectedOfficer.person.nik" maxlength="16" class="w-full mt-2 px-4 py-2.5 bg-gray-50 border-none rounded-lg text-sm focus:ring-2 focus:ring-amber-500" placeholder="Masukkan NIK">
                     </div>
 
 
                     <div>
-                        <label class="text-[11px] font-bold text-gray-500 uppercase tracking-wider">Jenis Kelamin <span class="text-red-500">*</span></label>
+                        <label class="text-[11px] font-bold text-gray-500 uppercase tracking-wider">Jenis Kelamin <span class="text-rose-500">*</span></label>
                         <select name="gender_person" id="e_gender_person" x-model="selectedOfficer.person.gender" class="w-full mt-2 px-3 py-2.5 bg-gray-50 border-none rounded-lg text-sm focus:ring-2 focus:ring-amber-500">
                             <option value="L">Laki-laki</option>
                             <option value="P">Perempuan</option>
@@ -89,22 +89,22 @@
                     </div>
 
                     <div>
-                        <label class="text-[11px] font-bold text-gray-500 uppercase tracking-wider">Nomor Telepon <span class="text-red-500">*</span></label>
+                        <label class="text-[11px] font-bold text-gray-500 uppercase tracking-wider">Nomor Telepon <span class="text-rose-500">*</span></label>
                         <input type="text" name="phone_person" id="e_phone_person" x-model="selectedOfficer.person.user.phone" class="w-full mt-2 px-4 py-2.5 bg-gray-50 border-none rounded-lg text-sm focus:ring-2 focus:ring-amber-500" placeholder="Cth: 08xxxxxxxxxx">
                     </div>
 
                     <div>
-                        <label class="text-[11px] font-bold text-gray-500 uppercase tracking-wider">Tempat Lahir <span class="text-red-500">*</span></label>
+                        <label class="text-[11px] font-bold text-gray-500 uppercase tracking-wider">Tempat Lahir <span class="text-rose-500">*</span></label>
                         <input type="text" name="place_birthday_person" id="e_place_birthday_person" x-model="selectedOfficer.person.place_birthday" class="w-full mt-2 px-4 py-2.5 bg-gray-50 border-none rounded-lg text-sm focus:ring-2 focus:ring-amber-500" placeholder="Cth: Singaraja">
                     </div>
 
                     <div>
-                        <label class="text-[11px] font-bold text-gray-500 uppercase tracking-wider">Tanggal Lahir <span class="text-red-500">*</span></label>
+                        <label class="text-[11px] font-bold text-gray-500 uppercase tracking-wider">Tanggal Lahir <span class="text-rose-500">*</span></label>
                         <input type="date" name="date_birthday_person" id="e_date_birthday_person" x-model="selectedOfficer.person.date_birthday" class="w-full mt-2 px-4 py-2.5 bg-gray-50 border-none rounded-lg text-sm focus:ring-2 focus:ring-amber-500">
                     </div>
 
                     <div>
-                        <label class="text-[11px] font-bold text-gray-500 uppercase tracking-wider">Agama <span class="text-red-500">*</span></label>
+                        <label class="text-[11px] font-bold text-gray-500 uppercase tracking-wider">Agama <span class="text-rose-500">*</span></label>
                         <select name="religion" id="e_religion" x-model="selectedOfficer.person.religion" class="w-full mt-2 px-3 py-2.5 bg-gray-50 border-none rounded-lg text-sm focus:ring-2 focus:ring-amber-500">
                             <option value="" disabled>Pilih Agama</option>
                             <option value="Islam">Islam</option>
@@ -117,7 +117,7 @@
                     </div>
 
                     <div>
-                        <label class="text-[11px] font-bold text-gray-500 uppercase tracking-wider">Status Pernikahan <span class="text-red-500">*</span></label>
+                        <label class="text-[11px] font-bold text-gray-500 uppercase tracking-wider">Status Pernikahan <span class="text-rose-500">*</span></label>
                         <select name="marital_status" id="e_marital_status" x-model="selectedOfficer.person.marital_status" class="w-full mt-2 px-3 py-2.5 bg-gray-50 border-none rounded-lg text-sm focus:ring-2 focus:ring-amber-500">
                             <option value="" disabled>Pilih Status</option>
                             <option value="Belum Kawin">Belum Kawin</option>
@@ -133,31 +133,31 @@
                     <h3 class="text-sm font-bold uppercase tracking-widest text-amber-600 mb-6">Alamat KTP</h3>
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-6">
                         <div>
-                            <label class="text-[11px] font-bold text-gray-500 uppercase tracking-wider">Provinsi <span class="text-red-500">*</span></label>
+                            <label class="text-[11px] font-bold text-gray-500 uppercase tracking-wider">Provinsi <span class="text-rose-500">*</span></label>
                             <select name="province_ktp" id="e_province_ktp" x-bind:data-selected="selectedOfficer.person.province_ktp" class="w-full mt-2 px-3 py-2.5 bg-gray-50 border-none rounded-lg text-sm focus:ring-2 focus:ring-amber-500">
                                 <option value="" disabled selected>Pilih Provinsi</option>
                             </select>
                         </div>
                         <div>
-                            <label class="text-[11px] font-bold text-gray-500 uppercase tracking-wider">Kabupaten <span class="text-red-500">*</span></label>
+                            <label class="text-[11px] font-bold text-gray-500 uppercase tracking-wider">Kabupaten <span class="text-rose-500">*</span></label>
                             <select name="regency_ktp" id="e_regency_ktp" x-bind:data-selected="selectedOfficer.person.regency_ktp" class="w-full mt-2 px-3 py-2.5 bg-gray-50 border-none rounded-lg text-sm focus:ring-2 focus:ring-amber-500" disabled>
                                 <option value="" disabled selected>Pilih Kabupaten/Kota</option>
                             </select>
                         </div>
                         <div>
-                            <label class="text-[11px] font-bold text-gray-500 uppercase tracking-wider">Kecamatan <span class="text-red-500">*</span></label>
+                            <label class="text-[11px] font-bold text-gray-500 uppercase tracking-wider">Kecamatan <span class="text-rose-500">*</span></label>
                             <select name="district_ktp" id="e_district_ktp" x-bind:data-selected="selectedOfficer.person.district_ktp" class="w-full mt-2 px-3 py-2.5 bg-gray-50 border-none rounded-lg text-sm focus:ring-2 focus:ring-amber-500" disabled>
                                 <option value="" disabled selected>Pilih Kecamatan</option>
                             </select>
                         </div>
                         <div>
-                            <label class="text-[11px] font-bold text-gray-500 uppercase tracking-wider">Desa/Kelurahan <span class="text-red-500">*</span></label>
+                            <label class="text-[11px] font-bold text-gray-500 uppercase tracking-wider">Desa/Kelurahan <span class="text-rose-500">*</span></label>
                             <select name="village_ktp" id="e_village_ktp" x-bind:data-selected="selectedOfficer.person.village_ktp" class="w-full mt-2 px-3 py-2.5 bg-gray-50 border-none rounded-lg text-sm focus:ring-2 focus:ring-amber-500" disabled>
                                 <option value="" disabled selected>Pilih Desa/Kelurahan</option>
                             </select>
                         </div>
                         <div class="md:col-span-2">
-                            <label class="text-[11px] font-bold text-gray-500 uppercase tracking-wider">Alamat Jalan <span class="text-red-500">*</span></label>
+                            <label class="text-[11px] font-bold text-gray-500 uppercase tracking-wider">Alamat Jalan <span class="text-rose-500">*</span></label>
                             <textarea name="address_ktp" id="e_address_ktp" x-model="selectedOfficer.person.address_ktp" rows="2" class="w-full mt-2 px-4 py-2.5 bg-gray-50 border-none rounded-lg text-sm focus:ring-2 focus:ring-amber-500" placeholder="Masukkan alamat lengkap sesuai KTP"></textarea>
                         </div>
                     </div>
@@ -174,31 +174,31 @@
                     </div>
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-6">
                         <div>
-                            <label class="text-[11px] font-bold text-gray-500 uppercase tracking-wider">Provinsi <span class="text-red-500">*</span></label>
+                            <label class="text-[11px] font-bold text-gray-500 uppercase tracking-wider">Provinsi <span class="text-rose-500">*</span></label>
                             <select name="province_domicile" id="e_province_domicile" x-bind:data-selected="selectedOfficer.person.province_domicile" class="w-full mt-2 px-3 py-2.5 bg-gray-50 border-none rounded-lg text-sm focus:ring-2 focus:ring-amber-500">
                                 <option value="" disabled selected>Pilih Provinsi</option>
                             </select>
                         </div>
                         <div>
-                            <label class="text-[11px] font-bold text-gray-500 uppercase tracking-wider">Kabupaten <span class="text-red-500">*</span></label>
+                            <label class="text-[11px] font-bold text-gray-500 uppercase tracking-wider">Kabupaten <span class="text-rose-500">*</span></label>
                             <select name="regency_domicile" id="e_regency_domicile" x-bind:data-selected="selectedOfficer.person.regency_domicile" class="w-full mt-2 px-3 py-2.5 bg-gray-50 border-none rounded-lg text-sm focus:ring-2 focus:ring-amber-500" disabled>
                                 <option value="" disabled selected>Pilih Kabupaten/Kota</option>
                             </select>
                         </div>
                         <div>
-                            <label class="text-[11px] font-bold text-gray-500 uppercase tracking-wider">Kecamatan <span class="text-red-500">*</span></label>
+                            <label class="text-[11px] font-bold text-gray-500 uppercase tracking-wider">Kecamatan <span class="text-rose-500">*</span></label>
                             <select name="district_domicile" id="e_district_domicile" x-bind:data-selected="selectedOfficer.person.district_domicile" class="w-full mt-2 px-3 py-2.5 bg-gray-50 border-none rounded-lg text-sm focus:ring-2 focus:ring-amber-500" disabled>
                                 <option value="" disabled selected>Pilih Kecamatan</option>
                             </select>
                         </div>
                         <div>
-                            <label class="text-[11px] font-bold text-gray-500 uppercase tracking-wider">Desa/Kelurahan <span class="text-red-500">*</span></label>
+                            <label class="text-[11px] font-bold text-gray-500 uppercase tracking-wider">Desa/Kelurahan <span class="text-rose-500">*</span></label>
                             <select name="village_domicile" id="e_village_domicile" x-bind:data-selected="selectedOfficer.person.village_domicile" class="w-full mt-2 px-3 py-2.5 bg-gray-50 border-none rounded-lg text-sm focus:ring-2 focus:ring-amber-500" disabled>
                                 <option value="" disabled selected>Pilih Desa/Kelurahan</option>
                             </select>
                         </div>
                         <div class="md:col-span-2">
-                            <label class="text-[11px] font-bold text-gray-500 uppercase tracking-wider">Alamat Jalan <span class="text-red-500">*</span></label>
+                            <label class="text-[11px] font-bold text-gray-500 uppercase tracking-wider">Alamat Jalan <span class="text-rose-500">*</span></label>
                             <textarea name="address_domicile" id="e_address_domicile" x-model="selectedOfficer.person.address_domicile" rows="2" class="w-full mt-2 px-4 py-2.5 bg-gray-50 border-none rounded-lg text-sm focus:ring-2 focus:ring-amber-500" placeholder="Masukkan alamat lengkap domisili saat ini"></textarea>
                         </div>
                     </div>
@@ -210,7 +210,7 @@
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-6">
 
                     <div>
-                        <label class="text-[11px] font-bold text-gray-500 uppercase tracking-wider">Jabatan <span class="text-red-500">*</span></label>
+                        <label class="text-[11px] font-bold text-gray-500 uppercase tracking-wider">Jabatan <span class="text-rose-500">*</span></label>
                         <select name="id_ref_position" id="e_id_ref_position" x-model="selectedOfficer.id_ref_position" class="w-full mt-2 px-3 py-2.5 bg-gray-50 border-none rounded-lg text-sm focus:ring-2 focus:ring-amber-500">
                             <option value="" disabled>Pilih Jabatan</option>
                             @foreach($positions as $pos)
@@ -220,7 +220,7 @@
                     </div>
 
                     <div id="e_wa_wrapper" class="hidden">
-                        <label class="text-[11px] font-bold text-gray-500 uppercase tracking-wider">Penugasan SK (Work Assignment) <span class="text-red-500">*</span></label>
+                        <label class="text-[11px] font-bold text-gray-500 uppercase tracking-wider">Penugasan SK (Work Assignment) <span class="text-rose-500">*</span></label>
                         <select name="id_work_assignment" id="e_id_work_assignment" x-model="selectedOfficer.person.id_work_assignment" class="w-full mt-2 px-3 py-2.5 bg-gray-50 border-none rounded-lg text-sm focus:ring-2 focus:ring-amber-500">
                             <option value="none" selected>Pilih Penugasan...</option>
                             @foreach($workAssignments as $wa)
@@ -234,7 +234,7 @@
                     </div>
 
                     <div id="e_unit_wrapper">
-                        <label class="text-[11px] font-bold text-gray-500 uppercase tracking-wider">Unit SPPG <span class="text-red-500">*</span></label>
+                        <label class="text-[11px] font-bold text-gray-500 uppercase tracking-wider">Unit SPPG <span class="text-rose-500">*</span></label>
                         <select name="id_sppg_unit" id="e_id_sppg_unit" x-model="selectedOfficer.id_sppg_unit" class="w-full mt-2 px-3 py-2.5 bg-gray-50 border-none rounded-lg text-sm focus:ring-2 focus:ring-amber-500 disabled:opacity-50 disabled:cursor-not-allowed" disabled>
                             <option value="none" disabled selected>Pilih Jabatan Terlebih Dahulu...</option>
                             @foreach($sppgUnits as $unit)
@@ -255,7 +255,7 @@
                     <h3 class="text-sm font-bold uppercase tracking-widest text-amber-600 mb-6">Status & Honorarium</h3>
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-6">
                         <div>
-                            <label class="text-[11px] font-bold text-gray-500 uppercase tracking-wider mb-2 block">Status Keaktifan Petugas <span class="text-red-500">*</span></label>
+                            <label class="text-[11px] font-bold text-gray-500 uppercase tracking-wider mb-2 block">Status Keaktifan Petugas <span class="text-rose-500">*</span></label>
                             <div class="flex gap-4">
                                 <label class="flex items-center gap-2 cursor-pointer p-4 bg-gray-50 rounded-xl border border-transparent hover:border-amber-300 transition-all flex-1">
                                     <input type="radio" name="is_active" value="1" x-model="selectedOfficer.is_active" class="w-5 h-5 text-amber-600 focus:ring-amber-500 border-slate-300">
@@ -276,7 +276,7 @@
                         </div>
 
                         <div>
-                            <label class="text-[11px] font-bold text-gray-500 uppercase tracking-wider">Hak Akses Sistem <span class="text-red-500">*</span></label>
+                            <label class="text-[11px] font-bold text-gray-500 uppercase tracking-wider">Hak Akses Sistem <span class="text-rose-500">*</span></label>
                             <select name="id_ref_role" id="e_id_ref_role" x-model="selectedOfficer.person.user.id_ref_role" class="w-full mt-2 px-3 py-2.5 bg-gray-50 border-none rounded-lg text-sm focus:ring-2 focus:ring-amber-500">
                                 <option value="" disabled>Pilih Hak Akses</option>
                                 @foreach($roles as $role)

@@ -18,7 +18,6 @@
             </div>
         </div>
     </div>
-    </div>
 
 <script>
         window.confirmDelete = function(userId, email, isForce) {

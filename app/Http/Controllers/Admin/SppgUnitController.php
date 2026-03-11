@@ -82,6 +82,14 @@ class SppgUnitController extends Controller
             ->toArray();
         $allBeneficiaries = Beneficiary::orderBy('name')->get();
         $allSuppliers = \App\Models\Supplier::orderBy('name_supplier')->get();
+        $supplierTypes = [
+            'Koperasi Desa Merah Putih',
+            'Koperasi',
+            'Bumdes',
+            'Bumdesma',
+            'UMKM',
+            'Supplier Lain'
+        ];
 
         // Unique address data for filters
         $filterData = [
@@ -92,10 +100,10 @@ class SppgUnitController extends Controller
         ];
 
         if ($request->ajax()) {
-            return view('admin.manage-sppg.index', compact('units', 'leaders', 'nutritionists', 'accountants', 'occupiedPeople', 'decrees', 'assignedDecreeMap', 'allBeneficiaries', 'allSuppliers', 'filterData'))->fragment('sppg-table-container');
+            return view('admin.manage-sppg.index', compact('units', 'leaders', 'nutritionists', 'accountants', 'occupiedPeople', 'decrees', 'assignedDecreeMap', 'allBeneficiaries', 'allSuppliers', 'supplierTypes', 'filterData'))->fragment('sppg-table-container');
         }
 
-        return view('admin.manage-sppg.index', compact('units', 'leaders', 'nutritionists', 'accountants', 'occupiedPeople', 'decrees', 'assignedDecreeMap', 'allBeneficiaries', 'allSuppliers', 'filterData'));
+        return view('admin.manage-sppg.index', compact('units', 'leaders', 'nutritionists', 'accountants', 'occupiedPeople', 'decrees', 'assignedDecreeMap', 'allBeneficiaries', 'allSuppliers', 'supplierTypes', 'filterData'));
     }
 
     /**

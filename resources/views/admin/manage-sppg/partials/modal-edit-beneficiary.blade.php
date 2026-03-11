@@ -60,9 +60,9 @@
                                     <option value="Posyandu">Posyandu</option>
                                 </select>
                             </div>
-                            <div>
-                                <label class="text-[11px] font-bold text-gray-500 uppercase tracking-wider">Kategori</label>
-                                <select name="category" x-model="selectedPM.category" class="w-full mt-2 px-3 py-2.5 bg-gray-50 border-none rounded-lg text-sm focus:ring-2 focus:ring-indigo-500 outline-none transition-all">
+                             <div>
+                                <label class="text-[11px] font-bold text-gray-500 uppercase tracking-wider">Kategori <span class="text-rose-500">*</span></label>
+                                <select required name="category" x-model="selectedPM.category" class="w-full mt-2 px-3 py-2.5 bg-gray-50 border-none rounded-lg text-sm focus:ring-2 focus:ring-indigo-500 outline-none transition-all">
                                     <option value="" disabled selected>Pilih Kategori</option>
                                     <template x-if="selectedPM.group_type && categories[selectedPM.group_type]">
                                         <template x-for="cat in categories[selectedPM.group_type]" :key="cat">
@@ -102,33 +102,41 @@
                                 <input type="hidden" name="is_active" :value="(selectedPM.is_active == 1 || selectedPM.is_active == true || selectedPM.is_active === '1') ? 1 : 0">
                                 <input type="hidden" name="village" id="eb_vill_name" :value="selectedPM.village">
 
-                                <select name="province_code" id="eb_prov" class="px-4 py-2.5 bg-gray-50 border-none rounded-lg text-sm focus:ring-2 focus:ring-indigo-500 outline-none transition-all">
+                                 <select required name="province_code" id="eb_prov" class="px-4 py-2.5 bg-gray-50 border-none rounded-lg text-sm focus:ring-2 focus:ring-indigo-500 outline-none transition-all">
                                     <option value="">Pilih Provinsi</option>
                                 </select>
-                                <select name="regency_code" id="eb_reg" disabled class="input-disabled px-4 py-2.5 border-none rounded-lg text-sm focus:ring-2 focus:ring-indigo-500 outline-none transition-all">
+                                <select required name="regency_code" id="eb_reg" disabled class="input-disabled px-4 py-2.5 border-none rounded-lg text-sm focus:ring-2 focus:ring-indigo-500 outline-none transition-all">
                                     <option value="">Pilih Kabupaten</option>
                                 </select>
-                                <select name="district_code" id="eb_dist" disabled class="input-disabled px-4 py-2.5 border-none rounded-lg text-sm focus:ring-2 focus:ring-indigo-500 outline-none transition-all">
+                                <select required name="district_code" id="eb_dist" disabled class="input-disabled px-4 py-2.5 border-none rounded-lg text-sm focus:ring-2 focus:ring-indigo-500 outline-none transition-all">
                                     <option value="">Pilih Kecamatan</option>
                                 </select>
-                                <select name="village_code" id="eb_vill" disabled class="input-disabled px-4 py-2.5 border-none rounded-lg text-sm focus:ring-2 focus:ring-indigo-500 outline-none transition-all">
+                                <select required name="village_code" id="eb_vill" disabled class="input-disabled px-4 py-2.5 border-none rounded-lg text-sm focus:ring-2 focus:ring-indigo-500 outline-none transition-all">
                                     <option value="">Pilih Desa</option>
                                 </select>
                             </div>
                             <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
                                 <div class="sm:col-span-2">
-                                    <textarea name="address" x-model="selectedPM.address" required rows="2" placeholder="Alamat Jalan Lengkap" class="w-full px-4 py-2.5 bg-gray-50 border-none rounded-lg text-sm focus:ring-2 focus:ring-indigo-500 outline-none transition-all"></textarea>
+                                    <label class="text-[11px] font-bold text-gray-500 uppercase tracking-wider">Alamat Jalan Lengkap <span class="text-rose-500">*</span></label>
+                                    <textarea name="address" x-model="selectedPM.address" required rows="2" placeholder="Alamat Jalan Lengkap" class="w-full mt-2 px-4 py-2.5 bg-gray-50 border-none rounded-lg text-sm focus:ring-2 focus:ring-indigo-500 outline-none transition-all"></textarea>
                                 </div>
-                                <div>
-                                    <input type="text" name="postal_code" x-model="selectedPM.postal_code" placeholder="Kode Pos" class="w-full px-4 py-2.5 bg-gray-50 border-none rounded-lg text-sm focus:ring-2 focus:ring-indigo-500">
+                                 <div>
+                                    <label class="text-[11px] font-bold text-gray-500 uppercase tracking-wider">Kode Pos <span class="text-rose-500">*</span></label>
+                                    <input required type="text" name="postal_code" x-model="selectedPM.postal_code" placeholder="Kode Pos" class="w-full mt-2 px-4 py-2.5 bg-gray-50 border-none rounded-lg text-sm focus:ring-2 focus:ring-indigo-500">
                                 </div>
                             </div>
                         </div>
                         <div>
                             <div id="map-edit-beneficiary-integrated" style="height: 300px; width: 100%; border-radius: 0.75rem; border: 4px solid white; box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1);"></div>
                             <div class="grid grid-cols-2 gap-4 mt-4">
-                                <input type="text" name="latitude_gps" id="beneficiary_e_lat" x-model="selectedPM.latitude_gps" readonly class="px-3 py-2 bg-slate-100 rounded-lg text-[10px] text-slate-500 focus:outline-none cursor-not-allowed" placeholder="Lat (Klik Peta)">
-                                <input type="text" name="longitude_gps" id="beneficiary_e_lng" x-model="selectedPM.longitude_gps" readonly class="px-3 py-2 bg-slate-100 rounded-lg text-[10px] text-slate-500 focus:outline-none cursor-not-allowed" placeholder="Lng (Klik Peta)">
+                                <div>
+                                    <label class="text-[11px] font-bold text-gray-500 uppercase tracking-wider">Latitude <span class="text-rose-500">*</span></label>
+                                    <input type="text" name="latitude_gps" id="beneficiary_e_lat" required x-model="selectedPM.latitude_gps" readonly class="w-full mt-2 px-3 py-2 bg-slate-100 rounded-lg text-[10px] text-slate-500 focus:outline-none cursor-not-allowed" placeholder="Lat (Klik Peta)">
+                                </div>
+                                <div>
+                                    <label class="text-[11px] font-bold text-gray-500 uppercase tracking-wider">Longitude <span class="text-rose-500">*</span></label>
+                                    <input type="text" name="longitude_gps" id="beneficiary_e_lng" required x-model="selectedPM.longitude_gps" readonly class="w-full mt-2 px-3 py-2 bg-slate-100 rounded-lg text-[10px] text-slate-500 focus:outline-none cursor-not-allowed" placeholder="Lng (Klik Peta)">
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -138,33 +146,33 @@
                 <div class="space-y-6">
                     <h4 class="text-[11px] font-bold text-indigo-600 uppercase tracking-widest border-b border-indigo-50 pb-2">Rincian Porsi Penerimaan</h4>
                     <div class="grid grid-cols-2 md:grid-cols-4 gap-6">
-                        <div>
-                            <label class="text-[10px] font-bold text-gray-400 uppercase">Porsi Kecil (L)</label>
-                            <input type="number" name="small_portion_male" x-model="selectedPM.small_portion_male" min="0" class="w-full mt-2 px-4 py-2.5 bg-gray-50 border-none rounded-lg text-sm" placeholder="0">
+                         <div>
+                            <label class="text-[10px] font-bold text-gray-400 uppercase">Porsi Kecil (L) <span class="text-rose-500">*</span></label>
+                            <input type="number" name="small_portion_male" required x-model="selectedPM.small_portion_male" min="0" class="w-full mt-2 px-4 py-2.5 bg-gray-50 border-none rounded-lg text-sm" placeholder="0">
                         </div>
                         <div>
-                            <label class="text-[10px] font-bold text-gray-400 uppercase">Porsi Kecil (P)</label>
-                            <input type="number" name="small_portion_female" x-model="selectedPM.small_portion_female" min="0" class="w-full mt-2 px-4 py-2.5 bg-gray-50 border-none rounded-lg text-sm" placeholder="0">
+                            <label class="text-[10px] font-bold text-gray-400 uppercase">Porsi Kecil (P) <span class="text-rose-500">*</span></label>
+                            <input type="number" name="small_portion_female" required x-model="selectedPM.small_portion_female" min="0" class="w-full mt-2 px-4 py-2.5 bg-gray-50 border-none rounded-lg text-sm" placeholder="0">
                         </div>
                         <div>
-                            <label class="text-[10px] font-bold text-gray-400 uppercase">Porsi Besar (L)</label>
-                            <input type="number" name="large_portion_male" x-model="selectedPM.large_portion_male" min="0" class="w-full mt-2 px-4 py-2.5 bg-gray-50 border-none rounded-lg text-sm" placeholder="0">
+                            <label class="text-[10px] font-bold text-gray-400 uppercase">Porsi Besar (L) <span class="text-rose-500">*</span></label>
+                            <input type="number" name="large_portion_male" required x-model="selectedPM.large_portion_male" min="0" class="w-full mt-2 px-4 py-2.5 bg-gray-50 border-none rounded-lg text-sm" placeholder="0">
                         </div>
                         <div>
-                            <label class="text-[10px] font-bold text-gray-400 uppercase">Porsi Besar (P)</label>
-                            <input type="number" name="large_portion_female" x-model="selectedPM.large_portion_female" min="0" class="w-full mt-2 px-4 py-2.5 bg-gray-50 border-none rounded-lg text-sm" placeholder="0">
+                            <label class="text-[10px] font-bold text-gray-400 uppercase">Porsi Besar (P) <span class="text-rose-500">*</span></label>
+                            <input type="number" name="large_portion_female" required x-model="selectedPM.large_portion_female" min="0" class="w-full mt-2 px-4 py-2.5 bg-gray-50 border-none rounded-lg text-sm" placeholder="0">
                         </div>
                         <div>
-                            <label class="text-[10px] font-bold text-gray-400 uppercase">Porsi Guru</label>
-                            <input type="number" name="teacher_portion" x-model="selectedPM.teacher_portion" min="0" class="w-full mt-2 px-4 py-2.5 bg-gray-50 border-none rounded-lg text-sm" placeholder="0">
+                            <label class="text-[10px] font-bold text-gray-400 uppercase">Porsi Guru <span class="text-rose-500">*</span></label>
+                            <input type="number" name="teacher_portion" required x-model="selectedPM.teacher_portion" min="0" class="w-full mt-2 px-4 py-2.5 bg-gray-50 border-none rounded-lg text-sm" placeholder="0">
                         </div>
                         <div>
-                            <label class="text-[10px] font-bold text-gray-400 uppercase">Porsi Staff</label>
-                            <input type="number" name="staff_portion" x-model="selectedPM.staff_portion" min="0" class="w-full mt-2 px-4 py-2.5 bg-gray-50 border-none rounded-lg text-sm" placeholder="0">
+                            <label class="text-[10px] font-bold text-gray-400 uppercase">Porsi Staff <span class="text-rose-500">*</span></label>
+                            <input type="number" name="staff_portion" required x-model="selectedPM.staff_portion" min="0" class="w-full mt-2 px-4 py-2.5 bg-gray-50 border-none rounded-lg text-sm" placeholder="0">
                         </div>
                         <div>
-                            <label class="text-[10px] font-bold text-gray-400 uppercase">Porsi Kader</label>
-                            <input type="number" name="cadre_portion" x-model="selectedPM.cadre_portion" min="0" class="w-full mt-2 px-4 py-2.5 bg-gray-50 border-none rounded-lg text-sm" placeholder="0">
+                            <label class="text-[10px] font-bold text-gray-400 uppercase">Porsi Kader <span class="text-rose-500">*</span></label>
+                            <input type="number" name="cadre_portion" required x-model="selectedPM.cadre_portion" min="0" class="w-full mt-2 px-4 py-2.5 bg-gray-50 border-none rounded-lg text-sm" placeholder="0">
                         </div>
                     </div>
                 </div>
@@ -173,17 +181,17 @@
                 <div class="space-y-6">
                     <h4 class="text-[11px] font-bold text-indigo-600 uppercase tracking-widest border-b border-indigo-50 pb-2">Informasi Penanggung Jawab (PIC)</h4>
                     <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-                        <div>
-                            <label class="text-[11px] font-bold text-gray-500 uppercase tracking-wider">Nama PIC</label>
-                            <input type="text" name="pic_name" x-model="selectedPM.pic_name" class="w-full mt-2 px-4 py-2.5 bg-gray-50 border-none rounded-lg text-sm focus:ring-2 focus:ring-indigo-500" placeholder="Nama Lengkap">
+                         <div>
+                            <label class="text-[11px] font-bold text-gray-500 uppercase tracking-wider">Nama PIC <span class="text-rose-500">*</span></label>
+                            <input type="text" name="pic_name" required x-model="selectedPM.pic_name" class="w-full mt-2 px-4 py-2.5 bg-gray-50 border-none rounded-lg text-sm focus:ring-2 focus:ring-indigo-500" placeholder="Nama Lengkap">
                         </div>
                         <div>
-                            <label class="text-[11px] font-bold text-gray-500 uppercase tracking-wider">Telepon PIC</label>
-                            <input type="text" name="pic_phone" x-model="selectedPM.pic_phone" class="w-full mt-2 px-4 py-2.5 bg-gray-50 border-none rounded-lg text-sm focus:ring-2 focus:ring-indigo-500 outline-none transition-all" placeholder="812xxxxx">
+                            <label class="text-[11px] font-bold text-gray-500 uppercase tracking-wider">Telepon PIC <span class="text-rose-500">*</span></label>
+                            <input type="text" name="pic_phone" required x-model="selectedPM.pic_phone" class="w-full mt-2 px-4 py-2.5 bg-gray-50 border-none rounded-lg text-sm focus:ring-2 focus:ring-indigo-500 outline-none transition-all" placeholder="812xxxxx">
                         </div>
                         <div>
-                            <label class="text-[11px] font-bold text-gray-500 uppercase tracking-wider">Email PIC</label>
-                            <input type="email" name="pic_email" x-model="selectedPM.pic_email" class="w-full mt-2 px-4 py-2.5 bg-gray-50 border-none rounded-lg text-sm focus:ring-2 focus:ring-indigo-500" placeholder="email@contoh.com">
+                            <label class="text-[11px] font-bold text-gray-500 uppercase tracking-wider">Email PIC <span class="text-rose-500">*</span></label>
+                            <input type="email" name="pic_email" required x-model="selectedPM.pic_email" class="w-full mt-2 px-4 py-2.5 bg-gray-50 border-none rounded-lg text-sm focus:ring-2 focus:ring-indigo-500" placeholder="email@contoh.com">
                         </div>
                     </div>
                 </div>

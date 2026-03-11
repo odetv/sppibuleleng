@@ -18,13 +18,14 @@
             <form id="masterForm" method="POST" enctype="multipart/form-data">
                 @csrf
                 <div id="method_field"></div>
+                <input type="hidden" id="edit-positions-meta-data" value="{{ json_encode($positions->pluck('slug_position', 'id_ref_position')) }}">
 
                 <div class="p-8 max-h-[75vh] overflow-y-auto space-y-10">
 
                     {{-- SECTION 1: FOTO & IDENTITAS UTAMA --}}
                     <div class="flex flex-col lg:flex-row gap-12">
                         <div class="shrink-0 flex flex-col items-center gap-4">
-                            <label class="text-[11px] font-bold text-gray-500 uppercase tracking-wider">Pas Foto (4x6)</label>
+                            <label class="text-[11px] font-bold text-gray-500 uppercase tracking-wider">Pas Foto (4x6) <span class="text-rose-500">*</span></label>
                             <div class="relative group">
                                 <div class="h-60 w-40 rounded-2xl overflow-hidden bg-indigo-600 border-4 border-white shadow-lg ring-1 ring-slate-100 bg-gray-50 flex items-center justify-center text-center">
                                     <img id="cropped-preview" class="h-full w-full object-cover cursor-pointer hidden" src="" alt="Preview">
@@ -42,15 +43,15 @@
 
                         <div class="flex-1 grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-6">
                             <div class="md:col-span-2">
-                                <label class="text-[11px] font-bold text-gray-500 uppercase tracking-wider">Nama Lengkap (Sesuai KTP)</label>
+                                <label class="text-[11px] font-bold text-gray-500 uppercase tracking-wider">Nama Lengkap (Sesuai KTP) <span class="text-rose-500">*</span></label>
                                 <input required type="text" name="name" id="f_name" class="w-full mt-2 px-4 py-2.5 bg-gray-50 border-none rounded-lg text-sm focus:ring-2 focus:ring-indigo-500">
                             </div>
-                            <div><label class="text-[11px] font-bold text-gray-500 uppercase tracking-wider">Email</label><input required type="email" name="email" id="f_email" class="w-full mt-2 px-4 py-2.5 bg-slate-100 border-none rounded-lg text-sm text-slate-400 cursor-not-allowed" readonly></div>
-                            <div><label class="text-[11px] font-bold text-gray-500 uppercase tracking-wider">Telepon</label><input required type="number" name="phone" id="f_phone" class="w-full mt-2 px-4 py-2.5 bg-gray-50 border-none rounded-lg text-sm focus:ring-2 focus:ring-indigo-500"></div>
-                            <div><label class="text-[11px] font-bold text-gray-500 uppercase tracking-wider">NIK (16 Digit)</label><input required type="number" name="nik" id="f_nik" class="w-full mt-2 px-4 py-2.5 bg-gray-50 border-none rounded-lg text-sm"></div>
-                            <div><label class="text-[11px] font-bold text-gray-500 uppercase tracking-wider">Nomor KK (16 Digit)</label><input required type="number" name="no_kk" id="f_no_kk" class="w-full mt-2 px-4 py-2.5 bg-gray-50 border-none rounded-lg text-sm"></div>
-                            <div><label class="text-[11px] font-bold text-gray-500 uppercase tracking-wider">NIP</label><input required type="number" name="nip" id="f_nip" class="w-full mt-2 px-4 py-2.5 bg-gray-50 border-none rounded-lg text-sm focus:ring-2 focus:ring-indigo-500"></div>
-                            <div><label class="text-[11px] font-bold text-gray-500 uppercase tracking-wider">NPWP</label><input required type="number" name="npwp" id="f_npwp" class="w-full mt-2 px-4 py-2.5 bg-gray-50 border-none rounded-lg text-sm focus:ring-2 focus:ring-indigo-500"></div>
+                            <div><label class="text-[11px] font-bold text-gray-500 uppercase tracking-wider">Email <span class="text-rose-500">*</span></label><input required type="email" name="email" id="f_email" class="w-full mt-2 px-4 py-2.5 bg-slate-100 border-none rounded-lg text-sm text-slate-400 cursor-not-allowed" readonly></div>
+                            <div><label class="text-[11px] font-bold text-gray-500 uppercase tracking-wider">Telepon <span class="text-rose-500">*</span></label><input required type="number" name="phone" id="f_phone" class="w-full mt-2 px-4 py-2.5 bg-gray-50 border-none rounded-lg text-sm focus:ring-2 focus:ring-indigo-500"></div>
+                            <div><label class="text-[11px] font-bold text-gray-500 uppercase tracking-wider">NIK (16 Digit) <span class="text-rose-500">*</span></label><input required type="number" name="nik" id="f_nik" class="w-full mt-2 px-4 py-2.5 bg-gray-50 border-none rounded-lg text-sm"></div>
+                            <div><label class="text-[11px] font-bold text-gray-500 uppercase tracking-wider">Nomor KK (16 Digit) <span class="text-rose-500">*</span></label><input required type="number" name="no_kk" id="f_no_kk" class="w-full mt-2 px-4 py-2.5 bg-gray-50 border-none rounded-lg text-sm"></div>
+                            <div><label class="text-[11px] font-bold text-gray-500 uppercase tracking-wider">NIP <span class="text-rose-500">*</span></label><input required type="number" name="nip" id="f_nip" class="w-full mt-2 px-4 py-2.5 bg-gray-50 border-none rounded-lg text-sm focus:ring-2 focus:ring-indigo-500"></div>
+                            <div><label class="text-[11px] font-bold text-gray-500 uppercase tracking-wider">NPWP <span class="text-rose-500">*</span></label><input required type="number" name="npwp" id="f_npwp" class="w-full mt-2 px-4 py-2.5 bg-gray-50 border-none rounded-lg text-sm focus:ring-2 focus:ring-indigo-500"></div>
                             <div><label class="text-[11px] font-bold text-gray-500 uppercase tracking-wider">No. BPJS Kesehatan</label><input type="number" name="no_bpjs_kes" id="f_bpjs_kes" class="w-full mt-2 px-4 py-2.5 bg-gray-50 border-none rounded-lg text-sm focus:ring-2 focus:ring-indigo-500"></div>
                             <div><label class="text-[11px] font-bold text-gray-500 uppercase tracking-wider">No. BPJS Ketenagakerjaan</label><input type="number" name="no_bpjs_tk" id="f_bpjs_tk" class="w-full mt-2 px-4 py-2.5 bg-gray-50 border-none rounded-lg text-sm focus:ring-2 focus:ring-indigo-500"></div>
                         </div>
@@ -62,7 +63,7 @@
                         <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
                             {{-- JABATAN: pilih dulu agar bisa filter unit --}}
                             <div class="col-span-2 md:col-span-5">
-                                <label class="text-[11px] font-bold text-gray-500 uppercase tracking-wider">Jabatan</label>
+                                <label class="text-[11px] font-bold text-gray-500 uppercase tracking-wider">Jabatan <span class="text-rose-500">*</span></label>
                                 <select name="id_ref_position" id="f_pos" class="w-full mt-2 px-3 py-2.5 bg-gray-50 border-none rounded-lg text-sm focus:ring-2 focus:ring-indigo-500 transition-all">
                                     <option value="">Belum Menjabat</option>
                                     @foreach($positions as $p)
@@ -77,21 +78,21 @@
 
                             {{-- UNIT PENUGASAN: difilter & di-disable berdasarkan jabatan --}}
                             <div class="col-span-2">
-                                <label class="text-[11px] font-bold text-gray-500 uppercase tracking-wider">Unit Penugasan</label>
+                                <label class="text-[11px] font-bold text-gray-500 uppercase tracking-wider">Unit Penugasan <span class="text-rose-500">*</span></label>
 
                                 {{-- Dropdown untuk ASN/SPPI (via work_assignment) --}}
                                 <div id="wa-dropdown-wrapper">
                                     <select name="id_work_assignment" id="f_wa" class="w-full mt-2 px-3 py-2.5 bg-gray-50 border-none rounded-lg text-sm">
                                         <option value="none">Belum Penugasan</option>
                                         @foreach($workAssignments as $wa)
-                                            <option value="{{ $wa->id_work_assignment }}"
-                                                data-pos="{{ $wa->decree?->type_sk ?? '' }}"
-                                                data-unit="{{ $wa->id_sppg_unit }}"
-                                                data-leader="{{ $wa->sppgUnit->leader_id ?? '' }}"
-                                                data-nutritionist="{{ $wa->sppgUnit->nutritionist_id ?? '' }}"
-                                                data-accountant="{{ $wa->sppgUnit->accountant_id ?? '' }}">
-                                                {{ $wa->id_sppg_unit ? ($wa->sppgUnit?->name ?? '-') : ($wa->decree?->position?->name_position ?? 'Posisi Tidak Ditemukan') }} - {{ $wa->decree?->no_sk ?? 'SK Tidak Ditemukan' }}
-                                            </option>
+                                        <option value="{{ $wa->id_work_assignment }}"
+                                            data-pos="{{ $wa->decree?->type_sk ?? '' }}"
+                                            data-unit="{{ $wa->id_sppg_unit }}"
+                                            data-leader="{{ $wa->sppgUnit->leader_id ?? '' }}"
+                                            data-nutritionist="{{ $wa->sppgUnit->nutritionist_id ?? '' }}"
+                                            data-accountant="{{ $wa->sppgUnit->accountant_id ?? '' }}">
+                                            {{ $wa->id_sppg_unit ? ($wa->sppgUnit?->name ?? '-') : ($wa->decree?->position?->name_position ?? 'Posisi Tidak Ditemukan') }} - {{ $wa->decree?->no_sk ?? 'SK Tidak Ditemukan' }}
+                                        </option>
                                         @endforeach
                                     </select>
                                     <p id="f-wa-occupied-note" class="hidden text-[10px] text-amber-600 font-medium mt-1">
@@ -104,16 +105,16 @@
                                     <select name="id_sppg_unit" id="f_unit_volunteer" class="w-full mt-2 px-3 py-2.5 bg-gray-50 border-none rounded-lg text-sm disabled:opacity-50" disabled>
                                         <option value="none">Belum Penugasan (Relawan)</option>
                                         @foreach($sppgUnits ?? [] as $unit)
-                                            <option value="{{ $unit->id_sppg_unit }}">
-                                                {{ $unit->name }}
-                                            </option>
+                                        <option value="{{ $unit->id_sppg_unit }}">
+                                            {{ $unit->name }}
+                                        </option>
                                         @endforeach
                                     </select>
                                     <p class="text-[10px] text-gray-400 mt-1 italic"><i class="fas fa-info-circle mr-1"></i> Penugasan relawan langsung ke entitas SPPG.</p>
                                 </div>
                             </div>
-                            <div><label class="text-[11px] font-bold text-gray-500 uppercase tracking-wider">Batch</label><select required name="batch" id="f_batch" class="w-full mt-2 px-3 py-2.5 bg-gray-50 border-none rounded-lg text-sm">@foreach(['1', '2', '3', 'Non-SPPI'] as $b) <option value="{{ $b }}">{{ $b }}</option> @endforeach</select></div>
-                            <div><label class="text-[11px] font-bold text-gray-500 uppercase tracking-wider">Hak Akses Sistem</label><select required name="id_ref_role" id="f_role" class="w-full mt-2 px-3 py-2.5 bg-gray-50 border-none rounded-lg text-sm">@foreach($roles as $r)<option value="{{$r->id_ref_role}}">{{$r->name_role}}</option>@endforeach</select></div>
+                            <div><label class="text-[11px] font-bold text-gray-500 uppercase tracking-wider">Batch <span class="text-rose-500">*</span></label><select required name="batch" id="f_batch" class="w-full mt-2 px-3 py-2.5 bg-gray-50 border-none rounded-lg text-sm">@foreach(['1', '2', '3', 'Non-SPPI'] as $b) <option value="{{ $b }}">{{ $b }}</option> @endforeach</select></div>
+                            <div><label class="text-[11px] font-bold text-gray-500 uppercase tracking-wider">Hak Akses Sistem <span class="text-rose-500">*</span></label><select required name="id_ref_role" id="f_role" class="w-full mt-2 px-3 py-2.5 bg-gray-50 border-none rounded-lg text-sm">@foreach($roles as $r)<option value="{{$r->id_ref_role}}">{{$r->name_role}}</option>@endforeach</select></div>
                         </div>
                     </div>
 
@@ -121,24 +122,24 @@
                     <div class="pt-10 border-t border-gray-100">
                         <h3 class="text-sm font-bold uppercase tracking-widest text-indigo-600 mb-6">Detail Personal & Pendidikan</h3>
                         <div class="grid grid-cols-2 md:grid-cols-4 gap-6">
-                            <div><label class="text-[11px] font-bold text-gray-500 uppercase tracking-wider">Pendidikan Terakhir</label><select required name="last_education" id="f_last_edu" class="w-full mt-1 px-3 py-2 bg-gray-50 border-none rounded-lg text-sm">@foreach(['D-III', 'D-IV', 'S-1', 'S-2'] as $edu)<option value="{{ $edu }}">{{ $edu }}</option>@endforeach</select></div>
-                            <div><label class="text-[11px] font-bold text-gray-500 uppercase tracking-wider">Gelar Belakang</label><input required type="text" name="title_education" id="f_title_edu" placeholder="S.Kom." class="w-full mt-1 px-4 py-2 bg-gray-50 border-none rounded-lg text-sm"></div>
-                            <div><label class="text-[11px] font-bold text-gray-500 uppercase tracking-wider">Jurusan / Prodi</label><input required type="text" name="major_education" id="f_major" placeholder="Ilmu Kelautan" class="w-full mt-1 px-4 py-2 bg-gray-50 border-none rounded-lg text-sm"></div>
-                            <div><label class="text-[11px] font-bold text-gray-500 uppercase tracking-wider">Status Kerja</label><select required name="employment_status" id="f_emp" class="w-full mt-1 px-3 py-2 bg-gray-50 border-none rounded-lg text-sm">
+                            <div><label class="text-[11px] font-bold text-gray-500 uppercase tracking-wider">Pendidikan Terakhir <span class="text-rose-500">*</span></label><select required name="last_education" id="f_last_edu" class="w-full mt-1 px-3 py-2 bg-gray-50 border-none rounded-lg text-sm">@foreach(['D-III', 'D-IV', 'S-1', 'S-2'] as $edu)<option value="{{ $edu }}">{{ $edu }}</option>@endforeach</select></div>
+                            <div><label class="text-[11px] font-bold text-gray-500 uppercase tracking-wider">Gelar Belakang <span class="text-rose-500">*</span></label><input required type="text" name="title_education" id="f_title_edu" placeholder="S.Kom." class="w-full mt-1 px-4 py-2 bg-gray-50 border-none rounded-lg text-sm"></div>
+                            <div><label class="text-[11px] font-bold text-gray-500 uppercase tracking-wider">Jurusan / Prodi <span class="text-rose-500">*</span></label><input required type="text" name="major_education" id="f_major" placeholder="Ilmu Kelautan" class="w-full mt-1 px-4 py-2 bg-gray-50 border-none rounded-lg text-sm"></div>
+                            <div><label class="text-[11px] font-bold text-gray-500 uppercase tracking-wider">Status Kerja <span class="text-rose-500">*</span></label><select required name="employment_status" id="f_emp" class="w-full mt-1 px-3 py-2 bg-gray-50 border-none rounded-lg text-sm">
                                     <option value="ASN">ASN</option>
                                     <option value="Non-ASN">Non-ASN</option>
                                 </select></div>
-                            <div><label class="text-[11px] font-bold text-gray-500 uppercase tracking-wider">Tempat Lahir</label><input required type="text" name="place_birthday" id="f_place" class="w-full mt-1 px-4 py-2 bg-gray-50 border-none rounded-lg text-sm"></div>
-                            <div><label class="text-[11px] font-bold text-gray-500 uppercase tracking-wider">Tanggal Lahir</label><input required type="date" name="date_birthday" id="f_date" class="w-full mt-1 px-4 py-2 bg-gray-50 border-none rounded-lg text-sm"></div>
-                            <div><label class="text-[11px] font-bold text-gray-500 uppercase tracking-wider">Umur</label><input required type="text" id="f_age" readonly class="w-full mt-1 px-4 py-2 bg-slate-50 border-none rounded-lg text-sm text-slate-400 cursor-not-allowed"></div>
-                            <div><label class="text-[11px] font-bold text-gray-500 uppercase tracking-wider">Agama</label><select required name="religion" id="f_religion" class="w-full mt-1 px-3 py-2 bg-gray-50 border-none rounded-lg text-sm">@foreach(['Islam', 'Kristen', 'Katholik', 'Hindu', 'Buddha', 'Khonghucu'] as $rel)<option value="{{ $rel }}">{{ $rel }}</option>@endforeach</select></div>
-                            <div><label class="text-[11px] font-bold text-gray-500 uppercase tracking-wider">Gender</label><select required name="gender" id="f_gender" class="w-full mt-1 px-3 py-2 bg-gray-50 border-none rounded-lg text-sm">
+                            <div><label class="text-[11px] font-bold text-gray-500 uppercase tracking-wider">Tempat Lahir <span class="text-rose-500">*</span></label><input required type="text" name="place_birthday" id="f_place" class="w-full mt-1 px-4 py-2 bg-gray-50 border-none rounded-lg text-sm"></div>
+                            <div><label class="text-[11px] font-bold text-gray-500 uppercase tracking-wider">Tanggal Lahir <span class="text-rose-500">*</span></label><input required type="date" name="date_birthday" id="f_date" class="w-full mt-1 px-4 py-2 bg-gray-50 border-none rounded-lg text-sm"></div>
+                            <div><label class="text-[11px] font-bold text-gray-500 uppercase tracking-wider">Umur <span class="text-rose-500">*</span></label><input required type="text" id="f_age" readonly class="w-full mt-1 px-4 py-2 bg-slate-50 border-none rounded-lg text-sm text-slate-400 cursor-not-allowed"></div>
+                            <div><label class="text-[11px] font-bold text-gray-500 uppercase tracking-wider">Agama <span class="text-rose-500">*</span></label><select required name="religion" id="f_religion" class="w-full mt-1 px-3 py-2 bg-gray-50 border-none rounded-lg text-sm">@foreach(['Islam', 'Kristen', 'Katholik', 'Hindu', 'Buddha', 'Khonghucu'] as $rel)<option value="{{ $rel }}">{{ $rel }}</option>@endforeach</select></div>
+                            <div><label class="text-[11px] font-bold text-gray-500 uppercase tracking-wider">Jenis Kelamin <span class="text-rose-500">*</span></label><select required name="gender" id="f_gender" class="w-full mt-1 px-3 py-2 bg-gray-50 border-none rounded-lg text-sm">
                                     <option value="L">Laki-laki</option>
                                     <option value="P">Perempuan</option>
                                 </select></div>
-                            <div><label class="text-[11px] font-bold text-gray-500 uppercase tracking-wider">Status Pernikahan</label><select required name="marital_status" id="f_marital" class="w-full mt-1 px-3 py-2 bg-gray-50 border-none rounded-lg text-sm">@foreach(['Belum Kawin', 'Kawin', 'Janda', 'Duda'] as $status)<option value="{{ $status }}">{{ $status }}</option>@endforeach</select></div>
-                            <div><label class="text-[11px] font-bold text-gray-500 uppercase tracking-wider">Ukuran Baju</label><select required name="clothing_size" id="f_cloth" class="w-full mt-1 px-3 py-2 bg-gray-50 border-none rounded-lg text-sm">@foreach(['XS', 'S', 'M', 'L', 'XL', 'XXL', 'XXXL', '4XL', '5XL'] as $size)<option value="{{ $size }}">{{ $size }}</option>@endforeach</select></div>
-                            <div><label class="text-[11px] font-bold text-gray-500 uppercase tracking-wider">Ukuran Sepatu</label><select required name="shoe_size" id="f_shoe" class="w-full mt-1 px-3 py-2 bg-gray-50 border-none rounded-lg text-sm">@for($i=35; $i<=50; $i++)<option value="{{ $i }}">{{ $i }}</option>@endfor</select></div>
+                            <div><label class="text-[11px] font-bold text-gray-500 uppercase tracking-wider">Status Pernikahan <span class="text-rose-500">*</span></label><select required name="marital_status" id="f_marital" class="w-full mt-1 px-3 py-2 bg-gray-50 border-none rounded-lg text-sm">@foreach(['Belum Kawin', 'Kawin', 'Janda', 'Duda'] as $status)<option value="{{ $status }}">{{ $status }}</option>@endforeach</select></div>
+                            <div><label class="text-[11px] font-bold text-gray-500 uppercase tracking-wider">Ukuran Baju <span class="text-rose-500">*</span></label><select required name="clothing_size" id="f_cloth" class="w-full mt-1 px-3 py-2 bg-gray-50 border-none rounded-lg text-sm">@foreach(['XS', 'S', 'M', 'L', 'XL', 'XXL', 'XXXL', '4XL', '5XL'] as $size)<option value="{{ $size }}">{{ $size }}</option>@endforeach</select></div>
+                            <div><label class="text-[11px] font-bold text-gray-500 uppercase tracking-wider">Ukuran Sepatu <span class="text-rose-500">*</span></label><select required name="shoe_size" id="f_shoe" class="w-full mt-1 px-3 py-2 bg-gray-50 border-none rounded-lg text-sm">@for($i=35; $i<=50; $i++)<option value="{{ $i }}">{{ $i }}</option>@endfor</select></div>
                         </div>
                     </div>
 
@@ -147,30 +148,30 @@
                         <h3 class="text-sm font-bold uppercase tracking-widest text-indigo-600 mb-6">Alamat KTP</h3>
                         <div class="grid grid-cols-2 md:grid-cols-4 gap-6 text-sm">
                             <div>
-                                <label class="text-[11px] font-bold text-gray-500 uppercase tracking-wider">Provinsi</label>
+                                <label class="text-[11px] font-bold text-gray-500 uppercase tracking-wider">Provinsi <span class="text-rose-500">*</span></label>
                                 <select required name="province_ktp" id="f_ktp_prov" data-selected="{{ $user->province_ktp ?? '' }}" class="w-full px-4 py-2 bg-gray-50 border-none rounded-lg text-sm">
                                     <option value="" disabled selected>Pilih Provinsi</option>
                                 </select>
                             </div>
                             <div>
-                                <label class="text-[11px] font-bold text-gray-500 uppercase tracking-wider">Kabupaten</label>
+                                <label class="text-[11px] font-bold text-gray-500 uppercase tracking-wider">Kabupaten <span class="text-rose-500">*</span></label>
                                 <select required name="regency_ktp" id="f_ktp_reg" data-selected="{{ $user->regency_ktp ?? '' }}" class="w-full px-4 py-2 bg-gray-50 border-none rounded-lg text-sm" disabled>
                                     <option value="" disabled selected>Pilih Kabupaten</option>
                                 </select>
                             </div>
                             <div>
-                                <label class="text-[11px] font-bold text-gray-500 uppercase tracking-wider">Kecamatan</label>
+                                <label class="text-[11px] font-bold text-gray-500 uppercase tracking-wider">Kecamatan <span class="text-rose-500">*</span></label>
                                 <select required name="district_ktp" id="f_ktp_dist" data-selected="{{ $user->district_ktp ?? '' }}" class="w-full px-4 py-2 bg-gray-50 border-none rounded-lg text-sm" disabled>
                                     <option value="" disabled selected>Pilih Kecamatan</option>
                                 </select>
                             </div>
                             <div>
-                                <label class="text-[11px] font-bold text-gray-500 uppercase tracking-wider">Desa/Kelurahan</label>
+                                <label class="text-[11px] font-bold text-gray-500 uppercase tracking-wider">Desa/Kelurahan <span class="text-rose-500">*</span></label>
                                 <select required name="village_ktp" id="f_ktp_vill" data-selected="{{ $user->village_ktp ?? '' }}" class="w-full px-4 py-2 bg-gray-50 border-none rounded-lg text-sm" disabled>
                                     <option value="" disabled selected>Pilih Desa/Kelurahan</option>
                                 </select>
                             </div>
-                            <div class="md:col-span-4"><label class="text-[11px] font-bold text-gray-500 uppercase tracking-wider">Alamat Jalan/Rumah</label><textarea required name="address_ktp" id="f_ktp_address" rows="2" class="w-full mt-1 px-4 py-2 bg-gray-50 border-none rounded-lg text-sm">{{ $user->address_ktp ?? '' }}</textarea></div>
+                            <div class="md:col-span-4"><label class="text-[11px] font-bold text-gray-500 uppercase tracking-wider">Alamat Jalan/Rumah <span class="text-rose-500">*</span></label><textarea required name="address_ktp" id="f_ktp_address" rows="2" class="w-full mt-1 px-4 py-2 bg-gray-50 border-none rounded-lg text-sm">{{ $user->address_ktp ?? '' }}</textarea></div>
                         </div>
                     </div>
 
@@ -187,33 +188,33 @@
                             <div class="space-y-6">
                                 <div class="grid grid-cols-2 gap-4">
                                     <div>
-                                        <label class="text-[11px] font-bold text-gray-500 uppercase tracking-wider">Provinsi</label>
+                                        <label class="text-[11px] font-bold text-gray-500 uppercase tracking-wider">Provinsi <span class="text-rose-500">*</span></label>
                                         <select required name="province_domicile" id="f_dom_prov" data-selected="{{ $user->province_domicile ?? '' }}" class="w-full px-4 py-2 bg-gray-50 border-none rounded-lg text-sm">
                                             <option value="" disabled selected>Pilih Provinsi</option>
                                         </select>
                                     </div>
                                     <div>
-                                        <label class="text-[11px] font-bold text-gray-500 uppercase tracking-wider">Kabupaten</label>
+                                        <label class="text-[11px] font-bold text-gray-500 uppercase tracking-wider">Kabupaten <span class="text-rose-500">*</span></label>
                                         <select required name="regency_domicile" id="f_dom_reg" data-selected="{{ $user->regency_domicile ?? '' }}" class="w-full px-4 py-2 bg-gray-50 border-none rounded-lg text-sm" disabled>
                                             <option value="" disabled selected>Pilih Kabupaten</option>
                                         </select>
                                     </div>
                                     <div>
-                                        <label class="text-[11px] font-bold text-gray-500 uppercase tracking-wider">Kecamatan</label>
+                                        <label class="text-[11px] font-bold text-gray-500 uppercase tracking-wider">Kecamatan <span class="text-rose-500">*</span></label>
                                         <select required name="district_domicile" id="f_dom_dist" data-selected="{{ $user->district_domicile ?? '' }}" class="w-full px-4 py-2 bg-gray-50 border-none rounded-lg text-sm" disabled>
                                             <option value="" disabled selected>Pilih Kecamatan</option>
                                         </select>
                                     </div>
                                     <div>
-                                        <label class="text-[11px] font-bold text-gray-500 uppercase tracking-wider">Desa/Kelurahan</label>
+                                        <label class="text-[11px] font-bold text-gray-500 uppercase tracking-wider">Desa/Kelurahan <span class="text-rose-500">*</span></label>
                                         <select required name="village_domicile" id="f_dom_vill" data-selected="{{ $user->village_domicile ?? '' }}" class="w-full px-4 py-2 bg-gray-50 border-none rounded-lg text-sm" disabled>
                                             <option value="" disabled selected>Pilih Desa/Kelurahan</option>
                                         </select>
                                     </div>
                                 </div>
-                                <div><label class="text-[11px] font-bold text-gray-500 uppercase tracking-wider">Alamat Jalan/Rumah</label><textarea required name="address_domicile" id="f_dom_address" rows="2" class="w-full mt-1 px-4 py-2 bg-gray-50 border-none rounded-lg text-sm focus:ring-2 focus:ring-indigo-500"></textarea></div>
+                                <div><label class="text-[11px] font-bold text-gray-500 uppercase tracking-wider">Alamat Jalan/Rumah <span class="text-rose-500">*</span></label><textarea required name="address_domicile" id="f_dom_address" rows="2" class="w-full mt-1 px-4 py-2 bg-gray-50 border-none rounded-lg text-sm focus:ring-2 focus:ring-indigo-500"></textarea></div>
                                 <div>
-                                    <label class="text-[11px] font-bold text-gray-500 uppercase tracking-wider">Koordinat GPS (Klik Pada Peta)</label>
+                                    <label class="text-[11px] font-bold text-gray-500 uppercase tracking-wider">Koordinat GPS (Klik Pada Peta) <span class="text-rose-500">*</span></label>
                                     <div class="flex gap-2 mt-2 text-nowrap">
                                         <input required type="text" id="f_dom_lat" name="latitude_gps_domicile" readonly class="w-1/2 px-4 py-2.5 bg-gray-50 border-none rounded-lg text-sm input-disabled">
                                         <input required type="text" id="f_dom_lng" name="longitude_gps_domicile" readonly class="w-1/2 px-4 py-2.5 bg-gray-50 border-none rounded-lg text-sm input-disabled">
@@ -228,9 +229,9 @@
                     <div class="pt-10 border-t border-gray-100">
                         <h3 class="text-sm font-bold uppercase tracking-widest text-indigo-600 mb-6">Informasi Payroll</h3>
                         <div class="grid grid-cols-1 md:grid-cols-3 gap-8 text-sm">
-                            <div><label class="text-[11px] font-bold text-gray-500 uppercase tracking-wider">Nama Bank</label><select required name="payroll_bank_name" id="f_bank_name" class="w-full px-4 py-2 bg-gray-50 border-none rounded-lg text-sm">@foreach(['BNI', 'Mandiri', 'BCA', 'BTN', 'BSI', 'BPD Bali'] as $bank)<option value="{{ $bank }}">{{ $bank }}</option>@endforeach</select></div>
-                            <div><label class="text-[11px] font-bold text-gray-500 uppercase tracking-wider">Nomor Rekening</label><input required type="number" name="payroll_bank_account_number" id="f_bank_acc" class="w-full px-4 py-2 bg-gray-50 border-none rounded-lg text-sm"></div>
-                            <div><label class="text-[11px] font-bold text-gray-500 uppercase tracking-wider">Nama Pemilik Rekening</label><input required type="text" name="payroll_bank_account_name" id="f_bank_owner" class="w-full px-4 py-2 bg-gray-50 border-none rounded-lg text-sm"></div>
+                            <div><label class="text-[11px] font-bold text-gray-500 uppercase tracking-wider">Nama Bank <span class="text-rose-500">*</span></label><select required name="payroll_bank_name" id="f_bank_name" class="w-full px-4 py-2 bg-gray-50 border-none rounded-lg text-sm">@foreach(['BNI', 'Mandiri', 'BCA', 'BTN', 'BSI', 'BPD Bali'] as $bank)<option value="{{ $bank }}">{{ $bank }}</option>@endforeach</select></div>
+                            <div><label class="text-[11px] font-bold text-gray-500 uppercase tracking-wider">Nomor Rekening <span class="text-rose-500">*</span></label><input required type="number" name="payroll_bank_account_number" id="f_bank_acc" class="w-full px-4 py-2 bg-gray-50 border-none rounded-lg text-sm"></div>
+                            <div><label class="text-[11px] font-bold text-gray-500 uppercase tracking-wider">Nama Pemilik Rekening <span class="text-rose-500">*</span></label><input required type="text" name="payroll_bank_account_name" id="f_bank_owner" class="w-full px-4 py-2 bg-gray-50 border-none rounded-lg text-sm"></div>
                         </div>
                     </div>
 
@@ -263,7 +264,7 @@
         </div>
     </div>
 
-<script>
+    <script>
         document.addEventListener('DOMContentLoaded', function() {
             const apiBase = "/api-wilayah";
             const sleep = (ms) => new Promise(resolve => setTimeout(resolve, ms));
@@ -705,20 +706,21 @@
         }
 
         // JS LOGIC UNTUK VALIDASI PENUGASAN
-        const editPositionsMeta = @json($positions->pluck('slug_position', 'id_ref_position') ?? []);
+        const editPosMetaDataEl = document.getElementById('edit-positions-meta-data');
+        const editPositionsMeta = editPosMetaDataEl ? JSON.parse(editPosMetaDataEl.value) : {};
         const currentPersonId = () => window.currentEditingPersonId;
 
         // ── FILTER & DISABLE OPSI UNIT PENUGASAN BERDASARKAN JABATAN (modal-edit) ──
         function updateEditWaOptions() {
-            const posEl  = document.getElementById('f_pos');
+            const posEl = document.getElementById('f_pos');
             const waDropdownWrapper = document.getElementById('wa-dropdown-wrapper');
             const unitDropdownWrapper = document.getElementById('unit-dropdown-wrapper');
-            const waEl   = document.getElementById('f_wa');
+            const waEl = document.getElementById('f_wa');
             const unitVolEl = document.getElementById('f_unit_volunteer');
-            const note   = document.getElementById('f-wa-occupied-note');
+            const note = document.getElementById('f-wa-occupied-note');
 
             const selectedPosId = posEl?.value;
-            const posSlug       = editPositionsMeta[selectedPosId] ?? '';
+            const posSlug = editPositionsMeta[selectedPosId] ?? '';
 
             // Toggle logic between Work Assignment (core) and Sppg Unit (volunteer)
             const corePositionSlugs = ['kasppg', 'ag', 'ak', 'korwil', 'sppi', 'korcam', 'kasppg-pengganti'];
@@ -728,7 +730,10 @@
                 // Show volunteer unit dropdown, hide work assignment dropdown
                 if (waDropdownWrapper) waDropdownWrapper.classList.add('hidden');
                 if (unitDropdownWrapper) unitDropdownWrapper.classList.remove('hidden');
-                if (waEl) { waEl.disabled = true; waEl.value = 'none'; }
+                if (waEl) {
+                    waEl.disabled = true;
+                    waEl.value = 'none';
+                }
                 if (unitVolEl) unitVolEl.disabled = false;
                 if (note) note.classList.add('hidden');
                 // Ensure "none" option is always visible for unitVolEl if it exists
@@ -744,14 +749,21 @@
                 if (waDropdownWrapper) waDropdownWrapper.classList.remove('hidden');
                 if (unitDropdownWrapper) unitDropdownWrapper.classList.add('hidden');
                 if (waEl) waEl.disabled = false;
-                if (unitVolEl) { unitVolEl.disabled = true; unitVolEl.value = 'none'; }
+                if (unitVolEl) {
+                    unitVolEl.disabled = true;
+                    unitVolEl.value = 'none';
+                }
             }
 
             // Occupancy logic for work assignments
-            const unitRoles  = ['kasppg', 'ag', 'ak'];
-            const slugToAttr = { kasppg: 'leader', ag: 'nutritionist', ak: 'accountant' };
+            const unitRoles = ['kasppg', 'ag', 'ak'];
+            const slugToAttr = {
+                kasppg: 'leader',
+                ag: 'nutritionist',
+                ak: 'accountant'
+            };
             const isUnitRole = posSlug && unitRoles.includes(posSlug);
-            const attrKey    = isUnitRole ? slugToAttr[posSlug] : null;
+            const attrKey = isUnitRole ? slugToAttr[posSlug] : null;
 
             const waOptions = waEl?.querySelectorAll('option[data-pos]') ?? [];
             let anyDisabled = false;
@@ -761,11 +773,11 @@
 
                 // 1. Filter based on Position ID
                 if (waPosId && selectedPosId && waPosId !== selectedPosId) {
-                    opt.hidden   = true;
+                    opt.hidden = true;
                     opt.disabled = true;
                     opt.style.color = '#9ca3af';
                 } else if (!selectedPosId || selectedPosId === 'none') {
-                    opt.hidden   = true;
+                    opt.hidden = true;
                     opt.disabled = true;
                     opt.style.color = '#9ca3af';
                 } else {
@@ -777,12 +789,12 @@
                         if (occupantId && occupantId !== '' && String(occupantId) !== String(currentPersonId())) {
                             opt.disabled = true;
                             opt.style.color = '#9ca3af';
-                            opt.title    = 'Sudah ditetapkan';
-                            anyDisabled  = true;
+                            opt.title = 'Sudah ditetapkan';
+                            anyDisabled = true;
                         } else {
                             opt.disabled = false;
                             opt.style.color = '';
-                            opt.title    = '';
+                            opt.title = '';
                         }
                     } else {
                         opt.disabled = false;
@@ -821,4 +833,4 @@
             }
             document.getElementById('f_age').value = age;
         });
-</script>
+    </script>

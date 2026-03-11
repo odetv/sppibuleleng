@@ -153,6 +153,8 @@ Route::middleware(['auth', 'role:administrator', 'profile.completed'])->prefix('
         Route::get('/template', [App\Http\Controllers\Admin\SupplierController::class, 'exportTemplate'])->name('template');
         Route::get('/check-availability', [App\Http\Controllers\Admin\SupplierController::class, 'checkAvailability'])->name('check-availability');
         Route::post('/import', [App\Http\Controllers\Admin\SupplierController::class, 'importSupplier'])->name('import');
+        Route::post('/batch-link-to-sppg', [App\Http\Controllers\Admin\SupplierController::class, 'batchLinkToSppg'])->name('batch-link-to-sppg');
+        Route::post('/unlink-from-sppg', [App\Http\Controllers\Admin\SupplierController::class, 'unlinkFromSppg'])->name('unlink-from-sppg');
     });
 
     // Manajemen PM (Penerima Manfaat)

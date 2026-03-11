@@ -99,11 +99,10 @@
                                 <option value="Swasta">Swasta</option>
                             </select>
                         </div>
-                        <div class="md:col-span-1">
-                            <label class="text-[11px] font-bold text-gray-500 uppercase tracking-wider">SPPG Unit</label>
-                            <select name="id_sppg_unit" class="w-full mt-2 px-3 py-2.5 bg-gray-50 border-none rounded-lg text-sm focus:ring-2 focus:ring-indigo-500 outline-none transition-all">
-                                <option value="" disabled selected>Hubungkan ke Unit</option>
-                                <option value="">Belum Diberikan</option>
+                        <div>
+                            <label class="text-[11px] font-bold text-gray-500 uppercase tracking-wider">Unit SPPG <span class="text-rose-500">*</span></label>
+                            <select name="id_sppg_unit" required class="w-full mt-2 px-3 py-2.5 bg-gray-50 border-none rounded-lg text-sm focus:ring-2 focus:ring-indigo-500">
+                                <option value="" disabled selected>Pilih Unit SPPG</option>
                                 @foreach($sppgUnits as $unit)
                                     <option value="{{ $unit->id_sppg_unit }}">{{ $unit->name }} ({{ $unit->id_sppg_unit }})</option>
                                 @endforeach
@@ -209,35 +208,35 @@
                     
                     <div class="grid grid-cols-2 md:grid-cols-4 gap-6">
                         <div>
-                            <label class="text-[11px] font-bold text-gray-500 uppercase tracking-wider">Porsi Kecil (L)</label>
-                            <input type="number" name="small_portion_male" min="0" value="0" class="w-full mt-2 px-4 py-2.5 bg-gray-50 border-none rounded-lg text-sm focus:ring-2 focus:ring-indigo-500 outline-none transition-all" placeholder="0">
+                            <label class="text-[11px] font-bold text-gray-500 uppercase tracking-wider">Porsi Kecil (L) <span class="text-rose-500">*</span></label>
+                            <input type="number" name="small_portion_male" min="0" value="0" required class="w-full mt-2 px-4 py-2.5 bg-gray-50 border-none rounded-lg text-sm focus:ring-2 focus:ring-indigo-500 outline-none transition-all" placeholder="0">
                         </div>
                         <div>
-                            <label class="text-[11px] font-bold text-gray-500 uppercase tracking-wider">Porsi Kecil (P)</label>
-                            <input type="number" name="small_portion_female" min="0" value="0" class="w-full mt-2 px-4 py-2.5 bg-gray-50 border-none rounded-lg text-sm focus:ring-2 focus:ring-indigo-500 outline-none transition-all" placeholder="0">
+                            <label class="text-[11px] font-bold text-gray-500 uppercase tracking-wider">Porsi Kecil (P) <span class="text-rose-500">*</span></label>
+                            <input type="number" name="small_portion_female" min="0" value="0" required class="w-full mt-2 px-4 py-2.5 bg-gray-50 border-none rounded-lg text-sm focus:ring-2 focus:ring-indigo-500 outline-none transition-all" placeholder="0">
                         </div>
                         <div>
-                            <label class="text-[11px] font-bold text-gray-500 uppercase tracking-wider">Porsi Besar (L)</label>
-                            <input type="number" name="large_portion_male" min="0" value="0" class="w-full mt-2 px-4 py-2.5 bg-gray-50 border-none rounded-lg text-sm focus:ring-2 focus:ring-indigo-500 outline-none transition-all" placeholder="0">
+                            <label class="text-[11px] font-bold text-gray-500 uppercase tracking-wider">Porsi Besar (L) <span class="text-rose-500">*</span></label>
+                            <input type="number" name="large_portion_male" min="0" value="0" required class="w-full mt-2 px-4 py-2.5 bg-gray-50 border-none rounded-lg text-sm focus:ring-2 focus:ring-indigo-500 outline-none transition-all" placeholder="0">
                         </div>
                         <div>
-                            <label class="text-[11px] font-bold text-gray-500 uppercase tracking-wider">Porsi Besar (P)</label>
-                            <input type="number" name="large_portion_female" min="0" value="0" class="w-full mt-2 px-4 py-2.5 bg-gray-50 border-none rounded-lg text-sm focus:ring-2 focus:ring-indigo-500 outline-none transition-all" placeholder="0">
+                            <label class="text-[11px] font-bold text-gray-500 uppercase tracking-wider">Porsi Besar (P) <span class="text-rose-500">*</span></label>
+                            <input type="number" name="large_portion_female" min="0" value="0" required class="w-full mt-2 px-4 py-2.5 bg-gray-50 border-none rounded-lg text-sm focus:ring-2 focus:ring-indigo-500 outline-none transition-all" placeholder="0">
                         </div>
                     </div>
 
                     <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mt-6">
                         <div>
-                            <label class="text-[11px] font-bold text-gray-500 uppercase tracking-wider">Guru</label>
-                            <input type="number" name="teacher_portion" min="0" value="0" class="w-full mt-2 px-4 py-2.5 bg-gray-50 border-none rounded-lg text-sm focus:ring-2 focus:ring-indigo-500 outline-none transition-all" placeholder="0">
+                            <label class="text-[11px] font-bold text-gray-500 uppercase tracking-wider">Guru <span class="text-rose-500">*</span></label>
+                            <input type="number" name="teacher_portion" min="0" value="0" required class="w-full mt-2 px-4 py-2.5 bg-gray-50 border-none rounded-lg text-sm focus:ring-2 focus:ring-indigo-500 outline-none transition-all" placeholder="0">
                         </div>
                         <div>
-                            <label class="text-[11px] font-bold text-gray-500 uppercase tracking-wider">Staff</label>
-                            <input type="number" name="staff_portion" min="0" value="0" class="w-full mt-2 px-4 py-2.5 bg-gray-50 border-none rounded-lg text-sm focus:ring-2 focus:ring-indigo-500 outline-none transition-all" placeholder="0">
+                            <label class="text-[11px] font-bold text-gray-500 uppercase tracking-wider">Staff <span class="text-rose-500">*</span></label>
+                            <input type="number" name="staff_portion" min="0" value="0" required class="w-full mt-2 px-4 py-2.5 bg-gray-50 border-none rounded-lg text-sm focus:ring-2 focus:ring-indigo-500 outline-none transition-all" placeholder="0">
                         </div>
                         <div>
-                            <label class="text-[11px] font-bold text-gray-500 uppercase tracking-wider">Kader</label>
-                            <input type="number" name="cadre_portion" min="0" value="0" class="w-full mt-2 px-4 py-2.5 bg-gray-50 border-none rounded-lg text-sm focus:ring-2 focus:ring-indigo-500 outline-none transition-all" placeholder="0">
+                            <label class="text-[11px] font-bold text-gray-500 uppercase tracking-wider">Kader <span class="text-rose-500">*</span></label>
+                            <input type="number" name="cadre_portion" min="0" value="0" required class="w-full mt-2 px-4 py-2.5 bg-gray-50 border-none rounded-lg text-sm focus:ring-2 focus:ring-indigo-500 outline-none transition-all" placeholder="0">
                         </div>
                     </div>
                 </div>

@@ -22,7 +22,7 @@
         }
 
         /* Style Peta Sesuai Mekanisme Referensi */
-        #map-create {
+        #map-create, #map-edit {
             height: 350px;
             width: 100%;
             border-radius: 0.75rem;
@@ -69,6 +69,7 @@
         x-data="{ 
             showCreateModal: false, 
             showEditModal: false,
+            showCreateSupplierModal: false,
             showCreateBeneficiaryModal: false,
             showEditBeneficiaryModal: false,
             showUnlinkModal: false,
@@ -76,6 +77,7 @@
             selectedUnit: { beneficiaries: [], suppliers: [] },
             selectedPM: {},
             allBeneficiaryList: {{ json_encode($allBeneficiaries) }},
+            allSupplierList: {{ json_encode($allSuppliers) }},
             
             // PM Management Shared State
             stagedBeneficiaries: [],
@@ -185,9 +187,128 @@
                     this.showUnlinkModal = false;
                     this.beneficiaryToUnlink = null;
                 }
+            },
+
+            // Supplier Management Shared State
+            stagedSuppliers: [],
+            isLinkingSupplier: false,
+            supplierSearchTerm: '',
+            get filteredAllSuppliers() {
+                if (!this.supplierSearchTerm) return [];
+                const lower = this.supplierSearchTerm.toLowerCase();
+                return this.allSupplierList.filter(s => 
+                    (s.name_supplier.toLowerCase().includes(lower)) &&
+                    !this.selectedUnit.suppliers.find(us => us.id_supplier === s.id_supplier) &&
+                    !this.stagedSuppliers.find(st => st.id_supplier === s.id_supplier)
+                ).slice(0, 5);
+            },
+            addStagedSupplier(supplier) {
+                this.stagedSuppliers.push(supplier);
+                this.supplierSearchTerm = '';
+            },
+            removeStagedSupplier(supplierId) {
+                this.stagedSuppliers = this.stagedSuppliers.filter(s => s.id_supplier !== supplierId);
+            },
+            async linkStagedSuppliers() {
+                if (this.stagedSuppliers.length === 0) return;
+                
+                if (this.showEditModal) {
+                    this.isLinkingSupplier = true;
+                    const idsToLink = this.stagedSuppliers.map(s => s.id_supplier);
+                    try {
+                        const resp = await fetch('{{ route("admin.manage-supplier.batch-link-to-sppg") }}', {
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/json',
+                                'X-CSRF-TOKEN': '{{ csrf_token() }}',
+                                'X-Requested-With': 'XMLHttpRequest',
+                                'Accept': 'application/json'
+                            },
+                            body: JSON.stringify({ 
+                                id_supplier_list: idsToLink, 
+                                id_sppg_unit: this.selectedUnit.id_sppg_unit 
+                            })
+                        });
+                        const data = await resp.json();
+                        if (resp.ok) {
+                            this.selectedUnit.suppliers = data.unit_suppliers;
+                            this.stagedSuppliers = [];
+                            this.supplierSearchTerm = '';
+                        } else {
+                            alert('Gagal menautkan supplier: ' + (data.errors ? JSON.stringify(data.errors) : 'Unknown error'));
+                        }
+                    } catch (err) {
+                        console.error(err);
+                        alert('Gagal menyambung ke server');
+                    } finally {
+                        this.isLinkingSupplier = false;
+                    }
+                } else {
+                    this.selectedUnit.suppliers.push(...this.stagedSuppliers);
+                    this.stagedSuppliers = [];
+                    this.supplierSearchTerm = '';
+                }
+            },
+            async unlinkSupplier(supplier) {
+                if (!confirm(`Yakin ingin melepas tautan supplier '${supplier.name_supplier}'?`)) return;
+                
+                if (this.showEditModal) {
+                    try {
+                        const resp = await fetch('{{ route("admin.manage-supplier.unlink-from-sppg") }}', {
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/json',
+                                'X-CSRF-TOKEN': '{{ csrf_token() }}',
+                                'X-Requested-With': 'XMLHttpRequest',
+                                'Accept': 'application/json'
+                            },
+                            body: JSON.stringify({ 
+                                id_supplier: supplier.id_supplier, 
+                                id_sppg_unit: this.selectedUnit.id_sppg_unit 
+                            })
+                        });
+                        const data = await resp.json();
+                        if (resp.ok) {
+                            this.selectedUnit.suppliers = data.unit_suppliers;
+                        } else {
+                            alert('Gagal melepas tautan: ' + (data.errors ? JSON.stringify(data.errors) : 'Unknown error'));
+                        }
+                    } catch (err) {
+                        console.error(err);
+                        alert('Terjadi kesalahan jaringan');
+                    }
+                } else {
+                    this.selectedUnit.suppliers = this.selectedUnit.suppliers.filter(s => s.id_supplier != supplier.id_supplier);
+                }
+            },
+
+            handleSupplierCreated(detail) {
+                const supplier = detail.supplier;
+                // Add to global list if not exists
+                if (!this.allSupplierList.find(s => s.id_supplier === supplier.id_supplier)) {
+                    this.allSupplierList.push(supplier);
+                }
+                // Automatically link to current unit
+                if (!this.selectedUnit.suppliers.find(s => s.id_supplier === supplier.id_supplier)) {
+                    this.selectedUnit.suppliers.push(supplier);
+                }
+                this.showCreateSupplierModal = false;
+                
+                Swal.fire({
+                    icon: 'success',
+                    title: 'Berhasil',
+                    text: 'Supplier baru berhasil ditambahkan dan dihubungkan.',
+                    toast: true,
+                    position: 'top-end',
+                    showConfirmButton: false,
+                    timer: 3000
+                });
             }
         }"
-        @open-unlink-modal.window="unlinkBeneficiary($event.detail.beneficiary)">
+        @open-unlink-modal.window="unlinkBeneficiary($event.detail.beneficiary)"
+        @open-edit-sppg.window="openEditModal($event.detail)"
+        @supplier-created-integrated.window="handleSupplierCreated($event.detail)"
+        @open-create-supplier-modal.window="showCreateSupplierModal = true; $nextTick(() => { if(window.initSupplierWilayah) window.initSupplierWilayah(); })">
 
         <div class="max-w-full mx-auto space-y-6">
             {{-- 1. HEADER SECTION --}}
@@ -195,7 +316,7 @@
                 <div class="p-6 md:p-8 flex flex-col md:flex-row justify-between gap-4">
                     <div>
                         <h2 class="text-xl font-bold text-slate-800 uppercase leading-tight">Manajemen SPPG</h2>
-                        <p class="text-sm text-slate-400 font-medium mt-1">Manajemen Satuan Pelayanan Pemenuhan Gizi terdaftar</p>
+                        <p class="text-sm text-slate-400 font-medium mt-1">Manajemen SPPG (Satuan Pelayanan Pemenuhan Gizi) terdaftar</p>
                     </div>
                     <div class="flex items-center">
                         <span class="inline-flex items-center px-4 py-2 text-[10px] font-bold rounded bg-white text-slate-600 uppercase border border-slate-200 tracking-widest shadow-sm">
@@ -213,13 +334,14 @@
             <div class="bg-white rounded-xl border border-slate-200 overflow-hidden shadow-sm">
                 <div class="p-6 border-b border-slate-100 bg-slate-50/50 flex flex-col md:flex-row md:justify-between md:items-center gap-4">
                     <h3 class="font-bold text-slate-700 uppercase tracking-wider text-[14px]">Daftar Seluruh SPPG</h3>
-                    <div class="flex flex-wrap items-center gap-3">
-                        {{-- Tombol Export --}}
+                    <div class="flex flex-col md:flex-row items-stretch md:items-center gap-4">
+                        <div class="flex items-center gap-2 overflow-x-auto pb-1 md:pb-0 hide-scrollbar shrink-0">
+                            {{-- Tombol Export --}}
                             <button type="button" onclick="openExportModal()" class="flex items-center justify-center p-2.5 md:px-4 text-[11px] font-bold uppercase tracking-wider text-emerald-600 bg-white border border-emerald-200 rounded-lg hover:bg-emerald-600 hover:text-white transition-all cursor-pointer shadow-sm">
                                 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="w-4 h-4">
                                     <path fill-rule="evenodd" d="M12 2.25a.75.75 0 0 1 .75.75v11.69l3.22-3.22a.75.75 0 1 1 1.06 1.06l-4.5 4.5a.75.75 0 0 1-1.06 0l-4.5-4.5a.75.75 0 1 1 1.06-1.06l3.22 3.22V3a.75.75 0 0 1 .75-.75Zm-9 13.5a.75.75 0 0 1 .75.75v2.25a1.5 1.5 0 0 0 1.5 1.5h13.5a1.5 1.5 0 0 0 1.5-1.5V16.5a.75.75 0 0 1 1.5 0v2.25a3 3 0 0 1-3 3H5.25a3 3 0 0 1-3-3V16.5a.75.75 0 0 1 .75-.75Z" clip-rule="evenodd" />
                                 </svg>
-                                <span class="hidden md:inline ml-2">Export</span>
+                                <span class="hidden sm:inline ml-2 text-nowrap">Export</span>
                             </button>
 
                             {{-- Tombol Import --}}
@@ -227,37 +349,40 @@
                                 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="w-4 h-4">
                                     <path fill-rule="evenodd" d="M11.47 2.47a.75.75 0 0 1 1.06 0l4.5 4.5a.75.75 0 1 1-1.06 1.06l-3.22-3.22V16.5a.75.75 0 0 1-1.5 0V4.81L8.03 8.03a.75.75 0 0 1-1.06-1.06l4.5-4.5ZM3 15.75a.75.75 0 0 1 .75.75v2.25a1.5 1.5 0 0 0 1.5 1.5h13.5a1.5 1.5 0 0 0 1.5-1.5V16.5a.75.75 0 0 1 1.5 0v2.25a3 3 0 0 1-3 3H5.25a3 3 0 0 1-3-3V16.5a.75.75 0 0 1 .75-.75Z" clip-rule="evenodd" />
                                 </svg>
-                                <span class="hidden md:inline ml-2">Import</span>
+                                <span class="hidden sm:inline ml-2 text-nowrap">Import</span>
                             </button>
 
                             {{-- Tombol Tambah --}}
                             <button @click="selectedUnit = { beneficiaries: [], suppliers: [] }; stagedBeneficiaries = []; searchTerm = ''; showCreateModal = true" class="flex items-center justify-center p-2.5 md:px-4 text-[11px] font-bold uppercase tracking-wider text-indigo-600 bg-white border border-indigo-200 rounded-lg hover:bg-indigo-600 hover:text-white transition-all cursor-pointer shadow-sm">
                                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
-                    </svg>
-                                <span class="hidden md:inline ml-2 text-nowrap">Tambah</span>
-                            </button>
-
-                        {{-- Search Input (Live Search) --}}
-                        <div class="relative flex-grow md:flex-initial md:w-64 text-slate-800">
-                            <span class="absolute inset-y-0 left-0 flex items-center pl-3 text-slate-400">
-                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
                                 </svg>
-                            </span>
-                            <input type="text"
-                                id="sppg-search"
-                                data-table="sppg"
-                                class="live-search-input text-xs border-slate-200 rounded-lg pl-9 pr-3 py-2.5 w-full focus:ring-2 focus:ring-indigo-500 outline-none transition-all bg-white shadow-sm"
-                                placeholder="Cari ID, kode, atau nama..." value="{{ request('search') }}"
-                                autocomplete="off">
+                                <span class="hidden sm:inline ml-2 text-nowrap">Tambah</span>
+                            </button>
                         </div>
 
-                        <button type="button" onclick="resetFilters()" class="flex items-center justify-center p-2.5 text-rose-500 bg-white border border-rose-100 rounded-lg hover:bg-rose-50 transition-all cursor-pointer shadow-sm" title="Reset Filter">
-                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
-                            </svg>
-                        </button>
+                        <div class="flex items-center gap-2">
+                            {{-- Search Input (Live Search) --}}
+                            <div class="relative grow md:w-72 lg:w-80 text-slate-800">
+                                <span class="absolute inset-y-0 left-0 flex items-center pl-3 text-slate-400">
+                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                                    </svg>
+                                </span>
+                                <input type="text"
+                                    id="sppg-search"
+                                    data-table="sppg"
+                                    class="live-search-input text-xs border-slate-200 rounded-lg pl-9 pr-3 py-2.5 w-full focus:ring-2 focus:ring-indigo-500 outline-none transition-all bg-white shadow-sm"
+                                    placeholder="Cari ID, kode, atau nama..." value="{{ request('search') }}"
+                                    autocomplete="off">
+                            </div>
+
+                            <button type="button" onclick="resetFilters()" class="flex items-center justify-center p-2.5 text-rose-500 bg-white border border-rose-100 rounded-lg hover:bg-rose-50 transition-all cursor-pointer shadow-sm shrink-0" title="Reset Filter">
+                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+                                </svg>
+                            </button>
+                        </div>
                     </div>
                 </div>
 
@@ -279,9 +404,9 @@
                             <option value="">Semua SK</option>
                             <option value="none" {{ request('id_assignment_decree') === 'none' ? 'selected' : '' }}>Belum Ada SK</option>
                             @foreach($decrees->flatten() as $d)
-                                <option value="{{ $d->id_assignment_decree }}" {{ request('id_assignment_decree') == $d->id_assignment_decree ? 'selected' : '' }}>
-                                    {{ $d->no_sk }}
-                                </option>
+                            <option value="{{ $d->id_assignment_decree }}" {{ request('id_assignment_decree') == $d->id_assignment_decree ? 'selected' : '' }}>
+                                {{ $d->no_sk }}
+                            </option>
                             @endforeach
                         </select>
                     </div>
@@ -290,7 +415,7 @@
                         <select id="filter-province" class="filter-input w-full text-[11px] border-slate-200 rounded-lg py-1.5 focus:ring-1 focus:ring-indigo-500 bg-white">
                             <option value="">Semua Provinsi</option>
                             @foreach($filterData['provinces'] as $p)
-                                <option value="{{ $p }}" {{ request('province') === $p ? 'selected' : '' }}>{{ $p }}</option>
+                            <option value="{{ $p }}" {{ request('province') === $p ? 'selected' : '' }}>{{ $p }}</option>
                             @endforeach
                         </select>
                     </div>
@@ -299,7 +424,7 @@
                         <select id="filter-regency" {{ empty($filterData['regencies']) ? 'disabled' : '' }} class="filter-input w-full text-[11px] border-slate-200 rounded-lg py-1.5 focus:ring-1 focus:ring-indigo-500 bg-white disabled:bg-slate-100 disabled:text-slate-400">
                             <option value="">Semua Kabupaten/Kota</option>
                             @foreach($filterData['regencies'] as $r)
-                                <option value="{{ $r }}" {{ request('regency') === $r ? 'selected' : '' }}>{{ $r }}</option>
+                            <option value="{{ $r }}" {{ request('regency') === $r ? 'selected' : '' }}>{{ $r }}</option>
                             @endforeach
                         </select>
                     </div>
@@ -308,7 +433,7 @@
                         <select id="filter-district" {{ empty($filterData['districts']) ? 'disabled' : '' }} class="filter-input w-full text-[11px] border-slate-200 rounded-lg py-1.5 focus:ring-1 focus:ring-indigo-500 bg-white disabled:bg-slate-100 disabled:text-slate-400">
                             <option value="">Semua Kecamatan</option>
                             @foreach($filterData['districts'] as $d)
-                                <option value="{{ $d }}" {{ request('district') === $d ? 'selected' : '' }}>{{ $d }}</option>
+                            <option value="{{ $d }}" {{ request('district') === $d ? 'selected' : '' }}>{{ $d }}</option>
                             @endforeach
                         </select>
                     </div>
@@ -317,7 +442,7 @@
                         <select id="filter-village" {{ empty($filterData['villages']) ? 'disabled' : '' }} class="filter-input w-full text-[11px] border-slate-200 rounded-lg py-1.5 focus:ring-1 focus:ring-indigo-500 bg-white disabled:bg-slate-100 disabled:text-slate-400">
                             <option value="">Semua Desa/Kelurahan</option>
                             @foreach($filterData['villages'] as $v)
-                                <option value="{{ $v }}" {{ request('village') === $v ? 'selected' : '' }}>{{ $v }}</option>
+                            <option value="{{ $v }}" {{ request('village') === $v ? 'selected' : '' }}>{{ $v }}</option>
                             @endforeach
                         </select>
                     </div>
@@ -325,64 +450,64 @@
 
                 <div id="sppg-table-container">
                     <div class="overflow-x-auto scrollbar-thin">
-                    <table class="w-full text-left border-collapse text-sm">
-                        <thead>
-                            <tr class="bg-slate-50 text-[11px] font-bold uppercase tracking-wider text-slate-400 border-b border-slate-100">
-                                <th class="px-6 py-4">INFORMASI UNIT</th>
-                                <th class="px-6 py-4 text-center">KEPALA SPPG / TANGGAL OPS</th>
-                                <th class="px-6 py-4 text-center">SK</th>
-                                <th class="px-6 py-4">ALAMAT</th>
-                                <th class="px-6 py-4 text-center">TOTAL PORSI</th>
-                                <th class="px-6 py-4 text-center">STATUS</th>
-                                <th class="px-6 py-4 text-center">AKSI</th>
-                            </tr>
-                        </thead>
-                        <tbody class="divide-y divide-slate-100">
-                            @forelse($units as $unit)
-                            <tr class="hover:bg-slate-50/50 transition-colors group">
-                                {{-- INFORMASI UNIT --}}
-                                <td class="px-6 py-4">
-                                    <div class="flex items-center gap-4">
-                                        <div class="w-16 h-12 rounded-md bg-indigo-600 text-white flex justify-center items-center text-sm font-bold shadow-sm shrink-0 overflow-hidden">
-                                            @if($unit->photo)
-                                            <img src="{{ asset('storage/' . $unit->photo) }}" class="w-full h-full object-cover">
-                                            @else
-                                            <svg class="w-6 h-6 text-white/70" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
-                                            </svg>
-                                            @endif
-                                        </div>
-                                        <div>
-                                            <div class="font-bold text-slate-700 capitalize">{{ $unit->name }}</div>
-                                            <div class="text-xs text-slate-500 font-medium whitespace-nowrap">
-                                                ID: {{ $unit->id_sppg_unit }} <span class="mx-1">-</span> Kode: <span>{{ $unit->code_sppg_unit ?? '-' }}</span>
+                        <table class="w-full text-left border-collapse text-sm">
+                            <thead>
+                                <tr class="bg-slate-50 text-[11px] font-bold uppercase tracking-wider text-slate-400 border-b border-slate-100">
+                                    <th class="px-6 py-4">INFORMASI UNIT</th>
+                                    <th class="px-6 py-4 text-center">KEPALA SPPG / TANGGAL OPS</th>
+                                    <th class="px-6 py-4 text-center">SK</th>
+                                    <th class="px-6 py-4">ALAMAT</th>
+                                    <th class="px-6 py-4 text-center">TOTAL PORSI</th>
+                                    <th class="px-6 py-4 text-center">STATUS</th>
+                                    <th class="px-6 py-4 text-center">AKSI</th>
+                                </tr>
+                            </thead>
+                            <tbody class="divide-y divide-slate-100">
+                                @forelse($units as $unit)
+                                <tr class="hover:bg-slate-50/50 transition-colors group">
+                                    {{-- INFORMASI UNIT --}}
+                                    <td class="px-6 py-4">
+                                        <div class="flex items-center gap-4">
+                                            <div class="w-16 h-12 rounded-md bg-indigo-600 text-white flex justify-center items-center text-sm font-bold shadow-sm shrink-0 overflow-hidden">
+                                                @if($unit->photo)
+                                                <img src="{{ asset('storage/' . $unit->photo) }}" class="w-full h-full object-cover">
+                                                @else
+                                                <svg class="w-6 h-6 text-white/70" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
+                                                </svg>
+                                                @endif
+                                            </div>
+                                            <div>
+                                                <div class="font-bold text-slate-700 capitalize">{{ $unit->name }}</div>
+                                                <div class="text-xs text-slate-500 font-medium whitespace-nowrap">
+                                                    ID: {{ $unit->id_sppg_unit }} <span class="mx-1">-</span> Kode: <span>{{ $unit->code_sppg_unit ?? '-' }}</span>
+                                                </div>
                                             </div>
                                         </div>
-                                    </div>
-                                </td>
+                                    </td>
 
-                                {{-- KEPALA SPPG & TGL OPS --}}
-                                <td class="px-6 py-4 text-center">
-                                    <span class="text-slate-700 text-xs block capitalize font-bold">{{ $unit->leader->name ?? 'Belum Ditugaskan' }}</span>
-                                    <span class="text-xs text-slate-500 capitalize font-medium">{{ $unit->operational_date ? \Carbon\Carbon::parse($unit->operational_date)->translatedFormat('d F Y') : '-' }}</span>
-                                </td>
+                                    {{-- KEPALA SPPG & TGL OPS --}}
+                                    <td class="px-6 py-4 text-center">
+                                        <span class="text-slate-700 text-xs block capitalize font-bold">{{ $unit->leader->name ?? 'Belum Ditugaskan' }}</span>
+                                        <span class="text-xs text-slate-500 capitalize font-medium">{{ $unit->operational_date ? \Carbon\Carbon::parse($unit->operational_date)->translatedFormat('d F Y') : '-' }}</span>
+                                    </td>
 
-                                {{-- SK INFO --}}
-                                <td class="px-6 py-4 text-center">
-                                    <div class="flex flex-col items-center gap-1.5 grayscale opacity-90 hover:grayscale-0 hover:opacity-100 transition-all">
-                                        {{-- 1. Kepala SPPG --}}
-                                        @php
+                                    {{-- SK INFO --}}
+                                    <td class="px-6 py-4 text-center">
+                                        <div class="flex flex-col items-center gap-1.5 grayscale opacity-90 hover:grayscale-0 hover:opacity-100 transition-all">
+                                            {{-- 1. Kepala SPPG --}}
+                                            @php
                                             $unitDecrees = $assignedDecreeMap[$unit->id_sppg_unit] ?? [];
                                             $leaderPos = \App\Models\RefPosition::where('slug_position', 'kasppg')->first();
                                             $nutriPos = \App\Models\RefPosition::where('slug_position', 'ag')->first();
                                             $accPos = \App\Models\RefPosition::where('slug_position', 'ak')->first();
-                                            
+
                                             $leaderSk = isset($unitDecrees[$leaderPos?->id_ref_position]) ? \App\Models\AssignmentDecree::find($unitDecrees[$leaderPos->id_ref_position]) : null;
                                             $nutriSk = isset($unitDecrees[$nutriPos?->id_ref_position]) ? \App\Models\AssignmentDecree::find($unitDecrees[$nutriPos->id_ref_position]) : null;
                                             $accSk = isset($unitDecrees[$accPos?->id_ref_position]) ? \App\Models\AssignmentDecree::find($unitDecrees[$accPos->id_ref_position]) : null;
-                                        @endphp
+                                            @endphp
 
-                                        @if($leaderSk || $nutriSk || $accSk)
+                                            @if($leaderSk || $nutriSk || $accSk)
                                             {{-- 1. Kepala SPPG --}}
                                             <div class="flex items-center gap-1.5 px-2 py-0.5 bg-indigo-50 border border-indigo-100 rounded text-[10px] text-indigo-700 font-bold" title="SK Kepala SPPG">
                                                 <span class="bg-indigo-600 text-white px-1 rounded-sm text-[8px]">KaSPPG</span>
@@ -400,134 +525,134 @@
                                                 <span class="bg-amber-600 text-white px-1 rounded-sm text-[8px]">AK</span>
                                                 <span>{{ $accSk->no_sk ?? '-' }}</span>
                                             </div>
-                                        @else
+                                            @else
                                             <span class="text-slate-300 text-xs block capitalize font-medium italic">Belum Ada SK</span>
-                                        @endif
-                                    </div>
-                                </td>
-
-                                {{-- ALAMAT --}}
-                                <td class="px-6 py-4">
-                                    <div class="max-w-[200px]">
-                                        <span class="text-slate-500 text-xs block capitalize font-medium">
-                                            {{ $unit->address ?? '-' }}
-                                        </span>
-                                        <div class="flex flex-wrap gap-x-1 items-center text-slate-500 text-xs block capitalize font-medium">
-                                            <span>{{ $unit->village }},</span>
-                                            <span>{{ $unit->district }}</span>
+                                            @endif
                                         </div>
-                                        <div class="flex flex-wrap gap-x-1 items-center text-slate-500 text-xs block capitalize font-medium">
-                                            <span>{{ $unit->regency }},</span>
-                                            <span>{{ $unit->province }}</span>
-                                        </div>
-                                    </div>
-                                </td>
+                                    </td>
 
-                                {{-- TOTAL PORSI --}}
-                                <td class="px-6 py-4 text-center">
-                                    @php
+                                    {{-- ALAMAT --}}
+                                    <td class="px-6 py-4">
+                                        <div class="max-w-[200px]">
+                                            <span class="text-slate-500 text-xs block capitalize font-medium">
+                                                {{ $unit->address ?? '-' }}
+                                            </span>
+                                            <div class="flex flex-wrap gap-x-1 items-center text-slate-500 text-xs block capitalize font-medium">
+                                                <span>{{ $unit->village }},</span>
+                                                <span>{{ $unit->district }}</span>
+                                            </div>
+                                            <div class="flex flex-wrap gap-x-1 items-center text-slate-500 text-xs block capitalize font-medium">
+                                                <span>{{ $unit->regency }},</span>
+                                                <span>{{ $unit->province }}</span>
+                                            </div>
+                                        </div>
+                                    </td>
+
+                                    {{-- TOTAL PORSI --}}
+                                    <td class="px-6 py-4 text-center">
+                                        @php
                                         $totalPorsi = $unit->beneficiaries->sum('small_portion_male')
-                                            + $unit->beneficiaries->sum('small_portion_female')
-                                            + $unit->beneficiaries->sum('large_portion_male')
-                                            + $unit->beneficiaries->sum('large_portion_female')
-                                            + $unit->beneficiaries->sum('teacher_portion')
-                                            + $unit->beneficiaries->sum('staff_portion')
-                                            + $unit->beneficiaries->sum('cadre_portion');
+                                        + $unit->beneficiaries->sum('small_portion_female')
+                                        + $unit->beneficiaries->sum('large_portion_male')
+                                        + $unit->beneficiaries->sum('large_portion_female')
+                                        + $unit->beneficiaries->sum('teacher_portion')
+                                        + $unit->beneficiaries->sum('staff_portion')
+                                        + $unit->beneficiaries->sum('cadre_portion');
                                         $pmCount = $unit->beneficiaries->count();
-                                    @endphp
-                                    @if($pmCount > 0)
+                                        @endphp
+                                        @if($pmCount > 0)
                                         <div class="flex flex-col items-center gap-0.5">
                                             <span class="text-base font-bold text-slate-700">{{ number_format($totalPorsi) }}</span>
                                             <span class="text-[10px] text-slate-400 font-medium">dari {{ $pmCount }} PM</span>
                                         </div>
-                                    @else
+                                        @else
                                         <span class="text-slate-300 text-xs font-medium">-</span>
-                                    @endif
-                                </td>
+                                        @endif
+                                    </td>
 
 
-                                {{-- STATUS --}}
-                                <td class="px-6 py-4 text-center">
-                                    @php
+                                    {{-- STATUS --}}
+                                    <td class="px-6 py-4 text-center">
+                                        @php
                                         $statusStyles = match($unit->status) {
-                                            'Operasional' => 'bg-[#e0fdef] text-[#047857] border-emerald-200',
-                                            'Belum Operasional' => 'bg-amber-100 text-amber-600 border-amber-200',
-                                            'Tutup Sementara' => 'bg-rose-100 text-rose-600 border-rose-200',
-                                            'Tutup Permanen' => 'bg-black/50 text-white border-black/20',
-                                            default => 'bg-slate-100 text-slate-500 border-slate-200'
+                                        'Operasional' => 'bg-[#e0fdef] text-[#047857] border-emerald-200',
+                                        'Belum Operasional' => 'bg-amber-100 text-amber-600 border-amber-200',
+                                        'Tutup Sementara' => 'bg-rose-100 text-rose-600 border-rose-200',
+                                        'Tutup Permanen' => 'bg-black/50 text-white border-black/20',
+                                        default => 'bg-slate-100 text-slate-500 border-slate-200'
                                         };
-                                    @endphp
-                                    <span class="text-xs font-medium px-1.5 py-0.5 rounded border capitalize {{ $statusStyles }}">
-                                        {{ $unit->status }}
-                                    </span>
-                                </td>
+                                        @endphp
+                                        <span class="text-xs font-medium px-1.5 py-0.5 rounded border capitalize {{ $statusStyles }}">
+                                            {{ $unit->status }}
+                                        </span>
+                                    </td>
 
-                                {{-- AKSI --}}
-                                <td class="px-6 py-4 text-center">
-                                    <div class="flex justify-center items-center gap-1">
-                                        <button type="button" @click="selectedUnit = {{ json_encode($unit->load(['socialMedia', 'beneficiaries', 'suppliers'])) }}; selectedUnit.original_id = '{{ $unit->id_sppg_unit }}'; showEditModal = true; setTimeout(() => window.dispatchEvent(new CustomEvent('init-edit-sppg', { detail: selectedUnit })), 300)"
-                                            title="Edit" class="p-2 text-slate-400 hover:text-indigo-600 cursor-pointer transition-colors hover:bg-indigo-50 rounded-lg">
-                                            <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-                                                <path d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path>
-                                            </svg>
-                                        </button>
+                                    {{-- AKSI --}}
+                                    <td class="px-6 py-4 text-center">
+                                        <div class="flex justify-center items-center gap-1">
+                                            <button type="button" @click="selectedUnit = JSON.parse('{{ addslashes($unit->load(['socialMedia', 'beneficiaries', 'suppliers'])->toJson()) }}'); selectedUnit.original_id = '{{ $unit->id_sppg_unit }}'; showEditModal = true; setTimeout(() => window.dispatchEvent(new CustomEvent('init-edit-sppg', { detail: selectedUnit })), 300)"
+                                                title="Edit" class="p-2 text-slate-400 hover:text-indigo-600 cursor-pointer transition-colors hover:bg-indigo-50 rounded-lg">
+                                                <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                                                    <path d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path>
+                                                </svg>
+                                            </button>
 
-                                        <button type="button" title="Hapus" onclick="confirmDeleteSppg('{{ $unit->id_sppg_unit }}', '{{ addslashes($unit->name) }}')" class="p-2 text-rose-600 hover:bg-rose-50 cursor-pointer rounded-lg opacity-80 hover:opacity-100 transition-colors">
-                                            <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-                                                <path d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path>
-                                            </svg>
-                                        </button>
-                                    </div>
-                                </td>
-                            </tr>
-                            @empty
-                            <tr>
-                                <td colspan="6" class="px-6 py-12 text-center">
-                                    <div class="flex flex-col items-center justify-center">
-                                        <div class="p-3 bg-slate-50 rounded-full mb-3">
-                                            <svg class="w-8 h-8 text-slate-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
-                    </svg>
+                                            <button type="button" title="Hapus" onclick="confirmDeleteSppg('{{ $unit->id_sppg_unit }}', '{{ addslashes($unit->name) }}')" class="p-2 text-rose-600 hover:bg-rose-50 cursor-pointer rounded-lg opacity-80 hover:opacity-100 transition-colors">
+                                                <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                                                    <path d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path>
+                                                </svg>
+                                            </button>
                                         </div>
-                                        <p class="text-[11px] font-bold uppercase tracking-[0.2em] text-slate-400">
-                                            Belum ada data SPPG terdaftar
-                                        </p>
-                                        <p class="text-[10px] text-slate-400 mt-1 italic">Coba gunakan kata kunci yang berbeda</p>
-                                    </div>
-                                </td>
-                            </tr>
-                            @endforelse
-                        </tbody>
-                    </table>
-                </div>
+                                    </td>
+                                </tr>
+                                @empty
+                                <tr>
+                                    <td colspan="7" class="px-6 py-12 text-center">
+                                        <div class="flex flex-col items-center justify-center">
+                                            <div class="p-3 bg-slate-50 rounded-full mb-3">
+                                                <svg class="w-8 h-8 text-slate-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
+                                                </svg>
+                                            </div>
+                                            <p class="text-[11px] font-bold uppercase tracking-[0.2em] text-slate-400">
+                                                Belum ada data SPPG terdaftar
+                                            </p>
+                                            <p class="text-[10px] text-slate-400 mt-1 italic">Coba gunakan kata kunci yang berbeda</p>
+                                        </div>
+                                    </td>
+                                </tr>
+                                @endforelse
+                            </tbody>
+                        </table>
+                    </div>
 
-                @if($units->hasPages() || request('per_page') > 5)
-                <div class="px-6 py-4 bg-white border-t border-slate-100 flex flex-col md:flex-row justify-between items-center gap-4 text-xs
+                    @if($units->hasPages() || request('per_page') > 5)
+                    <div class="px-6 py-4 bg-white border-t border-slate-100 flex flex-col md:flex-row justify-between items-center gap-4 text-xs
     [&_nav]:flex [&_nav]:justify-between [&_nav]:items-center [&_nav]:w-full md:[&_nav]:w-auto
     [&_a]:bg-white [&_a]:text-slate-600 [&_a]:border-slate-200 [&_a]:rounded-lg [&_a]:hover:bg-slate-50
     [&_span]:bg-white [&_span]:text-slate-600 [&_span]:border-slate-200 [&_span]:rounded-lg
     [&_.bg-gray-800]:bg-emerald-600 [&_.bg-gray-800]:text-white [&_.bg-gray-800]:border-emerald-600
     [&_.dark\:bg-gray-800]:bg-white [&_.dark\:text-gray-400]:text-slate-600">
-                    
-                    {{-- DROPDOWN PER PAGE --}}
-                    <div class="flex items-center gap-2">
-                        <span class="text-sm text-slate-600">Tampilkan</span>
-                        <select id="sppg-per-page" class="per-page-select border-slate-200 rounded-lg text-sm py-1.5 pl-3 pr-8 focus:ring-emerald-500 text-slate-600 font-medium cursor-pointer bg-slate-50 hover:bg-slate-100 transition-colors">
-                            <option value="5" {{ request('per_page') == '5' ? 'selected' : '' }}>5</option>
-                            <option value="15" {{ request('per_page') == '15' ? 'selected' : '' }}>15</option>
-                            <option value="50" {{ request('per_page') == '50' ? 'selected' : '' }}>50</option>
-                            <option value="100" {{ request('per_page') == '100' ? 'selected' : '' }}>100</option>
-                        </select>
-                        <span class="text-sm text-slate-600 hidden sm:inline">Baris</span>
-                    </div>
 
-                    {{-- LARAVEL PAGINATION --}}
-                    <div class="w-full md:w-auto overflow-x-auto pb-1 md:pb-0">
-                        {{ $units->links() }}
-                    </div>
+                        {{-- DROPDOWN PER PAGE --}}
+                        <div class="flex items-center gap-2">
+                            <span class="text-sm text-slate-600">Tampilkan</span>
+                            <select id="sppg-per-page" class="per-page-select border-slate-200 rounded-lg text-sm py-1.5 pl-3 pr-8 focus:ring-emerald-500 text-slate-600 font-medium cursor-pointer bg-slate-50 hover:bg-slate-100 transition-colors">
+                                <option value="5" {{ request('per_page') == '5' ? 'selected' : '' }}>5</option>
+                                <option value="15" {{ request('per_page') == '15' ? 'selected' : '' }}>15</option>
+                                <option value="50" {{ request('per_page') == '50' ? 'selected' : '' }}>50</option>
+                                <option value="100" {{ request('per_page') == '100' ? 'selected' : '' }}>100</option>
+                            </select>
+                            <span class="text-sm text-slate-600 hidden sm:inline">Baris</span>
+                        </div>
 
-                </div>
-                @endif
+                        {{-- LARAVEL PAGINATION --}}
+                        <div class="w-full md:w-auto overflow-x-auto pb-1 md:pb-0">
+                            {{ $units->links() }}
+                        </div>
+
+                    </div>
+                    @endif
                 </div>
             </div>
         </div>
@@ -540,6 +665,7 @@
         @include('admin.manage-sppg.partials.modal-cropper')
         @include('admin.manage-sppg.partials.modal-delete')
         @include('admin.manage-sppg.partials.modal-delete-beneficiary')
+        @include('admin.manage-sppg.partials.modal-create-supplier')
     </div>
 
     {{-- SCRIPTS UTAMA --}}
@@ -548,21 +674,35 @@
 
     <script>
         document.addEventListener('DOMContentLoaded', function() {
-            // Observer untuk memicu init Peta dan inisialisasi Cropper saat modal muncul
+            let createMapDone = false;
+            let editMapDone = false;
+
             const observer = new MutationObserver(() => {
-                const modal = document.querySelector('[x-show="showCreateModal"]');
-                if (modal && window.getComputedStyle(modal).display !== 'none' && window.getComputedStyle(modal).opacity === '1') {
-                    // Panggil fungsi init dari modal-create
-                    if (typeof initCreateMapModal === 'function') initCreateMapModal();
-                    if (typeof initCropperLogic === 'function') initCropperLogic();
+                // Modal Create
+                const createModal = document.getElementById('sppgCreateModalContainer');
+                if (createModal && window.getComputedStyle(createModal).display !== 'none') {
+                    if (!createMapDone) {
+                        if (typeof initCreateMapModal === 'function') initCreateMapModal();
+                        if (typeof initCropperLogic === 'function') initCropperLogic();
+                        createMapDone = true;
+                    }
+                } else {
+                    createMapDone = false;
+                }
+
+                // Modal Edit
+                const editModal = document.getElementById('sppgEditModalContainer');
+                if (editModal && window.getComputedStyle(editModal).display !== 'none') {
+                    if (!editMapDone) {
+                        if (typeof initEditMapModal === 'function') initEditMapModal();
+                        editMapDone = true;
+                    }
+                } else {
+                    editMapDone = false;
                 }
             });
 
-            observer.observe(document.body, {
-                attributes: true,
-                subtree: true,
-                childList: true
-            });
+            observer.observe(document.body, { attributes: true, subtree: true, attributeFilter: ['style', 'class'] });
         });
 
         // ==========================
@@ -572,11 +712,11 @@
             const modal = document.getElementById('deleteModal');
             const form = document.getElementById('deleteForm');
             const info = document.getElementById('delete_modal_info');
-            
+
             // Route asli Laravel Anda untuk SPPG adalah /admin/manage-sppg/{id}
             form.action = `/admin/manage-sppg/${unitId}`;
             info.innerHTML = `Data SPPG <b>${unitName}</b> akan dihapus secara permanen beserta foto dan media sosialnya.`;
-            
+
             modal.classList.remove('hidden');
         }
 
@@ -591,17 +731,17 @@
 
         function getCurrentUrlModifiers(inputEl = null) {
             let currentUrl = new URL(window.location.href);
-            
+
             // 1. Search keyword
             const activeSearch = document.getElementById('sppg-search');
-            if(activeSearch) {
-                if(activeSearch.value) currentUrl.searchParams.set('search', activeSearch.value);
+            if (activeSearch) {
+                if (activeSearch.value) currentUrl.searchParams.set('search', activeSearch.value);
                 else currentUrl.searchParams.delete('search');
             }
-            
+
             // 2. Per-page
             const activePerPage = document.getElementById('sppg-per-page');
-            if(activePerPage) currentUrl.searchParams.set('per_page', activePerPage.value);
+            if (activePerPage) currentUrl.searchParams.set('per_page', activePerPage.value);
 
             // 3. Filters
             const filters = {
@@ -623,7 +763,7 @@
             });
 
             // Back to page 1 if triggered by input/filter change
-            if(inputEl) currentUrl.searchParams.delete('page');
+            if (inputEl) currentUrl.searchParams.delete('page');
 
             return currentUrl.toString();
         }
@@ -633,53 +773,53 @@
             if (!container) return;
 
             fetch(url, {
-                headers: {
-                    "X-Requested-With": "XMLHttpRequest"
-                }
-            })
-            .then(response => response.text())
-            .then(html => {
-                let parser = new DOMParser();
-                let doc = parser.parseFromString(html, 'text/html');
-                
-                // Update Table Content
-                const newTable = doc.getElementById('sppg-table-container');
-                if(newTable) container.innerHTML = newTable.innerHTML;
+                    headers: {
+                        "X-Requested-With": "XMLHttpRequest"
+                    }
+                })
+                .then(response => response.text())
+                .then(html => {
+                    let parser = new DOMParser();
+                    let doc = parser.parseFromString(html, 'text/html');
 
-                // Update Filter Dropdowns (Cascading Logic)
-                const filterArea = doc.querySelector('.p-4.bg-slate-50.border-b');
-                if(filterArea) {
-                    const currentFilters = ['filter-province', 'filter-regency', 'filter-district', 'filter-village'];
-                    currentFilters.forEach(id => {
-                        const oldEl = document.getElementById(id);
-                        const newEl = doc.getElementById(id);
-                        if(oldEl && newEl) {
-                            const currentVal = oldEl.value;
-                            oldEl.innerHTML = newEl.innerHTML;
-                            oldEl.disabled = newEl.disabled;
-                            // Attempt to restore value, or reset if no longer present
-                            oldEl.value = Array.from(oldEl.options).some(opt => opt.value === currentVal) ? currentVal : '';
-                        }
-                    });
-                }
+                    // Update Table Content
+                    const newTable = doc.getElementById('sppg-table-container');
+                    if (newTable) container.innerHTML = newTable.innerHTML;
 
-                // Sync URL
-                window.history.pushState({}, '', url);
+                    // Update Filter Dropdowns (Cascading Logic)
+                    const filterArea = doc.querySelector('.p-4.bg-slate-50.border-b');
+                    if (filterArea) {
+                        const currentFilters = ['filter-province', 'filter-regency', 'filter-district', 'filter-village'];
+                        currentFilters.forEach(id => {
+                            const oldEl = document.getElementById(id);
+                            const newEl = doc.getElementById(id);
+                            if (oldEl && newEl) {
+                                const currentVal = oldEl.value;
+                                oldEl.innerHTML = newEl.innerHTML;
+                                oldEl.disabled = newEl.disabled;
+                                // Attempt to restore value, or reset if no longer present
+                                oldEl.value = Array.from(oldEl.options).some(opt => opt.value === currentVal) ? currentVal : '';
+                            }
+                        });
+                    }
 
-                // Restore focus
-                if (focusId) {
-                    requestAnimationFrame(() => {
-                        const activeInput = document.getElementById(focusId);
-                        if (activeInput) {
-                            activeInput.focus();
-                            const val = activeInput.value;
-                            activeInput.value = '';
-                            activeInput.value = val;
-                        }
-                    });
-                }
-            })
-            .catch(error => console.error('Error:', error));
+                    // Sync URL
+                    window.history.pushState({}, '', url);
+
+                    // Restore focus
+                    if (focusId) {
+                        requestAnimationFrame(() => {
+                            const activeInput = document.getElementById(focusId);
+                            if (activeInput) {
+                                activeInput.focus();
+                                const val = activeInput.value;
+                                activeInput.value = '';
+                                activeInput.value = val;
+                            }
+                        });
+                    }
+                })
+                .catch(error => console.error('Error:', error));
         }
 
         // 1. Reset Filters
@@ -721,7 +861,7 @@
             let anchor = e.target.closest('#sppg-table-container nav a');
             if (anchor && anchor.getAttribute('href')) {
                 let url = new URL(anchor.getAttribute('href'));
-                
+
                 // Ensure per_page and filters are preserved
                 const modUrl = new URL(getCurrentUrlModifiers());
                 modUrl.searchParams.set('page', url.searchParams.get('page'));

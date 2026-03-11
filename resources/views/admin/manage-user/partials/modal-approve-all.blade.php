@@ -12,10 +12,11 @@
 
             <form action="{{ route('admin.manage-user.approve-all') }}" method="POST" class="space-y-4">
                 @csrf
+                <input type="hidden" id="aa-positions-meta-data" value="{{ json_encode($positions->pluck('slug_position', 'id_ref_position')) }}">
 
                 {{-- JABATAN (pilih dulu) --}}
                 <div>
-                    <label class="text-[11px] font-bold text-slate-400 uppercase tracking-widest mb-1 block">Jabatan</label>
+                    <label class="text-[11px] font-bold text-slate-400 uppercase tracking-widest mb-1 block">Jabatan <span class="text-rose-500">*</span></label>
                     <select id="aa_pos" name="id_ref_position" required class="w-full border-slate-200 rounded-xl text-sm py-3 px-4 focus:ring-emerald-500 outline-none font-sans shadow-sm">
                         <option value="" disabled selected>Pilih Jabatan</option>
                         <option value="none">Belum Menjabat</option>
@@ -27,7 +28,7 @@
 
                 {{-- PENUGASAN (filter berdasarkan jabatan) --}}
                 <div>
-                    <label class="text-[11px] font-bold text-slate-400 uppercase tracking-widest mb-1 block">Unit Penugasan</label>
+                    <label class="text-[11px] font-bold text-slate-400 uppercase tracking-widest mb-1 block">Unit Penugasan <span class="text-rose-500">*</span></label>
                     <select id="aa_wa" name="id_work_assignment" required class="w-full border-slate-200 rounded-xl text-sm py-3 px-4 focus:ring-emerald-500 outline-none font-sans shadow-sm">
                         <option value="" disabled selected>Pilih Unit Penugasan</option>
                         <option value="none">Belum Penugasan</option>
@@ -49,7 +50,7 @@
 
                 {{-- HAK AKSES --}}
                 <div>
-                    <label class="text-[11px] font-bold text-slate-400 uppercase tracking-widest mb-1 block">Hak Akses</label>
+                    <label class="text-[11px] font-bold text-slate-400 uppercase tracking-widest mb-1 block">Hak Akses <span class="text-rose-500">*</span></label>
                     <select name="id_ref_role" required class="w-full border-slate-200 rounded-xl text-sm py-3 px-4 focus:ring-emerald-500 outline-none font-sans shadow-sm">
                         <option value="" disabled selected>Pilih Hak Akses</option>
                         @foreach($roles as $r)
@@ -65,90 +66,94 @@
             </form>
         </div>
     </div>
-    </div>
 
-<script>
-    window.openApproveAllModal = function() {
-        document.getElementById('approveAllModal').classList.remove('hidden');
-        updateApproveAllWaOptions(); // Jalankan filter saat modal dibuka
-    }
+    <script>
+        window.openApproveAllModal = function() {
+            document.getElementById('approveAllModal').classList.remove('hidden');
+            updateApproveAllWaOptions(); // Jalankan filter saat modal dibuka
+        }
 
-    window.closeApproveAllModal = function() {
-        document.getElementById('approveAllModal').classList.add('hidden');
-    }
+        window.closeApproveAllModal = function() {
+            document.getElementById('approveAllModal').classList.add('hidden');
+        }
 
-    // ── FILTER OPSI UNIT PENUGASAN BERDASARKAN JABATAN (Approve All Modal) ──
-    const aaPositionsMeta = @json($positions->pluck('slug_position', 'id_ref_position') ?? []);
+        // ── FILTER OPSI UNIT PENUGASAN BERDASARKAN JABATAN (Approve All Modal) ──
+        const aaPosMetaDataEl = document.getElementById('aa-positions-meta-data');
+        const aaPositionsMeta = aaPosMetaDataEl ? JSON.parse(aaPosMetaDataEl.value) : {};
 
-    function updateApproveAllWaOptions() {
-        const posEl = document.getElementById('aa_pos');
-        const waEl  = document.getElementById('aa_wa');
-        const note  = document.getElementById('aa-occupied-note');
+        function updateApproveAllWaOptions() {
+            const posEl = document.getElementById('aa_pos');
+            const waEl = document.getElementById('aa_wa');
+            const note = document.getElementById('aa-occupied-note');
 
-        const selectedPosId = posEl?.value;
-        const posSlug       = aaPositionsMeta[selectedPosId];
+            const selectedPosId = posEl?.value;
+            const posSlug = aaPositionsMeta[selectedPosId];
 
-        const unitRoles  = ['kasppg', 'ag', 'ak'];
-        const slugToAttr = { kasppg: 'leader', ag: 'nutritionist', ak: 'accountant' };
-        const isUnitRole = posSlug && unitRoles.includes(posSlug);
-        const attrKey    = isUnitRole ? slugToAttr[posSlug] : null;
+            const unitRoles = ['kasppg', 'ag', 'ak'];
+            const slugToAttr = {
+                kasppg: 'leader',
+                ag: 'nutritionist',
+                ak: 'accountant'
+            };
+            const isUnitRole = posSlug && unitRoles.includes(posSlug);
+            const attrKey = isUnitRole ? slugToAttr[posSlug] : null;
 
-        const waOptions = waEl.querySelectorAll('option[data-pos]');
-        let anyDisabled = false;
+            const waOptions = waEl.querySelectorAll('option[data-pos]');
+            let anyDisabled = false;
 
-        waOptions.forEach(opt => {
-            const waPosId = opt.getAttribute('data-pos');
+            waOptions.forEach(opt => {
+                const waPosId = opt.getAttribute('data-pos');
 
-            // 1. Filter based on Position ID (Must match unless it's the "none" option)
-            if (waPosId && selectedPosId && waPosId !== selectedPosId) {
-                opt.hidden   = true;
-                opt.disabled = true;
-                opt.style.color = '#9ca3af';
-            } else if (!selectedPosId || selectedPosId === 'none') {
-                // If no position selected, hide all except "none"
-                opt.hidden   = true;
-                opt.disabled = true;
-                opt.style.color = '#9ca3af';
-            } else {
-                opt.hidden = false;
+                // 1. Filter based on Position ID (Must match unless it's the "none" option)
+                if (waPosId && selectedPosId && waPosId !== selectedPosId) {
+                    opt.hidden = true;
+                    opt.disabled = true;
+                    opt.style.color = '#9ca3af';
+                } else if (!selectedPosId || selectedPosId === 'none') {
+                    // If no position selected, hide all except "none"
+                    opt.hidden = true;
+                    opt.disabled = true;
+                    opt.style.color = '#9ca3af';
+                } else {
+                    opt.hidden = false;
 
-                // 2. Check Occupancy ONLY for core roles (Head, AG, AK)
-                if (isUnitRole) {
-                    const occupantId = opt.getAttribute('data-' + attrKey);
-                    if (occupantId && occupantId !== '') {
-                        opt.disabled = true;
-                        opt.style.color = '#9ca3af';
-                        opt.title    = 'Sudah ditetapkan';
-                        anyDisabled  = true;
+                    // 2. Check Occupancy ONLY for core roles (Head, AG, AK)
+                    if (isUnitRole) {
+                        const occupantId = opt.getAttribute('data-' + attrKey);
+                        if (occupantId && occupantId !== '') {
+                            opt.disabled = true;
+                            opt.style.color = '#9ca3af';
+                            opt.title = 'Sudah ditetapkan';
+                            anyDisabled = true;
+                        } else {
+                            opt.disabled = false;
+                            opt.style.color = '';
+                            opt.title = '';
+                        }
                     } else {
+                        // For other positions, we don't have occupancy check yet in SPPG Unit table
                         opt.disabled = false;
                         opt.style.color = '';
-                        opt.title    = '';
+                        opt.title = '';
                     }
-                } else {
-                    // For other positions, we don't have occupancy check yet in SPPG Unit table
-                    opt.disabled = false;
-                    opt.style.color = '';
-                    opt.title = '';
                 }
+            });
+
+            // Ensure "none" option is always visible
+            const noneOpt = waEl.querySelector('option[value="none"]');
+            if (noneOpt) {
+                noneOpt.hidden = false;
+                noneOpt.disabled = false;
+                noneOpt.style.color = '';
             }
-        });
 
-        // Ensure "none" option is always visible
-        const noneOpt = waEl.querySelector('option[value="none"]');
-        if (noneOpt) {
-            noneOpt.hidden = false;
-            noneOpt.disabled = false;
-            noneOpt.style.color = '';
+            // If current selected value is now hidden/disabled, reset to none
+            if (waEl.options[waEl.selectedIndex] && (waEl.options[waEl.selectedIndex].hidden || waEl.options[waEl.selectedIndex].disabled) && waEl.value !== 'none') {
+                waEl.value = 'none';
+            }
+
+            if (note) note.classList.toggle('hidden', !anyDisabled || !isUnitRole);
         }
 
-        // If current selected value is now hidden/disabled, reset to none
-        if (waEl.options[waEl.selectedIndex] && (waEl.options[waEl.selectedIndex].hidden || waEl.options[waEl.selectedIndex].disabled) && waEl.value !== 'none') {
-            waEl.value = 'none';
-        }
-
-        if (note) note.classList.toggle('hidden', !anyDisabled || !isUnitRole);
-    }
-
-    document.getElementById('aa_pos')?.addEventListener('change', updateApproveAllWaOptions);
-</script>
+        document.getElementById('aa_pos')?.addEventListener('change', updateApproveAllWaOptions);
+    </script>

@@ -15,7 +15,7 @@
                 @method('PATCH')
 
                 <div class="p-8">
-                    <label class="text-[11px] font-bold uppercase text-slate-500 block mb-2 tracking-widest">Nama Tampilan Hak Akses</label>
+                    <label class="text-[11px] font-bold uppercase text-slate-500 block mb-2 tracking-widest">Nama Tampilan Hak Akses <span class="text-rose-500">*</span></label>
                     <input type="text" id="input_name_role" name="name_role"
                         class="w-full px-4 py-3 bg-slate-50 border-none rounded-lg focus:ring-2 focus:ring-indigo-500 outline-none text-sm transition-all font-sans"
                         required>

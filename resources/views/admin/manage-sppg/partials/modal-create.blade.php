@@ -1,4 +1,4 @@
-<div x-show="showCreateModal" class="fixed inset-0 z-[99] flex items-center justify-center p-4 text-left" x-cloak>
+<div id="sppgCreateModalContainer" x-show="showCreateModal" class="fixed inset-0 z-[99] flex items-center justify-center p-4 text-left" x-cloak>
     <style>
         .input-disabled {
             background-color: #f8fafc !important;
@@ -55,9 +55,9 @@
             <button type="button" @click="showCreateModal = false" class="text-slate-400 hover:text-slate-600 text-2xl cursor-pointer">&times;</button>
         </div>
 
-        <form action="{{ route('admin.manage-sppg.store') }}" 
-            method="POST" 
-            enctype="multipart/form-data" 
+        <form action="{{ route('admin.manage-sppg.store') }}"
+            method="POST"
+            enctype="multipart/form-data"
             id="createUnitForm"
             @submit.prevent="window.submitCreateSppg($el)">
             @csrf
@@ -73,7 +73,7 @@
                 {{-- SECTION 1: FOTO & IDENTITAS --}}
                 <div class="flex flex-col lg:flex-row gap-12">
                     <div class="shrink-0 flex flex-col items-center gap-4">
-                        <label class="text-[11px] font-bold text-gray-500 uppercase tracking-wider">Foto Tampak Depan SPPG</label>
+                        <label class="text-[11px] font-bold text-gray-500 uppercase tracking-wider">Foto Tampak Depan SPPG <span class="text-rose-500">*</span></label>
                         <div class="relative group">
                             <div id="photo-container" class="h-45 w-60 rounded-2xl overflow-hidden bg-slate-200 border-4 border-white shadow-lg ring-1 ring-slate-100 flex items-center justify-center text-center transition-all">
                                 <img id="cropped-preview" class="h-full w-full object-cover hidden cursor-pointer" src="" alt="Preview">
@@ -97,19 +97,19 @@
 
                     <div class="flex-1 grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-6">
                         <div class="md:col-span-2">
-                            <label class="text-[11px] font-bold text-gray-500 uppercase tracking-wider">Nama SPPG</label>
+                            <label class="text-[11px] font-bold text-gray-500 uppercase tracking-wider block mb-2">Nama SPPG <span class="text-rose-500">*</span></label>
                             <input type="text" name="name" id="f_name" class="w-full mt-2 px-4 py-2.5 bg-gray-50 border-none rounded-lg text-sm focus:ring-2 focus:ring-indigo-500" placeholder="Masukkan Nama SPPG">
                         </div>
                         <div>
-                            <label class="text-[11px] font-bold text-gray-500 uppercase tracking-wider">ID SPPG</label>
+                            <label class="text-[11px] font-bold text-gray-500 uppercase tracking-wider block mb-2">ID SPPG <span class="text-rose-500">*</span></label>
                             <input type="text" name="id_sppg_unit" id="f_id" class="w-full mt-2 px-4 py-2.5 bg-gray-50 border-none rounded-lg text-sm focus:ring-2 focus:ring-indigo-500" placeholder="Cth: 6UWFOPNM">
                         </div>
                         <div>
-                            <label class="text-[11px] font-bold text-gray-500 uppercase tracking-wider">Kode SPPG</label>
+                            <label class="text-[11px] font-bold text-gray-500 uppercase tracking-wider">Kode SPPG <span class="text-rose-500">*</span></label>
                             <input type="text" name="code_sppg_unit" id="f_code" class="w-full mt-2 px-4 py-2.5 bg-gray-50 border-none rounded-lg text-sm focus:ring-2 focus:ring-indigo-500" placeholder="Cth: 51.XX.XX.XXXX.XX">
                         </div>
                         <div>
-                            <label class="text-[11px] font-bold text-gray-500 uppercase tracking-wider">Status Operasional</label>
+                            <label class="text-[11px] font-bold text-gray-500 uppercase tracking-wider block mb-2">Status Operasional <span class="text-rose-500">*</span></label>
                             <select name="status" id="f_status" class="w-full mt-2 px-3 py-2.5 bg-gray-50 border-none rounded-lg text-sm focus:ring-2 focus:ring-indigo-500">
                                 <option value="" disabled selected>Pilih Status</option>
                                 <option value="Belum Operasional">Belum Operasional</option>
@@ -119,11 +119,11 @@
                             </select>
                         </div>
                         <div>
-                            <label class="text-[11px] font-bold text-gray-500 uppercase tracking-wider">Tanggal Operasional</label>
+                            <label class="text-[11px] font-bold text-gray-500 uppercase tracking-wider block mb-2">Tanggal Operasional</label>
                             <input type="date" name="operational_date" id="f_op_date" class="w-full mt-2 px-4 py-2.5 bg-gray-50 border-none rounded-lg text-sm text-slate-600 focus:ring-2 focus:ring-indigo-500">
                         </div>
                         <div>
-                            <label class="text-[11px] font-bold text-gray-500 uppercase tracking-wider">Kepala SPPG</label>
+                            <label class="text-[11px] font-bold text-gray-500 uppercase tracking-wider">Kepala SPPG <span class="text-rose-500">*</span></label>
                             <select name="leader_id" id="f_leader" class="w-full mt-2 px-3 py-2.5 bg-gray-50 border-none rounded-lg text-sm focus:ring-2 focus:ring-indigo-500">
                                 <option value="" disabled selected>Pilih Kepala SPPG</option>
                                 <option value="NULL">Belum Ditugaskan</option>
@@ -160,14 +160,14 @@
                     <h3 class="text-sm font-bold uppercase tracking-widest text-indigo-600 mb-6">Surat Keputusan (SK)</h3>
                     <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
                         @php
-                            $leaderPos = \App\Models\RefPosition::where('slug_position', 'kasppg')->first();
-                            $nutriPos = \App\Models\RefPosition::where('slug_position', 'ag')->first();
-                            $accPos = \App\Models\RefPosition::where('slug_position', 'ak')->first();
+                        $leaderPos = \App\Models\RefPosition::where('slug_position', 'kasppg')->first();
+                        $nutriPos = \App\Models\RefPosition::where('slug_position', 'ag')->first();
+                        $accPos = \App\Models\RefPosition::where('slug_position', 'ak')->first();
                         @endphp
-                        
+
                         {{-- SK KEPALA --}}
                         <div>
-                            <label class="text-[11px] font-bold text-gray-500 uppercase tracking-wider">SK Kepala SPPG <span class="text-red-500">*</span></label>
+                            <label class="text-[11px] font-bold text-gray-500 uppercase tracking-wider">SK Kepala SPPG <span class="text-rose-500">*</span></label>
                             <select name="id_sk_leader" id="f_sk_leader" class="w-full mt-2 px-3 py-2.5 bg-gray-50 border-none rounded-lg text-sm focus:ring-2 focus:ring-indigo-500">
                                 <option value="" disabled selected>Pilih SK Kepala</option>
                                 @foreach($decrees[$leaderPos?->id_ref_position] ?? [] as $decree)
@@ -213,31 +213,31 @@
                     <h3 class="text-sm font-bold uppercase tracking-widest text-indigo-600 mb-6">Informasi Alamat</h3>
                     <div class="grid grid-cols-2 md:grid-cols-4 gap-6 text-sm">
                         <div>
-                            <label class="text-[11px] font-bold text-gray-500 uppercase tracking-wider">Provinsi</label>
+                            <label class="text-[11px] font-bold text-gray-500 uppercase tracking-wider">Provinsi <span class="text-rose-500">*</span></label>
                             <select name="province" id="f_prov" class="w-full mt-1 px-4 py-2 bg-gray-50 border-none rounded-lg text-sm focus:ring-2 focus:ring-indigo-500">
                                 <option value="">Pilih Provinsi</option>
                             </select>
                         </div>
                         <div>
-                            <label class="text-[11px] font-bold text-gray-500 uppercase tracking-wider">Kabupaten</label>
+                            <label class="text-[11px] font-bold text-gray-500 uppercase tracking-wider">Kabupaten <span class="text-rose-500">*</span></label>
                             <select name="regency" id="f_reg" disabled class="input-disabled w-full mt-1 px-4 py-2 border-none rounded-lg text-sm focus:ring-2 focus:ring-indigo-500">
                                 <option value="">Pilih Kabupaten</option>
                             </select>
                         </div>
                         <div>
-                            <label class="text-[11px] font-bold text-gray-500 uppercase tracking-wider">Kecamatan</label>
+                            <label class="text-[11px] font-bold text-gray-500 uppercase tracking-wider">Kecamatan <span class="text-rose-500">*</span></label>
                             <select name="district" id="f_dist" disabled class="input-disabled w-full mt-1 px-4 py-2 border-none rounded-lg text-sm focus:ring-2 focus:ring-indigo-500">
                                 <option value="">Pilih Kecamatan</option>
                             </select>
                         </div>
                         <div>
-                            <label class="text-[11px] font-bold text-gray-500 uppercase tracking-wider">Desa/Kelurahan</label>
+                            <label class="text-[11px] font-bold text-gray-500 uppercase tracking-wider">Desa/Kelurahan <span class="text-rose-500">*</span></label>
                             <select name="village" id="f_vill" disabled class="input-disabled w-full mt-1 px-4 py-2 border-none rounded-lg text-sm focus:ring-2 focus:ring-indigo-500">
                                 <option value="">Pilih Desa/Kelurahan</option>
                             </select>
                         </div>
                         <div class="md:col-span-4">
-                            <label class="text-[11px] font-bold text-gray-500 uppercase tracking-wider">Alamat Jalan</label>
+                            <label class="text-[11px] font-bold text-gray-500 uppercase tracking-wider">Alamat Jalan <span class="text-rose-500">*</span></label>
                             <textarea name="address" id="f_address" rows="3" class="w-full mt-1 px-4 py-2 bg-gray-50 border-none rounded-lg text-sm focus:ring-2 focus:ring-indigo-500" placeholder="Cth: Jl. Raya Singaraja Denpasar, No. 99"></textarea>
                         </div>
                     </div>
@@ -248,41 +248,162 @@
                     <h3 class="text-sm font-bold uppercase tracking-widest text-indigo-600 mb-6">Informasi Lokasi GPS (Klik Pada Peta)</h3>
                     <div id="map-create" class="rounded-xl border-4 border-white shadow-lg ring-1 ring-slate-200"></div>
                     <div class="grid grid-cols-2 gap-4 mt-4">
-                        <input type="text" name="latitude_gps" id="f_lat" readonly class="w-full px-4 py-2.5 bg-slate-100 border-none rounded-lg text-sm text-slate-500" placeholder="Latitude Otomatis">
-                        <input type="text" name="longitude_gps" id="f_lng" readonly class="w-full px-4 py-2.5 bg-slate-100 border-none rounded-lg text-sm text-slate-500" placeholder="Longitude Otomatis">
+                        <div>
+                            <label class="text-[11px] font-bold text-gray-400 uppercase">Latitude <span class="text-rose-500">*</span></label>
+                            <input type="text" name="latitude_gps" id="f_lat" required readonly class="w-full mt-1 px-4 py-2.5 bg-slate-100 border-none rounded-lg text-sm text-slate-500" placeholder="Latitude Otomatis">
+                        </div>
+                        <div>
+                            <label class="text-[11px] font-bold text-gray-400 uppercase">Longitude <span class="text-rose-500">*</span></label>
+                            <input type="text" name="longitude_gps" id="f_lng" required readonly class="w-full mt-1 px-4 py-2.5 bg-slate-100 border-none rounded-lg text-sm text-slate-500" placeholder="Longitude Otomatis">
+                        </div>
                     </div>
                 </div>
-                {{-- SECTION 4: SUPPLIER TERKAIT --}}
                 <div class="pt-10 border-t border-gray-100">
-                    <h3 class="text-sm font-bold uppercase tracking-widest text-indigo-600 mb-6">Supplier Terkait <span class="text-slate-400 font-normal normal-case tracking-normal text-xs">(Opsional)</span></h3>
-                    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 max-h-48 overflow-y-auto p-4 bg-slate-50 rounded-xl border border-slate-200 custom-scrollbar">
-                        @foreach($allSuppliers as $supplier)
-                        <label class="flex items-center gap-3 p-2 hover:bg-white rounded-lg transition-colors cursor-pointer group">
-                            <input type="checkbox" name="supplier_ids[]" value="{{ $supplier->id_supplier }}" class="rounded border-slate-300 text-indigo-600 focus:ring-indigo-500">
-                            <div class="flex flex-col">
-                                <span class="text-[13px] font-bold text-slate-700 group-hover:text-indigo-600">{{ $supplier->name_supplier }}</span>
-                                <span class="text-[10px] text-slate-400">{{ $supplier->type_supplier }}</span>
+                    <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-6 gap-4">
+                        <div class="flex items-center gap-3">
+                            <span class="p-1.5 bg-indigo-50 text-indigo-600 rounded-lg">
+                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
+                                </svg>
+                            </span>
+                            <h3 class="text-sm font-bold uppercase tracking-widest text-indigo-600">Supplier Terhubung</h3>
+                        </div>
+
+                        <div class="flex items-center gap-3">
+                            <button type="button" @click="window.dispatchEvent(new CustomEvent('open-create-supplier-modal'))" class="px-4 py-2 bg-emerald-50 text-emerald-600 border border-emerald-100 rounded-lg text-xs font-bold uppercase tracking-wider hover:bg-emerald-100 transition-all flex items-center">
+                                <svg class="w-3.5 h-3.5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
+                                </svg>
+                                <span>Tambah Supplier Baru</span>
+                            </button>
+                        </div>
+                    </div>
+
+                    {{-- Link Existing Supplier Tool --}}
+                    <div class="mb-6 p-4 bg-slate-50 rounded-xl border border-slate-200">
+                        <label class="text-[10px] font-bold text-slate-500 uppercase tracking-widest block mb-2">Tautkan Supplier yang Sudah Ada</label>
+                        <div class="flex gap-2 relative">
+                            <div class="relative flex-1">
+                                <input type="text" x-model="supplierSearchTerm" placeholder="Cari Nama Supplier..." class="w-full px-4 py-2.5 bg-white border border-slate-200 rounded-lg text-sm focus:ring-2 focus:ring-indigo-500 outline-none">
+                                <div x-show="supplierSearchTerm && filteredAllSuppliers.length > 0" class="absolute z-50 left-0 right-0 mt-1 bg-white border border-slate-200 rounded-lg shadow-xl overflow-hidden max-h-60 overflow-y-auto">
+                                    <template x-for="supplier in filteredAllSuppliers" :key="supplier.id_supplier">
+                                        <button type="button"
+                                            @click="addStagedSupplier(supplier)"
+                                            class="w-full text-left px-4 py-3 hover:bg-indigo-50 flex flex-row items-center justify-between border-b border-slate-50 last:border-0 group transition-all cursor-pointer">
+                                            <div class="flex flex-col gap-0.5">
+                                                <span class="font-bold text-slate-700" x-text="supplier.name_supplier"></span>
+                                                <span class="text-[10px] text-slate-400 capitalize" x-text="supplier.type_supplier ? supplier.type_supplier.toLowerCase() : ''"></span>
+                                            </div>
+                                            <span class="px-2 py-0.5 bg-emerald-50 text-emerald-600 text-[9px] font-bold uppercase rounded border border-emerald-100 group-hover:bg-emerald-600 group-hover:text-white transition-colors">Pilih</span>
+                                        </button>
+                                    </template>
+                                </div>
+                                <div x-show="supplierSearchTerm && filteredAllSuppliers.length === 0" class="absolute z-50 left-0 right-0 mt-1 bg-white border border-slate-200 rounded-lg shadow-xl p-4 text-center">
+                                    <p class="text-[10px] font-bold text-slate-400 uppercase tracking-widest italic">Tidak ada supplier ditemukan</p>
+                                </div>
                             </div>
-                        </label>
-                        @endforeach
+                            <button type="button"
+                                @click="linkStagedSuppliers()"
+                                :disabled="stagedSuppliers.length === 0"
+                                class="px-6 py-2.5 bg-indigo-600 text-white rounded-lg text-xs font-bold uppercase transition-all hover:bg-indigo-700 disabled:bg-slate-300">
+                                <span>Tautkan <span x-show="stagedSuppliers.length > 0" x-text="'(' + stagedSuppliers.length + ')'"></span></span>
+                            </button>
+                        </div>
+
+                        {{-- Staged Suppliers List --}}
+                        <template x-if="stagedSuppliers.length > 0">
+                            <div class="mt-4 flex flex-wrap gap-2">
+                                <template x-for="s in stagedSuppliers" :key="s.id_supplier">
+                                    <div class="px-3 py-1.5 bg-indigo-100 text-indigo-700 rounded-lg text-[10px] font-bold flex items-center gap-2 border border-indigo-200 shadow-sm">
+                                        <span x-text="s.name_supplier"></span>
+                                        <button type="button" @click="removeStagedSupplier(s.id_supplier)" class="p-0.5 hover:bg-indigo-200 rounded-full transition-colors text-indigo-400 hover:text-indigo-600">
+                                            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                                            </svg>
+                                        </button>
+                                    </div>
+                                </template>
+                            </div>
+                        </template>
+                    </div>
+
+                    {{-- Connected Suppliers Table --}}
+                    {{-- Hidden Inputs for Form Submission --}}
+                    <template x-for="s in selectedUnit.suppliers" :key="s.id_supplier">
+                        <input type="hidden" name="supplier_ids[]" :value="s.id_supplier">
+                    </template>
+
+                    <div class="bg-white rounded-xl overflow-hidden border border-slate-200 shadow-sm">
+                        <div class="overflow-x-auto">
+                            <table class="w-full text-left text-sm">
+                                <thead>
+                                    <tr class="bg-indigo-600/5 text-[11px] font-bold text-indigo-600/60 uppercase tracking-widest border-b border-indigo-600/10">
+                                        <th class="px-5 py-4">Nama Supplier</th>
+                                        <th class="px-5 py-4">Tipe</th>
+                                        <th class="px-5 py-4">Kontak</th>
+                                        <th class="px-5 py-4 text-center">Aksi</th>
+                                    </tr>
+                                </thead>
+                                <tbody class="divide-y divide-slate-100 bg-white">
+                                    <template x-if="selectedUnit.suppliers && selectedUnit.suppliers.length > 0">
+                                        <template x-for="s in selectedUnit.suppliers" :key="s.id_supplier">
+                                            <tr class="hover:bg-indigo-50/30 transition-colors">
+                                                <td class="px-5 py-4 align-top">
+                                                    <div class="font-bold text-slate-800 text-sm" x-text="s.name_supplier"></div>
+                                                </td>
+                                                <td class="px-5 py-4 align-top">
+                                                    <span class="px-2 py-0.5 rounded-full text-[10px] font-bold uppercase border bg-indigo-50 text-indigo-600 border-indigo-100" x-text="s.type_supplier || '-'"></span>
+                                                </td>
+                                                <td class="px-5 py-4 align-top">
+                                                    <div class="font-bold text-slate-700 text-sm" x-text="s.phone || '-'"></div>
+                                                    <div class="text-[10px] text-slate-400 mt-0.5" x-text="s.leader_name || ''"></div>
+                                                </td>
+                                                <td class="px-5 py-4 text-center align-top">
+                                                    <button type="button" @click="unlinkSupplier(s)"
+                                                        class="p-2 text-rose-500 hover:bg-rose-50 rounded-lg transition-all" title="Lepas Tautan">
+                                                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.875 18.825A10.05 10.05 0 0112 19c-4.478 0-8.268-2.943-9.543-7a9.97 9.97 0 011.563-3.029m5.858.908a3 3 0 114.243 4.243M9.878 9.878l4.242 4.242M9.88 9.88l-3.29-3.29m7.532 7.532l3.29 3.29M3 3l18 18" />
+                                                        </svg>
+                                                    </button>
+                                                </td>
+                                            </tr>
+                                        </template>
+                                    </template>
+                                    <template x-if="!selectedUnit.suppliers || selectedUnit.suppliers.length === 0">
+                                        <tr>
+                                            <td colspan="4" class="px-5 py-12 text-center">
+                                                <div class="flex flex-col items-center">
+                                                    <div class="p-3 bg-slate-50 rounded-full mb-3">
+                                                        <svg class="w-10 h-10 text-slate-200" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
+                                                        </svg>
+                                                    </div>
+                                                    <p class="text-[11px] font-bold uppercase tracking-widest text-slate-400 italic">Belum ada supplier terhubung</p>
+                                                    <p class="text-[10px] text-slate-300 mt-1">Gunakan alat pencarian atau tambah supplier baru untuk mengisi daftar ini</p>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                    </template>
+                                </tbody>
+                            </table>
+                        </div>
                     </div>
                 </div>
 
                 {{-- SECTION 5: DAFTAR PM --}}
                 <div class="pt-10 border-t border-gray-100"
-                @beneficiary-created-integrated.window="
+                    @beneficiary-created-integrated.window="
                     selectedUnit.beneficiaries.push($event.detail.beneficiary); 
                     allBeneficiaryList.push($event.detail.beneficiary);
                     showCreateBeneficiaryModal = false
                 "
-                @beneficiary-updated-integrated.window="
+                    @beneficiary-updated-integrated.window="
                     const idx = selectedUnit.beneficiaries.findIndex(b => b.id_beneficiary === $event.detail.beneficiary.id_beneficiary);
                     if (idx !== -1) selectedUnit.beneficiaries[idx] = $event.detail.beneficiary;
                     const idxAll = allBeneficiaryList.findIndex(b => b.id_beneficiary === $event.detail.beneficiary.id_beneficiary);
                     if (idxAll !== -1) allBeneficiaryList[idxAll] = $event.detail.beneficiary;
                     showEditBeneficiaryModal = false
-                "
-                >
+                ">
                     <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-6 gap-4">
                         <div class="flex items-center gap-3">
                             <span class="p-1.5 bg-indigo-50 text-indigo-600 rounded-lg">
@@ -290,9 +411,9 @@
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
                                 </svg>
                             </span>
-                            <h3 class="text-sm font-bold uppercase tracking-widest text-indigo-600">Penerima Manfaat (PM) Terhubung</h3>
+                            <h3 class="text-sm font-bold uppercase tracking-widest text-indigo-600">Penerima Manfaat Terhubung</h3>
                         </div>
-                        
+
                         <div class="flex items-center gap-3">
                             <button type="button" @click="$dispatch('open-create-beneficiary')" class="px-4 py-2 bg-emerald-50 text-emerald-600 border border-emerald-100 rounded-lg text-xs font-bold uppercase tracking-wider hover:bg-emerald-100 transition-all flex items-center">
                                 <svg class="w-3.5 h-3.5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -311,8 +432,8 @@
                                 <input type="text" x-model="searchTerm" placeholder="Cari Nama atau Kode PM..." class="w-full px-4 py-2.5 bg-white border border-slate-200 rounded-lg text-sm focus:ring-2 focus:ring-indigo-500 outline-none">
                                 <div x-show="searchTerm && filteredAllBeneficiaries.length > 0" class="absolute z-[100] left-0 right-0 mt-1 bg-white border border-slate-200 rounded-lg shadow-xl overflow-hidden max-h-60 overflow-y-auto">
                                     <template x-for="item in filteredAllBeneficiaries" :key="item.id_beneficiary">
-                                        <button type="button" 
-                                            @click="if(!item.id_sppg_unit) addStagedBeneficiary(item)" 
+                                        <button type="button"
+                                            @click="if(!item.id_sppg_unit) addStagedBeneficiary(item)"
                                             :disabled="item.id_sppg_unit !== null"
                                             class="w-full text-left px-4 py-3 hover:bg-indigo-50 flex flex-row items-center justify-between border-b border-slate-50 last:border-0 group transition-all"
                                             :class="item.id_sppg_unit ? 'opacity-60 cursor-not-allowed bg-slate-50' : 'cursor-pointer'">
@@ -338,7 +459,7 @@
                                     <p class="text-[10px] font-bold text-slate-400 uppercase tracking-widest italic">Tidak ada PM ditemukan</p>
                                 </div>
                             </div>
-                            <button type="button" 
+                            <button type="button"
                                 @click="linkStagedBeneficiaries()"
                                 :disabled="stagedBeneficiaries.length === 0"
                                 class="px-6 py-2.5 bg-indigo-600 text-white rounded-lg text-xs font-bold uppercase transition-all hover:bg-indigo-700 disabled:bg-slate-300">
@@ -367,7 +488,7 @@
                     <template x-for="b in selectedUnit.beneficiaries" :key="b.id_beneficiary">
                         <input type="hidden" name="beneficiary_ids[]" :value="b.id_beneficiary">
                     </template>
-                    
+
                     <div class="bg-white rounded-xl overflow-hidden border border-slate-200 shadow-sm">
                         <div class="overflow-x-auto custom-scrollbar">
                             <table class="w-full text-left text-sm">
@@ -406,7 +527,9 @@
                                                     <div class="text-slate-600 line-clamp-2 text-sm" x-text="beneficiary.address || '-'"></div>
                                                     <div class="text-[10px] text-slate-400 mt-1" x-text="(beneficiary.village || '-') + ', ' + (beneficiary.district || '-') + ', ' + (beneficiary.regency || '-')"></div>
                                                     <div class="mt-2 flex items-center text-[10px] font-bold text-indigo-500">
-                                                        <svg class="w-3.5 h-3.5 mr-1" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5a2.5 2.5 0 010-5 2.5 2.5 0 010 5z"/></svg>
+                                                        <svg class="w-3.5 h-3.5 mr-1" fill="currentColor" viewBox="0 0 24 24">
+                                                            <path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5a2.5 2.5 0 010-5 2.5 2.5 0 010 5z" />
+                                                        </svg>
                                                         <span x-text="(beneficiary.latitude_gps && beneficiary.longitude_gps) ? beneficiary.latitude_gps.slice(0,10) + ', ' + beneficiary.longitude_gps.slice(0,10) : 'GPS Tidak Ada'"></span>
                                                     </div>
                                                 </td>
@@ -416,21 +539,21 @@
                                                 </td>
                                                 <td class="px-5 py-4 text-center align-top">
                                                     <div class="flex justify-center items-center gap-1">
-                                                        <button type="button" 
+                                                        <button type="button"
                                                             @click="$dispatch('open-edit-beneficiary', { beneficiary: beneficiary })"
                                                             class="p-2 text-indigo-500 hover:bg-indigo-50 rounded-lg transition-all" title="Ubah Data PM">
                                                             <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
                                                             </svg>
                                                         </button>
-                                                        <button type="button" 
+                                                        <button type="button"
                                                             @click="unlinkBeneficiary(beneficiary)"
                                                             class="p-2 text-rose-500 hover:bg-rose-50 rounded-lg transition-all" title="Lepas Tautan">
                                                             <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.875 18.825A10.05 10.05 0 0112 19c-4.478 0-8.268-2.943-9.543-7a9.97 9.97 0 011.563-3.029m5.858.908a3 3 0 114.243 4.243M9.878 9.878l4.242 4.242M9.88 9.88l-3.29-3.29m7.532 7.532l3.29 3.29M3 3l18 18" />
-                                                        </svg>
-                                                    </button>
-                                                </div>
+                                                            </svg>
+                                                        </button>
+                                                    </div>
                                                 </td>
                                             </tr>
                                         </template>
@@ -458,13 +581,15 @@
 
                 {{-- SECTION 6: SOSIAL MEDIA --}}
                 <div class="pt-10 border-t border-gray-100">
-                    <h3 class="text-sm font-bold uppercase tracking-widest text-indigo-600 mb-6">Sosial Media <span class="text-slate-400 font-normal normal-case tracking-normal text-xs">(Opsional)</span></h3>
+                    <h3 class="text-sm font-bold uppercase tracking-widest text-indigo-600 mb-6">Sosial Media</h3>
                     <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
                         <div>
                             <label class="text-[11px] font-bold text-gray-500 uppercase tracking-wider">Facebook</label>
                             <div class="flex mt-2 rounded-lg overflow-hidden ring-1 ring-gray-200 focus-within:ring-2 focus-within:ring-indigo-400">
                                 <span class="px-3 py-2.5 bg-gray-100 text-blue-600 text-xs font-bold flex items-center shrink-0">
-                                    <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24"><path d="M18 2h-3a5 5 0 00-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 011-1h3z"/></svg>
+                                    <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24">
+                                        <path d="M18 2h-3a5 5 0 00-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 011-1h3z" />
+                                    </svg>
                                 </span>
                                 <input type="url" name="facebook_url" id="f_facebook" class="flex-1 px-3 py-2.5 bg-gray-50 border-none text-sm focus:outline-none focus:ring-0" placeholder="https://facebook.com/...">
                             </div>
@@ -473,7 +598,11 @@
                             <label class="text-[11px] font-bold text-gray-500 uppercase tracking-wider">Instagram</label>
                             <div class="flex mt-2 rounded-lg overflow-hidden ring-1 ring-gray-200 focus-within:ring-2 focus-within:ring-indigo-400">
                                 <span class="px-3 py-2.5 bg-gray-100 text-pink-500 text-xs font-bold flex items-center shrink-0">
-                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect x="2" y="2" width="20" height="20" rx="5" ry="5"/><path d="M16 11.37A4 4 0 1112.63 8 4 4 0 0116 11.37z"/><line x1="17.5" y1="6.5" x2="17.51" y2="6.5"/></svg>
+                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                                        <rect x="2" y="2" width="20" height="20" rx="5" ry="5" />
+                                        <path d="M16 11.37A4 4 0 1112.63 8 4 4 0 0116 11.37z" />
+                                        <line x1="17.5" y1="6.5" x2="17.51" y2="6.5" />
+                                    </svg>
                                 </span>
                                 <input type="url" name="instagram_url" id="f_instagram" class="flex-1 px-3 py-2.5 bg-gray-50 border-none text-sm focus:outline-none focus:ring-0" placeholder="https://instagram.com/...">
                             </div>
@@ -482,7 +611,9 @@
                             <label class="text-[11px] font-bold text-gray-500 uppercase tracking-wider">TikTok</label>
                             <div class="flex mt-2 rounded-lg overflow-hidden ring-1 ring-gray-200 focus-within:ring-2 focus-within:ring-indigo-400">
                                 <span class="px-3 py-2.5 bg-gray-100 text-slate-800 text-xs font-bold flex items-center shrink-0">
-                                    <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24"><path d="M19.59 6.69a4.83 4.83 0 01-3.77-4.25V2h-3.45v13.67a2.89 2.89 0 01-2.88 2.5 2.89 2.89 0 01-2.89-2.89 2.89 2.89 0 012.89-2.89c.28 0 .54.04.79.1V9.01a6.33 6.33 0 00-.79-.05 6.34 6.34 0 00-6.34 6.34 6.34 6.34 0 006.34 6.34 6.34 6.34 0 006.33-6.34V8.69a8.17 8.17 0 004.78 1.52V6.75a4.85 4.85 0 01-1.01-.06z"/></svg>
+                                    <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24">
+                                        <path d="M19.59 6.69a4.83 4.83 0 01-3.77-4.25V2h-3.45v13.67a2.89 2.89 0 01-2.88 2.5 2.89 2.89 0 01-2.89-2.89 2.89 2.89 0 012.89-2.89c.28 0 .54.04.79.1V9.01a6.33 6.33 0 00-.79-.05 6.34 6.34 0 00-6.34 6.34 6.34 6.34 0 006.34 6.34 6.34 6.34 0 006.33-6.34V8.69a8.17 8.17 0 004.78 1.52V6.75a4.85 4.85 0 01-1.01-.06z" />
+                                    </svg>
                                 </span>
                                 <input type="url" name="tiktok_url" id="f_tiktok" class="flex-1 px-3 py-2.5 bg-gray-50 border-none text-sm focus:outline-none focus:ring-0" placeholder="https://tiktok.com/@...">
                             </div>
@@ -554,19 +685,54 @@
         let hasLocalError = false;
 
         // Validasi Sisi Client
-        const fields = [
-            { id: 'f_name',    msg: 'Nama SPPG wajib diisi' },
-            { id: 'f_id',      msg: 'ID SPPG wajib diisi' },
-            { id: 'f_code',    msg: 'Kode SPPG wajib diisi' },
-            { id: 'f_leader',  msg: 'Pilihan Kepala SPPG tidak valid' },
-            { id: 'f_status',  msg: 'Pilih status operasional' },
-            { id: 'f_sk_leader',  msg: 'SK Kepala SPPG wajib dipilih' },
-            { id: 'f_prov',    msg: 'Provinsi wajib dipilih' },
-            { id: 'f_reg',     msg: 'Kabupaten wajib dipilih' },
-            { id: 'f_dist',    msg: 'Kecamatan wajib dipilih' },
-            { id: 'f_vill',    msg: 'Desa/Kelurahan wajib dipilih' },
-            { id: 'f_address', msg: 'Alamat wajib diisi' },
-            { id: 'f_lat',     msg: 'Titik GPS belum ditentukan (Klik pada peta)' }
+        const fields = [{
+                id: 'f_name',
+                msg: 'Nama SPPG wajib diisi'
+            },
+            {
+                id: 'f_id',
+                msg: 'ID SPPG wajib diisi'
+            },
+            {
+                id: 'f_code',
+                msg: 'Kode SPPG wajib diisi'
+            },
+            {
+                id: 'f_leader',
+                msg: 'Pilihan Kepala SPPG tidak valid'
+            },
+            {
+                id: 'f_status',
+                msg: 'Pilih status operasional'
+            },
+            {
+                id: 'f_sk_leader',
+                msg: 'SK Kepala SPPG wajib dipilih'
+            },
+            {
+                id: 'f_prov',
+                msg: 'Provinsi wajib dipilih'
+            },
+            {
+                id: 'f_reg',
+                msg: 'Kabupaten wajib dipilih'
+            },
+            {
+                id: 'f_dist',
+                msg: 'Kecamatan wajib dipilih'
+            },
+            {
+                id: 'f_vill',
+                msg: 'Desa/Kelurahan wajib dipilih'
+            },
+            {
+                id: 'f_address',
+                msg: 'Alamat wajib diisi'
+            },
+            {
+                id: 'f_lat',
+                msg: 'Titik GPS belum ditentukan (Klik pada peta)'
+            }
         ];
 
         fields.forEach(f => {
@@ -584,7 +750,10 @@
 
         if (hasLocalError) {
             const first = document.querySelector('.input-error');
-            if (first) first.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            if (first) first.scrollIntoView({
+                behavior: 'smooth',
+                block: 'center'
+            });
             return;
         }
 
@@ -617,13 +786,13 @@
                 if (result.errors) {
                     Object.keys(result.errors).forEach(key => {
                         let fieldId = 'f_' + key;
-                        if (key === 'id_sppg_unit')          fieldId = 'f_id';
-                        if (key === 'code_sppg_unit')        fieldId = 'f_code';
-                        if (key === 'operational_date')      fieldId = 'f_op_date';
-                        if (key === 'photo')                 fieldId = 'create_photo';
-                        if (key === 'id_sk_leader')          fieldId = 'f_sk_leader';
-                        if (key === 'id_sk_nutritionist')    fieldId = 'f_sk_nutritionist';
-                        if (key === 'id_sk_accountant')      fieldId = 'f_sk_accountant';
+                        if (key === 'id_sppg_unit') fieldId = 'f_id';
+                        if (key === 'code_sppg_unit') fieldId = 'f_code';
+                        if (key === 'operational_date') fieldId = 'f_op_date';
+                        if (key === 'photo') fieldId = 'create_photo';
+                        if (key === 'id_sk_leader') fieldId = 'f_sk_leader';
+                        if (key === 'id_sk_nutritionist') fieldId = 'f_sk_nutritionist';
+                        if (key === 'id_sk_accountant') fieldId = 'f_sk_accountant';
 
                         result.errors[key].forEach(msg => {
                             showFieldError(fieldId, msg);
@@ -631,7 +800,10 @@
                     });
 
                     const firstServerErr = document.querySelector('.input-error');
-                    if (firstServerErr) firstServerErr.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                    if (firstServerErr) firstServerErr.scrollIntoView({
+                        behavior: 'smooth',
+                        block: 'center'
+                    });
                 }
             }
         } catch (err) {
@@ -643,7 +815,7 @@
         }
     };
     const occupiedPeople = @json($occupiedPeople ?? []);
-    
+
     function checkSppgPersonnelOccupancy(id, slug) {
         const el = document.getElementById(id);
         if (!el) return;
@@ -662,7 +834,7 @@
             warnEl.classList.add('hidden');
             return;
         }
-        
+
         if (occupiedPeople[slug] && occupiedPeople[slug].includes(parseInt(personId))) {
             warnEl.innerHTML = `<i class="fas fa-info-circle mr-1"></i> Terpilih di unit lain. Jika disimpan, ia akan <strong>DIPINDAHKAN</strong> ke unit ini.`;
             warnEl.classList.remove('hidden');
@@ -774,17 +946,19 @@
         const container = document.getElementById('map-create');
         if (!container) return;
 
-        // Cek jika sudah ada instance, tinggal resize
+        // Cek jika sudah ada instance
         if (window.createMapInstance) {
-            setTimeout(() => {
-                window.createMapInstance.invalidateSize();
-            }, 300);
+            setTimeout(() => window.createMapInstance.invalidateSize(), 150);
+            setTimeout(() => window.createMapInstance.invalidateSize(), 600);
             return;
         }
 
         const bulelengCoords = [-8.1127, 115.0911];
         window.createMapInstance = L.map('map-create').setView(bulelengCoords, 12);
-        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png').addTo(window.createMapInstance);
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            maxZoom: 19,
+            attribution: '© OpenStreetMap'
+        }).addTo(window.createMapInstance);
 
         window.createMapInstance.on('click', function(e) {
             if (window.createMarkerInstance) {
@@ -801,12 +975,11 @@
             }
             document.getElementById('f_lat').value = e.latlng.lat.toFixed(8);
             document.getElementById('f_lng').value = e.latlng.lng.toFixed(8);
-            clearFieldError('f_lat');
+            if (typeof clearFieldError === 'function') clearFieldError('f_lat');
         });
 
-        setTimeout(() => {
-            window.createMapInstance.invalidateSize();
-        }, 500);
+        setTimeout(() => window.createMapInstance.invalidateSize(), 150);
+        setTimeout(() => window.createMapInstance.invalidateSize(), 600);
     }
 
     (function() {

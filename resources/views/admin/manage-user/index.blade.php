@@ -205,7 +205,7 @@
                                 </tr>
                                 @empty
                                 <tr>
-                                    <td colspan="5" class="px-6 py-12 text-center">
+                                    <td colspan="6" class="px-6 py-12 text-center">
                                         <div class="flex flex-col items-center justify-center">
                                             <div class="p-3 bg-slate-50 rounded-full mb-3">
                                                 <svg class="w-8 h-8 text-slate-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -260,17 +260,14 @@
                         {{-- 1. Judul --}}
                         <h3 class="font-bold text-slate-700 uppercase tracking-wider text-[14px]">Daftar Seluruh Pengguna</h3>
 
-                        {{-- Container Aksi: Flex-row di mobile agar tombol & input sebaris --}}
-                        <div class="flex flex-row items-center gap-3 w-full md:w-auto">
-
-                            {{-- 2. Grup Tombol: Berjejer di kiri, teks hilang di layar kecil --}}
-                            <div class="flex items-center gap-2 shrink-0">
+                        <div class="flex flex-col md:flex-row items-stretch md:items-center gap-4">
+                            <div class="flex items-center gap-2 overflow-x-auto pb-1 md:pb-0 hide-scrollbar shrink-0">
                                 {{-- Tombol Export --}}
                                 <button type="button" onclick="openExportModal()" class="flex items-center justify-center p-2.5 md:px-4 text-[11px] font-bold uppercase tracking-wider text-emerald-600 bg-white border border-emerald-200 rounded-lg hover:bg-emerald-600 hover:text-white transition-all cursor-pointer shadow-sm">
                                     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="w-4 h-4">
                                         <path fill-rule="evenodd" d="M12 2.25a.75.75 0 0 1 .75.75v11.69l3.22-3.22a.75.75 0 1 1 1.06 1.06l-4.5 4.5a.75.75 0 0 1-1.06 0l-4.5-4.5a.75.75 0 1 1 1.06-1.06l3.22 3.22V3a.75.75 0 0 1 .75-.75Zm-9 13.5a.75.75 0 0 1 .75.75v2.25a1.5 1.5 0 0 0 1.5 1.5h13.5a1.5 1.5 0 0 0 1.5-1.5V16.5a.75.75 0 0 1 1.5 0v2.25a3 3 0 0 1-3 3H5.25a3 3 0 0 1-3-3V16.5a.75.75 0 0 1 .75-.75Z" clip-rule="evenodd" />
                                     </svg>
-                                    <span class="hidden md:inline ml-2">Export</span>
+                                    <span class="hidden sm:inline ml-2 text-nowrap">Export</span>
                                 </button>
 
                                 {{-- Tombol Import --}}
@@ -278,39 +275,41 @@
                                     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="w-4 h-4">
                                         <path fill-rule="evenodd" d="M11.47 2.47a.75.75 0 0 1 1.06 0l4.5 4.5a.75.75 0 1 1-1.06 1.06l-3.22-3.22V16.5a.75.75 0 0 1-1.5 0V4.81L8.03 8.03a.75.75 0 0 1-1.06-1.06l4.5-4.5ZM3 15.75a.75.75 0 0 1 .75.75v2.25a1.5 1.5 0 0 0 1.5 1.5h13.5a1.5 1.5 0 0 0 1.5-1.5V16.5a.75.75 0 0 1 1.5 0v2.25a3 3 0 0 1-3 3H5.25a3 3 0 0 1-3-3V16.5a.75.75 0 0 1 .75-.75Z" clip-rule="evenodd" />
                                     </svg>
-                                    <span class="hidden md:inline ml-2">Import</span>
+                                    <span class="hidden sm:inline ml-2 text-nowrap">Import</span>
                                 </button>
 
                                 {{-- Tombol Tambah --}}
                                 <button type="button" onclick="openAddUserModal()" class="flex items-center justify-center p-2.5 md:px-4 text-[11px] font-bold uppercase tracking-wider text-indigo-600 bg-white border border-indigo-200 rounded-lg hover:bg-indigo-600 hover:text-white transition-all cursor-pointer shadow-sm">
-                                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="w-4 h-4">
-                                        <path d="M6.25 6.375a4.125 4.125 0 1 1 8.25 0 4.125 4.125 0 0 1-8.25 0ZM3.25 19.125a7.125 7.125 0 0 1 14.25 0v.003l-.001.119a.75.75 0 0 1-.363.63 13.067 13.067 0 0 1-6.761 1.873c-2.472 0-4.786-.684-6.76-1.873a.75.75 0 0 1-.364-.63l-.001-.122ZM19.75 7.5a.75.75 0 0 0-1.5 0v2.25H16a.75.75 0 0 0 0 1.5h2.25v2.25a.75.75 0 0 0 1.5 0v-2.25H22a.75.75 0 0 0 0-1.5h-2.25V7.5Z" />
+                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
                                     </svg>
-                                    <span class="hidden md:inline ml-2 text-nowrap">Tambah</span>
+                                    <span class="hidden sm:inline ml-2 text-nowrap">Tambah</span>
                                 </button>
                             </div>
 
-                            {{-- 3. Input Pencarian: Melebar menggunakan flex-grow --}}
-                            <div class="relative flex-grow md:flex-initial md:w-64 text-slate-800">
-                                <span class="absolute inset-y-0 left-0 flex items-center pl-3 text-slate-400">
-                                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="w-4 h-4">
-                                        <path fill-rule="evenodd" d="M10.5 3.75a6.75 6.75 0 1 0 0 13.5 6.75 6.75 0 0 0 0-13.5ZM2.25 10.5a8.25 8.25 0 1 1 14.59 5.28l4.69 4.69a.75.75 0 1 1-1.06 1.06l-4.69-4.69A8.25 8.25 0 0 1 2.25 10.5Z" clip-rule="evenodd" />
-                                    </svg>
-                                </span>
-                                <input type="text"
-                                    id="search-all"
-                                    data-table="all"
-                                    class="live-search-input text-xs border-slate-200 rounded-lg pl-9 pr-3 py-2.5 w-full focus:ring-2 focus:ring-indigo-500 outline-none transition-all bg-white shadow-sm"
-                                    placeholder="Cari nama atau email..."
-                                    value="{{ request('search_all') }}"
-                                    autocomplete="off">
-                            </div>
+                            <div class="flex items-center gap-2">
+                                {{-- Input Pencarian --}}
+                                <div class="relative grow md:w-72 lg:w-80 text-slate-800">
+                                    <span class="absolute inset-y-0 left-0 flex items-center pl-3 text-slate-400">
+                                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="w-4 h-4">
+                                            <path fill-rule="evenodd" d="M10.5 3.75a6.75 6.75 0 1 0 0 13.5 6.75 6.75 0 0 0 0-13.5ZM2.25 10.5a8.25 8.25 0 1 1 14.59 5.28l4.69 4.69a.75.75 0 1 1-1.06 1.06l-4.69-4.69A8.25 8.25 0 0 1 2.25 10.5Z" clip-rule="evenodd" />
+                                        </svg>
+                                    </span>
+                                    <input type="text"
+                                        id="search-all"
+                                        data-table="all"
+                                        class="live-search-input text-xs border-slate-200 rounded-lg pl-9 pr-3 py-2.5 w-full focus:ring-2 focus:ring-indigo-500 outline-none transition-all bg-white shadow-sm"
+                                        placeholder="Cari nama atau email..."
+                                        value="{{ request('search_all') }}"
+                                        autocomplete="off">
+                                </div>
 
-                            <button type="button" onclick="resetFiltersUser()" class="flex items-center justify-center p-2.5 text-rose-500 bg-white border border-rose-100 rounded-lg hover:bg-rose-50 transition-all cursor-pointer shadow-sm" title="Reset Filter">
-                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
-                                </svg>
-                            </button>
+                                <button type="button" onclick="resetFiltersUser()" class="flex items-center justify-center p-2.5 text-rose-500 bg-white border border-rose-100 rounded-lg hover:bg-rose-50 transition-all cursor-pointer shadow-sm shrink-0" title="Reset Filter">
+                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+                                    </svg>
+                                </button>
+                            </div>
                         </div>
                     </div>
 
@@ -321,7 +320,7 @@
                             <select id="filter-user-status" class="filter-input-user w-full text-[11px] border-slate-200 rounded-lg py-1.5 focus:ring-1 focus:ring-indigo-500 bg-white">
                                 <option value="">Semua Status</option>
                                 <option value="active" {{ request('status_user') === 'active' ? 'selected' : '' }}>Aktif</option>
-                                <option value="pending" {{ request('status_user') === 'pending' ? 'selected' : '' }}>Pending</option>
+                                <option value="pending" {{ request('status_user') === 'pending' ? 'selected' : '' }}>Tertunda</option>
                             </select>
                         </div>
                         <div>
@@ -371,7 +370,7 @@
                             </select>
                         </div>
                         <div>
-                            <label class="text-[9px] font-bold text-slate-400 uppercase tracking-widest block mb-1 px-1">Kabupaten/Kota</label>
+                            <label class="text-[9px] font-bold text-slate-400 uppercase tracking-widest block mb-1 px-1">Kabupaten</label>
                             <select id="filter-user-regency" {{ empty($filterData['regencies']) ? 'disabled' : '' }} class="filter-input-user w-full text-[11px] border-slate-200 rounded-lg py-1.5 focus:ring-1 focus:ring-indigo-500 bg-white disabled:bg-slate-100 disabled:text-slate-400">
                                 <option value="">Semua Kabupaten/Kota</option>
                                 @foreach($filterData['regencies'] as $r)
@@ -448,7 +447,7 @@
                                     </td>
                                     <td class="px-6 py-4 text-center">
                                         <span class="text-xs font-medium px-1.5 py-0.5 rounded border capitalize {{ $u->status_user == 'active' ? 'text-emerald-600 bg-emerald-50 border-emerald-100' : 'text-yellow-600 bg-yellow-50 border-yellow-100' }}">
-                                            {{ $u->status_user }}
+                                            {{ $u->status_user == 'active' ? 'Aktif' : 'Tertunda' }}
                                         </span>
                                     </td>
                                     <td class="px-6 py-4 text-right">
@@ -630,7 +629,7 @@
                                     </td>
                                     <td class="px-6 py-4 text-center">
                                         <span class="text-xs font-medium px-1.5 py-0.5 rounded border capitalize text-rose-600 bg-rose-50 border-rose-100">
-                                            {{ $tu->status_user }}
+                                            {{ $tu->status_user == 'active' ? 'Aktif' : 'Tertunda' }}
                                         </span>
                                     </td>
                                     <td class="px-6 py-4 text-center flex justify-center items-center gap-2">
@@ -715,6 +714,7 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.13/cropper.min.js"></script>
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 
+    @php $posMetaForJs = $positions->pluck('slug_position', 'id_ref_position') ?? []; @endphp
     <script>
         let searchTimer;
 
@@ -887,7 +887,7 @@
             }
         });
         // ── FILTER UNIT PENUGASAN BERDASARKAN JABATAN (per baris tabel verifikasi) ──
-        const inlinePosMetaRaw = @json($positions->pluck('slug_position', 'id_ref_position') ?? []);
+        const inlinePosMetaRaw = @json($posMetaForJs);
         const inlineUnitRoles = ['kasppg', 'ag', 'ak'];
         const inlineSlugToAttr = {
             kasppg: 'leader',

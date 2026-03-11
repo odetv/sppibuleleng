@@ -22,9 +22,11 @@
         .dropdown-sppg-scroll::-webkit-scrollbar {
             width: 4px;
         }
+
         .dropdown-sppg-scroll::-webkit-scrollbar-track {
             background: #f1f1f1;
         }
+
         .dropdown-sppg-scroll::-webkit-scrollbar-thumb {
             background: #cbd5e1;
             border-radius: 4px;
@@ -45,8 +47,8 @@
             <div class="bg-white rounded-xl border border-slate-200 overflow-hidden shadow-sm">
                 <div class="p-6 md:p-8 flex flex-col md:flex-row justify-between gap-4">
                     <div>
-                        <h2 class="text-xl font-bold text-slate-800 uppercase leading-tight">Manajemen SK Penugasan</h2>
-                        <p class="text-sm text-slate-400 font-medium mt-1">Manajemen Surat Keputusan & BA Verifikasi Validasi</p>
+                        <h2 class="text-xl font-bold text-slate-800 uppercase leading-tight">Manajemen SK</h2>
+                        <p class="text-sm text-slate-400 font-medium mt-1">Manajemen Surat Keputusan & BA Verifikasi Validasi Penugasan</p>
                     </div>
                     <div class="flex items-center">
                         <span class="inline-flex items-center px-4 py-2 text-[10px] font-bold rounded bg-white text-slate-600 uppercase border border-slate-200 tracking-widest shadow-sm">
@@ -61,51 +63,55 @@
             <div class="bg-white rounded-xl border border-slate-200 overflow-hidden shadow-sm">
                 <div class="p-6 border-b border-slate-100 bg-slate-50/50 flex flex-col md:flex-row md:justify-between md:items-center gap-4">
                     <h3 class="font-bold text-slate-700 uppercase tracking-wider text-[14px]">Daftar Seluruh Dokumen SK</h3>
-                    <div class="flex flex-wrap items-center gap-3">
+                    <div class="flex flex-col md:flex-row items-stretch md:items-center gap-4">
+                        <div class="flex items-center gap-2 overflow-x-auto pb-1 md:pb-0 hide-scrollbar shrink-0">
 
-                        {{-- Tombol Export --}}
-                        <button type="button" onclick="openExportModal()" class="flex items-center justify-center p-2.5 md:px-4 text-[11px] font-bold uppercase tracking-wider text-emerald-600 bg-white border border-emerald-200 rounded-lg hover:bg-emerald-600 hover:text-white transition-all cursor-pointer shadow-sm">
-                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="w-4 h-4">
-                                <path fill-rule="evenodd" d="M12 2.25a.75.75 0 0 1 .75.75v11.69l3.22-3.22a.75.75 0 1 1 1.06 1.06l-4.5 4.5a.75.75 0 0 1-1.06 0l-4.5-4.5a.75.75 0 1 1 1.06-1.06l3.22 3.22V3a.75.75 0 0 1 .75-.75Zm-9 13.5a.75.75 0 0 1 .75.75v2.25a1.5 1.5 0 0 0 1.5 1.5h13.5a1.5 1.5 0 0 0 1.5-1.5V16.5a.75.75 0 0 1 1.5 0v2.25a3 3 0 0 1-3 3H5.25a3 3 0 0 1-3-3V16.5a.75.75 0 0 1 .75-.75Z" clip-rule="evenodd" />
-                            </svg>
-                            <span class="hidden md:inline ml-2">Export</span>
-                        </button>
-
-                        {{-- Tombol Import --}}
-                        <button type="button" onclick="openImportModal()" class="flex items-center justify-center p-2.5 md:px-4 text-[11px] font-bold uppercase tracking-wider text-amber-600 bg-white border border-amber-200 rounded-lg hover:bg-amber-600 hover:text-white transition-all cursor-pointer shadow-sm">
-                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="w-4 h-4">
-                                <path fill-rule="evenodd" d="M11.47 2.47a.75.75 0 0 1 1.06 0l4.5 4.5a.75.75 0 1 1-1.06 1.06l-3.22-3.22V16.5a.75.75 0 0 1-1.5 0V4.81L8.03 8.03a.75.75 0 0 1-1.06-1.06l4.5-4.5ZM3 15.75a.75.75 0 0 1 .75.75v2.25a1.5 1.5 0 0 0 1.5 1.5h13.5a1.5 1.5 0 0 0 1.5-1.5V16.5a.75.75 0 0 1 1.5 0v2.25a3 3 0 0 1-3 3H5.25a3 3 0 0 1-3-3V16.5a.75.75 0 0 1 .75-.75Z" clip-rule="evenodd" />
-                            </svg>
-                            <span class="hidden md:inline ml-2">Import</span>
-                        </button>
-
-                        {{-- Tombol Tambah --}}
-                        <button @click="showCreateModal = true" class="flex items-center justify-center p-2.5 md:px-4 text-[11px] font-bold uppercase tracking-wider text-indigo-600 bg-white border border-indigo-200 rounded-lg hover:bg-indigo-600 hover:text-white transition-all cursor-pointer shadow-sm">
-                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                            {{-- Tombol Export --}}
+                            <button type="button" onclick="openExportModal()" class="flex items-center justify-center p-2.5 md:px-4 text-[11px] font-bold uppercase tracking-wider text-emerald-600 bg-white border border-emerald-200 rounded-lg hover:bg-emerald-600 hover:text-white transition-all cursor-pointer shadow-sm">
+                                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="w-4 h-4">
+                                    <path fill-rule="evenodd" d="M12 2.25a.75.75 0 0 1 .75.75v11.69l3.22-3.22a.75.75 0 1 1 1.06 1.06l-4.5 4.5a.75.75 0 0 1-1.06 0l-4.5-4.5a.75.75 0 1 1 1.06-1.06l3.22 3.22V3a.75.75 0 0 1 .75-.75Zm-9 13.5a.75.75 0 0 1 .75.75v2.25a1.5 1.5 0 0 0 1.5 1.5h13.5a1.5 1.5 0 0 0 1.5-1.5V16.5a.75.75 0 0 1 1.5 0v2.25a3 3 0 0 1-3 3H5.25a3 3 0 0 1-3-3V16.5a.75.75 0 0 1 .75-.75Z" clip-rule="evenodd" />
                                 </svg>
-                            <span class="hidden md:inline ml-2 text-nowrap">Tambah</span>
-                        </button>
+                                <span class="hidden sm:inline ml-2 text-nowrap">Export</span>
+                            </button>
 
-                        {{-- Search Input (Live Search) --}}
-                        <div class="relative flex-grow md:flex-initial md:w-64 text-slate-800">
-                            <span class="absolute inset-y-0 left-0 flex items-center pl-3 text-slate-400">
+                            {{-- Tombol Import --}}
+                            <button type="button" onclick="openImportModal()" class="flex items-center justify-center p-2.5 md:px-4 text-[11px] font-bold uppercase tracking-wider text-amber-600 bg-white border border-amber-200 rounded-lg hover:bg-amber-600 hover:text-white transition-all cursor-pointer shadow-sm">
+                                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="w-4 h-4">
+                                    <path fill-rule="evenodd" d="M11.47 2.47a.75.75 0 0 1 1.06 0l4.5 4.5a.75.75 0 1 1-1.06 1.06l-3.22-3.22V16.5a.75.75 0 0 1-1.5 0V4.81L8.03 8.03a.75.75 0 0 1-1.06-1.06l4.5-4.5ZM3 15.75a.75.75 0 0 1 .75.75v2.25a1.5 1.5 0 0 0 1.5 1.5h13.5a1.5 1.5 0 0 0 1.5-1.5V16.5a.75.75 0 0 1 1.5 0v2.25a3 3 0 0 1-3 3H5.25a3 3 0 0 1-3-3V16.5a.75.75 0 0 1 .75-.75Z" clip-rule="evenodd" />
+                                </svg>
+                                <span class="hidden sm:inline ml-2 text-nowrap">Import</span>
+                            </button>
+
+                            {{-- Tombol Tambah --}}
+                            <button @click="showCreateModal = true" class="flex items-center justify-center p-2.5 md:px-4 text-[11px] font-bold uppercase tracking-wider text-indigo-600 bg-white border border-indigo-200 rounded-lg hover:bg-indigo-600 hover:text-white transition-all cursor-pointer shadow-sm">
                                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
                                 </svg>
-                            </span>
-                            <input type="text"
-                                id="sk-search"
-                                class="live-search-input text-xs border-slate-200 rounded-lg pl-9 pr-3 py-2.5 w-full focus:ring-2 focus:ring-indigo-500 outline-none transition-all bg-white shadow-sm"
-                                placeholder="Cari Nomor SK atau BA..." value="{{ request('search') }}"
-                                autocomplete="off">
+                                <span class="hidden sm:inline ml-2 text-nowrap">Tambah</span>
+                            </button>
                         </div>
 
-                        <button type="button" onclick="resetFilters()" class="flex items-center justify-center p-2.5 text-rose-500 bg-white border border-rose-100 rounded-lg hover:bg-rose-50 transition-all cursor-pointer shadow-sm" title="Reset Filter">
-                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
-                            </svg>
-                        </button>
+                        <div class="flex items-center gap-2">
+                            {{-- Search Input (Live Search) --}}
+                            <div class="relative grow md:w-72 lg:w-80 text-slate-800">
+                                <span class="absolute inset-y-0 left-0 flex items-center pl-3 text-slate-400">
+                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                                    </svg>
+                                </span>
+                                <input type="text"
+                                    id="sk-search"
+                                    class="live-search-input text-xs border-slate-200 rounded-lg pl-9 pr-3 py-2.5 w-full focus:ring-2 focus:ring-indigo-500 outline-none transition-all bg-white shadow-sm"
+                                    placeholder="Cari nomor SK atau BA..." value="{{ request('search') }}"
+                                    autocomplete="off">
+                            </div>
+
+                            <button type="button" onclick="resetFilters()" class="flex items-center justify-center p-2.5 text-rose-500 bg-white border border-rose-100 rounded-lg hover:bg-rose-50 transition-all cursor-pointer shadow-sm shrink-0" title="Reset Filter">
+                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+                                </svg>
+                            </button>
+                        </div>
                     </div>
                 </div>
 
@@ -184,22 +190,22 @@
                                             </div>
 
                                             @if($decree->workAssignments->count() > 1)
-                                                <div class="mt-2.5 pt-2.5 border-t border-indigo-200/60 w-full">
-                                                    <ul class="text-[11px] font-medium text-left space-y-1.5 list-none text-indigo-900/80">
-                                                        @foreach($decree->workAssignments as $wa)
-                                                            <li class="leading-tight relative pl-2.5 whitespace-normal">
-                                                                <span class="absolute left-0 top-0 opacity-60 font-medium">-</span>
-                                                                {{ $wa->sppgUnit?->name ?? 'SPPG Dihapus' }}
-                                                            </li>
-                                                        @endforeach
-                                                    </ul>
-                                                </div>
+                                            <div class="mt-2.5 pt-2.5 border-t border-indigo-200/60 w-full">
+                                                <ul class="text-[11px] font-medium text-left space-y-1.5 list-none text-indigo-900/80">
+                                                    @foreach($decree->workAssignments as $wa)
+                                                    <li class="leading-tight relative pl-2.5 whitespace-normal">
+                                                        <span class="absolute left-0 top-0 opacity-60 font-medium">-</span>
+                                                        {{ $wa->sppgUnit?->name ?? 'SPPG Dihapus' }}
+                                                    </li>
+                                                    @endforeach
+                                                </ul>
+                                            </div>
                                             @elseif($decree->workAssignments->count() == 1)
-                                                <div class="mt-2.5 pt-2.5 border-t border-indigo-200/60 w-full">
-                                                    <p class="text-[11px] font-medium text-left leading-tight whitespace-normal text-indigo-900/80">
-                                                        {{ $decree->workAssignments->first()->sppgUnit?->name ?? 'SPPG Dihapus' }}
-                                                    </p>
-                                                </div>
+                                            <div class="mt-2.5 pt-2.5 border-t border-indigo-200/60 w-full">
+                                                <p class="text-[11px] font-medium text-left leading-tight whitespace-normal text-indigo-900/80">
+                                                    {{ $decree->workAssignments->first()->sppgUnit?->name ?? 'SPPG Dihapus' }}
+                                                </p>
+                                            </div>
                                             @endif
                                         </div>
                                     </td>
@@ -207,28 +213,30 @@
                                     {{-- FILE SK --}}
                                     <td class="px-6 py-4">
                                         @if($decree->file_sk)
-                                            @php
-                                                $skFileUrl = '#';
-                                                $skHash = md5($decree->id_assignment_decree . config('app.key'));
-                                                
-                                                if ($decree->workAssignments->isNotEmpty()) {
-                                                    $firstSppg = $decree->workAssignments->first()->id_sppg_unit;
-                                                    $sppgHash = md5($firstSppg . config('app.key'));
-                                                    $skFileUrl = asset("storage/sppgunits/{$sppgHash}/files/{$skHash}/{$decree->file_sk}");
-                                                } else {
-                                                    $posSlug = $decree->position->slug_position ?? 'unknown';
-                                                    $skFileUrl = asset("storage/positions/{$posSlug}/files/{$skHash}/{$decree->file_sk}");
-                                                }
-                                            @endphp
-                                            <a href="{{ $skFileUrl }}" target="_blank" class="inline-flex items-center gap-1.5 px-3 py-1.5 text-[11px] font-bold text-indigo-700 bg-indigo-50 hover:bg-indigo-100 hover:text-indigo-800 rounded-lg transition-colors border border-indigo-100/50">
-                                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>
-                                                Lihat SK
-                                            </a>
+                                        @php
+                                        $skFileUrl = '#';
+                                        $skHash = md5($decree->id_assignment_decree . config('app.key'));
+
+                                        if ($decree->workAssignments->isNotEmpty()) {
+                                        $firstSppg = $decree->workAssignments->first()->id_sppg_unit;
+                                        $sppgHash = md5($firstSppg . config('app.key'));
+                                        $skFileUrl = asset("storage/sppgunits/{$sppgHash}/files/{$skHash}/{$decree->file_sk}");
+                                        } else {
+                                        $posSlug = $decree->position->slug_position ?? 'unknown';
+                                        $skFileUrl = asset("storage/positions/{$posSlug}/files/{$skHash}/{$decree->file_sk}");
+                                        }
+                                        @endphp
+                                        <a href="{{ $skFileUrl }}" target="_blank" class="inline-flex items-center gap-1.5 px-3 py-1.5 text-[11px] font-bold text-indigo-700 bg-indigo-50 hover:bg-indigo-100 hover:text-indigo-800 rounded-lg transition-colors border border-indigo-100/50">
+                                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+                                            </svg>
+                                            Lihat SK
+                                        </a>
                                         @else
-                                            <span class="text-[11px] font-medium text-slate-400 bg-slate-50 px-2 py-1 rounded-md border border-slate-100">Tanpa Berkas</span>
+                                        <span class="text-[11px] font-medium text-slate-400 bg-slate-50 px-2 py-1 rounded-md border border-slate-100">Tanpa Berkas</span>
                                         @endif
                                     </td>
- 
+
                                     {{-- AKSI --}}
                                     <td class="px-6 py-4 text-center">
                                         <div class="flex justify-center items-center gap-1">
@@ -248,15 +256,15 @@
                                                     }
                                                 @endphp
                                                 selectedDecree = eval(<?php echo htmlspecialchars(json_encode([
-                                                'id_assignment_decree' => $decree->id_assignment_decree,
-                                                'no_sk' => $decree->no_sk,
-                                                'file_sk_url' => $skFileUrl,
-                                                'date_sk' => $decree->date_sk,
-                                                'no_ba_verval' => $decree->no_ba_verval,
-                                                'date_ba_verval' => $decree->date_ba_verval,
-                                                'type_sk' => $decree->type_sk,
-                                                'sppg_units' => $decree->workAssignments->pluck('id_sppg_unit')->toArray()
-                                            ])); ?>); showEditModal = true; setTimeout(() => window.dispatchEvent(new CustomEvent('init-edit-sk', { detail: selectedDecree })), 100)"
+                                                                            'id_assignment_decree' => $decree->id_assignment_decree,
+                                                                            'no_sk' => $decree->no_sk,
+                                                                            'file_sk_url' => $skFileUrl,
+                                                                            'date_sk' => $decree->date_sk,
+                                                                            'no_ba_verval' => $decree->no_ba_verval,
+                                                                            'date_ba_verval' => $decree->date_ba_verval,
+                                                                            'type_sk' => $decree->type_sk,
+                                                                            'sppg_units' => $decree->workAssignments->pluck('id_sppg_unit')->toArray()
+                                                                        ])); ?>); showEditModal = true; setTimeout(() => window.dispatchEvent(new CustomEvent('init-edit-sk', { detail: selectedDecree })), 100)"
                                                 title="Edit" class="p-2 text-slate-400 hover:text-emerald-600 cursor-pointer transition-colors hover:bg-emerald-50 rounded-lg">
                                                 <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
                                                     <path d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path>
@@ -273,20 +281,20 @@
                                 </tr>
                                 @empty
                                 <tr>
-                                <td colspan="7" class="px-6 py-12 text-center">
-                                    <div class="flex flex-col items-center justify-center">
-                                        <div class="p-3 bg-slate-50 rounded-full mb-3">
-                                            <svg class="w-8 h-8 text-slate-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
-                                </svg>
+                                    <td colspan="8" class="px-6 py-12 text-center">
+                                        <div class="flex flex-col items-center justify-center">
+                                            <div class="p-3 bg-slate-50 rounded-full mb-3">
+                                                <svg class="w-8 h-8 text-slate-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                                                </svg>
+                                            </div>
+                                            <p class="text-[11px] font-bold uppercase tracking-[0.2em] text-slate-400">
+                                                Belum ada data SK terdaftar
+                                            </p>
+                                            <p class="text-[10px] text-slate-400 mt-1 italic">Coba gunakan kata kunci yang berbeda</p>
                                         </div>
-                                        <p class="text-[11px] font-bold uppercase tracking-[0.2em] text-slate-400">
-                                            Belum ada data SK terdaftar
-                                        </p>
-                                        <p class="text-[10px] text-slate-400 mt-1 italic">Coba gunakan kata kunci yang berbeda</p>
-                                    </div>
-                                </td>
-                            </tr>
+                                    </td>
+                                </tr>
                                 @endforelse
                             </tbody>
                         </table>
@@ -299,7 +307,7 @@
         [&_span]:bg-white [&_span]:text-slate-600 [&_span]:border-slate-200 [&_span]:rounded-lg
         [&_.bg-gray-800]:bg-emerald-600 [&_.bg-gray-800]:text-white [&_.bg-gray-800]:border-emerald-600
         [&_.dark\:bg-gray-800]:bg-white [&_.dark\:text-gray-400]:text-slate-600">
-                        
+
                         {{-- DROPDOWN PER PAGE --}}
                         <div class="flex items-center gap-2">
                             <span class="text-sm text-slate-600">Tampilkan</span>
@@ -338,24 +346,24 @@
 
         function getCurrentUrlModifiers(inputEl = null) {
             let currentUrl = new URL(window.location.href);
-            
+
             // 1. Ambil keyword search terbaru
             const activeSearch = document.getElementById('sk-search');
-            if(activeSearch) currentUrl.searchParams.set('search', activeSearch.value);
-            
+            if (activeSearch) currentUrl.searchParams.set('search', activeSearch.value);
+
             // 2. Ambil nilai filter tanggal
             const activeDateSk = document.getElementById('sk-date-sk');
-            if(activeDateSk) currentUrl.searchParams.set('date_sk', activeDateSk.value);
+            if (activeDateSk) currentUrl.searchParams.set('date_sk', activeDateSk.value);
 
             const activeDateBa = document.getElementById('sk-date-ba');
-            if(activeDateBa) currentUrl.searchParams.set('date_ba', activeDateBa.value);
+            if (activeDateBa) currentUrl.searchParams.set('date_ba', activeDateBa.value);
 
             // 3. Ambil nilai per-page terbaru
             const activePerPage = document.getElementById('sk-per-page');
-            if(activePerPage) currentUrl.searchParams.set('per_page', activePerPage.value);
+            if (activePerPage) currentUrl.searchParams.set('per_page', activePerPage.value);
 
             // Jauhkan parameter page (kembali ke hlmn 1) jika pemicunya BUKAN memencet link pagination
-            if(inputEl) currentUrl.searchParams.delete('page');
+            if (inputEl) currentUrl.searchParams.delete('page');
 
             return currentUrl.toString();
         }
@@ -375,7 +383,7 @@
                     let doc = parser.parseFromString(html, 'text/html');
                     let newContainer = doc.getElementById('sk-table-container');
 
-                    if(newContainer) {
+                    if (newContainer) {
                         // Update konten (Gunakan outerHTML agar div utamanya ikut ter-replace utuh)
                         container.outerHTML = newContainer.outerHTML;
                     }
@@ -438,10 +446,10 @@
             let anchor = e.target.closest('#sk-table-container nav a');
             if (anchor && anchor.getAttribute('href')) {
                 let url = new URL(anchor.getAttribute('href'));
-                
+
                 // Pastikan nilai per_page terbawa saat memencet next page
                 const activePerPage = document.getElementById('sk-per-page');
-                if(activePerPage) url.searchParams.set('per_page', activePerPage.value);
+                if (activePerPage) url.searchParams.set('per_page', activePerPage.value);
 
                 if (url.toString().includes('page=') && !url.toString().startsWith('javascript')) {
                     e.preventDefault();
@@ -450,7 +458,7 @@
             }
         });
     </script>
-    
+
     @include('admin.manage-assignment-decree.partials.modal-import')
     @include('admin.manage-assignment-decree.partials.modal-export')
 </x-app-layout>

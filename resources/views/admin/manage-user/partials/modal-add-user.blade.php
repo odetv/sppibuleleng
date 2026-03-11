@@ -21,7 +21,7 @@
                 <div class="p-8 space-y-5" id="add_user_form_body">
                     {{-- Email --}}
                     <div>
-                        <label class="text-[11px] font-bold text-gray-500 uppercase tracking-wider">Email</label>
+                        <label class="text-[11px] font-bold text-gray-500 uppercase tracking-wider">Email <span class="text-rose-500">*</span></label>
                         <input type="email" name="email" id="add_email" required
                             oninput="checkUniqueness('email', this.value)"
                             placeholder="Cth: user@email.com"
@@ -31,7 +31,7 @@
 
                     {{-- Phone --}}
                     <div>
-                        <label class="text-[11px] font-bold text-gray-500 uppercase tracking-wider">Nomor WhatsApp</label>
+                        <label class="text-[11px] font-bold text-gray-500 uppercase tracking-wider">Telepon (WhatsApp) <span class="text-rose-500">*</span></label>
                         <input type="number" name="phone" id="add_phone" required
                             oninput="checkUniqueness('phone', this.value)"
                             placeholder="Cth: 085xxxxxxxxx"
@@ -41,7 +41,7 @@
 
                     {{-- Role --}}
                     <div>
-                        <label class="text-[11px] font-bold text-gray-500 uppercase tracking-wider">Hak Akses Sistem</label>
+                        <label class="text-[11px] font-bold text-gray-500 uppercase tracking-wider">Hak Akses Sistem <span class="text-rose-500">*</span></label>
                         <select name="id_ref_role" required class="w-full mt-2 px-3 py-2.5 bg-gray-50 border border-slate-200 rounded-lg text-sm outline-none">
                             <option value="" disabled selected>Pilih Role</option>
                             @foreach($roles as $r)

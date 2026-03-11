@@ -48,12 +48,12 @@
                 {{-- SECTION: IDENTITAS DASAR --}}
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-6">
                     <div>
-                        <label class="text-[11px] font-bold text-gray-500 uppercase tracking-wider">Nama Lengkap (Sesuai KTP) <span class="text-red-500">*</span></label>
+                        <label class="text-[11px] font-bold text-gray-500 uppercase tracking-wider">Nama Lengkap (Sesuai KTP) <span class="text-rose-500">*</span></label>
                         <input type="text" name="name" id="f_name" class="w-full mt-2 px-4 py-2.5 bg-gray-50 border-none rounded-lg text-sm focus:ring-2 focus:ring-indigo-500" placeholder="Masukkan Nama Lengkap">
                     </div>
 
                     <div>
-                        <label class="text-[11px] font-bold text-gray-500 uppercase tracking-wider">No. Kartu Keluarga (KK) <span class="text-red-500">*</span></label>
+                        <label class="text-[11px] font-bold text-gray-500 uppercase tracking-wider">No. Kartu Keluarga (KK) <span class="text-rose-500">*</span></label>
                         <input type="text" name="no_kk" id="f_no_kk" maxlength="16" class="w-full mt-2 px-4 py-2.5 bg-gray-50 border-none rounded-lg text-sm focus:ring-2 focus:ring-indigo-500" placeholder="Masukkan Nomor KK">
                     </div>
 
@@ -68,13 +68,13 @@
                     </div>
 
                     <div>
-                        <label class="text-[11px] font-bold text-gray-500 uppercase tracking-wider">Nomor Induk Kependudukan (NIK) <span class="text-red-500">*</span></label>
+                        <label class="text-[11px] font-bold text-gray-500 uppercase tracking-wider">Nomor Induk Kependudukan (NIK) <span class="text-rose-500">*</span></label>
                         <input type="text" name="nik" id="f_nik" maxlength="16" class="w-full mt-2 px-4 py-2.5 bg-gray-50 border-none rounded-lg text-sm focus:ring-2 focus:ring-indigo-500" placeholder="Masukkan NIK">
                     </div>
 
 
                     <div>
-                        <label class="text-[11px] font-bold text-gray-500 uppercase tracking-wider">Jenis Kelamin <span class="text-red-500">*</span></label>
+                        <label class="text-[11px] font-bold text-gray-500 uppercase tracking-wider">Jenis Kelamin <span class="text-rose-500">*</span></label>
                         <select name="gender" id="f_gender" class="w-full mt-2 px-3 py-2.5 bg-gray-50 border-none rounded-lg text-sm focus:ring-2 focus:ring-indigo-500">
                             <option value="" disabled selected>Pilih Jenis Kelamin</option>
                             <option value="L">Laki-laki</option>
@@ -83,17 +83,17 @@
                     </div>
 
                     <div>
-                        <label class="text-[11px] font-bold text-gray-500 uppercase tracking-wider">Tempat Lahir <span class="text-red-500">*</span></label>
+                        <label class="text-[11px] font-bold text-gray-500 uppercase tracking-wider">Tempat Lahir <span class="text-rose-500">*</span></label>
                         <input type="text" name="place_birthday" id="f_place_birthday" class="w-full mt-2 px-4 py-2.5 bg-gray-50 border-none rounded-lg text-sm focus:ring-2 focus:ring-indigo-500" placeholder="Sesuai KTP">
                     </div>
 
                     <div>
-                        <label class="text-[11px] font-bold text-gray-500 uppercase tracking-wider">Tanggal Lahir <span class="text-red-500">*</span></label>
+                        <label class="text-[11px] font-bold text-gray-500 uppercase tracking-wider">Tanggal Lahir <span class="text-rose-500">*</span></label>
                         <input type="date" name="date_birthday" id="f_date_birthday" class="w-full mt-2 px-4 py-2.5 bg-gray-50 border-none rounded-lg text-sm focus:ring-2 focus:ring-indigo-500">
                     </div>
 
                     <div>
-                        <label class="text-[11px] font-bold text-gray-500 uppercase tracking-wider">Agama <span class="text-red-500">*</span></label>
+                        <label class="text-[11px] font-bold text-gray-500 uppercase tracking-wider">Agama <span class="text-rose-500">*</span></label>
                         <select name="religion" id="f_religion" class="w-full mt-2 px-3 py-2.5 bg-gray-50 border-none rounded-lg text-sm focus:ring-2 focus:ring-indigo-500">
                             <option value="" disabled selected>Pilih Agama</option>
                             <option value="Islam">Islam</option>
@@ -106,7 +106,7 @@
                     </div>
 
                     <div>
-                        <label class="text-[11px] font-bold text-gray-500 uppercase tracking-wider">Status Pernikahan <span class="text-red-500">*</span></label>
+                        <label class="text-[11px] font-bold text-gray-500 uppercase tracking-wider">Status Pernikahan <span class="text-rose-500">*</span></label>
                         <select name="marital_status" id="f_marital_status" class="w-full mt-2 px-3 py-2.5 bg-gray-50 border-none rounded-lg text-sm focus:ring-2 focus:ring-indigo-500">
                             <option value="" disabled selected>Pilih Status</option>
                             <option value="Belum Kawin">Belum Kawin</option>
@@ -122,31 +122,31 @@
                     <h3 class="text-sm font-bold uppercase tracking-widest text-indigo-600 mb-6">Alamat KTP</h3>
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-6">
                         <div>
-                            <label class="text-[11px] font-bold text-gray-500 uppercase tracking-wider">Provinsi <span class="text-red-500">*</span></label>
+                            <label class="text-[11px] font-bold text-gray-500 uppercase tracking-wider">Provinsi <span class="text-rose-500">*</span></label>
                             <select name="province_ktp" id="f_province_ktp" class="w-full mt-2 px-3 py-2.5 bg-gray-50 border-none rounded-lg text-sm focus:ring-2 focus:ring-indigo-500">
                                 <option value="" disabled selected>Pilih Provinsi</option>
                             </select>
                         </div>
                         <div>
-                            <label class="text-[11px] font-bold text-gray-500 uppercase tracking-wider">Kabupaten <span class="text-red-500">*</span></label>
+                            <label class="text-[11px] font-bold text-gray-500 uppercase tracking-wider">Kabupaten <span class="text-rose-500">*</span></label>
                             <select name="regency_ktp" id="f_regency_ktp" class="w-full mt-2 px-3 py-2.5 bg-gray-50 border-none rounded-lg text-sm focus:ring-2 focus:ring-indigo-500" disabled>
                                 <option value="" disabled selected>Pilih Kabupaten/Kota</option>
                             </select>
                         </div>
                         <div>
-                            <label class="text-[11px] font-bold text-gray-500 uppercase tracking-wider">Kecamatan <span class="text-red-500">*</span></label>
+                            <label class="text-[11px] font-bold text-gray-500 uppercase tracking-wider">Kecamatan <span class="text-rose-500">*</span></label>
                             <select name="district_ktp" id="f_district_ktp" class="w-full mt-2 px-3 py-2.5 bg-gray-50 border-none rounded-lg text-sm focus:ring-2 focus:ring-indigo-500" disabled>
                                 <option value="" disabled selected>Pilih Kecamatan</option>
                             </select>
                         </div>
                         <div>
-                            <label class="text-[11px] font-bold text-gray-500 uppercase tracking-wider">Desa/Kelurahan <span class="text-red-500">*</span></label>
+                            <label class="text-[11px] font-bold text-gray-500 uppercase tracking-wider">Desa/Kelurahan <span class="text-rose-500">*</span></label>
                             <select name="village_ktp" id="f_village_ktp" class="w-full mt-2 px-3 py-2.5 bg-gray-50 border-none rounded-lg text-sm focus:ring-2 focus:ring-indigo-500" disabled>
                                 <option value="" disabled selected>Pilih Desa/Kelurahan</option>
                             </select>
                         </div>
                         <div class="md:col-span-2">
-                            <label class="text-[11px] font-bold text-gray-500 uppercase tracking-wider">Alamat Jalan <span class="text-red-500">*</span></label>
+                            <label class="text-[11px] font-bold text-gray-500 uppercase tracking-wider">Alamat Jalan <span class="text-rose-500">*</span></label>
                             <textarea name="address_ktp" id="f_address_ktp" rows="2" class="w-full mt-2 px-4 py-2.5 bg-gray-50 border-none rounded-lg text-sm focus:ring-2 focus:ring-indigo-500" placeholder="Masukkan alamat lengkap sesuai KTP"></textarea>
                         </div>
                     </div>
@@ -163,31 +163,31 @@
                     </div>
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-6">
                         <div>
-                            <label class="text-[11px] font-bold text-gray-500 uppercase tracking-wider">Provinsi <span class="text-red-500">*</span></label>
+                            <label class="text-[11px] font-bold text-gray-500 uppercase tracking-wider">Provinsi <span class="text-rose-500">*</span></label>
                             <select name="province_domicile" id="f_province_domicile" class="w-full mt-2 px-3 py-2.5 bg-gray-50 border-none rounded-lg text-sm focus:ring-2 focus:ring-indigo-500">
                                 <option value="" disabled selected>Pilih Provinsi</option>
                             </select>
                         </div>
                         <div>
-                            <label class="text-[11px] font-bold text-gray-500 uppercase tracking-wider">Kabupaten <span class="text-red-500">*</span></label>
+                            <label class="text-[11px] font-bold text-gray-500 uppercase tracking-wider">Kabupaten <span class="text-rose-500">*</span></label>
                             <select name="regency_domicile" id="f_regency_domicile" class="w-full mt-2 px-3 py-2.5 bg-gray-50 border-none rounded-lg text-sm focus:ring-2 focus:ring-indigo-500" disabled>
                                 <option value="" disabled selected>Pilih Kabupaten/Kota</option>
                             </select>
                         </div>
                         <div>
-                            <label class="text-[11px] font-bold text-gray-500 uppercase tracking-wider">Kecamatan <span class="text-red-500">*</span></label>
+                            <label class="text-[11px] font-bold text-gray-500 uppercase tracking-wider">Kecamatan <span class="text-rose-500">*</span></label>
                             <select name="district_domicile" id="f_district_domicile" class="w-full mt-2 px-3 py-2.5 bg-gray-50 border-none rounded-lg text-sm focus:ring-2 focus:ring-indigo-500" disabled>
                                 <option value="" disabled selected>Pilih Kecamatan</option>
                             </select>
                         </div>
                         <div>
-                            <label class="text-[11px] font-bold text-gray-500 uppercase tracking-wider">Desa/Kelurahan <span class="text-red-500">*</span></label>
+                            <label class="text-[11px] font-bold text-gray-500 uppercase tracking-wider">Desa/Kelurahan <span class="text-rose-500">*</span></label>
                             <select name="village_domicile" id="f_village_domicile" class="w-full mt-2 px-3 py-2.5 bg-gray-50 border-none rounded-lg text-sm focus:ring-2 focus:ring-indigo-500" disabled>
                                 <option value="" disabled selected>Pilih Desa/Kelurahan</option>
                             </select>
                         </div>
                         <div class="md:col-span-2">
-                            <label class="text-[11px] font-bold text-gray-500 uppercase tracking-wider">Alamat Jalan <span class="text-red-500">*</span></label>
+                            <label class="text-[11px] font-bold text-gray-500 uppercase tracking-wider">Alamat Jalan <span class="text-rose-500">*</span></label>
                             <textarea name="address_domicile" id="f_address_domicile" rows="2" class="w-full mt-2 px-4 py-2.5 bg-gray-50 border-none rounded-lg text-sm focus:ring-2 focus:ring-indigo-500" placeholder="Masukkan alamat lengkap domisili saat ini"></textarea>
                         </div>
                     </div>
@@ -198,7 +198,7 @@
                     <h3 class="text-sm font-bold uppercase tracking-widest text-indigo-600 mb-6">Informasi Penugasan & Kontak</h3>
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-6">
                         <div>
-                            <label class="text-[11px] font-bold text-gray-500 uppercase tracking-wider">Jabatan <span class="text-red-500">*</span></label>
+                            <label class="text-[11px] font-bold text-gray-500 uppercase tracking-wider">Jabatan <span class="text-rose-500">*</span></label>
                             <select name="id_ref_position" id="f_id_ref_position" class="w-full mt-2 px-3 py-2.5 bg-gray-50 border-none rounded-lg text-sm focus:ring-2 focus:ring-indigo-500">
                                 <option value="" disabled selected>Pilih Jabatan</option>
                                 @foreach($positions as $pos)
@@ -208,7 +208,7 @@
                         </div>
 
                         <div id="f_wa_wrapper" class="hidden">
-                            <label class="text-[11px] font-bold text-gray-500 uppercase tracking-wider">Penugasan SK (Work Assignment) <span class="text-red-500">*</span></label>
+                            <label class="text-[11px] font-bold text-gray-500 uppercase tracking-wider">Penugasan SK (Work Assignment) <span class="text-rose-500">*</span></label>
                             <select name="id_work_assignment" id="f_id_work_assignment" class="w-full mt-2 px-3 py-2.5 bg-gray-50 border-none rounded-lg text-sm focus:ring-2 focus:ring-indigo-500">
                                 <option value="none" selected>Pilih Penugasan...</option>
                                 @foreach($workAssignments as $wa)
@@ -222,7 +222,7 @@
                         </div>
 
                         <div id="f_unit_wrapper">
-                            <label class="text-[11px] font-bold text-gray-500 uppercase tracking-wider">Unit SPPG <span class="text-red-500">*</span></label>
+                            <label class="text-[11px] font-bold text-gray-500 uppercase tracking-wider">Unit SPPG <span class="text-rose-500">*</span></label>
                             <select name="id_sppg_unit" id="f_id_sppg_unit" class="w-full mt-2 px-3 py-2.5 bg-gray-50 border-none rounded-lg text-sm focus:ring-2 focus:ring-indigo-500 disabled:opacity-50 disabled:cursor-not-allowed" disabled>
                                 <option value="none" disabled selected>Pilih Jabatan Terlebih Dahulu...</option>
                                 @foreach($sppgUnits as $unit)
@@ -237,12 +237,12 @@
                         </div>
 
                         <div>
-                            <label class="text-[11px] font-bold text-gray-500 uppercase tracking-wider">Nomor Telepon <span class="text-red-500">*</span></label>
+                            <label class="text-[11px] font-bold text-gray-500 uppercase tracking-wider">Nomor Telepon <span class="text-rose-500">*</span></label>
                             <input type="text" name="phone" id="f_phone" class="w-full mt-2 px-4 py-2.5 bg-gray-50 border-none rounded-lg text-sm focus:ring-2 focus:ring-indigo-500" placeholder="Cth: 08xxxxxxxxxx">
                         </div>
 
                         <div>
-                            <label class="text-[11px] font-bold text-gray-500 uppercase tracking-wider">Hak Akses Sistem <span class="text-red-500">*</span></label>
+                            <label class="text-[11px] font-bold text-gray-500 uppercase tracking-wider">Hak Akses Sistem <span class="text-rose-500">*</span></label>
                             <select name="id_ref_role" id="f_id_ref_role" class="w-full mt-2 px-3 py-2.5 bg-gray-50 border-none rounded-lg text-sm focus:ring-2 focus:ring-indigo-500">
                                 <option value="" disabled selected>Pilih Hak Akses</option>
                                 @foreach($roles as $role)
