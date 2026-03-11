@@ -77,53 +77,78 @@
                 <div class="space-y-8 pt-4 border-t border-slate-50">
                     <h3 class="text-sm font-bold uppercase tracking-widest text-indigo-600 mb-6">Lokasi Supplier</h3>
                     
-                    {{-- Hidden inputs for clean names --}}
-                    <input type="hidden" name="province_name" id="e_prov_name">
-                    <input type="hidden" name="regency_name" id="e_reg_name">
-                    <input type="hidden" name="district_name" id="e_dist_name">
-                    <input type="hidden" name="village_name" id="e_vill_name">
+                    <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                        {{-- Form Section --}}
+                        <div class="space-y-8">
+                            {{-- Hidden inputs for clean names --}}
+                            <input type="hidden" name="province_name" id="e_prov_name">
+                            <input type="hidden" name="regency_name" id="e_reg_name">
+                            <input type="hidden" name="district_name" id="e_dist_name">
+                            <input type="hidden" name="village_name" id="e_vill_name">
 
-                    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-                        <div>
-                            <label class="text-[11px] font-bold text-gray-500 uppercase tracking-wider">Provinsi <span class="text-rose-500">*</span></label>
-                            <select name="province" id="e_prov" 
-                                class="w-full mt-2 text-sm bg-gray-50 border-none rounded-lg py-2.5 px-4 focus:ring-2 focus:ring-indigo-500 outline-none transition-all capitalize">
-                                <option value="">Pilih Provinsi</option>
-                            </select>
-                        </div>
-                        <div>
-                            <label class="text-[11px] font-bold text-gray-500 uppercase tracking-wider">Kab/Kota <span class="text-rose-500">*</span></label>
-                            <select name="regency" id="e_reg" disabled
-                                class="w-full mt-2 text-sm border-none rounded-lg py-2.5 px-4 focus:ring-2 focus:ring-indigo-500 outline-none transition-all disabled:opacity-50 disabled:cursor-not-allowed capitalize input-disabled">
-                                <option value="">Pilih Kabupaten</option>
-                            </select>
-                        </div>
-                        <div>
-                            <label class="text-[11px] font-bold text-gray-500 uppercase tracking-wider">Kecamatan <span class="text-rose-500">*</span></label>
-                            <select name="district" id="e_dist" disabled
-                                class="w-full mt-2 text-sm border-none rounded-lg py-2.5 px-4 focus:ring-2 focus:ring-indigo-500 outline-none transition-all disabled:opacity-50 disabled:cursor-not-allowed capitalize input-disabled">
-                                <option value="">Pilih Kecamatan</option>
-                            </select>
-                        </div>
-                        <div>
-                            <label class="text-[11px] font-bold text-gray-500 uppercase tracking-wider">Kelurahan <span class="text-rose-500">*</span></label>
-                            <select name="village" id="e_vill" disabled
-                                class="w-full mt-2 text-sm border-none rounded-lg py-2.5 px-4 focus:ring-2 focus:ring-indigo-500 outline-none transition-all disabled:opacity-50 disabled:cursor-not-allowed capitalize input-disabled">
-                                <option value="">Pilih Desa/Kelurahan</option>
-                            </select>
-                        </div>
-                    </div>
+                            <div class="grid grid-cols-2 gap-6">
+                                <div>
+                                    <label class="text-[11px] font-bold text-gray-500 uppercase tracking-wider">Provinsi <span class="text-rose-500">*</span></label>
+                                    <select name="province" id="e_prov" 
+                                        class="w-full mt-2 text-sm bg-gray-50 border-none rounded-lg py-2.5 px-4 focus:ring-2 focus:ring-indigo-500 outline-none transition-all capitalize">
+                                        <option value="">Pilih Provinsi</option>
+                                    </select>
+                                </div>
+                                <div>
+                                    <label class="text-[11px] font-bold text-gray-500 uppercase tracking-wider">Kab/Kota <span class="text-rose-500">*</span></label>
+                                    <select name="regency" id="e_reg" disabled
+                                        class="w-full mt-2 text-sm border-none rounded-lg py-2.5 px-4 focus:ring-2 focus:ring-indigo-500 outline-none transition-all disabled:opacity-50 disabled:cursor-not-allowed capitalize input-disabled">
+                                        <option value="">Pilih Kabupaten</option>
+                                    </select>
+                                </div>
+                                <div>
+                                    <label class="text-[11px] font-bold text-gray-500 uppercase tracking-wider">Kecamatan <span class="text-rose-500">*</span></label>
+                                    <select name="district" id="e_dist" disabled
+                                        class="w-full mt-2 text-sm border-none rounded-lg py-2.5 px-4 focus:ring-2 focus:ring-indigo-500 outline-none transition-all disabled:opacity-50 disabled:cursor-not-allowed capitalize input-disabled">
+                                        <option value="">Pilih Kecamatan</option>
+                                    </select>
+                                </div>
+                                <div>
+                                    <label class="text-[11px] font-bold text-gray-500 uppercase tracking-wider">Kelurahan <span class="text-rose-500">*</span></label>
+                                    <select name="village" id="e_vill" disabled
+                                        class="w-full mt-2 text-sm border-none rounded-lg py-2.5 px-4 focus:ring-2 focus:ring-indigo-500 outline-none transition-all disabled:opacity-50 disabled:cursor-not-allowed capitalize input-disabled">
+                                        <option value="">Pilih Desa/Kelurahan</option>
+                                    </select>
+                                </div>
+                            </div>
 
-                    <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-                        <div class="md:col-span-2">
-                            <label class="text-[11px] font-bold text-gray-500 uppercase tracking-wider">Alamat Detail <span class="text-rose-500">*</span></label>
-                            <textarea name="address" id="e_address" rows="2" x-model="selectedSupplier.address" class="w-full mt-2 text-sm bg-gray-50 border-none rounded-lg py-2.5 px-4 focus:ring-2 focus:ring-indigo-500 outline-none transition-all"></textarea>
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                <div class="md:col-span-2">
+                                    <label class="text-[11px] font-bold text-gray-500 uppercase tracking-wider">Alamat Detail <span class="text-rose-500">*</span></label>
+                                    <textarea name="address" id="e_address" rows="2" x-model="selectedSupplier.address" class="w-full mt-2 text-sm bg-gray-50 border-none rounded-lg py-2.5 px-4 focus:ring-2 focus:ring-indigo-500 outline-none transition-all"></textarea>
+                                </div>
+                                <div>
+                                    <label class="text-[11px] font-bold text-gray-500 uppercase tracking-wider">Kode Pos <span class="text-rose-500">*</span></label>
+                                    <input type="text" name="postal_code" id="e_postal" 
+                                        oninput="this.value = this.value.replace(/[^0-9]/g, '')"
+                                        x-model="selectedSupplier.postal_code" class="w-full mt-2 text-sm bg-gray-50 border-none rounded-lg py-2.5 px-4 focus:ring-2 focus:ring-indigo-500 outline-none transition-all">
+                                </div>
+                                <div class="hidden">
+                                     {{-- GPS group --}}
+                                </div>
+                                <div>
+                                    <label class="text-[11px] font-bold text-gray-500 uppercase tracking-wider">Latitude GPS <span class="text-rose-500">*</span></label>
+                                    <input type="text" name="latitude_gps" id="e_latitude" 
+                                        x-model="selectedSupplier.latitude_gps" class="w-full mt-2 text-sm bg-gray-50 border-none rounded-lg py-2.5 px-4 focus:ring-2 focus:ring-indigo-500 outline-none transition-all" placeholder="-8.xxxxx">
+                                </div>
+                                <div>
+                                    <label class="text-[11px] font-bold text-gray-500 uppercase tracking-wider">Longitude GPS <span class="text-rose-500">*</span></label>
+                                    <input type="text" name="longitude_gps" id="e_longitude" 
+                                        x-model="selectedSupplier.longitude_gps" class="w-full mt-2 text-sm bg-gray-50 border-none rounded-lg py-2.5 px-4 focus:ring-2 focus:ring-indigo-500 outline-none transition-all" placeholder="115.xxxxx">
+                                </div>
+                            </div>
                         </div>
-                        <div>
-                            <label class="text-[11px] font-bold text-gray-500 uppercase tracking-wider">Kode Pos <span class="text-rose-500">*</span></label>
-                            <input type="text" name="postal_code" id="e_postal" 
-                                oninput="this.value = this.value.replace(/[^0-9]/g, '')"
-                                x-model="selectedSupplier.postal_code" class="w-full mt-2 text-sm bg-gray-50 border-none rounded-lg py-2.5 px-4 focus:ring-2 focus:ring-indigo-500 outline-none transition-all">
+
+                        {{-- Map Section --}}
+                        <div class="space-y-4">
+                            <label class="text-[11px] font-bold text-gray-400 uppercase tracking-widest">Pilih Lokasi Di Peta <span class="text-rose-500">*</span></label>
+                            <div id="map-edit" class="w-full h-full min-h-[350px] rounded-xl border-2 border-slate-100 shadow-inner z-10"></div>
+                            <p class="text-[10px] text-slate-400 italic font-medium px-1">Klik pada peta untuk mengubah titik koordinat supplier.</p>
                         </div>
                     </div>
                 </div>
@@ -251,8 +276,74 @@
             };
         }
 
+        function initEditMapModal(supplier) {
+            if (typeof L === 'undefined') return;
+            const container = document.getElementById('map-edit');
+            if (!container) return;
+
+            const lat = parseFloat(supplier.latitude_gps);
+            const lng = parseFloat(supplier.longitude_gps);
+            const coords = (lat && lng) ? [lat, lng] : [-8.1127, 115.0911];
+
+            if (window.editMapInstance) {
+                window.editMapInstance.setView(coords, 15);
+                if (window.editMarkerInstance) {
+                    window.editMarkerInstance.setLatLng(coords);
+                } else if (lat && lng) {
+                    window.editMarkerInstance = L.marker(coords, { draggable: true }).addTo(window.editMapInstance);
+                    setupMarkerEvents(window.editMarkerInstance);
+                }
+                setTimeout(() => window.editMapInstance.invalidateSize(), 150);
+                return;
+            }
+
+            window.editMapInstance = L.map('map-edit').setView(coords, (lat && lng) ? 15 : 12);
+            L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                maxZoom: 19,
+                attribution: '© OpenStreetMap'
+            }).addTo(window.editMapInstance);
+
+            if (lat && lng) {
+                window.editMarkerInstance = L.marker(coords, { draggable: true }).addTo(window.editMapInstance);
+                setupMarkerEvents(window.editMarkerInstance);
+            }
+
+            window.editMapInstance.on('click', function(e) {
+                if (window.editMarkerInstance) {
+                    window.editMarkerInstance.setLatLng(e.latlng);
+                } else {
+                    window.editMarkerInstance = L.marker(e.latlng, { draggable: true }).addTo(window.editMapInstance);
+                    setupMarkerEvents(window.editMarkerInstance);
+                }
+                updateCoords(e.latlng.lat, e.latlng.lng);
+            });
+
+            function setupMarkerEvents(marker) {
+                marker.on('dragend', function(ev) {
+                    const pos = ev.target.getLatLng();
+                    updateCoords(pos.lat, pos.lng);
+                });
+            }
+
+            function updateCoords(lat, lng) {
+                const latEl = document.getElementById('e_latitude');
+                const lngEl = document.getElementById('e_longitude');
+                if (latEl) latEl.value = lat.toFixed(8);
+                if (lngEl) lngEl.value = lng.toFixed(8);
+                
+                // Trigger Alpine.js models
+                latEl.dispatchEvent(new Event('input'));
+                lngEl.dispatchEvent(new Event('input'));
+                
+                if (typeof clearEditErrors === 'function') clearEditErrors('e_latitude');
+            }
+
+            setTimeout(() => window.editMapInstance.invalidateSize(), 150);
+        }
+
         window.addEventListener('init-edit-supplier', (e) => {
             syncEditWilayah(e.detail);
+            setTimeout(() => initEditMapModal(e.detail), 300);
         });
 
         function clearEditErrors() {

@@ -61,6 +61,8 @@
                                         <th class="p-3 border-b font-bold text-slate-500 uppercase">Jenis</th>
                                         <th class="p-3 border-b font-bold text-slate-500 uppercase">Pimpinan</th>
                                         <th class="p-3 border-b font-bold text-slate-500 uppercase">Telepon</th>
+                                        <th class="p-3 border-b font-bold text-slate-500 uppercase">Latitude</th>
+                                        <th class="p-3 border-b font-bold text-slate-500 uppercase">Longitude</th>
                                         <th class="p-3 border-b font-bold text-slate-500 uppercase">SPPG</th>
                                         <th class="p-3 border-b font-bold text-slate-500 uppercase">Catatan Sistem</th>
                                     </tr>
@@ -283,6 +285,8 @@
                 'DESA/KELURAHAN',
                 'ALAMAT JALAN',
                 'KODE POS',
+                'LATITUDE_GPS',
+                'LONGITUDE_GPS',
                 'ID UNIT SPPG TERKAIT (Pisahkan dengan koma jika banyak)'
             ];
             
@@ -321,11 +325,15 @@
                 const name = (row['NAMA SUPPLIER'] || '').toString().trim();
                 const leader = (row['NAMA PIMPINAN'] || '').toString();
                 const phone = (row['TELEPON (Hanya Angka)'] || '').toString();
+                const lat = (row['LATITUDE_GPS'] || '').toString().trim();
+                const lng = (row['LONGITUDE_GPS'] || '').toString().trim();
                 const sppgIds = (row['ID UNIT SPPG TERKAIT (Pisahkan dengan koma jika banyak)'] || '').toString();
 
                 let errors = [];
 
                 if (!name) errors.push('NAMA SUPPLIER kosong');
+                if (!lat) errors.push('LATITUDE_GPS kosong');
+                if (!lng) errors.push('LONGITUDE_GPS kosong');
                 if (name && seenNames.has(name)) errors.push('NAMA SUPPLIER ganda di file ini');
                 if (name) seenNames.add(name);
 
@@ -365,6 +373,8 @@
                     <td class="p-3 border-b border-slate-100 text-slate-600 font-medium">${type || '-'}</td>
                     <td class="p-3 border-b border-slate-100 text-slate-600 font-medium">${leader || '-'}</td>
                     <td class="p-3 border-b border-slate-100 text-slate-600">${phone || '-'}</td>
+                    <td class="p-3 border-b border-slate-100 text-slate-600 font-mono text-[10px]">${lat || '-'}</td>
+                    <td class="p-3 border-b border-slate-100 text-slate-600 font-mono text-[10px]">${lng || '-'}</td>
                     <td class="p-3 border-b border-slate-100 text-slate-400 font-bold tracking-tight">${sppgIds || '-'}</td>
                     <td class="p-3 border-b border-slate-100 text-slate-600">
                         ${isRowError 

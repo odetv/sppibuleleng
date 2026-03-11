@@ -22,6 +22,8 @@ class Supplier extends Model
         'village',
         'address',
         'postal_code',
+        'latitude_gps',
+        'longitude_gps',
     ];
 
     /**

@@ -26,6 +26,8 @@ class SupplierSeeder extends Seeder
                 'district'      => 'Sawan',
                 'village'       => 'Sangsit',
                 'address'       => 'Jl. Raya Sangsit No. 10',
+                'latitude_gps'  => '-8.123456',
+                'longitude_gps' => '115.123456',
             ],
             [
                 'type_supplier' => 'UMKM',
@@ -38,6 +40,8 @@ class SupplierSeeder extends Seeder
                 'district'      => 'Buleleng',
                 'village'       => 'Penarukan',
                 'address'       => 'Jl. Gajah Mada No. 45',
+                'latitude_gps'  => '-8.123457',
+                'longitude_gps' => '115.123457',
             ],
             [
                 'type_supplier' => 'Bumdes',
@@ -50,6 +54,8 @@ class SupplierSeeder extends Seeder
                 'district'      => 'Banjar',
                 'village'       => 'Banjar',
                 'address'       => 'Jl. Seririt No. 22',
+                'latitude_gps'  => '-8.123458',
+                'longitude_gps' => '115.123458',
             ],
             [
                 'type_supplier' => 'Supplier Lain',
@@ -62,6 +68,8 @@ class SupplierSeeder extends Seeder
                 'district'      => 'Buleleng',
                 'village'       => 'Kampung Anyar',
                 'address'       => 'Jl. Patimura No. 5',
+                'latitude_gps'  => '-8.123459',
+                'longitude_gps' => '115.123459',
             ],
             [
                 'type_supplier' => 'UMKM',
@@ -74,6 +82,8 @@ class SupplierSeeder extends Seeder
                 'district'      => 'Sukasada',
                 'village'       => 'Sukasada',
                 'address'       => 'Jl. Jelantik No. 8',
+                'latitude_gps'  => '-8.123460',
+                'longitude_gps' => '115.123460',
             ],
         ];
 

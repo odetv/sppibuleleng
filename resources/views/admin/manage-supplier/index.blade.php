@@ -1,4 +1,5 @@
 <x-app-layout title="Manajemen Supplier">
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
     <script src="https://cdn.jsdelivr.net/npm/xlsx/dist/xlsx.full.min.js"></script>
     <style>
         [x-cloak] {
@@ -112,7 +113,7 @@
                                 <span class="hidden sm:inline ml-2 text-nowrap">Import</span>
                             </button>
 
-                            <button @click="selectedSupplier = { sppg_units: [] }; showCreateModal = true" class="flex items-center justify-center p-2.5 md:px-4 text-[11px] font-bold uppercase tracking-wider text-indigo-600 bg-white border border-indigo-200 rounded-lg hover:bg-indigo-600 hover:text-white transition-all cursor-pointer shadow-sm">
+                            <button @click="selectedSupplier = { sppg_units: [] }; showCreateModal = true; $dispatch('open-create-supplier')" class="flex items-center justify-center p-2.5 md:px-4 text-[11px] font-bold uppercase tracking-wider text-indigo-600 bg-white border border-indigo-200 rounded-lg hover:bg-indigo-600 hover:text-white transition-all cursor-pointer shadow-sm">
                                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
                                 </svg>
@@ -296,6 +297,7 @@
         @include('admin.manage-supplier.partials.modal-export')
     </div>
 
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
     <script>
         window.validSppgIds = {
             !!json_encode($validSppgIds) !!

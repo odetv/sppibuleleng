@@ -26,6 +26,8 @@ class SupplierTemplateExport implements FromArray, WithHeadings, WithStyles, Sho
             'DESA/KELURAHAN',
             'ALAMAT JALAN',
             'KODE POS',
+            'LATITUDE_GPS',
+            'LONGITUDE_GPS',
             'ID UNIT SPPG TERKAIT (Pisahkan dengan koma jika banyak)',
         ];
     }
@@ -45,6 +47,8 @@ class SupplierTemplateExport implements FromArray, WithHeadings, WithStyles, Sho
                 'Baktiseraga',
                 'Jl. Ahmad Yani No. 12',
                 '81116',
+                '-8.11277341',
+                '115.08833130',
                 'SPPG-001, SPPG-002',
             ]
         ];

@@ -18,7 +18,7 @@
         x-transition:leave="transition ease-in duration-200"
         x-transition:leave-start="opacity-100 scale-100"
         x-transition:leave-end="opacity-0 scale-95"
-        class="relative w-full max-w-4xl bg-white rounded-xl shadow-xl border border-slate-200 overflow-hidden font-sans text-sm">
+        class="relative w-full max-w-6xl bg-white rounded-xl shadow-xl border border-slate-200 overflow-hidden font-sans text-sm">
         
         <div class="p-6 border-b border-slate-100 bg-slate-50 flex justify-between items-center text-slate-800">
             <div class="flex items-center gap-3">
@@ -74,54 +74,76 @@
                 {{-- SECTION 2: LOKASI --}}
                 <div class="space-y-6 pt-6 border-t border-slate-100">
                     <h3 class="text-xs font-bold uppercase tracking-widest text-indigo-600">Lokasi Supplier</h3>
-                    
-                    {{-- Hidden inputs for clean names --}}
-                    <input type="hidden" name="province_name" id="fs_prov_name">
-                    <input type="hidden" name="regency_name" id="fs_reg_name">
-                    <input type="hidden" name="district_name" id="fs_dist_name">
-                    <input type="hidden" name="village_name" id="fs_vill_name">
 
-                    <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
-                        <div>
-                            <label class="text-[10px] font-bold text-gray-500 uppercase tracking-wider">Provinsi <span class="text-rose-500">*</span></label>
-                            <select name="province" id="fs_prov" 
-                                class="w-full mt-1.5 text-[11px] bg-gray-50 border-slate-200 rounded-lg py-2 px-3 focus:ring-2 focus:ring-indigo-500 outline-none transition-all capitalize">
-                                <option value="">Pilih Provinsi</option>
-                            </select>
-                        </div>
-                        <div>
-                            <label class="text-[10px] font-bold text-gray-500 uppercase tracking-wider">Kab/Kota <span class="text-rose-500">*</span></label>
-                            <select name="regency" id="fs_reg" disabled
-                                class="w-full mt-1.5 text-[11px] border-slate-200 rounded-lg py-2 px-3 focus:ring-2 focus:ring-indigo-500 outline-none transition-all disabled:opacity-50 disabled:cursor-not-allowed capitalize input-disabled">
-                                <option value="">Pilih Kabupaten</option>
-                            </select>
-                        </div>
-                        <div>
-                            <label class="text-[10px] font-bold text-gray-500 uppercase tracking-wider">Kecamatan <span class="text-rose-500">*</span></label>
-                            <select name="district" id="fs_dist" disabled
-                                class="w-full mt-1.5 text-[11px] border-slate-200 rounded-lg py-2 px-3 focus:ring-2 focus:ring-indigo-500 outline-none transition-all disabled:opacity-50 disabled:cursor-not-allowed capitalize input-disabled">
-                                <option value="">Pilih Kecamatan</option>
-                            </select>
-                        </div>
-                        <div>
-                            <label class="text-[10px] font-bold text-gray-500 uppercase tracking-wider">Kelurahan <span class="text-rose-500">*</span></label>
-                            <select name="village" id="fs_vill" disabled
-                                class="w-full mt-1.5 text-[11px] border-slate-200 rounded-lg py-2 px-3 focus:ring-2 focus:ring-indigo-500 outline-none transition-all disabled:opacity-50 disabled:cursor-not-allowed capitalize input-disabled">
-                                <option value="">Pilih Desa/Kelurahan</option>
-                            </select>
-                        </div>
-                    </div>
+                    <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                        {{-- Form Section --}}
+                        <div class="space-y-6">
+                            {{-- Hidden inputs for clean names --}}
+                            <input type="hidden" name="province_name" id="fs_prov_name">
+                            <input type="hidden" name="regency_name" id="fs_reg_name">
+                            <input type="hidden" name="district_name" id="fs_dist_name">
+                            <input type="hidden" name="village_name" id="fs_vill_name">
 
-                    <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
-                        <div class="md:col-span-2">
-                            <label class="text-[10px] font-bold text-gray-500 uppercase tracking-wider">Alamat Detail <span class="text-rose-500">*</span></label>
-                            <textarea name="address" id="fs_address" rows="1" class="w-full mt-1.5 text-xs bg-gray-50 border-slate-200 rounded-lg py-2 px-3 focus:ring-2 focus:ring-indigo-500 outline-none transition-all" placeholder="Nama jalan, nomor rumah, RT/RW"></textarea>
+                            <div class="grid grid-cols-2 gap-4">
+                                <div>
+                                    <label class="text-[10px] font-bold text-gray-500 uppercase tracking-wider">Provinsi <span class="text-rose-500">*</span></label>
+                                    <select name="province" id="fs_prov"
+                                        class="w-full mt-1.5 text-[11px] bg-gray-50 border-slate-200 rounded-lg py-2 px-3 focus:ring-2 focus:ring-indigo-500 outline-none transition-all capitalize">
+                                        <option value="">Pilih Provinsi</option>
+                                    </select>
+                                </div>
+                                <div>
+                                    <label class="text-[10px] font-bold text-gray-500 uppercase tracking-wider">Kab/Kota <span class="text-rose-500">*</span></label>
+                                    <select name="regency" id="fs_reg" disabled
+                                        class="w-full mt-1.5 text-[11px] border-slate-200 rounded-lg py-2 px-3 focus:ring-2 focus:ring-indigo-500 outline-none transition-all disabled:opacity-50 disabled:cursor-not-allowed capitalize input-disabled">
+                                        <option value="">Pilih Kabupaten</option>
+                                    </select>
+                                </div>
+                                <div>
+                                    <label class="text-[10px] font-bold text-gray-500 uppercase tracking-wider">Kecamatan <span class="text-rose-500">*</span></label>
+                                    <select name="district" id="fs_dist" disabled
+                                        class="w-full mt-1.5 text-[11px] border-slate-200 rounded-lg py-2 px-3 focus:ring-2 focus:ring-indigo-500 outline-none transition-all disabled:opacity-50 disabled:cursor-not-allowed capitalize input-disabled">
+                                        <option value="">Pilih Kecamatan</option>
+                                    </select>
+                                </div>
+                                <div>
+                                    <label class="text-[10px] font-bold text-gray-500 uppercase tracking-wider">Kelurahan <span class="text-rose-500">*</span></label>
+                                    <select name="village" id="fs_vill" disabled
+                                        class="w-full mt-1.5 text-[11px] border-slate-200 rounded-lg py-2 px-3 focus:ring-2 focus:ring-indigo-500 outline-none transition-all disabled:opacity-50 disabled:cursor-not-allowed capitalize input-disabled">
+                                        <option value="">Pilih Desa/Kelurahan</option>
+                                    </select>
+                                </div>
+                            </div>
+
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                <div class="md:col-span-2">
+                                    <label class="text-[10px] font-bold text-gray-500 uppercase tracking-wider">Alamat Detail <span class="text-rose-500">*</span></label>
+                                    <textarea name="address" id="fs_address" rows="1" class="w-full mt-1.5 text-xs bg-gray-50 border-slate-200 rounded-lg py-2 px-3 focus:ring-2 focus:ring-indigo-500 outline-none transition-all" placeholder="Nama jalan, nomor rumah, RT/RW"></textarea>
+                                </div>
+                                <div>
+                                    <label class="text-[10px] font-bold text-gray-500 uppercase tracking-wider">Kode Pos <span class="text-rose-500">*</span></label>
+                                    <input type="text" name="postal_code" id="fs_postal"
+                                        oninput="this.value = this.value.replace(/[^0-9]/g, '')"
+                                        class="w-full mt-1.5 text-xs bg-gray-50 border-slate-200 rounded-lg py-2 px-3 focus:ring-2 focus:ring-indigo-500 outline-none transition-all" placeholder="811xx">
+                                </div>
+                                <div>
+                                    <label class="text-[10px] font-bold text-gray-500 uppercase tracking-wider">Latitude GPS <span class="text-rose-500">*</span></label>
+                                    <input type="text" name="latitude_gps" id="fs_latitude"
+                                        class="w-full mt-1.5 text-xs bg-gray-50 border-slate-200 rounded-lg py-2 px-3 focus:ring-2 focus:ring-indigo-500 outline-none transition-all" placeholder="-8.xxxxx">
+                                </div>
+                                <div>
+                                    <label class="text-[10px] font-bold text-gray-500 uppercase tracking-wider">Longitude GPS <span class="text-rose-500">*</span></label>
+                                    <input type="text" name="longitude_gps" id="fs_longitude"
+                                        class="w-full mt-1.5 text-xs bg-gray-50 border-slate-200 rounded-lg py-2 px-3 focus:ring-2 focus:ring-indigo-500 outline-none transition-all" placeholder="115.xxxxx">
+                                </div>
+                            </div>
                         </div>
-                        <div>
-                            <label class="text-[10px] font-bold text-gray-500 uppercase tracking-wider">Kode Pos <span class="text-rose-500">*</span></label>
-                            <input type="text" name="postal_code" id="fs_postal" 
-                                oninput="this.value = this.value.replace(/[^0-9]/g, '')"
-                                class="w-full mt-1.5 text-xs bg-gray-50 border-slate-200 rounded-lg py-2 px-3 focus:ring-2 focus:ring-indigo-500 outline-none transition-all" placeholder="811xx">
+
+                        {{-- Map Section --}}
+                        <div class="space-y-4">
+                            <label class="text-[10px] font-bold text-gray-400 uppercase tracking-widest">Pilih Lokasi Di Peta <span class="text-rose-500">*</span></label>
+                            <div id="map-create-supplier" class="w-full h-full min-h-[300px] rounded-xl border-2 border-slate-100 shadow-inner z-10"></div>
+                            <p class="text-[9px] text-slate-400 italic font-medium px-1">Klik pada peta untuk menentukan titik koordinat supplier.</p>
                         </div>
                     </div>
                 </div>
@@ -179,11 +201,49 @@
             }
         }
 
+        // Map Logic
+        function initCreateSupplierMap() {
+            if (typeof L === 'undefined') return;
+            const container = document.getElementById('map-create-supplier');
+            if (!container) return;
+
+            if (window.integratedSupplierMap) {
+                setTimeout(() => window.integratedSupplierMap.invalidateSize(), 150);
+                return;
+            }
+
+            const bulelengCoords = [-8.1127, 115.0911];
+            window.integratedSupplierMap = L.map('map-create-supplier').setView(bulelengCoords, 12);
+            L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                maxZoom: 19,
+                attribution: '© OpenStreetMap'
+            }).addTo(window.integratedSupplierMap);
+
+            window.integratedSupplierMap.on('click', function(e) {
+                if (window.integratedSupplierMarker) {
+                    window.integratedSupplierMarker.setLatLng(e.latlng);
+                } else {
+                    window.integratedSupplierMarker = L.marker(e.latlng, { draggable: true }).addTo(window.integratedSupplierMap);
+                    window.integratedSupplierMarker.on('dragend', function(ev) {
+                        const pos = ev.target.getLatLng();
+                        document.getElementById('fs_latitude').value = pos.lat.toFixed(8);
+                        document.getElementById('fs_longitude').value = pos.lng.toFixed(8);
+                    });
+                }
+                document.getElementById('fs_latitude').value = e.latlng.lat.toFixed(8);
+                document.getElementById('fs_longitude').value = e.latlng.lng.toFixed(8);
+                if (typeof clearErrors === 'function') clearErrors('fs_latitude');
+            });
+
+            setTimeout(() => window.integratedSupplierMap.invalidateSize(), 150);
+        }
+
         // Initialize Provinces
         window.initSupplierWilayah = function() {
             if (sel.p && sel.p.options.length <= 1) {
                 populate(sel.p, 'provinces', 'Provinsi');
             }
+            setTimeout(initCreateSupplierMap, 300);
         };
 
         sel.p.onchange = async function() {
@@ -282,6 +342,8 @@
                             if (key === 'name_supplier') fieldId = 'fs_name';
                             if (key === 'leader_name')   fieldId = 'fs_leader';
                             if (key === 'commodities')   fieldId = 'fs_commodities';
+                            if (key === 'latitude_gps')  fieldId = 'fs_latitude';
+                            if (key === 'longitude_gps') fieldId = 'fs_longitude';
 
                             showFieldError(fieldId, result.errors[key][0]);
                         });

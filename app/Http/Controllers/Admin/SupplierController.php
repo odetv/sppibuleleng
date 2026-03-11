@@ -74,6 +74,8 @@ class SupplierController extends Controller
             'village_name'  => 'required|string',
             'address'       => 'required|string',
             'postal_code'   => 'required|numeric',
+            'latitude_gps'  => 'required|string',
+            'longitude_gps' => 'required|string',
             'sppg_units'    => 'nullable|array',
             'sppg_units.*'  => 'exists:sppg_units,id_sppg_unit',
         ];
@@ -145,6 +147,8 @@ class SupplierController extends Controller
             'village_name'  => 'required|string',
             'address'       => 'required|string',
             'postal_code'   => 'required|numeric',
+            'latitude_gps'  => 'required|string',
+            'longitude_gps' => 'required|string',
             'sppg_units'    => 'nullable|array',
             'sppg_units.*'  => 'exists:sppg_units,id_sppg_unit',
         ];
@@ -287,6 +291,8 @@ class SupplierController extends Controller
                         'village'       => trim($row['DESA/KELURAHAN'] ?? ''),
                         'address'       => trim($row['ALAMAT JALAN'] ?? ''),
                         'postal_code'   => trim($row['KODE POS'] ?? ''),
+                        'latitude_gps'  => trim($row['LATITUDE_GPS'] ?? ''),
+                        'longitude_gps' => trim($row['LONGITUDE_GPS'] ?? ''),
                     ];
 
                     $supplier = Supplier::create($supplierData);

@@ -64,6 +64,8 @@ class SupplierExport extends DefaultValueBinder implements
             'village'       => 'DESA/KELURAHAN',
             'address'       => 'ALAMAT JALAN',
             'postal_code'   => 'KODE POS',
+            'latitude_gps'  => 'LATITUDE GPS',
+            'longitude_gps' => 'LONGITUDE GPS',
             'linked_sppg'   => 'UNIT SPPG TERKAIT',
         ];
 
@@ -87,6 +89,8 @@ class SupplierExport extends DefaultValueBinder implements
                 'village'       => $supplier->village ?? '-',
                 'address'       => $supplier->address ?? '-',
                 'postal_code'   => $supplier->postal_code ?? '-',
+                'latitude_gps'  => $supplier->latitude_gps ?? '-',
+                'longitude_gps' => $supplier->longitude_gps ?? '-',
                 'linked_sppg'   => $supplier->sppgUnits->pluck('name')->join(', ') ?: '-',
                 default         => '-',
             };

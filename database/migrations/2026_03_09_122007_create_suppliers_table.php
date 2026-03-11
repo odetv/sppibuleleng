@@ -26,6 +26,10 @@ return new class extends Migration
             $table->string('village');
             $table->text('address');
             $table->string('postal_code')->nullable();
+            
+            // GPS Location
+            $table->string('latitude_gps')->nullable();
+            $table->string('longitude_gps')->nullable();
 
             $table->timestamps();
         });

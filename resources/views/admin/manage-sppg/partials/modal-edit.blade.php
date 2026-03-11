@@ -382,47 +382,8 @@
                     </div>
                 </div>
 
-                {{-- SECTION 5: SOSIAL MEDIA --}}
-                <div class="pt-10 border-t border-gray-100">
-                    <h3 class="text-sm font-bold uppercase tracking-widest text-indigo-600 mb-6">Sosial Media</h3>
-                    <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-                        <div>
-                            <label class="text-[11px] font-bold text-gray-500 uppercase tracking-wider">Facebook</label>
-                            <div class="flex mt-2 rounded-lg overflow-hidden ring-1 ring-gray-200 focus-within:ring-2 focus-within:ring-indigo-400">
-                                <span class="px-3 py-2.5 bg-gray-100 text-blue-600 text-xs font-bold flex items-center shrink-0">
-                                    <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24">
-                                        <path d="M18 2h-3a5 5 0 00-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 011-1h3z" />
-                                    </svg>
-                                </span>
-                                <input type="url" name="facebook_url" id="e_facebook" class="flex-1 px-3 py-2.5 bg-gray-50 border-none text-sm focus:outline-none focus:ring-0" placeholder="https://facebook.com/...">
-                            </div>
-                        </div>
-                        <div>
-                            <label class="text-[11px] font-bold text-gray-500 uppercase tracking-wider">Instagram</label>
-                            <div class="flex mt-2 rounded-lg overflow-hidden ring-1 ring-gray-200 focus-within:ring-2 focus-within:ring-indigo-400">
-                                <span class="px-3 py-2.5 bg-gray-100 text-pink-500 text-xs font-bold flex items-center shrink-0">
-                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-                                        <rect x="2" y="2" width="20" height="20" rx="5" ry="5" />
-                                        <path d="M16 11.37A4 4 0 1112.63 8 4 4 0 0116 11.37z" />
-                                        <line x1="17.5" y1="6.5" x2="17.51" y2="6.5" />
-                                    </svg>
-                                </span>
-                                <input type="url" name="instagram_url" id="e_instagram" class="flex-1 px-3 py-2.5 bg-gray-50 border-none text-sm focus:outline-none focus:ring-0" placeholder="https://instagram.com/...">
-                            </div>
-                        </div>
-                        <div>
-                            <label class="text-[11px] font-bold text-gray-500 uppercase tracking-wider">TikTok</label>
-                            <div class="flex mt-2 rounded-lg overflow-hidden ring-1 ring-gray-200 focus-within:ring-2 focus-within:ring-indigo-400">
-                                <span class="px-3 py-2.5 bg-gray-100 text-slate-800 text-xs font-bold flex items-center shrink-0">
-                                    <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24">
-                                        <path d="M19.59 6.69a4.83 4.83 0 01-3.77-4.25V2h-3.45v13.67a2.89 2.89 0 01-2.88 2.5 2.89 2.89 0 01-2.89-2.89 2.89 2.89 0 012.89-2.89c.28 0 .54.04.79.1V9.01a6.33 6.33 0 00-.79-.05 6.34 6.34 0 00-6.34 6.34 6.34 6.34 0 006.34 6.34 6.34 6.34 0 006.33-6.34V8.69a8.17 8.17 0 004.78 1.52V6.75a4.85 4.85 0 01-1.01-.06z" />
-                                    </svg>
-                                </span>
-                                <input type="url" name="tiktok_url" id="e_tiktok" class="flex-1 px-3 py-2.5 bg-gray-50 border-none text-sm focus:outline-none focus:ring-0" placeholder="https://tiktok.com/@...">
-                            </div>
-                        </div>
-                    </div>
-                </div>
+                {{-- SECTION: SOSIAL MEDIA (MOVED TO END) --}}
+
 
                 {{-- SECTION 5: DAFTAR PM --}}
                 <div class="pt-10 border-t border-gray-100"
@@ -680,6 +641,48 @@
                 </div>
 
 
+
+                {{-- SECTION 6: SOSIAL MEDIA --}}
+                <div class="pt-10 border-t border-gray-100">
+                    <h3 class="text-sm font-bold uppercase tracking-widest text-indigo-600 mb-6">Sosial Media</h3>
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                        <div>
+                            <label class="text-[11px] font-bold text-gray-500 uppercase tracking-wider">Facebook</label>
+                            <div class="flex mt-2 rounded-lg overflow-hidden ring-1 ring-gray-200 focus-within:ring-2 focus-within:ring-indigo-400">
+                                <span class="px-3 py-2.5 bg-gray-100 text-blue-600 text-xs font-bold flex items-center shrink-0">
+                                    <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24">
+                                        <path d="M18 2h-3a5 5 0 00-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 011-1h3z" />
+                                    </svg>
+                                </span>
+                                <input type="url" name="facebook_url" id="e_facebook" class="flex-1 px-3 py-2.5 bg-gray-50 border-none text-sm focus:outline-none focus:ring-0" placeholder="https://facebook.com/...">
+                            </div>
+                        </div>
+                        <div>
+                            <label class="text-[11px] font-bold text-gray-500 uppercase tracking-wider">Instagram</label>
+                            <div class="flex mt-2 rounded-lg overflow-hidden ring-1 ring-gray-200 focus-within:ring-2 focus-within:ring-indigo-400">
+                                <span class="px-3 py-2.5 bg-gray-100 text-pink-500 text-xs font-bold flex items-center shrink-0">
+                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                                        <rect x="2" y="2" width="20" height="20" rx="5" ry="5" />
+                                        <path d="M16 11.37A4 4 0 1112.63 8 4 4 0 0116 11.37z" />
+                                        <line x1="17.5" y1="6.5" x2="17.51" y2="6.5" />
+                                    </svg>
+                                </span>
+                                <input type="url" name="instagram_url" id="e_instagram" class="flex-1 px-3 py-2.5 bg-gray-50 border-none text-sm focus:outline-none focus:ring-0" placeholder="https://instagram.com/...">
+                            </div>
+                        </div>
+                        <div>
+                            <label class="text-[11px] font-bold text-gray-500 uppercase tracking-wider">TikTok</label>
+                            <div class="flex mt-2 rounded-lg overflow-hidden ring-1 ring-gray-200 focus-within:ring-2 focus-within:ring-indigo-400">
+                                <span class="px-3 py-2.5 bg-gray-100 text-slate-800 text-xs font-bold flex items-center shrink-0">
+                                    <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24">
+                                        <path d="M19.59 6.69a4.83 4.83 0 01-3.77-4.25V2h-3.45v13.67a2.89 2.89 0 01-2.88 2.5 2.89 2.89 0 01-2.89-2.89 2.89 2.89 0 012.89-2.89c.28 0 .54.04.79.1V9.01a6.33 6.33 0 00-.79-.05 6.34 6.34 0 00-6.34 6.34 6.34 6.34 0 006.34 6.34 6.34 6.34 0 006.33-6.34V8.69a8.17 8.17 0 004.78 1.52V6.75a4.85 4.85 0 01-1.01-.06z" />
+                                    </svg>
+                                </span>
+                                <input type="url" name="tiktok_url" id="e_tiktok" class="flex-1 px-3 py-2.5 bg-gray-50 border-none text-sm focus:outline-none focus:ring-0" placeholder="https://tiktok.com/@...">
+                            </div>
+                        </div>
+                    </div>
+                </div>
 
             </div>
 
