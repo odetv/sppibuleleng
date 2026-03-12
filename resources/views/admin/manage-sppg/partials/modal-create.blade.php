@@ -579,6 +579,305 @@
                     </div>
                 </div>
 
+                {{-- SECTION: SERTIFIKASI (INTEGRATED) --}}
+                <div class="pt-10 border-t border-gray-100" 
+                    x-data="{ 
+                        showCertForm: false, 
+                        certForm: {
+                            name_certification: '',
+                            certification_number: '',
+                            issued_by: '',
+                            issued_date: '',
+                            start_date: '',
+                            expiry_date: '',
+                            status: true
+                        },
+                        certErrors: {},
+                        certEditingIndex: null,
+                        resetCertForm() {
+                            this.certForm = {
+                                name_certification: '',
+                                certification_number: '',
+                                issued_by: '',
+                                issued_date: '',
+                                start_date: '',
+                                expiry_date: '',
+                                status: true
+                            };
+                            this.certErrors = {};
+                            this.certEditingIndex = null;
+                            if (document.getElementById('create_cert_file')) document.getElementById('create_cert_file').value = '';
+                        },
+                        formatDate(dateStr) {
+                            if (!dateStr) return '-';
+                            if (dateStr.includes('T')) dateStr = dateStr.split('T')[0];
+                            const parts = dateStr.split('-');
+                            if (parts.length !== 3) return dateStr;
+                            return `${parts[2]}-${parts[1]}-${parts[0]}`;
+                        },
+                        isTypeSelected(type) {
+                            return selectedUnit.certifications.some((c, idx) => 
+                                c.name_certification === type && idx !== this.certEditingIndex
+                            );
+                        },
+                        addCertToList() {
+                            this.certErrors = {};
+                            let hasError = false;
+
+                            if (!this.certForm.name_certification) {
+                                this.certErrors.name_certification = ['* Wajib diisi'];
+                                hasError = true;
+                            }
+                            if (!this.certForm.certification_number) {
+                                this.certErrors.certification_number = ['* Wajib diisi'];
+                                hasError = true;
+                            }
+                            if (!this.certForm.issued_by) {
+                                this.certErrors.issued_by = ['* Wajib diisi'];
+                                hasError = true;
+                            }
+                            if (!this.certForm.issued_date) {
+                                this.certErrors.issued_date = ['* Wajib diisi'];
+                                hasError = true;
+                            }
+                            if (!this.certForm.start_date) {
+                                this.certErrors.start_date = ['* Wajib diisi'];
+                                hasError = true;
+                            }
+                            if (!this.certForm.expiry_date) {
+                                this.certErrors.expiry_date = ['* Wajib diisi'];
+                                hasError = true;
+                            }
+
+                            const fileInput = document.getElementById('create_cert_file');
+                            // File only required for NEW certs (not editing a staged one that already has a file)
+                            if (this.certEditingIndex === null && !fileInput.files[0]) {
+                                this.certErrors.file_certification = ['* Wajib diisi'];
+                                hasError = true;
+                            }
+
+                            if (hasError) return;
+
+                            const certData = {
+                                ...this.certForm,
+                                file: fileInput.files[0] || (this.certEditingIndex !== null ? selectedUnit.certifications[this.certEditingIndex].file : null),
+                                file_name: fileInput.files[0] ? fileInput.files[0].name : (this.certEditingIndex !== null ? selectedUnit.certifications[this.certEditingIndex].file_name : '')
+                            };
+
+                            if (this.certEditingIndex !== null) {
+                                selectedUnit.certifications[this.certEditingIndex] = certData;
+                            } else {
+                                selectedUnit.certifications.push(certData);
+                            }
+
+                            this.showCertForm = false;
+                            this.resetCertForm();
+                        },
+                        removeCert(index) {
+                            selectedUnit.certifications.splice(index, 1);
+                        },
+                        editStagedCert(index) {
+                            this.certEditingIndex = index;
+                            const cert = selectedUnit.certifications[index];
+                            // Ensure dates are in YYYY-MM-DD for input
+                            this.certForm = { 
+                                ...cert,
+                                issued_date: cert.issued_date ? cert.issued_date.split('T')[0] : '',
+                                start_date: cert.start_date ? cert.start_date.split('T')[0] : '',
+                                expiry_date: cert.expiry_date ? cert.expiry_date.split('T')[0] : ''
+                            };
+                            this.showCertForm = true;
+                            // Reset file input
+                            if (document.getElementById('create_cert_file')) document.getElementById('create_cert_file').value = '';
+                        }
+                    }"
+                >
+                    <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-6 gap-4">
+                        <div class="flex items-center gap-3">
+                            <span class="p-1.5 bg-indigo-50 text-indigo-600 rounded-lg">
+                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
+                                </svg>
+                            </span>
+                            <h3 class="text-sm font-bold uppercase tracking-widest text-indigo-600">Sertifikasi Unit</h3>
+                        </div>
+
+                        <button type="button" @click="showCertForm = !showCertForm; resetCertForm()" class="px-4 py-2 bg-emerald-50 text-emerald-600 border border-emerald-100 rounded-lg text-xs font-bold uppercase tracking-wider hover:bg-emerald-100 transition-all flex items-center">
+                            <svg class="w-3.5 h-3.5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" x-show="!showCertForm">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
+                            </svg>
+                            <svg class="w-3.5 h-3.5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" x-show="showCertForm">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                            </svg>
+                            <span x-text="showCertForm ? 'Batal' : (selectedUnit.certifications.length > 0 ? 'Tambah Lagi' : 'Tambah Sertifikasi')"></span>
+                        </button>
+                    </div>
+
+                    {{-- Form Tambah Sertifikasi --}}
+                    <div x-show="showCertForm" x-collapse class="mb-8 p-6 bg-slate-50 rounded-xl border border-slate-200">
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            <div>
+                                <label class="text-[11px] font-bold text-gray-500 uppercase tracking-wider block mb-2">Jenis Sertifikasi <span class="text-rose-500">*</span></label>
+                                <select x-model="certForm.name_certification" class="w-full px-4 py-2.5 bg-white border border-slate-200 rounded-lg text-sm focus:ring-2 focus:ring-indigo-500 outline-none" :class="certErrors.name_certification ? 'border-rose-500 ring-rose-50' : ''">
+                                    <option value="">Pilih Jenis</option>
+                                    <option value="SLHS" :disabled="isTypeSelected('SLHS')">SLHS (Sertifikat Laik Higiene Sanitasi)</option>
+                                    <option value="Halal" :disabled="isTypeSelected('Halal')">Halal</option>
+                                    <option value="HACCP" :disabled="isTypeSelected('HACCP')">HACCP</option>
+                                    <option value="Chef" :disabled="isTypeSelected('Chef')">Chef</option>
+                                </select>
+                                <template x-if="certErrors.name_certification">
+                                    <p class="text-[10px] text-rose-500 mt-1 font-bold italic" x-text="certErrors.name_certification[0]"></p>
+                                </template>
+                            </div>
+                            <div>
+                                <label class="text-[11px] font-bold text-gray-500 uppercase tracking-wider block mb-2">Nomor Sertifikasi <span class="text-rose-500">*</span></label>
+                                <input type="text" x-model="certForm.certification_number" class="w-full px-4 py-2.5 bg-white border border-slate-200 rounded-lg text-sm focus:ring-2 focus:ring-indigo-500 outline-none" :class="certErrors.certification_number ? 'border-rose-500 ring-rose-50' : ''" placeholder="Masukkan Nomor">
+                                <template x-if="certErrors.certification_number">
+                                    <p class="text-[10px] text-rose-500 mt-1 font-bold italic" x-text="certErrors.certification_number[0]"></p>
+                                </template>
+                            </div>
+                            <div>
+                                <label class="text-[11px] font-bold text-gray-500 uppercase tracking-wider block mb-2">Diterbitkan Oleh <span class="text-rose-500">*</span></label>
+                                <input type="text" x-model="certForm.issued_by" class="w-full px-4 py-2.5 bg-white border border-slate-200 rounded-lg text-sm focus:ring-2 focus:ring-indigo-500 outline-none" :class="certErrors.issued_by ? 'border-rose-500 ring-rose-50' : ''" placeholder="Cth: Kemenag, Dinkes, dll">
+                                <template x-if="certErrors.issued_by">
+                                    <p class="text-[10px] text-rose-500 mt-1 font-bold italic" x-text="certErrors.issued_by[0]"></p>
+                                </template>
+                            </div>
+                            <div class="grid grid-cols-3 gap-4">
+                                <div>
+                                    <label class="text-[11px] font-bold text-gray-500 uppercase tracking-wider block mb-2">Tgl Terbit <span class="text-rose-500">*</span></label>
+                                    <input type="date" x-model="certForm.issued_date" class="w-full px-4 py-2.5 bg-white border border-slate-200 rounded-lg text-sm focus:ring-2 focus:ring-indigo-500 outline-none" :class="certErrors.issued_date ? 'border-rose-500 ring-rose-50' : ''">
+                                    <template x-if="certErrors.issued_date">
+                                        <p class="text-[10px] text-rose-500 mt-1 font-bold italic" x-text="certErrors.issued_date[0]"></p>
+                                    </template>
+                                </div>
+                                <div>
+                                    <label class="text-[11px] font-bold text-gray-500 uppercase tracking-wider block mb-2">Tgl Mulai <span class="text-rose-500">*</span></label>
+                                    <input type="date" x-model="certForm.start_date" class="w-full px-4 py-2.5 bg-white border border-slate-200 rounded-lg text-sm focus:ring-2 focus:ring-indigo-500 outline-none" :class="certErrors.start_date ? 'border-rose-500 ring-rose-50' : ''">
+                                    <template x-if="certErrors.start_date">
+                                        <p class="text-[10px] text-rose-500 mt-1 font-bold italic" x-text="certErrors.start_date[0]"></p>
+                                    </template>
+                                </div>
+                                <div>
+                                    <label class="text-[11px] font-bold text-gray-500 uppercase tracking-wider block mb-2">Tgl Kadaluarsa <span class="text-rose-500">*</span></label>
+                                    <input type="date" x-model="certForm.expiry_date" class="w-full px-4 py-2.5 bg-white border border-slate-200 rounded-lg text-sm focus:ring-2 focus:ring-indigo-500 outline-none" :class="certErrors.expiry_date ? 'border-rose-500 ring-rose-50' : ''">
+                                    <template x-if="certErrors.expiry_date">
+                                        <p class="text-[10px] text-rose-500 mt-1 font-bold italic" x-text="certErrors.expiry_date[0]"></p>
+                                    </template>
+                                </div>
+                            </div>
+                            <div class="space-y-2">
+                                    <label class="text-[11px] font-bold text-gray-500 uppercase tracking-wider block mb-2">File Sertifikasi (PDF) <span class="text-rose-500" x-show="certEditingIndex === null">*</span></label>
+                                    <input type="file" id="create_cert_file" accept=".pdf" class="w-full px-4 py-2 bg-white border border-slate-200 rounded-lg text-xs file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-xs file:font-semibold file:bg-indigo-50 file:text-indigo-700 hover:file:bg-indigo-100" :class="certErrors.file_certification ? 'border-rose-500 ring-rose-50' : ''">
+                                    <template x-if="certErrors.file_certification">
+                                        <p class="text-[10px] text-rose-500 mt-1 font-bold italic" x-text="certErrors.file_certification[0]"></p>
+                                    </template>
+                                    
+                                    <template x-if="certEditingIndex !== null && selectedUnit.certifications[certEditingIndex].file_name">
+                                        <div class="flex items-center gap-2 mt-2 p-2 bg-indigo-50/50 rounded-lg border border-indigo-100/50">
+                                            <svg class="w-4 h-4 text-indigo-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                                            </svg>
+                                            <span class="text-[10px] text-indigo-700 font-medium truncate max-w-[200px]" x-text="'File saat ini: ' + selectedUnit.certifications[certEditingIndex].file_name"></span>
+                                        </div>
+                                    </template>
+                                    <p class="text-[10px] text-slate-400 mt-1 italic" x-show="certEditingIndex !== null">Kosongkan jika tidak ingin mengubah file</p>
+                                </div>
+                            <div class="flex items-center gap-4">
+                                <button type="button" @click="addCertToList()" class="mt-6 px-8 py-2.5 bg-indigo-600 text-white rounded-lg text-xs font-bold uppercase transition-all hover:bg-indigo-700 shadow-md active:scale-95">
+                                    <span x-text="certEditingIndex !== null ? 'Simpan Perubahan' : 'Simpan Sementara'"></span>
+                                </button>
+                                <button type="button" @click="showCertForm = false; resetCertForm()" class="mt-6 px-8 py-2.5 bg-white text-slate-500 border border-slate-200 rounded-lg text-xs font-bold uppercase transition-all hover:bg-slate-100">Batal</button>
+                            </div>
+                        </div>
+                    </div>
+
+                    {{-- Daftar Sertifikasi Terpilih --}}
+                    <div class="bg-white rounded-xl overflow-hidden border border-slate-200 shadow-sm">
+                        <div class="overflow-x-auto">
+                            <table class="w-full text-left text-sm">
+                                <thead>
+                                    <tr class="bg-indigo-600/5 text-[11px] font-bold text-indigo-600/60 uppercase tracking-widest border-b border-indigo-600/10">
+                                        <th class="px-5 py-4">Sertifikasi</th>
+                                        <th class="px-5 py-4">Penerbit</th>
+                                        <th class="px-5 py-4 text-center">Tgl Terbit</th>
+                                        <th class="px-5 py-4 text-center">Tgl Mulai</th>
+                                        <th class="px-5 py-4 text-center">Tgl Kadaluarsa</th>
+                                        <th class="px-5 py-4 text-center">Status</th>
+                                        <th class="px-5 py-4 text-center">Berkas</th>
+                                        <th class="px-5 py-4 text-center">Aksi</th>
+                                    </tr>
+                                </thead>
+                                <tbody class="divide-y divide-slate-100 bg-white">
+                                    <template x-if="selectedUnit.certifications && selectedUnit.certifications.length > 0">
+                                        <template x-for="(c, index) in selectedUnit.certifications" :key="index">
+                                            <tr class="hover:bg-indigo-50/30 transition-colors group">
+                                                 <td class="px-5 py-4">
+                                                    <div class="flex items-center gap-3">
+                                                        <div class="w-8 h-8 rounded bg-indigo-50 flex items-center justify-center text-indigo-600 shrink-0">
+                                                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                                                            </svg>
+                                                        </div>
+                                                        <div>
+                                                            <div class="font-bold text-slate-800" x-text="c.name_certification"></div>
+                                                            <div class="text-[10px] text-slate-400 mt-0.5 font-medium" x-text="c.certification_number || '-'"></div>
+                                                        </div>
+                                                    </div>
+                                                </td>
+                                                <td class="px-5 py-4">
+                                                    <span class="text-slate-700" x-text="c.issued_by || '-'"></span>
+                                                </td>
+                                                <td class="px-5 py-4 text-center text-[11px] text-slate-600 font-medium" x-text="formatDate(c.issued_date)"></td>
+                                                <td class="px-5 py-4 text-center text-[11px] text-slate-600 font-medium" x-text="formatDate(c.start_date)"></td>
+                                                <td class="px-5 py-4 text-center text-[11px] text-rose-600 font-medium" x-text="formatDate(c.expiry_date)"></td>
+                                                <td class="px-5 py-4 text-center">
+                                                    <button type="button" @click="c.status = !c.status" class="relative inline-flex h-5 w-10 shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none"
+                                                        :class="c.status ? 'bg-indigo-600' : 'bg-slate-200'">
+                                                        <span class="pointer-events-none inline-block h-4 w-4 transform rounded-full bg-white shadow ring-0 transition duration-200 ease-in-out"
+                                                            :class="c.status ? 'translate-x-5' : 'translate-x-0'"></span>
+                                                    </button>
+                                                </td>
+                                                <td class="px-5 py-4 text-center">
+                                                    <span class="text-[10px] text-indigo-600 font-bold italic" x-text="c.file_name"></span>
+                                                </td>
+                                                <td class="px-5 py-4 text-center">
+                                                    <div class="flex justify-center items-center gap-1">
+                                                        <button type="button" @click="editStagedCert(index)" class="p-2 text-amber-500 hover:bg-amber-50 rounded-lg transition-all" title="Edit">
+                                                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z" />
+                                                            </svg>
+                                                        </button>
+                                                        <button type="button" @click="removeCert(index)" class="p-2 text-rose-500 hover:bg-rose-50 rounded-lg transition-all" title="Hapus">
+                                                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                                                            </svg>
+                                                        </button>
+                                                    </div>
+                                                </td>
+                                            </tr>
+                                        </template>
+                                    </template>
+                                    <template x-if="!selectedUnit.certifications || selectedUnit.certifications.length === 0">
+                                        <tr>
+                                             <td colspan="8" class="px-5 py-12 text-center">
+                                                <div class="flex flex-col items-center">
+                                                    <div class="p-3 bg-slate-50 rounded-full mb-3">
+                                                        <svg class="w-10 h-10 text-slate-200" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                                                        </svg>
+                                                    </div>
+                                                    <p class="text-[11px] font-bold uppercase tracking-widest text-slate-400 italic">Belum ada sertifikasi disiapkan</p>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                    </template>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+
                 {{-- SECTION 6: SOSIAL MEDIA --}}
                 <div class="pt-10 border-t border-gray-100">
                     <h3 class="text-sm font-bold uppercase tracking-widest text-indigo-600 mb-6">Sosial Media</h3>
@@ -764,6 +1063,23 @@
 
         try {
             const formData = new FormData(formElement);
+
+            // Append certifications data and files
+            if (window.selectedUnit && window.selectedUnit.certifications) {
+                window.selectedUnit.certifications.forEach((cert, index) => {
+                    formData.append(`certifications[${index}][name_certification]`, cert.name_certification);
+                    formData.append(`certifications[${index}][certification_number]`, cert.certification_number);
+                    formData.append(`certifications[${index}][issued_by]`, cert.issued_by);
+                    formData.append(`certifications[${index}][issued_date]`, cert.issued_date);
+                    formData.append(`certifications[${index}][start_date]`, cert.start_date);
+                    formData.append(`certifications[${index}][expiry_date]`, cert.expiry_date);
+                    formData.append(`certifications[${index}][status]`, cert.status ? 1 : 0);
+                    if (cert.file) {
+                        formData.append(`certifications[${index}][file]`, cert.file);
+                    }
+                });
+            }
+
             const response = await fetch(formElement.action, {
                 method: 'POST',
                 body: formData,

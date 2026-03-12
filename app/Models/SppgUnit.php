@@ -76,6 +76,11 @@ class SppgUnit extends Model
         )->withTimestamps();
     }
 
+    public function certifications()
+    {
+        return $this->hasMany(Certification::class, 'id_sppg_unit', 'id_sppg_unit');
+    }
+
     /**
      * Sinkronisasi personil unit dengan tabel persons.
      * Algoritma: Saat ini unit ini berisi leader/nutritionist/accountant tertentu.

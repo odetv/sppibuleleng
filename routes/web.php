@@ -218,7 +218,11 @@ Route::middleware(['auth', 'role:administrator', 'profile.completed'])->prefix('
 
     Route::prefix('manage-certification')->name('manage-certification.')->group(function () {
         Route::get('/', [CertificationController::class, 'index'])->name('index');
-        // CRUD routes will be added later
+        Route::post('/store', [CertificationController::class, 'store'])->name('store');
+        Route::patch('/{id}/update', [CertificationController::class, 'update'])->name('update');
+        Route::delete('/{id}', [CertificationController::class, 'destroy'])->name('destroy');
+        Route::post('/{id}/toggle-status', [CertificationController::class, 'toggleStatus'])->name('toggle-status');
+        Route::get('/by-unit/{id_sppg_unit}', [CertificationController::class, 'getByUnit'])->name('by-unit');
     });
 });
 

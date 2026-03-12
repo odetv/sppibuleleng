@@ -2,6 +2,7 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.13/cropper.min.css">
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
     <script src="https://cdn.jsdelivr.net/npm/xlsx/dist/xlsx.full.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
     <style>
         [x-cloak] {
@@ -74,9 +75,10 @@
             showCreateBeneficiaryModal: false,
             showEditBeneficiaryModal: false,
             showUnlinkModal: false,
+            // Removed showCertificationModal as it is now integrated
             beneficiaryToUnlink: null,
             supplierToUnlink: null,
-            selectedUnit: { beneficiaries: [], suppliers: [] },
+            selectedUnit: { beneficiaries: [], suppliers: [], certifications: [] },
             selectedPM: {},
             allBeneficiaryList: {{ json_encode($allBeneficiaries) }},
             allSupplierList: {{ json_encode($allSuppliers) }},
@@ -364,7 +366,7 @@
                             </button>
 
                             {{-- Tombol Tambah --}}
-                            <button @click="selectedUnit = { beneficiaries: [], suppliers: [] }; stagedBeneficiaries = []; searchTerm = ''; showCreateModal = true" class="flex items-center justify-center p-2.5 md:px-4 text-[11px] font-bold uppercase tracking-wider text-indigo-600 bg-white border border-indigo-200 rounded-lg hover:bg-indigo-600 hover:text-white transition-all cursor-pointer shadow-sm">
+                            <button @click="selectedUnit = { beneficiaries: [], suppliers: [], certifications: [] }; stagedBeneficiaries = []; searchTerm = ''; showCreateModal = true" class="flex items-center justify-center p-2.5 md:px-4 text-[11px] font-bold uppercase tracking-wider text-indigo-600 bg-white border border-indigo-200 rounded-lg hover:bg-indigo-600 hover:text-white transition-all cursor-pointer shadow-sm">
                                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
                                 </svg>
@@ -601,7 +603,7 @@
                                     {{-- AKSI --}}
                                     <td class="px-6 py-4 text-center">
                                         <div class="flex justify-center items-center gap-1">
-                                            <button type="button" @click="selectedUnit = JSON.parse('{{ addslashes($unit->load(['socialMedia', 'beneficiaries', 'suppliers'])->toJson()) }}'); selectedUnit.original_id = '{{ $unit->id_sppg_unit }}'; showEditModal = true; setTimeout(() => window.dispatchEvent(new CustomEvent('init-edit-sppg', { detail: selectedUnit })), 300)"
+                                            <button type="button" @click="selectedUnit = JSON.parse('{{ addslashes($unit->load(['socialMedia', 'beneficiaries', 'suppliers', 'certifications'])->toJson()) }}'); selectedUnit.original_id = '{{ $unit->id_sppg_unit }}'; showEditModal = true; setTimeout(() => window.dispatchEvent(new CustomEvent('init-edit-sppg', { detail: selectedUnit })), 300)"
                                                 title="Edit" class="p-2 text-slate-400 hover:text-indigo-600 cursor-pointer transition-colors hover:bg-indigo-50 rounded-lg">
                                                 <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
                                                     <path d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path>
@@ -613,6 +615,7 @@
                                                     <path d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path>
                                                 </svg>
                                             </button>
+
                                         </div>
                                     </td>
                                 </tr>

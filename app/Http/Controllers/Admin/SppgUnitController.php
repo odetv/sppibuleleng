@@ -9,6 +9,7 @@ use App\Models\Person;
 use App\Models\SocialMedia;
 use App\Models\WorkAssignment;
 use App\Models\Beneficiary;
+use App\Models\Certification;
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
 use Illuminate\Support\Facades\DB;
@@ -210,6 +211,31 @@ class SppgUnitController extends Controller
                     'tiktok_url'    => $request->tiktok_url    ?: null,
                 ]
             );
+
+            // Handle Certifications
+            if ($request->has('certifications')) {
+                foreach ($request->certifications as $certData) {
+                    $certification = new Certification();
+                    $certification->id_sppg_unit = $unit->id_sppg_unit;
+                    $certification->name_certification = $certData['name_certification'];
+                    $certification->certification_number = $certData['certification_number'];
+                    $certification->issued_by = $certData['issued_by'];
+                    $certification->issued_date = $certData['issued_date'];
+                    $certification->start_date = $certData['start_date'] ?? null;
+                    $certification->expiry_date = $certData['expiry_date'];
+                    $certification->status = filter_var($certData['status'], FILTER_VALIDATE_BOOLEAN);
+                    $certification->save();
+
+                    // Handle File
+                    $certIndex = array_search($certData, $request->certifications);
+                    if ($request->hasFile("certifications.{$certIndex}.file")) {
+                        $file = $request->file("certifications.{$certIndex}.file");
+                        $certHash = md5($certification->id_certification . config('app.key'));
+                        $filePath = $file->store("sppgunits/{$folderHash}/files/{$certHash}", 'public');
+                        $certification->update(['file_certification' => $filePath]);
+                    }
+                }
+            }
 
             DB::commit();
 

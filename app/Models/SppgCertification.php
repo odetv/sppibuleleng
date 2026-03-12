@@ -4,10 +4,10 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 
-class Certification extends Model
+class SppgCertification extends Model
 {
-    protected $table = 'certifications';
-    protected $primaryKey = 'id_certification';
+    protected $table = 'sppg_certifications';
+    protected $primaryKey = 'id_sppg_certification';
 
     protected $fillable = [
         'id_sppg_unit',
@@ -22,10 +22,10 @@ class Certification extends Model
     ];
 
     protected $casts = [
-        'issued_date' => 'date:Y-m-d',
-        'start_date' => 'date:Y-m-d',
-        'expiry_date' => 'date:Y-m-d',
         'status' => 'boolean',
+        'issued_date' => 'date',
+        'start_date' => 'date',
+        'expiry_date' => 'date',
     ];
 
     public function sppgUnit()
