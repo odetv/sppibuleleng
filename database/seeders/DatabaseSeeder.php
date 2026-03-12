@@ -24,6 +24,7 @@ class DatabaseSeeder extends Seeder
             SppgOfficerSeeder::class,
             BeneficiarySeeder::class,
             SupplierSeeder::class,
+            CertificationSeeder::class,
         ]);
     }
 }

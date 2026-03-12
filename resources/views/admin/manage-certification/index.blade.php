@@ -147,12 +147,7 @@
                         </select>
                     </div>
                 </div>
-                <div class="mb-4 px-1 flex items-center justify-between">
-                    <div class="flex items-center gap-2 text-slate-400">
-                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
-                        <span class="text-[10px] font-medium tracking-wide">Berdasarkan tgl hari ini: <span class="text-slate-600 font-bold uppercase">{{ \Carbon\Carbon::now()->translatedFormat('d F Y') }}</span></span>
-                    </div>
-                </div>
+
 
                 <div id="cert-table-container">
                     <div class="overflow-x-auto scrollbar-thin">
